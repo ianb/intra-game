@@ -1,5 +1,10 @@
+import LlmLog from "@/components/llmlog";
 import { model } from "@/lib/model";
+import { persistentSignal } from "@/lib/persistentsignal";
+import { useSignal } from "@preact/signals-react";
 import { KeyboardEvent } from "react";
+
+const activeTab = persistentSignal("activeTab", "inv");
 
 export default function Home() {
   return (
@@ -12,7 +17,6 @@ export default function Home() {
       <div className="flex flex-1 pt-12">
         {" "}
         {/* Add pt-12 to push down the content below the fixed top bar */}
-        {/* Left side (Chat interface) */}
         <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
           {/* Scrollable log */}
           <div className="flex-1 overflow-y-auto border-b border-gray-700 p-2">
@@ -64,12 +68,85 @@ function Input() {
 }
 
 function HeadsUpDisplay() {
+  const activeClass = "text-black bg-gray-100 cursor-pointer";
+  const inactiveClass = "cursor-pointer";
   return (
-    <div className="flex-1 p-4 border-b border-gray-700">
+    <div className="flex-1 p-4 border-b border-gray-700 h-1/2">
+      <div>
+        <span
+          onClick={() => {
+            activeTab.value = "inv";
+          }}
+          className={activeTab.value === "inv" ? activeClass : inactiveClass}
+        >
+          (i)nv
+        </span>{" "}
+        <span
+          onClick={() => {
+            activeTab.value = "access";
+          }}
+          className={activeTab.value === "access" ? activeClass : inactiveClass}
+        >
+          (a)ccess
+        </span>{" "}
+        <span
+          onClick={() => {
+            activeTab.value = "blips";
+          }}
+          className={activeTab.value === "blips" ? activeClass : inactiveClass}
+        >
+          (b)lips
+        </span>{" "}
+        <span
+          onClick={() => {
+            activeTab.value = "log";
+          }}
+          className={activeTab.value === "log" ? activeClass : inactiveClass}
+        >
+          (l)og
+        </span>
+      </div>
+      {activeTab.value === "inv" && <Inventory />}
+      {activeTab.value === "access" && <AccessControl />}
+      {activeTab.value === "blips" && <Blips />}
+      {activeTab.value === "log" && <LlmLog />}
+    </div>
+  );
+}
+
+function Inventory() {
+  return (
+    <div className="flex-1 p-4">
+      <div className="mb-2">Inventory</div>
       <ul className="space-y-2">
-        <li className="cursor-pointer">Inventory</li>
-        <li className="cursor-pointer">Access Control</li>
-        <li className="cursor-pointer">Blip AIs</li>
+        <li>1. Item 1</li>
+        <li>2. Item 2</li>
+        <li>3. Item 3</li>
+      </ul>
+    </div>
+  );
+}
+
+function AccessControl() {
+  return (
+    <div className="flex-1 p-4">
+      <div className="mb-2">Access Control</div>
+      <ul className="space-y-2">
+        <li>1. Code XYZ</li>
+        <li>2. Code ABC</li>
+        <li>3. Code 123</li>
+      </ul>
+    </div>
+  );
+}
+
+function Blips() {
+  return (
+    <div className="flex-1 p-4">
+      <div className="mb-2">Blips</div>
+      <ul className="space-y-2">
+        <li>1. Helpertron</li>
+        <li>2. Fitz</li>
       </ul>
     </div>
   );
