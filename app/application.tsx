@@ -1,4 +1,4 @@
-import { Button } from "@/components/input";
+import { Button, CheckButton } from "@/components/input";
 import LlmLog from "@/components/llmlog";
 import { model } from "@/lib/model";
 import { persistentSignal } from "@/lib/persistentsignal";
@@ -8,6 +8,7 @@ import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const activeTab = persistentSignal("activeTab", "inv");
+const showInternals = persistentSignal("showInternals", false);
 
 export default function Home() {
   useEffect(() => {
@@ -41,10 +42,14 @@ export default function Home() {
 }
 
 function ChatLog() {
+  const internals = showInternals.value;
   return (
     <div>
       {model.session.value.updates.map((update, i) => {
         if (isStateUpdate(update)) {
+          if (!internals) {
+            return null;
+          }
           const lines = [`Update ${update.id}:`];
           for (const [key, value] of Object.entries(update.updates)) {
             lines.push(`  ${key}: ${JSON.stringify(value)}`);
@@ -159,14 +164,16 @@ function HeadsUpDisplay() {
         >
           (b)lips
         </span>{" "}
-        <span
-          onClick={() => {
-            activeTab.value = "log";
-          }}
-          className={activeTab.value === "log" ? activeClass : inactiveClass}
-        >
-          (l)og
-        </span>
+        {(showInternals.value || activeTab.value === "log") && (
+          <span
+            onClick={() => {
+              activeTab.value = "log";
+            }}
+            className={activeTab.value === "log" ? activeClass : inactiveClass}
+          >
+            (l)og
+          </span>
+        )}
       </div>
       <div>
         {activeTab.value === "inv" && <Inventory />}
@@ -220,6 +227,11 @@ function Controls() {
   return (
     <div className="flex-1 p-4 overflow-y-auto">
       <div className="mb-2">Controls</div>
+      <CheckButton
+        signal={showInternals}
+        on="Internals Shown"
+        off="Internals Hidden"
+      />
       <ul className="space-y-2">
         <li className="cursor-pointer">1. Item 1</li>
         <li className="cursor-pointer">2. Item 2</li>

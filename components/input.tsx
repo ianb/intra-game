@@ -1,6 +1,7 @@
 import { useSignal } from "@preact/signals-react";
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import { SignalType } from "@/lib/persistentsignal";
 
 export function Button({
   className,
@@ -40,5 +41,35 @@ export function Button({
         <div className="text-red-600 text-xs">{error.value.message}</div>
       )}
     </button>
+  );
+}
+
+export function CheckButton({
+  className,
+  signal,
+  on,
+  off,
+  onClass,
+  offClass,
+}: {
+  className?: string;
+  signal: SignalType<boolean>;
+  on: React.ReactNode;
+  off: React.ReactNode;
+  onClass?: string;
+  offClass?: string;
+}) {
+  onClass = onClass || "bg-green-600 border border-green-700";
+  offClass = offClass || "bg-green-950 border border-green-700";
+  const cls = twMerge(className, signal.value ? onClass : offClass);
+  return (
+    <Button
+      className={cls}
+      onClick={() => {
+        signal.value = !signal.value;
+      }}
+    >
+      {signal.value ? on : off}
+    </Button>
   );
 }

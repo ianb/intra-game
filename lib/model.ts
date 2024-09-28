@@ -154,12 +154,15 @@ export class Model {
 
   async triggerPrompt(entityId: string, prompt: string) {
     const entity = this.entities[entityId];
-    const promptId = Object.entries(entity.prompts || {}).filter(
+    const promptEntry = Object.entries(entity.prompts || {}).find(
       ([_id, text]) => text === prompt
-    )?.[0];
+    );
+    const promptTitle = promptEntry
+      ? promptEntry[0]
+      : prompt.slice(0, 10) + "...";
     const resp = await chat({
       meta: {
-        title: `${entityId.split(":")[1]}: ${promptId}`,
+        title: `${entityId.split(":")[1]}: ${promptTitle}`,
       },
       history: [
         {

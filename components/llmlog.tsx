@@ -2,13 +2,14 @@ import { logSignal } from "@/lib/llm";
 import { GeminiChatType } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
 import { useEffect } from "react";
+import { twMerge } from "tailwind-merge";
 
 export default function LlmLog() {
   return (
-    <div>
+    <div className="text-xs">
       {logSignal.value.map((log, index) => (
         <div key={index} className="border-b border-gray-700 p-2">
-          <div>
+          <div className="bg-blue-900 text-white p-1">
             #{log.request.meta.index} {log.request.meta.title}{" "}
             <RequestTime start={log.request.meta.start!} end={log.end} />
             {log.request.model === "gemini-1.5-flash" && " ⚡"}
@@ -29,14 +30,14 @@ function LlmRequest({
   finished: boolean;
 }) {
   return (
-    <div className={finished ? "bg-blue-900" : ""}>
+    <div className={finished ? "" : "bg-blue-900"}>
       {request.history.map((history, index) => (
-        <pre className="whitespace-pre-wrap" key={index}>
+        <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-1" key={index}>
           <strong>{history.role}:</strong>{" "}
           {history.parts!.map((part) => part.text).join(" ")}
         </pre>
       ))}
-      <pre className="whitespace-pre-wrap">
+      <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-2">
         <strong>user:</strong> {request.message}
       </pre>
     </div>
@@ -48,7 +49,7 @@ function LlmResponse({ response }: { response?: string }) {
     return null;
   }
   return (
-    <pre className="whitespace-pre-wrap bg-green-900">
+    <pre className="whitespace-pre-wrap text-white bg-green-900 -indent-2 pl-2">
       <strong>model:</strong> {response}
     </pre>
   );
