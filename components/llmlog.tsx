@@ -30,7 +30,7 @@ function LlmRequest({
   finished: boolean;
 }) {
   return (
-    <div className={finished ? "" : "bg-blue-900"}>
+    <div className={finished ? "" : "bg-blue-950"}>
       {request.history.map((history, index) => (
         <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-1" key={index}>
           <strong>{history.role}:</strong>{" "}

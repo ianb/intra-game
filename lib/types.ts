@@ -60,15 +60,30 @@ export type ExitType = {
 export type EntityType = {
   id: string;
   name: string;
+  pronouns: string;
   description: string;
   color: string;
   commands?: string;
+  prompts?: Record<string, string>;
   onEvent?: (_event: string, _model: Model) => Promise<void>;
   onGlobalEvent?: (_event: string, _model: Model) => Promise<void>;
   onCommand?: (_command: TagType, model: Model) => void;
   state: Record<string, any>;
-  prompts?: Record<string, string>;
+  inventory: Record<string, string>;
+  blipAis: Record<string, string>;
+  roomAccess: Record<string, string>;
 };
+
+export type EntityDefinitionType = Omit<
+  EntityType,
+  "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
+> &
+  Partial<
+    Pick<
+      EntityType,
+      "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
+    >
+  >;
 
 export type CommandType = {
   id: string;

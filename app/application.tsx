@@ -69,7 +69,34 @@ function ChatLog() {
               <div className={twMerge("font-bold", entity.color)}>
                 {entity.name}
               </div>
-              <pre className="whitespace-pre-wrap">{update.response}</pre>
+              {internals ? (
+                <pre className="pl-1 whitespace-pre-wrap">
+                  {update.response}
+                </pre>
+              ) : (
+                update.tags.map((tag, i) => {
+                  if (tag.type === "speak") {
+                    return (
+                      <pre
+                        className="pl-3 whitespace-pre-wrap -indent-2"
+                        key={i}
+                      >
+                        "{tag.content}""
+                      </pre>
+                    );
+                  } else if (tag.type === "description") {
+                    return (
+                      <pre
+                        className="pl-2 ml-2 whitespace-pre-wrap border-l-2 border-green-500"
+                        key={i}
+                      >
+                        {tag.content}
+                      </pre>
+                    );
+                  }
+                  return null;
+                })
+              )}
             </div>
           );
         } else {
@@ -94,7 +121,7 @@ function Input() {
     }
     if (event.key === "Enter") {
       event.preventDefault();
-      console.log("Enter key pressed");
+      onSubmit();
     }
   }
   async function onSubmit() {
@@ -186,39 +213,44 @@ function HeadsUpDisplay() {
 }
 
 function Inventory() {
+  // This is *based* on updates, so I'm using this to keep it updated:
+  const updates = model.session.value.updates;
+  const player = model.entities["entity:player"];
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Inventory</div>
-      <ul className="space-y-2">
-        <li>1. Item 1</li>
-        <li>2. Item 2</li>
-        <li>3. Item 3</li>
-      </ul>
+      {Object.values(player.inventory).map((item, i) => (
+        <div key={i}>- {item}</div>
+      ))}
+      <div>- Key card</div>
     </div>
   );
 }
 
 function AccessControl() {
+  const updates = model.session.value.updates;
+  const player = model.entities["entity:player"];
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Access Control</div>
-      <ul className="space-y-2">
-        <li>1. Code XYZ</li>
-        <li>2. Code ABC</li>
-        <li>3. Code 123</li>
-      </ul>
+      {Object.entries(player.roomAccess).map(([roomId, access], i) => {
+        const room = model.rooms[roomId];
+        return <div key={i}>- {room.name}</div>;
+      })}
     </div>
   );
 }
 
 function Blips() {
+  const updates = model.session.value.updates;
+  const player = model.entities["entity:player"];
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Blips</div>
-      <ul className="space-y-2">
-        <li>1. Helpertron</li>
-        <li>2. Fitz</li>
-      </ul>
+      {Object.entries(player.blipAis).map(([entityId, info], i) => {
+        const entity = model.entities[entityId];
+        return <div key={i}>- {entity.name}</div>;
+      })}
     </div>
   );
 }
