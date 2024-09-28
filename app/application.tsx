@@ -69,7 +69,7 @@ function ChatLog() {
           );
         } else {
           return (
-            <pre className="whitespace-pre-wrap text-red-400">
+            <pre className="whitespace-pre-wrap text-red-400" key={i}>
               Unknown update: {"\n"}
               {JSON.stringify(update, null, 2)}
             </pre>
