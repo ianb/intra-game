@@ -14,7 +14,7 @@ export default function Home() {
         <span className="">prefs</span>
       </div>
 
-      <div className="flex flex-1 pt-12">
+      <div className="flex flex-1 pt-12 overflow-hidden">
         {" "}
         {/* Add pt-12 to push down the content below the fixed top bar */}
         <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
@@ -25,7 +25,7 @@ export default function Home() {
           <Input />
         </div>
         {/* Right side (Tabs and Controls) */}
-        <div className="w-1/3 flex flex-col bg-gray-800 text-white">
+        <div className="w-1/3 flex flex-col bg-gray-800 text-white h-full">
           <HeadsUpDisplay />
           <Controls />
         </div>
@@ -71,7 +71,7 @@ function HeadsUpDisplay() {
   const activeClass = "text-black bg-gray-100 cursor-pointer";
   const inactiveClass = "cursor-pointer";
   return (
-    <div className="flex-1 p-4 border-b border-gray-700 h-1/2">
+    <div className="flex-1 p-4 border-b border-gray-700 overflow-y-auto">
       <div>
         <span
           onClick={() => {
@@ -106,10 +106,12 @@ function HeadsUpDisplay() {
           (l)og
         </span>
       </div>
-      {activeTab.value === "inv" && <Inventory />}
-      {activeTab.value === "access" && <AccessControl />}
-      {activeTab.value === "blips" && <Blips />}
-      {activeTab.value === "log" && <LlmLog />}
+      <div>
+        {activeTab.value === "inv" && <Inventory />}
+        {activeTab.value === "access" && <AccessControl />}
+        {activeTab.value === "blips" && <Blips />}
+        {activeTab.value === "log" && <LlmLog />}
+      </div>
     </div>
   );
 }
@@ -154,7 +156,7 @@ function Blips() {
 
 function Controls() {
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1 p-4 overflow-y-auto">
       <div className="mb-2">Controls</div>
       <ul className="space-y-2">
         <li className="cursor-pointer">1. Item 1</li>
