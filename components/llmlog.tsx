@@ -33,7 +33,7 @@ function LlmRequest({
       {request.history.map((history, index) => (
         <pre className="whitespace-pre-wrap" key={index}>
           <strong>{history.role}:</strong>{" "}
-          {history.parts.map((part) => part.text).join(" ")}
+          {history.parts!.map((part) => part.text).join(" ")}
         </pre>
       ))}
       <pre className="whitespace-pre-wrap">
