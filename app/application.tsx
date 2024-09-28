@@ -81,7 +81,7 @@ function ChatLog() {
                         className="pl-3 whitespace-pre-wrap -indent-2"
                         key={i}
                       >
-                        "{tag.content}""
+                        &quot;{tag.content}&quot;
                       </pre>
                     );
                   } else if (tag.type === "description") {
