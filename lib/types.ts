@@ -45,9 +45,9 @@ export type RoomType = {
   description: string;
   color: string;
   exits: ExitType[];
-  onEvent?: (this: EntityType, _event: string, _model: Model) => Promise<void>;
+  onEvent?: (this: RoomType, _event: string, _model: Model) => Promise<void>;
   onGlobalEvent?: (
-    this: EntityType,
+    this: RoomType,
     _event: string,
     _model: Model
   ) => Promise<void>;

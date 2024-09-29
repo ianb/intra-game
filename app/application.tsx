@@ -143,8 +143,12 @@ function Input() {
       <textarea
         ref={textareaRef}
         rows={2}
-        className="flex-1 resize-none bg-gray-800 text-white border-none p-2"
+        className={twMerge(
+          "flex-1 resize-none bg-gray-800 text-white border-none p-2",
+          running.value && "opacity-50"
+        )}
         placeholder="Type your message..."
+        disabled={running.value}
         onKeyDown={onKeyDown}
       />
       <div className="flex flex-col ml-2">
