@@ -1,5 +1,10 @@
 import { signal } from "@preact/signals-react";
-import { GeminiChatType, LlmLogType } from "./types";
+import { GeminiChatType, GeminiModelType, LlmLogType } from "./types";
+
+// export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro-exp-0827";
+// export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash-exp-0827";
+export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro";
+export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
 
 export const logSignal = signal<LlmLogType[]>([]);
 
@@ -13,17 +18,31 @@ export async function chat(request: GeminiChatType) {
     : 0;
   request.meta.index = (lastIndex || 0) + 1;
   request.meta.start = Date.now();
-  if (!request.model) {
-    request.model = "gemini-1.5-pro";
+  if (!request.model || request.model === "pro") {
+    request.model = DEFAULT_PRO_MODEL;
   } else if (request.model === "flash") {
-    request.model = "gemini-1.5-flash";
+    request.model = DEFAULT_FLASH_MODEL;
   }
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
-  const response = await fetch("/api/llm", {
-    method: "POST",
-    body: JSON.stringify(request),
-  });
-  const text = (await response.json()).response;
+  let text = "";
+  try {
+    const response = await fetch("/api/llm", {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    text = (await response.json()).response;
+  } catch (e) {
+    const newLog = {
+      ...log,
+      end: Date.now(),
+      errorMessage: `${e}`,
+    };
+    logSignal.value = logSignal.value.map((l) => (l === log ? newLog : l));
+    throw e;
+  }
   const newLog = {
     ...log,
     end: Date.now(),

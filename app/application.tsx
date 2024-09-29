@@ -65,10 +65,8 @@ function ChatLog() {
         } else if (isEntityInteraction(update)) {
           const entity = model.entities[update.entityId];
           return (
-            <div className="text-green-500" key={i}>
-              <div className={twMerge("font-bold", entity.color)}>
-                {entity.name}
-              </div>
+            <div className={entity.color} key={i}>
+              <div className={twMerge("font-bold")}>{entity.name}</div>
               {internals ? (
                 <pre className="pl-1 whitespace-pre-wrap">
                   {update.response}
@@ -78,7 +76,7 @@ function ChatLog() {
                   if (tag.type === "speak") {
                     return (
                       <pre
-                        className="pl-3 whitespace-pre-wrap -indent-2"
+                        className="pl-3 whitespace-pre-wrap -indent-2 mb-2"
                         key={i}
                       >
                         &quot;{tag.content}&quot;
@@ -87,7 +85,7 @@ function ChatLog() {
                   } else if (tag.type === "description") {
                     return (
                       <pre
-                        className="pl-2 ml-2 whitespace-pre-wrap border-l-2 border-green-500"
+                        className="px-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-700 text-justify"
                         key={i}
                       >
                         {tag.content}
@@ -191,7 +189,7 @@ function HeadsUpDisplay() {
         >
           (b)lips
         </span>{" "}
-        {(showInternals.value || activeTab.value === "log") && (
+        {(showInternals.value || activeTab.value === "log" || true) && (
           <span
             onClick={() => {
               activeTab.value = "log";
@@ -256,19 +254,29 @@ function Blips() {
 }
 
 function Controls() {
+  const room = model.rooms[model.session.value.interaction.roomId];
   return (
     <div className="flex-1 p-4 overflow-y-auto">
-      <div className="mb-2">Controls</div>
       <CheckButton
         signal={showInternals}
+        className="float-right"
         on="Internals Shown"
         off="Internals Hidden"
       />
-      <ul className="space-y-2">
-        <li className="cursor-pointer">1. Item 1</li>
-        <li className="cursor-pointer">2. Item 2</li>
-        <li className="cursor-pointer">3. Item 3</li>
-      </ul>
+      <div className="mb-2">Controls</div>
+      <div>
+        Exits:
+        <ul className="space-y-2">
+          {room.exits.map((exit, i) => {
+            const targetRoom = model.rooms[exit.roomId];
+            return (
+              <li key={i} className="cursor-pointer">
+                - {exit.name || targetRoom.name}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }

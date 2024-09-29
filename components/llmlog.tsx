@@ -1,8 +1,7 @@
 import { logSignal } from "@/lib/llm";
-import { GeminiChatType } from "@/lib/types";
+import { GeminiChatType, LlmLogType } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
 import { useEffect } from "react";
-import { twMerge } from "tailwind-merge";
 
 export default function LlmLog() {
   return (
@@ -14,11 +13,26 @@ export default function LlmLog() {
             <RequestTime start={log.request.meta.start!} end={log.end} />
             {log.request.model === "gemini-1.5-flash" && " ⚡"}
           </div>
-          <LlmRequest request={log.request} finished={!!log.response} />
+          <LlmError log={log} />
+          <LlmRequest
+            request={log.request}
+            finished={!!log.response || !!log.errorMessage}
+          />
           <LlmResponse response={log.response} />
         </div>
       ))}
     </div>
+  );
+}
+
+function LlmError({ log }: { log: LlmLogType }) {
+  if (!log.errorMessage) {
+    return null;
+  }
+  return (
+    <pre className="whitespace-pre-wrap text-white bg-red-900 -indent-2 pl-2">
+      <strong>error:</strong> {log.errorMessage}
+    </pre>
   );
 }
 
@@ -31,16 +45,25 @@ function LlmRequest({
 }) {
   return (
     <div className={finished ? "" : "bg-blue-950"}>
+      {request.systemInstruction && (
+        <LlmRequestItem role="system" text={request.systemInstruction} />
+      )}
       {request.history.map((history, index) => (
-        <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-1" key={index}>
-          <strong>{history.role}:</strong>{" "}
-          {history.parts!.map((part) => part.text).join(" ")}
-        </pre>
+        <LlmRequestItem
+          role={history.role}
+          text={history.parts!.map((part) => part.text).join(" ")}
+        />
       ))}
-      <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-2">
-        <strong>user:</strong> {request.message}
-      </pre>
+      <LlmRequestItem role="user" text={request.message} />
     </div>
+  );
+}
+
+function LlmRequestItem({ role, text }: { role: string; text: string }) {
+  return (
+    <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-2">
+      <strong>{role}:</strong> {text}
+    </pre>
   );
 }
 

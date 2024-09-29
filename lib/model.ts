@@ -6,6 +6,7 @@ import {
   InteractionType,
   isEntityInteraction,
   isStateUpdate,
+  PromptChoiceType,
   RoomType,
   SessionType,
   UpdateStreamType,
@@ -14,7 +15,7 @@ import { chat } from "./llm";
 import { parseTags, TagType } from "./parsetags";
 import { rooms } from "./game/rooms";
 import { entities } from "./game/entities";
-import { fillTemplate, tmpl } from "./template";
+import { fillTemplate, TemplateFalse, TemplateTrue, tmpl } from "./template";
 
 const beginningInteraction: InteractionType = {
   activeEntityIds: ["entity:ama"],
@@ -123,7 +124,12 @@ export class Model {
     this.rooms = {};
     this.entities = {};
     for (const room of rooms) {
-      this.rooms[room.id] = { ...room, state: { ...room.state } };
+      this.rooms[room.id] = {
+        color: "",
+        prompts: {},
+        ...room,
+        state: { ...room.state },
+      };
     }
     for (const entity of entities) {
       this.entities[entity.id] = {
@@ -132,6 +138,7 @@ export class Model {
         inventory: {},
         blipAis: {},
         roomAccess: {},
+        prompts: {},
         ...entity,
         state: { ...entity.state },
       };
@@ -185,46 +192,56 @@ export class Model {
     }
   }
 
-  async triggerPrompt(
-    entityId: string,
-    prompt: string,
-    props?: Record<string, any>
-  ) {
+  async triggerReaction(entityId: string, props?: Record<string, any>) {
     const entity = this.entities[entityId];
-    const promptEntry = Object.entries(entity.prompts || {}).find(
-      ([_id, text]) => text === prompt
-    );
-    const promptTitle = promptEntry
-      ? promptEntry[0]
-      : prompt.slice(0, 10) + "...";
-    const renderedPrompt = this.fillPrompt(prompt, entityId, props);
-    console.log("rendered with props", props, [prompt, renderedPrompt]);
+    const player = this.entities["entity:player"];
+    let promptChoice: PromptChoiceType = { id: "reactToUser" };
+    if (entity.choosePrompt) {
+      promptChoice = entity.choosePrompt(this);
+    }
+    props = { ...promptChoice.props, ...props };
+    const prompt = entity.prompts[promptChoice.id];
+    const twoPartPrompt = this.fillPrompt(prompt, entityId, props);
+    const parts = twoPartPrompt.split(/>>>\s*user/);
+    const renderedPrompt = parts[0].trim();
+    const extraUserPrompt = (parts[1] || "").trim();
+    console.log("rendered with props", props, [
+      prompt,
+      renderedPrompt,
+      extraUserPrompt,
+    ]);
     const description = this.fillPrompt(entity.description, entityId, props);
     const resp = await chat({
       meta: {
-        title: `${entityId.split(":")[1]}: ${promptTitle}`,
+        title: `${entityId.split(":")[1]}: ${promptChoice.id}`,
       },
-      history: [
-        {
-          role: "user",
-          text: tmpl`
-          You will be running a text adventure game.
+      systemInstruction: tmpl`
+      You are helping write out a text adventure game.
 
-          For this step you will be playing the part of a character named "${entity.name}" (${entity.pronouns}).
+      For the next step you will be playing the part of a character named "${entity.name}" (${entity.pronouns}).
 
-          The character is described as:
-          ${description}
-          `,
-        },
-        ...this.historyForEntity(entity),
-      ],
-      message: tmpl`
-      You will be continuing the game using this formatting:
+      You will be provided with a history of the gameplay up to this point.
 
-      ${this.formatCommands(entity)}
+      The character ${entity.name} is described as:
+      """
+      ${description}
+      """
 
-      Continue the game with this in mind:
+      The player character is ${player.name} (${player.pronouns}). Anything in <speak character="${player.name}">...</speak> is from the player character, and written (perhaps indirectly) by the user.
+
+      To continue the play you will be using this formatting in the text you generate:
+
+      ${this.formatCommands(entity, props)}
+
+      Instructions on how to play the character follow:
+
       ${renderedPrompt}
+      `,
+      history: [...this.historyForEntity(entity)],
+      message: tmpl`
+      Continue the game as ${entity.name}
+
+      ${extraUserPrompt}
       `,
     });
     const tags = parseTags(resp);
@@ -279,6 +296,13 @@ export class Model {
         }
       }
     }
+    if (result.length && result[0].role !== "user") {
+      // Gemini is picky about this
+      result.unshift({
+        role: "user",
+        text: "<beginStory></beginStory>",
+      });
+    }
     return result;
   }
 
@@ -293,34 +317,34 @@ export class Model {
     this.appendUpdate(interaction);
   }
 
-  formatCommands(entity: EntityType) {
+  formatCommands(entity: EntityType, props: Record<string, any>) {
     const commands = entity.commands
-      ? this.fillPrompt(entity.commands, entity.id)
+      ? this.fillPrompt(entity.commands, entity.id, props)
       : "";
     return tmpl`
     ${commands}
 
     To speak as "${entity.name}" you can use the following command:
 
-    <speak>Text to say</speak>
+    <speak character="${entity.name}">Text to say</speak>
 
     To describe visible activities or pertinent visible results, use:
 
     <description>...</description>
 
-    Reply with <thoughts>...</thoughts> to consider what ${entity.name} is thinking, then commands and <speak>...</speak> to act on those thoughts. Reply <noAction>...</noAction> to indicate that ${entity.name} is not taking any action.
+    Reply with <thoughts>...</thoughts> to consider what ${entity.name} is thinking, then commands and <speak>...</speak> to act on those thoughts. Reply <noAction>...</noAction> to indicate that ${entity.name} is not taking any action. Do not improvise any other tags.
     `;
   }
 
   async sendText(text: string) {
     const player = this.entities["entity:player"];
-    await this.triggerPrompt("entity:player", player.prompts!.sendText, {
+    await this.triggerReaction("entity:player", {
       text,
     });
     for (const entityId of this.session.value.interaction.activeEntityIds) {
       const entity = this.entities[entityId];
       if (entity.prompts?.reactToUser) {
-        await this.triggerPrompt(entityId, entity.prompts.reactToUser);
+        await this.triggerReaction(entityId);
       }
     }
   }
@@ -387,32 +411,43 @@ export class Model {
     } else if (variables[id]) {
       obj = variables[id];
       if (!parts.length) {
-        return obj;
+        return coerceVar(obj);
       }
     }
     if (!obj) {
       console.warn(
         `Entity ${JSON.stringify(id)} not found: ${JSON.stringify(key)}`
       );
-      return `<<${key}>>`;
+      return undefined;
     }
     if (!parts.length) {
       console.warn(`Object with no attributes: ${JSON.stringify(key)}`);
-      return `<<${key}>>`;
+      return undefined;
     }
     let value = obj;
     for (const part of parts) {
+      console.log("check part", [part, FUNCS[part]]);
       if (FUNCS[part]) {
         value = FUNCS[part](value);
         continue;
       }
-      if (!value || !value[part]) {
+      if (
+        value &&
+        value[part] === undefined &&
+        value.state &&
+        value.state[part] !== undefined
+      ) {
+        value = value.state[part];
+        continue;
+      }
+      if (!value || value[part] === undefined) {
         console.warn("Missing attribute", key, part, value);
         return undefined;
       }
       value = value[part];
     }
-    return value;
+    console.log(`Variable ${id}/${defaultEntityId}`, key, "=>", value);
+    return coerceVar(value);
   }
 }
 
@@ -450,6 +485,28 @@ const FUNCS: Record<string, (obj: any) => any> = {
     }
     return lines.join("\n");
   },
+  not(obj: any) {
+    if (obj && obj.isEmpty) {
+      return true;
+    }
+    if (Array.isArray(obj)) {
+      return !obj.length;
+    }
+    if (obj && typeof obj === "object") {
+      return Object.keys(obj).length === 0;
+    }
+    return !obj;
+  },
 };
+
+function coerceVar(value: any) {
+  if (value === true) {
+    return TemplateTrue;
+  }
+  if (value === false) {
+    return TemplateFalse;
+  }
+  return value;
+}
 
 export const model = new Model();

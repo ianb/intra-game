@@ -45,16 +45,23 @@ export type RoomType = {
   description: string;
   color: string;
   exits: ExitType[];
-  onEvent?: (_event: string, _model: Model) => Promise<void>;
-  onGlobalEvent?: (_event: string, _model: Model) => Promise<void>;
+  onEvent?: (this: EntityType, _event: string, _model: Model) => Promise<void>;
+  onGlobalEvent?: (
+    this: EntityType,
+    _event: string,
+    _model: Model
+  ) => Promise<void>;
   state: Record<string, any>;
-  prompts?: Record<string, string>;
+  prompts: Record<string, string>;
 };
+
+export type RoomDefinitionType = Omit<RoomType, "state" | "prompts" | "color"> &
+  Partial<Pick<RoomType, "state" | "prompts" | "color">>;
 
 export type ExitType = {
   roomId: string;
   name?: string;
-  restriction: string;
+  restriction?: string;
 };
 
 export type EntityType = {
@@ -64,24 +71,46 @@ export type EntityType = {
   description: string;
   color: string;
   commands?: string;
-  prompts?: Record<string, string>;
-  onEvent?: (_event: string, _model: Model) => Promise<void>;
-  onGlobalEvent?: (_event: string, _model: Model) => Promise<void>;
-  onCommand?: (_command: TagType, model: Model) => void;
+  prompts: Record<string, string>;
+  onEvent?: (this: EntityType, _event: string, _model: Model) => Promise<void>;
+  onGlobalEvent?: (
+    this: EntityType,
+    _event: string,
+    _model: Model
+  ) => Promise<void>;
+  choosePrompt?: (this: EntityType, _model: Model) => PromptChoiceType;
+  onCommand?: (this: EntityType, _command: TagType, model: Model) => void;
   state: Record<string, any>;
   inventory: Record<string, string>;
   blipAis: Record<string, string>;
   roomAccess: Record<string, string>;
 };
 
+export type PromptChoiceType = {
+  id: string;
+  props?: Record<string, any>;
+};
+
 export type EntityDefinitionType = Omit<
   EntityType,
-  "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
+  | "state"
+  | "pronouns"
+  | "color"
+  | "inventory"
+  | "blipAis"
+  | "roomAccess"
+  | "prompts"
 > &
   Partial<
     Pick<
       EntityType,
-      "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
+      | "state"
+      | "pronouns"
+      | "color"
+      | "inventory"
+      | "blipAis"
+      | "roomAccess"
+      | "prompts"
     >
   >;
 
@@ -106,6 +135,7 @@ export type GeminiChatType = {
   model?: GeminiModelType;
   history: GeminiHistoryType[];
   message: string;
+  systemInstruction?: string;
 };
 
 export type GeminiMetaType = {
@@ -114,7 +144,13 @@ export type GeminiMetaType = {
   start?: number;
 };
 
-export type GeminiModelType = "gemini-1.5-flash" | "gemini-1.5-pro" | "flash";
+export type GeminiModelType =
+  | "gemini-1.5-flash"
+  | "gemini-1.5-flash-exp-0827"
+  | "gemini-1.5-pro"
+  | "gemini-1.5-pro-exp-0827"
+  | "flash"
+  | "pro";
 
 export type GeminiRoleType = "user" | "model";
 
@@ -132,4 +168,6 @@ export type LlmLogType = {
   request: GeminiChatType;
   end?: number;
   response?: string;
+  errorMessage?: string;
+  errorBody?: any;
 };
