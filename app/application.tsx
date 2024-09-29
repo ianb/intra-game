@@ -6,6 +6,7 @@ import { serializeAttrs } from "@/lib/parsetags";
 import { persistentSignal } from "@/lib/persistentsignal";
 import {
   EntityInteractionType,
+  ExitType,
   isEntityInteraction,
   isStateUpdate,
   RoomType,
@@ -13,6 +14,7 @@ import {
   UpdateStreamType,
 } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
+import { on } from "events";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -127,7 +129,7 @@ function ChatLogEntityInteraction({
         } else if (tag.type === "description") {
           return (
             <pre
-              className="px-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-700 text-justify"
+              className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700"
               key={i}
             >
               {tag.content}
@@ -315,7 +317,24 @@ function Blips() {
 }
 
 function Controls() {
+  const SKIP_IDS = ["entity:narrator", "entity:player", "entity:ama"];
   const room = model.get(model.player.locationId) as RoomType;
+  const folks = model
+    .containedIn(model.player.locationId)
+    .filter((x) => !SKIP_IDS.includes(x.id));
+  async function onGoToRoom(room: RoomType, exit: ExitType) {
+    if (!exit.restriction) {
+      model.appendUpdate({
+        type: "entityInteraction",
+        entityId: "entity:player",
+        tags: [{ type: "goTo", attrs: {}, content: room.id }],
+        response: `<goTo>${room.id}</goTo>`,
+      });
+      model.goToRoom(exit.roomId);
+      return;
+    }
+    await model.sendText(`Go to ${room.name}`);
+  }
   return (
     <div className="flex-1 p-4 overflow-y-auto">
       <CheckButton
@@ -325,24 +344,43 @@ function Controls() {
         off="Internals Hidden"
       />
       <div className="mb-2">Controls</div>
-      <div>
+      <div className="border-b border-gray-400">
         Location: <strong className={room.color}>{room.name}</strong>
       </div>
-      <div>
-        Exits:
-        <ul className="space-y-2">
-          {room.exits.map((exit, i) => {
-            const targetRoom = model.rooms[exit.roomId];
-            return (
-              <li
-                key={i}
-                className={twMerge("cursor-pointer", targetRoom.color)}
-              >
-                - {exit.name || targetRoom.name}
-              </li>
-            );
-          })}
-        </ul>
+      <div className="flex space-x-4">
+        <div className="flex-1">
+          Exits:
+          <ul>
+            {room.exits.map((exit, i) => {
+              const targetRoom = model.rooms[exit.roomId];
+              return (
+                <li key={i}>
+                  -{" "}
+                  <button
+                    className={twMerge("", targetRoom.color)}
+                    onClick={() => {
+                      onGoToRoom(targetRoom, exit);
+                    }}
+                  >
+                    {exit.name || targetRoom.name}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        {folks.length > 0 && (
+          <div className="flex-1">
+            People:
+            <ul>
+              {folks.map((entity, i) => (
+                <li key={i}>
+                  - <span className={entity.color}>{entity.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

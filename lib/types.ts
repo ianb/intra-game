@@ -74,6 +74,7 @@ export type EntityType = {
   pronouns: string;
   shortDescription: string;
   description: string;
+  roleplayInstructions: string;
   color: string;
   locationId: string;
   commands?: string;

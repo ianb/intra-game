@@ -129,6 +129,21 @@ export class Model {
     }
   }
 
+  goToRoom(roomId: string) {
+    const dest = this.rooms[roomId];
+    if (!dest) {
+      throw new Error(`Unknown room: ${roomId}`);
+    }
+    model.updateState("entity:player", {
+      locationId: roomId,
+    });
+    model.createNarration(tmpl`
+    <description>
+    You go to ${dest.name}: ${dest.shortDescription}
+    </description>
+    `);
+  }
+
   updateState(id: string, updates: Record<string, any>) {
     this.appendUpdate({
       type: "stateUpdate",
@@ -472,7 +487,12 @@ export class Model {
         value.state &&
         value.state[part] !== undefined
       ) {
-        value = value.state[part];
+        if (typeof value.state[part] === "function") {
+          value = value.state[part].bind(value);
+          value = value();
+        } else {
+          value = value.state[part];
+        }
         continue;
       }
       if (!value || value[part] === undefined) {
