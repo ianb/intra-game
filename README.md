@@ -2,6 +2,8 @@
 
 This is a game written from September 27-29, 2024, for the [Text Adventure Hack](https://textadventurehack.com/).
 
+The main branch is deployed on [intra-game.vercel.app](https://intra-game.vercel.app/)
+
 # Installation instructions
 
 This is a [Next.js](https://nextjs.org). It can be deployed on Vercel, run locally... or probably run elsewhere without too much trouble.
@@ -83,3 +85,7 @@ The actual code I brought over from other projects is persistentsignal.ts, parse
 ## Is this generated with AI?
 
 I use Copilot and GPT extensively, but no large chunks are created independently. Much of the game dossier was created in close collaboration with GPT, but every item included a lot of back-and-forth.
+
+## Security?
+
+Because it all runs in the browser locally it's mostly fine... but it also means that there's a way to run arbitrary Gemini LLM calls with the deployed API key because the server isn't aware of what makes up a valid prompt. Pretty please don't abuse this. It's not even worth it, right? There's so many easier ways to run things on an LLM.
