@@ -50,6 +50,7 @@ function LlmRequest({
       )}
       {request.history.map((history, index) => (
         <LlmRequestItem
+          key={index}
           role={history.role}
           text={history.parts!.map((part) => part.text).join(" ")}
         />
