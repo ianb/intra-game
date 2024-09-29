@@ -1,3 +1,7 @@
+# About
+
+This is a game written from September 27-29, 2024, for the [Text Adventure Hack](https://textadventurehack.com/).
+
 # Installation instructions
 
 This is a [Next.js](https://nextjs.org). It can be deployed on Vercel, run locally... or probably run elsewhere without too much trouble.
@@ -29,11 +33,53 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 # Code
 
-There are only a few important parts of the code!
+There are only a few important parts of the code! Note that many contain spoilers.
 
 - [types.ts](./lib/types.ts) defines (almost) all the types used throughout the game
-- [model.ts](./lib/models.ts) actually runs the game and manages game state
+- [model.ts](./lib/model.ts) actually runs the game and manages game state
 - [application.tsx](./app/application.tsx) is the entire UI
-- [games/](./lib/games/) contains the game setup, [entities.ts](./lib/games/entities.ts) for all the autonomous entities (people and AI), and [rooms.ts](./lib/games/rooms.ts) for all the locations.
+- [game/](./lib/game/) contains the game setup, [entities.ts](./lib/game/entities.ts) for all the autonomous entities (people and AI), and [rooms.ts](./lib/game/rooms.ts) for all the locations.
+- [dossier.txt](./docs/dossier.txt) is the game background. I wasn't able to use much of this given the constrained implementation time, but I hope to eventually!
 
 There's a little more UI in [components/](./components/) and some libraries in [lib/](./lib/), but they are mostly generic and secondary. Besides application.tsx [app/](./app/) is mostly boilerplate or glue.
+
+# FAQ
+
+## Why Gemini?
+
+Entirely because Gemini offers a generous free tier, making it possible to share this application without much risk of large API charges.
+
+Is Gemini good? Eh. It's no GPT or Claude. But it'll do.
+
+## How does the LLM interaction work?
+
+In general the LLM will always output responses enclosed in tags. It's not "real" HTML or XML or any kind of markup, it's just ways to wrap different kinds of output that can appear in a single response.
+
+I deliberately did not use Tools or function calls for this. In part because Gemini isn't very good at them. But also the basic model of how a tool works isn't good for a game. The providers all generally expect:
+
+1. Setup the situation as a prompt
+2. Get the LLM to emit one or more tool calls (and handling the LLM's reluctance to actually emit multiple calls)
+3. "Return" the "execution" of the tool call. This makes sense if the LLM is looking up information, but for a game it's mostly just updating game state and there's not interesting results.
+4. Prod the LLM into finishing the response.
+
+I really want the LLM to simply state what should happen, and then make it happen, and not return to the LLM at all.
+
+Also when getting an LLM to simulate some fictional entity it's very useful to present the task as something like dialog generation, and never make the LLM "pretend" to be another person. Instead the LLM plays the part of a script writer. Tags get the LLM into the mode of writing dialog or simulating the effect of actions instead of the unnecessary and difficult task of changing the LLM's primary (helpful) personality to be something else.
+
+## What's with the update stream?
+
+I find it's easier to work with and debug the system if the whole things is one long list of updates:
+
+1. You get a chance to see all the changes; the changes become concrete saved objects. You don't just have to use lots of console.log statements and try to figure out how state updates.
+2. You get undo that can undo _everything_ automatically. This is important because it's common to try something, get the wrong response, change the prompt, and you want to retry that same thing.
+3. There's an opportunity to understand history. For instance if you want to know what an NPC character experienced you can know where the NPC was in the past, including only the history that was visible to the NPC.
+
+## Is this based on something?
+
+I've written almost all of this code from scratch for this hackathon. But I've done other similar projects in the past, much of which I wrote about in [Roleplaying driven by an LLM: observations & open questions](https://ianbicking.org/blog/2024/04/roleplaying-by-llm)
+
+The actual code I brought over from other projects is persistentsignal.ts, parsetags.ts, template.ts, scrollonupdate.tsx
+
+## Is this generated with AI?
+
+I use Copilot and GPT extensively, but no large chunks are created independently. Much of the game dossier was created in close collaboration with GPT, but every item included a lot of back-and-forth.
