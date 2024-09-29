@@ -10,6 +10,9 @@ export const entities: EntityDefinitionType[] = [
     pronouns: "she/her",
     color: "text-sky-300",
     locationId: "entity:player",
+    shortDescription: `
+    Ama is the AI in control of the entire Intra complex.
+    `,
     description: `
     Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing figure, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
     `,
@@ -147,6 +150,7 @@ export const entities: EntityDefinitionType[] = [
     id: "entity:player",
     name: "Player",
     pronouns: "they/them",
+    shortDescription: "The player character",
     description: "The player character",
     color: "text-emerald-400",
     locationId: "room:intake",
@@ -184,6 +188,11 @@ export const entities: EntityDefinitionType[] = [
           model.updateState(this.id, {
             locationId: dest,
           });
+          model.createNarration(tmpl`
+          <description>
+          You go to ${model.rooms[dest].name}: ${model.rooms[dest].shortDescription}
+          </description>
+          `);
         } else {
           model.createNarration(tmpl`
           <description>
@@ -217,9 +226,12 @@ export const entities: EntityDefinitionType[] = [
     id: "entity:narrator",
     name: "Narrator",
     pronouns: "they/them",
+    shortDescription: "The narrator",
     description: "The narrator",
     color: "text-gray-300",
     locationId: "entity:player",
+    cannotSpeak: true,
+    cannotThink: true,
     choosePrompt(model: Model, props: Record<string, any>) {
       if (props.examine) {
         return {
@@ -238,6 +250,9 @@ export const entities: EntityDefinitionType[] = [
 
       It has the exits:
       {{currentLocation.exitList}}
+
+      Nearby is:
+      {{currentLocation.nearby.shortDescription}}
 
       The player has indicated they want to examine the object:
       "{{examine}}"

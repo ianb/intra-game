@@ -35,6 +35,7 @@ export type RoomOrEntity = RoomType | EntityType;
 export type RoomType = {
   id: string;
   name: string;
+  shortDescription: string;
   description: string;
   color: string;
   exits: ExitType[];
@@ -71,6 +72,7 @@ export type EntityType = {
   id: string;
   name: string;
   pronouns: string;
+  shortDescription: string;
   description: string;
   color: string;
   locationId: string;
@@ -92,6 +94,9 @@ export type EntityType = {
   inventory: Record<string, string>;
   blipAis: Record<string, string>;
   roomAccess: Record<string, string>;
+  cannotSpeak?: boolean;
+  cannotDescribe?: boolean;
+  cannotThink?: boolean;
 };
 
 export type PromptChoiceType = {

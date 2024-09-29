@@ -13,23 +13,16 @@ export default function ScrollOnUpdate({
 }: ScrollOnUpdateProps) {
   const firstScroll = useSignal(true);
   const ref = useRef<HTMLDivElement>(null);
-  console.log("watch on", firstScroll.value, ref.current, watch);
   function scrollDown() {
     if (ref.current) {
       if (firstScroll.value) {
         firstScroll.value = false;
         ref.current.scrollTop = ref.current.scrollHeight;
-        console.log(
-          "set scrolltop to",
-          ref.current.scrollTop,
-          ref.current.scrollHeight
-        );
       } else {
         ref.current.scrollTo({
           top: ref.current.scrollHeight,
           behavior: "smooth",
         });
-        console.log("smooth scroll down", ref.current.scrollHeight);
       }
     }
   }
@@ -39,7 +32,6 @@ export default function ScrollOnUpdate({
   //   }
   // }, [ref.current]);
   useEffect(() => {
-    console.log("scroll hit", ref.current);
     if (ref.current) {
       scrollDown();
     }

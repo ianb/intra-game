@@ -2,8 +2,16 @@ import { Button, CheckButton } from "@/components/input";
 import LlmLog from "@/components/llmlog";
 import ScrollOnUpdate from "@/components/scrollonupdate";
 import { model } from "@/lib/model";
+import { serializeAttrs } from "@/lib/parsetags";
 import { persistentSignal } from "@/lib/persistentsignal";
-import { isEntityInteraction, isStateUpdate, RoomType } from "@/lib/types";
+import {
+  EntityInteractionType,
+  isEntityInteraction,
+  isStateUpdate,
+  RoomType,
+  StateUpdateType,
+  UpdateStreamType,
+} from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
@@ -46,73 +54,106 @@ export default function Home() {
 }
 
 function ChatLog() {
-  const internals = showInternals.value;
   return (
     <div>
-      {model.session.value.updates.map((update, i) => {
-        if (isStateUpdate(update)) {
-          if (!internals) {
-            return null;
-          }
-          const lines = [`Update ${update.id}:`];
-          for (const [key, value] of Object.entries(update.updates)) {
-            lines.push(`  ${key}: ${JSON.stringify(value)}`);
-          }
+      {model.session.value.updates.map((update, i) => (
+        <ChatLogItem update={update} key={i} />
+      ))}
+    </div>
+  );
+}
+
+function ChatLogItem({ update }: { update: UpdateStreamType }) {
+  if (isStateUpdate(update)) {
+    return <ChatLogStateUpdate update={update} />;
+  } else if (isEntityInteraction(update)) {
+    return <ChatLogEntityInteraction update={update} />;
+  } else {
+    return (
+      <pre className="whitespace-pre-wrap text-red-400">
+        Unknown update: {"\n"}
+        {JSON.stringify(update, null, 2)}
+      </pre>
+    );
+  }
+}
+
+function ChatLogStateUpdate({ update }: { update: StateUpdateType }) {
+  if (!showInternals.value) {
+    return null;
+  }
+  const lines = [`Update ${update.id}:`];
+  for (const [key, value] of Object.entries(update.updates)) {
+    lines.push(`  ${key}: ${JSON.stringify(value)}`);
+  }
+  return (
+    <pre className="text-xs whitespace-pre-wrap text-purple-600">
+      {lines.join("\n")}
+    </pre>
+  );
+}
+
+function ChatLogEntityInteraction({
+  update,
+}: {
+  update: EntityInteractionType;
+}) {
+  const entity = model.entities[update.entityId];
+  let children: React.ReactNode;
+  if (showInternals.value) {
+    children = (
+      <div>
+        {update.tags.map((tag, i) => (
+          <div key={i}>
+            <pre className="whitespace-pre-wrap text-xs pl-2">
+              {`<${tag.type}${serializeAttrs(tag.attrs)}>`}
+            </pre>
+            <pre className="whitespace-pre-wrap pl-6 text-sm">
+              {tag.content}
+            </pre>
+          </div>
+        ))}
+      </div>
+    );
+  } else {
+    children = update.tags
+      .map((tag, i) => {
+        if (tag.type === "speak") {
+          return (
+            <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2" key={i}>
+              &quot;{tag.content}&quot;
+            </pre>
+          );
+        } else if (tag.type === "description") {
           return (
             <pre
-              className="text-xs whitespace-pre-wrap text-purple-600"
+              className="px-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-700 text-justify"
               key={i}
             >
-              {lines.join("\n")}
+              {tag.content}
             </pre>
           );
-        } else if (isEntityInteraction(update)) {
-          const entity = model.entities[update.entityId];
+        } else if (tag.type === "goTo") {
+          const dest = model.rooms[tag.content.trim()];
           return (
-            <div className={entity.color} key={i}>
-              <div className={twMerge("font-bold")}>{entity.name}</div>
-              {internals ? (
-                <pre className="pl-1 whitespace-pre-wrap">
-                  {update.response}
-                </pre>
-              ) : (
-                update.tags.map((tag, i) => {
-                  if (tag.type === "speak") {
-                    return (
-                      <pre
-                        className="pl-3 whitespace-pre-wrap -indent-2 mb-2"
-                        key={i}
-                      >
-                        &quot;{tag.content}&quot;
-                      </pre>
-                    );
-                  } else if (tag.type === "description") {
-                    return (
-                      <pre
-                        className="px-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-700 text-justify"
-                        key={i}
-                      >
-                        {tag.content}
-                      </pre>
-                    );
-                  } else if (tag.type === "goTo") {
-                    const dest = model.rooms[tag.content.trim()];
-                    return <div key={i}>==&gt; {dest.name}</div>;
-                  }
-                  return null;
-                })
-              )}
+            <div className="pl-4" key={i}>
+              ==&gt; {dest.name}
             </div>
           );
-        } else {
-          return (
-            <pre className="whitespace-pre-wrap text-red-400" key={i}>
-              Unknown update: {"\n"}
-              {JSON.stringify(update, null, 2)}
-            </pre>
-          );
         }
-      })}
+        return null;
+      })
+      .filter((x) => x);
+    if (!(children as React.ReactNode[]).length) {
+      return null;
+    }
+  }
+  return (
+    <div className={entity.color}>
+      {entity.id !== "entity:narrator" && (
+        <div className={twMerge("font-bold")}>{entity.name}</div>
+      )}
+      {children}
     </div>
   );
 }
@@ -282,12 +323,18 @@ function Controls() {
       />
       <div className="mb-2">Controls</div>
       <div>
+        Location: <strong className={room.color}>{room.name}</strong>
+      </div>
+      <div>
         Exits:
         <ul className="space-y-2">
           {room.exits.map((exit, i) => {
             const targetRoom = model.rooms[exit.roomId];
             return (
-              <li key={i} className="cursor-pointer">
+              <li
+                key={i}
+                className={twMerge("cursor-pointer", targetRoom.color)}
+              >
                 - {exit.name || targetRoom.name}
               </li>
             );

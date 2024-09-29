@@ -132,7 +132,10 @@ type OmitArgument =
   | string[]
   | ((_key: string, _value: string) => boolean);
 
-function serializeAttrs(attrs: Record<string, string>, omit?: OmitArgument) {
+export function serializeAttrs(
+  attrs: Record<string, string>,
+  omit?: OmitArgument
+) {
   const result = [];
   for (const [key, value] of Object.entries(attrs)) {
     if (omit && Array.isArray(omit) && omit.includes(key)) {

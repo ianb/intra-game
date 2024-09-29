@@ -4,6 +4,7 @@ import {
   EntityType,
   GeminiHistoryType,
   isEntityInteraction,
+  isRoom,
   isStateUpdate,
   PromptChoiceType,
   RoomOrEntity,
@@ -15,7 +16,13 @@ import { chat } from "./llm";
 import { parseTags, TagType } from "./parsetags";
 import { rooms } from "./game/rooms";
 import { entities } from "./game/entities";
-import { fillTemplate, TemplateFalse, TemplateTrue, tmpl } from "./template";
+import {
+  dedent,
+  fillTemplate,
+  TemplateFalse,
+  TemplateTrue,
+  tmpl,
+} from "./template";
 
 export class Model {
   session: SignalType<SessionType>;
@@ -148,6 +155,8 @@ export class Model {
         color: "",
         prompts: {},
         ...room,
+        description: dedent(room.description),
+        shortDescription: dedent(room.shortDescription),
         state: { ...room.state },
       };
     }
@@ -160,6 +169,8 @@ export class Model {
         roomAccess: {},
         prompts: {},
         ...entity,
+        description: dedent(entity.description),
+        shortDescription: dedent(entity.shortDescription),
         state: { ...entity.state },
       };
     }
@@ -265,11 +276,6 @@ export class Model {
       `,
     });
     const tags = parseTags(resp);
-    for (const tag of tags) {
-      if (entity.onCommand) {
-        entity.onCommand(tag, this);
-      }
-    }
     const interaction: EntityInteractionType = {
       type: "entityInteraction",
       entityId,
@@ -278,11 +284,16 @@ export class Model {
       inputVariables: props,
     };
     this.appendUpdate(interaction);
+    for (const tag of tags) {
+      if (entity.onCommand) {
+        entity.onCommand(tag, this);
+      }
+    }
   }
 
   historyForEntity(perspective: EntityType): GeminiHistoryType[] {
     const updates = this.session.value.updates;
-    const result: GeminiHistoryType[] = [];
+    let result: GeminiHistoryType[] = [];
     for (const update of updates) {
       if (isEntityInteraction(update)) {
         const isEntity = update.entityId === perspective.id;
@@ -316,6 +327,9 @@ export class Model {
         }
       }
     }
+    if (perspective.id === "entity:player") {
+      result = result.slice(-5);
+    }
     if (result.length && result[0].role !== "user") {
       // Gemini is picky about this
       result.unshift({
@@ -344,15 +358,17 @@ export class Model {
     return tmpl`
     ${commands}
 
-    To speak as "${entity.name}" you can use the following command:
+    [[${coerceVar(!entity.cannotSpeak)} To speak as "${entity.name}" you can use the following command (do not nest <speak> tags!):
 
-    <speak character="${entity.name}">Text to say</speak>
+    <speak character="${entity.name}">Text to say</speak>]]
 
-    To describe visible activities or pertinent visible results, use:
+    [[${coerceVar(!entity.cannotDescribe)} To describe visible activities or pertinent visible results, use:
 
-    <description>...</description>
+    <description>...</description>]]
 
-    Reply with <thoughts>...</thoughts> to consider what ${entity.name} is thinking, then commands and <speak>...</speak> to act on those thoughts. Reply <noAction>...</noAction> to indicate that ${entity.name} is not taking any action. Do not improvise any other tags.
+    [[${coerceVar(!entity.cannotThink)} First emit <thoughts>...</thoughts> to consider what ${entity.name} is thinking.]]
+    [[${coerceVar(!entity.cannotSpeak)} Emit <speak character="${entity.name}">...</speak> write dialog for the character.]]
+    Reply <noAction>...</noAction> to indicate that ${entity.name} is not taking any action. Do not improvise any other tags.
     `;
   }
 
@@ -514,6 +530,25 @@ const FUNCS: Record<string, (obj: any) => any> = {
       return Object.keys(obj).length === 0;
     }
     return !obj;
+  },
+  nearby(obj: RoomOrEntity) {
+    const SKIP_IDS = ["entity:player", "entity:narrator", "entity:ama"];
+    const room = isRoom(obj) ? obj : model.rooms[obj.locationId];
+    const entities = model
+      .containedIn(room)
+      .filter((e) => e !== obj && !SKIP_IDS.includes(e.id));
+    return entities;
+  },
+  shortDescription(items: RoomOrEntity | RoomOrEntity[]) {
+    if (!Array.isArray(items)) {
+      items = [items];
+    }
+    return items
+      .map(
+        (item) =>
+          `${item.name}${isRoom(item) ? " (the room)" : ""}: ${item.shortDescription}`
+      )
+      .join("\n");
   },
 };
 
