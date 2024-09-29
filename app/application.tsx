@@ -97,7 +97,7 @@ function ChatLog() {
                     );
                   } else if (tag.type === "goTo") {
                     const dest = model.rooms[tag.content.trim()];
-                    return <div>==&gt; {dest.name}</div>;
+                    return <div key={i}>==&gt; {dest.name}</div>;
                   }
                   return null;
                 })
