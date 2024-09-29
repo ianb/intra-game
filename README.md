@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Installation instructions
+
+This is a [Next.js](https://nextjs.org). It can be deployed on Vercel, run locally... or probably run elsewhere without too much trouble.
+
+To run this you'll need a [Google Gemini API key](https://aistudio.google.com/app/apikey) (you should be able to get one for free, and run this game using a free-tier API key). ([Why Gemini?](#why-gemini)) Put the key in `.env.local` as `GEMINI_KEY="..."`
+
+The tech stack:
+
+- Next.js
+  - React
+  - TypeScript
+- Tailwind for styling
+- [Preact Signals](https://preactjs.com/guide/v10/signals/) for state management
+- Actual game state is stored in [browser localStorage](./blob/main/lib/persistentsignal.ts)
+- [One wee little server endpoint](./blob/main/app/api/llm/route.ts)
+- The Gemini LLM
 
 ## Getting Started
 
-First, run the development server:
+Sign up for a [Gemini API Key](https://aistudio.google.com/app/apikey) and put it in `.env.local`:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+GEMINI_KEY="your key"
+```
+
+Run `npm install` to install and `npm run dev` to run locally.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Code
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+There are only a few important parts of the code!
 
-## Learn More
+- [types.ts]() defines (almost) all the types used throughout the game
+- [model.ts]() actually runs the game and manages game state
+- [application.tsx]() is the entire UI
+- [games/]() contains the game setup, [entities.ts]() for all the autonomous entities (people and AI), and [rooms.ts]() for all the locations.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+There's a little more UI in [components/]() and some libraries in [lib/](), but they are mostly generic and secondary. Besides application.tsx [app/]() is mostly boilerplate or glue.
