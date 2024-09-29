@@ -3,10 +3,10 @@ import {
   EntityInteractionType,
   EntityType,
   GeminiHistoryType,
-  InteractionType,
   isEntityInteraction,
   isStateUpdate,
   PromptChoiceType,
+  RoomOrEntity,
   RoomType,
   SessionType,
   UpdateStreamType,
@@ -16,15 +16,6 @@ import { parseTags, TagType } from "./parsetags";
 import { rooms } from "./game/rooms";
 import { entities } from "./game/entities";
 import { fillTemplate, TemplateFalse, TemplateTrue, tmpl } from "./template";
-
-const beginningInteraction: InteractionType = {
-  activeEntityIds: ["entity:ama"],
-  passiveEntityIds: [],
-  roomId: "room:intake",
-  inventory: {},
-  availableAiIds: [],
-  accessControl: {},
-};
 
 export class Model {
   session: SignalType<SessionType>;
@@ -36,15 +27,53 @@ export class Model {
       (window as any).model = this;
     }
     this.session = persistentSignal<SessionType>("session", {
-      interaction: beginningInteraction,
       updates: [],
     });
     this.recalculateEntities();
   }
 
+  get player() {
+    return this.entities["entity:player"];
+  }
+
+  get(id: string): RoomOrEntity | undefined {
+    if (id.startsWith("room:")) {
+      return this.rooms[id];
+    }
+    if (id.startsWith("entity:")) {
+      return this.entities[id];
+    }
+    return undefined;
+  }
+
+  containedIn(thing: string | RoomOrEntity): EntityType[] {
+    if (typeof thing === "string") {
+      thing = this.get(thing)!;
+    }
+    if (!thing) {
+      throw new Error("Unknown thing");
+    }
+    const foundIds = new Set();
+    const searchIds: string[] = [thing.id];
+    const found: EntityType[] = [];
+    while (searchIds.length) {
+      const id = searchIds.pop()!;
+      for (const entity of Object.values(this.entities)) {
+        if (foundIds.has(entity.id)) {
+          continue;
+        }
+        if (entity.locationId === id) {
+          found.push(entity);
+          foundIds.add(entity.id);
+          searchIds.push(entity.id);
+        }
+      }
+    }
+    return found;
+  }
+
   reset() {
     this.session.value = {
-      interaction: beginningInteraction,
       updates: [],
     };
     this.recalculateEntities();
@@ -53,33 +82,24 @@ export class Model {
 
   checkLaunch() {
     const room = this.rooms["room:intake"];
-    console.log(
-      "check launch",
-      this.session.value.interaction.roomId,
-      room.id,
-      room.state.hasEntered
-    );
-    if (
-      this.session.value.interaction.roomId === room.id &&
-      !room.state.hasEntered
-    ) {
-      console.log("sendy");
+    if (this.player.locationId === room.id && !room.state.hasEntered) {
       this.sendEvent("enter");
     }
   }
 
   async sendEvent(event: string) {
-    const currentRoom = this.rooms[this.session.value.interaction.roomId];
-    const entityIds = [
-      ...this.session.value.interaction.activeEntityIds,
-      ...this.session.value.interaction.passiveEntityIds,
-    ];
-    console.log("sending event", event, currentRoom, entityIds);
+    const currentRoom = this.get(this.player.locationId) as RoomType;
+    const entities = this.containedIn(currentRoom);
+    console.log(
+      "sending event",
+      event,
+      currentRoom,
+      entities.map((e) => e.id)
+    );
     if (currentRoom.onEvent) {
       await currentRoom.onEvent(event, this);
     }
-    for (const entityId of entityIds) {
-      const entity = this.entities[entityId];
+    for (const entity of entities) {
       if (entity.onEvent) {
         await entity.onEvent(event, this);
       }
@@ -93,7 +113,7 @@ export class Model {
       }
     }
     for (const entity of Object.values(this.entities)) {
-      if (entityIds.includes(entity.id)) {
+      if (entities.includes(entity)) {
         continue;
       }
       if (entity.onGlobalEvent) {
@@ -197,7 +217,7 @@ export class Model {
     const player = this.entities["entity:player"];
     let promptChoice: PromptChoiceType = { id: "reactToUser" };
     if (entity.choosePrompt) {
-      promptChoice = entity.choosePrompt(this);
+      promptChoice = entity.choosePrompt(this, props || {});
     }
     props = { ...promptChoice.props, ...props };
     const prompt = entity.prompts[promptChoice.id];
@@ -341,10 +361,10 @@ export class Model {
     await this.triggerReaction("entity:player", {
       text,
     });
-    for (const entityId of this.session.value.interaction.activeEntityIds) {
-      const entity = this.entities[entityId];
+    const entities = this.containedIn(this.get(player.locationId) as RoomType);
+    for (const entity of entities) {
       if (entity.prompts?.reactToUser) {
-        await this.triggerReaction(entityId);
+        await this.triggerReaction(entity.id);
       }
     }
   }
@@ -400,7 +420,7 @@ export class Model {
       id = "entity:player";
     }
     if (id === "currentLocation") {
-      id = this.session.value.interaction.roomId;
+      id = this.player.locationId;
     }
     console.log("Prompt eval", [key, id, parts]);
     let obj: any;
@@ -426,7 +446,6 @@ export class Model {
     }
     let value = obj;
     for (const part of parts) {
-      console.log("check part", [part, FUNCS[part]]);
       if (FUNCS[part]) {
         value = FUNCS[part](value);
         continue;
@@ -446,7 +465,6 @@ export class Model {
       }
       value = value[part];
     }
-    console.log(`Variable ${id}/${defaultEntityId}`, key, "=>", value);
     return coerceVar(value);
   }
 }

@@ -9,6 +9,7 @@ export const entities: EntityDefinitionType[] = [
     name: "Ama",
     pronouns: "she/her",
     color: "text-sky-300",
+    locationId: "entity:player",
     description: `
     Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing figure, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
     `,
@@ -148,6 +149,7 @@ export const entities: EntityDefinitionType[] = [
     pronouns: "they/them",
     description: "The player character",
     color: "text-emerald-400",
+    locationId: "room:intake",
     commands: `
     The player will give a command or input, but many actions are not directly controlled by the player.
 
@@ -163,6 +165,10 @@ export const entities: EntityDefinitionType[] = [
 
     <goTo>locationId</goTo>
 
+    If the player wants to examine something, emit this with as simple a translation of the user input as possible. If the user just says "look" then assume they mean look around the room:
+
+    <examine>object</examine>
+
     Note if the player indicates vaguely that they speak, such as "compliment" then fill in speak like:
 
     <speak>You look so nice today!</speak>
@@ -171,6 +177,26 @@ export const entities: EntityDefinitionType[] = [
 
     <description>You cannot see any such location: "the gym"</description>
     `,
+    onCommand(command: TagType, model: Model) {
+      if (command.type === "goTo") {
+        const dest = command.content.trim();
+        if (model.rooms[dest]) {
+          model.updateState(this.id, {
+            locationId: dest,
+          });
+        } else {
+          model.createNarration(tmpl`
+          <description>
+          You cannot see any such location: "${dest}"
+          </description>
+          `);
+        }
+      } else if (command.type === "examine") {
+        model.triggerReaction("entity:narrator", {
+          examine: command.content.trim(),
+        });
+      }
+    },
     choosePrompt(model: Model) {
       return {
         id: "sendText",
@@ -193,5 +219,31 @@ export const entities: EntityDefinitionType[] = [
     pronouns: "they/them",
     description: "The narrator",
     color: "text-gray-300",
+    locationId: "entity:player",
+    choosePrompt(model: Model, props: Record<string, any>) {
+      if (props.examine) {
+        return {
+          id: "examine",
+          props,
+        };
+      }
+      throw new Error("Unknown narration situation");
+    },
+    prompts: {
+      examine: `
+      The player has indicated they want to examine something. You should describe the object in detail.
+
+      The room is described as:
+      {{currentLocation.description}}
+
+      It has the exits:
+      {{currentLocation.exitList}}
+
+      The player has indicated they want to examine the object:
+      "{{examine}}"
+
+      Describe the object in imaginative detail. (Do not use <speak>...</speak>)
+      `,
+    },
   },
 ];

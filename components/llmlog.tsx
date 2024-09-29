@@ -6,21 +6,37 @@ import { useEffect } from "react";
 export default function LlmLog() {
   return (
     <div className="text-xs">
-      {logSignal.value.map((log, index) => (
-        <div key={index} className="border-b border-gray-700 p-2">
-          <div className="bg-blue-900 text-white p-1">
-            #{log.request.meta.index} {log.request.meta.title}{" "}
-            <RequestTime start={log.request.meta.start!} end={log.end} />
-            {log.request.model === "gemini-1.5-flash" && " ⚡"}
-          </div>
-          <LlmError log={log} />
+      {logSignal.value.map((log) => (
+        <LogItem log={log} key={log.request.meta.index} />
+      ))}
+    </div>
+  );
+}
+
+function LogItem({ log }: { log: LlmLogType }) {
+  const hide = useSignal(false);
+  return (
+    <div className="border-b border-gray-700 p-2">
+      <div
+        className="bg-blue-900 text-white p-1 cursor-default"
+        onClick={() => {
+          hide.value = !hide.value;
+        }}
+      >
+        #{log.request.meta.index} {log.request.meta.title}{" "}
+        <RequestTime start={log.request.meta.start!} end={log.end} />
+        {log.request.model === "gemini-1.5-flash" && " ⚡"}
+      </div>
+      <LlmError log={log} />
+      {!hide.value && (
+        <>
           <LlmRequest
             request={log.request}
             finished={!!log.response || !!log.errorMessage}
           />
           <LlmResponse response={log.response} />
-        </div>
-      ))}
+        </>
+      )}
     </div>
   );
 }

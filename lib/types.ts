@@ -30,14 +30,7 @@ export function isEntityInteraction(
   return update.type === "entityInteraction";
 }
 
-export type InteractionType = {
-  activeEntityIds: string[];
-  passiveEntityIds: string[];
-  roomId: string;
-  inventory: Record<string, string>;
-  availableAiIds: string[];
-  accessControl: Record<string, string>;
-};
+export type RoomOrEntity = RoomType | EntityType;
 
 export type RoomType = {
   id: string;
@@ -55,6 +48,16 @@ export type RoomType = {
   prompts: Record<string, string>;
 };
 
+export function isRoom(roomOrEntity: RoomOrEntity): roomOrEntity is RoomType {
+  return roomOrEntity.id.startsWith("room:");
+}
+
+export function isEntity(
+  roomOrEntity: RoomOrEntity
+): roomOrEntity is EntityType {
+  return roomOrEntity.id.startsWith("entity:");
+}
+
 export type RoomDefinitionType = Omit<RoomType, "state" | "prompts" | "color"> &
   Partial<Pick<RoomType, "state" | "prompts" | "color">>;
 
@@ -70,6 +73,7 @@ export type EntityType = {
   pronouns: string;
   description: string;
   color: string;
+  locationId: string;
   commands?: string;
   prompts: Record<string, string>;
   onEvent?: (this: EntityType, _event: string, _model: Model) => Promise<void>;
@@ -78,7 +82,11 @@ export type EntityType = {
     _event: string,
     _model: Model
   ) => Promise<void>;
-  choosePrompt?: (this: EntityType, _model: Model) => PromptChoiceType;
+  choosePrompt?: (
+    this: EntityType,
+    _model: Model,
+    props: Record<string, any>
+  ) => PromptChoiceType;
   onCommand?: (this: EntityType, _command: TagType, model: Model) => void;
   state: Record<string, any>;
   inventory: Record<string, string>;
@@ -124,7 +132,6 @@ export type CommandType = {
 export type PhaseType = "intro" | "characterCreation" | "gameplay";
 
 export type SessionType = {
-  interaction: InteractionType;
   updates: UpdateStreamType[];
 };
 

@@ -1,8 +1,9 @@
 import { Button, CheckButton } from "@/components/input";
 import LlmLog from "@/components/llmlog";
+import ScrollOnUpdate from "@/components/scrollonupdate";
 import { model } from "@/lib/model";
 import { persistentSignal } from "@/lib/persistentsignal";
-import { isEntityInteraction, isStateUpdate } from "@/lib/types";
+import { isEntityInteraction, isStateUpdate, RoomType } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
@@ -26,9 +27,12 @@ export default function Home() {
         {/* Add pt-12 to push down the content below the fixed top bar */}
         <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
           {/* Scrollable log */}
-          <div className="flex-1 overflow-y-auto border-b border-gray-700 p-2">
+          <ScrollOnUpdate
+            className="flex-1 overflow-y-auto border-b border-gray-700 p-2"
+            watch={model.session.value.updates}
+          >
             <ChatLog />
-          </div>
+          </ScrollOnUpdate>
           <Input />
         </div>
         {/* Right side (Tabs and Controls) */}
@@ -91,6 +95,9 @@ function ChatLog() {
                         {tag.content}
                       </pre>
                     );
+                  } else if (tag.type === "goTo") {
+                    const dest = model.rooms[tag.content.trim()];
+                    return <div>==&gt; {dest.name}</div>;
                   }
                   return null;
                 })
@@ -123,6 +130,9 @@ function Input() {
     }
   }
   async function onSubmit() {
+    if (running.value) {
+      return;
+    }
     if (!textareaRef.current) {
       return;
     }
@@ -133,6 +143,9 @@ function Input() {
     running.value = false;
   }
   async function onUndo() {
+    if (running.value) {
+      return;
+    }
     const lastInput = model.undo();
     if (lastInput) {
       textareaRef.current!.value = lastInput;
@@ -147,15 +160,15 @@ function Input() {
           "flex-1 resize-none bg-gray-800 text-white border-none p-2",
           running.value && "opacity-50"
         )}
-        placeholder="Type your message..."
+        placeholder="ENTER COMMAND OR INSTRUCTIONS"
         disabled={running.value}
         onKeyDown={onKeyDown}
       />
       <div className="flex flex-col ml-2">
-        <Button className="bg-green-600" onClick={onSubmit}>
+        <Button className="bg-green-600 text-green-100" onClick={onSubmit}>
           Send
         </Button>
-        <Button className="bg-yellow-500" onClick={onUndo}>
+        <Button className="bg-yellow-500 text-yellow-900" onClick={onUndo}>
           Undo
         </Button>
       </div>
@@ -258,7 +271,7 @@ function Blips() {
 }
 
 function Controls() {
-  const room = model.rooms[model.session.value.interaction.roomId];
+  const room = model.get(model.player.locationId) as RoomType;
   return (
     <div className="flex-1 p-4 overflow-y-auto">
       <CheckButton
