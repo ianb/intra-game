@@ -340,8 +340,8 @@ function Controls() {
       <CheckButton
         signal={showInternals}
         className="float-right"
-        on="Internals Shown"
-        off="Internals Hidden"
+        on="Internals (Spoilers)"
+        off="Normal Mode"
       />
       <div className="mb-2">Controls</div>
       <div className="border-b border-gray-400">

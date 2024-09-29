@@ -134,14 +134,33 @@ export class Model {
     if (!dest) {
       throw new Error(`Unknown room: ${roomId}`);
     }
+    let visits = 0;
+    for (const update of this.session.value.updates) {
+      if (
+        isStateUpdate(update) &&
+        update.id === "entity:player" &&
+        update.updates?.locationId === roomId
+      ) {
+        visits++;
+      }
+    }
     model.updateState("entity:player", {
       locationId: roomId,
     });
-    model.createNarration(tmpl`
-    <description>
-    You go to ${dest.name}: ${dest.shortDescription}
-    </description>
-    `);
+    if (visits === 0) {
+      model.createNarration(tmpl`
+      <description>
+      ${dest.name}: ${dest.shortDescription}
+      ${dest.description}
+      </description>
+      `);
+    } else if (visits < 3) {
+      model.createNarration(tmpl`
+      <description>
+      You go to ${dest.name}: ${dest.shortDescription}
+      </description>
+      `);
+    }
   }
 
   updateState(id: string, updates: Record<string, any>) {
