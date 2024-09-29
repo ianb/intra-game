@@ -137,7 +137,7 @@ function ChatLogEntityInteraction({
           const dest = model.rooms[tag.content.trim()];
           return (
             <div className="pl-4" key={i}>
-              ==&gt; {dest.name}
+              ==&gt; <span className={dest.color}>{dest.name}</span>
             </div>
           );
         }
@@ -182,6 +182,9 @@ function Input() {
     await model.sendText(text);
     textareaRef.current.value = "";
     running.value = false;
+    setTimeout(() => {
+      textareaRef.current!.focus();
+    }, 0);
   }
   async function onUndo() {
     if (running.value) {
