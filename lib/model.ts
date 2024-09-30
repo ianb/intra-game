@@ -2,17 +2,19 @@ import { persistentSignal, SignalType } from "./persistentsignal";
 import {
   EntityInteractionType,
   EntityType,
+  GeminiChatType,
   GeminiHistoryType,
   isEntityInteraction,
   isRoom,
   isStateUpdate,
+  LlmErrorType,
   PromptChoiceType,
   RoomOrEntity,
   RoomType,
   SessionType,
   UpdateStreamType,
 } from "./types";
-import { chat } from "./llm";
+import { chat, LlmError } from "./llm";
 import { parseTags, TagType } from "./parsetags";
 import { rooms } from "./game/rooms";
 import { entities } from "./game/entities";
@@ -28,6 +30,7 @@ export class Model {
   session: SignalType<SessionType>;
   rooms: Record<string, RoomType> = {};
   entities: Record<string, EntityType> = {};
+  lastSuggestions: string = "";
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -129,7 +132,7 @@ export class Model {
     }
   }
 
-  goToRoom(roomId: string) {
+  async goToRoom(roomId: string) {
     const dest = this.rooms[roomId];
     if (!dest) {
       throw new Error(`Unknown room: ${roomId}`);
@@ -161,6 +164,7 @@ export class Model {
       </description>
       `);
     }
+    await this.triggerNearbyReaction();
   }
 
   updateState(id: string, updates: Record<string, any>) {
@@ -176,7 +180,7 @@ export class Model {
       ...this.session.value,
       updates: [...this.session.value.updates, update],
     };
-    if (isStateUpdate(update)) {
+    if (isStateUpdate(update) || isEntityInteraction(update)) {
       this.recalculateEntities();
     }
   }
@@ -184,6 +188,7 @@ export class Model {
   recalculateEntities() {
     this.rooms = {};
     this.entities = {};
+    this.lastSuggestions = "";
     for (const room of rooms) {
       this.rooms[room.id] = {
         color: "",
@@ -201,10 +206,10 @@ export class Model {
         inventory: {},
         blipAis: {},
         roomAccess: {},
-        prompts: {},
         ...entity,
         description: dedent(entity.description),
         shortDescription: dedent(entity.shortDescription),
+        roleplayInstructions: dedent(entity.roleplayInstructions),
         state: { ...entity.state },
       };
     }
@@ -219,7 +224,7 @@ export class Model {
             this.rooms[update.id].description = update.updates.description;
           }
         } else if (update.id.startsWith("entity:")) {
-          Object.assign(this.entities[update.id], update.updates);
+          Object.assign(this.entities[update.id].state, update.updates);
           if (update.updates.name) {
             this.entities[update.id].name = update.updates.name;
           }
@@ -228,6 +233,9 @@ export class Model {
           }
           if (update.updates.pronouns) {
             this.entities[update.id].pronouns = update.updates.pronouns;
+          }
+          if (update.updates.locationId) {
+            this.entities[update.id].locationId = update.updates.locationId;
           }
           if (update.updates.inventory) {
             Object.assign(
@@ -254,6 +262,12 @@ export class Model {
           console.error("Unknown update", update);
         }
       }
+      if (isEntityInteraction(update)) {
+        const tags = update.tags.filter((tag) => tag.type === "suggestion");
+        if (tags.length) {
+          this.lastSuggestions = tags.map((tag) => tag.content).join("\n");
+        }
+      }
     }
   }
 
@@ -270,13 +284,13 @@ export class Model {
     const parts = twoPartPrompt.split(/>>>\s*user/);
     const renderedPrompt = parts[0].trim();
     const extraUserPrompt = (parts[1] || "").trim();
-    console.log("rendered with props", props, [
-      prompt,
-      renderedPrompt,
-      extraUserPrompt,
-    ]);
+    const roleplaying = this.fillPrompt(
+      entity.roleplayInstructions,
+      entityId,
+      props
+    );
     const description = this.fillPrompt(entity.description, entityId, props);
-    const resp = await chat({
+    const fullPrompt: GeminiChatType = {
       meta: {
         title: `${entityId.split(":")[1]}: ${promptChoice.id}`,
       },
@@ -298,6 +312,9 @@ export class Model {
 
       ${this.formatCommands(entity, props)}
 
+      [[When writing dialog or considering actions for the character, note these roleplaying notes:
+      ${roleplaying}]]
+
       Instructions on how to play the character follow:
 
       ${renderedPrompt}
@@ -308,7 +325,22 @@ export class Model {
 
       ${extraUserPrompt}
       `,
-    });
+    };
+    let resp: string;
+    try {
+      resp = await chat(fullPrompt);
+    } catch (e) {
+      if (e instanceof LlmError) {
+        const error: LlmErrorType = {
+          type: "llmError",
+          context: `${props.text ? `Input ${JSON.stringify(props.text)} ` : ""} ${fullPrompt.meta.title}`,
+          description: e.describe(),
+        };
+        this.appendUpdate(error);
+        return;
+      }
+      throw e;
+    }
     const tags = parseTags(resp);
     const interaction: EntityInteractionType = {
       type: "entityInteraction",
@@ -320,7 +352,7 @@ export class Model {
     this.appendUpdate(interaction);
     for (const tag of tags) {
       if (entity.onCommand) {
-        entity.onCommand(tag, this);
+        await entity.onCommand(tag, this);
       }
     }
   }
@@ -403,6 +435,18 @@ export class Model {
     [[${coerceVar(!entity.cannotThink)} First emit <thoughts>...</thoughts> to consider what ${entity.name} is thinking.]]
     [[${coerceVar(!entity.cannotSpeak)} Emit <speak character="${entity.name}">...</speak> write dialog for the character.]]
     Reply <noAction>...</noAction> to indicate that ${entity.name} is not taking any action. Do not improvise any other tags.
+
+    Finally conclude with 2 suggestions for how the player may wish to reply. The two replies should be different and should not reveal any special information, but follow naturally from the situation. A command is typically 1-3 words (full grammar is not required!) Write these like:
+
+    <suggestion>
+    Punch him in face
+    </suggestion>
+
+    <suggestion>
+    Go cafeteria
+    </suggestion>
+
+    ---
     `;
   }
 
@@ -413,8 +457,23 @@ export class Model {
     });
     const entities = this.containedIn(this.get(player.locationId) as RoomType);
     for (const entity of entities) {
-      if (entity.prompts?.reactToUser) {
+      if (entity.prompts?.reactToUser !== undefined) {
         await this.triggerReaction(entity.id);
+      }
+    }
+  }
+
+  async triggerNearbyReaction(props?: Record<string, any>) {
+    const SKIP_IDS = ["entity:player", "entity:narrator"];
+    const entities = this.containedIn(
+      this.get(this.player.locationId) as RoomType
+    );
+    for (const entity of entities) {
+      if (SKIP_IDS.includes(entity.id)) {
+        continue;
+      }
+      if (entity.prompts?.reactToUser !== undefined) {
+        await this.triggerReaction(entity.id, props);
       }
     }
   }
@@ -508,7 +567,10 @@ export class Model {
       ) {
         if (typeof value.state[part] === "function") {
           value = value.state[part].bind(value);
-          value = value();
+          value = value({
+            defaultEntityId,
+            model: this,
+          });
         } else {
           value = value.state[part];
         }

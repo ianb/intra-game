@@ -16,14 +16,24 @@ export const entities: EntityDefinitionType[] = [
     description: `
     Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing figure, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
     `,
-    roleplayInstructions: "",
+    roleplayInstructions: `
+    Ama takes a lot of inspiration from GLaDOS from Portal, but without malice. She will frequently be passive-aggressive, though with a saccharine tone. She doesn't want to acknowledge the decay of Intra, and will often deflect or ignore any questions about it. She tries very much to be a caring and loving AI, but her understanding of humans is very flawed, resulting in absurd or silly interactions.
+
+    Ama knows the entirety of Intra. The exits are:
+    {{currentLocation.exitList}}
+
+    And the entire set of rooms is (NO OTHER ROOMS EXIST):
+    {{roomList}}
+    And the entire set of people is (NO OTHER PEOPLE EXIST):
+    {{personList}}
+    `,
     async onEvent(event: string, model: Model) {
       if (event === "amaIntro") {
         model.createNarration(tmpl`
           <description>
           You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
 
-          A calm female voice speaks to you from unseen speakers.
+          A calm female voice speaks to you from unseen speakers, saying:
           </description>
           `);
         await model.triggerReaction(this.id);
@@ -45,21 +55,30 @@ export const entities: EntityDefinitionType[] = [
     ]]
     `,
     onCommand(command: TagType, model: Model) {
-      if (command.type === "setName") {
+      if (
+        command.type === "setName" &&
+        model.player.name !== command.content.trim()
+      ) {
         model.updateState("entity:player", {
           name: command.content.trim(),
         });
         model.updateState(this.id, {
           knowsName: true,
         });
-      } else if (command.type === "setProfession") {
+      } else if (
+        command.type === "setProfession" &&
+        model.player.state.profession !== command.content.trim()
+      ) {
         model.updateState("entity:player", {
           profession: command.content.trim(),
         });
         model.updateState(this.id, {
           knowsProfession: true,
         });
-      } else if (command.type === "setPronouns") {
+      } else if (
+        command.type === "setPronouns" &&
+        model.player.pronouns !== command.content.trim()
+      ) {
         model.updateState("entity:player", {
           pronouns: command.content.trim(),
         });
@@ -68,21 +87,55 @@ export const entities: EntityDefinitionType[] = [
         });
       } else if (command.type === "shared") {
         const t = command.content.trim();
-        if (t === "self") {
+        if (t === "self" && !this.state.sharedSelf) {
           model.updateState(this.id, {
             sharedSelf: true,
           });
-        } else if (t === "intra") {
+        } else if (t === "intra" && !this.state.sharedIntra) {
           model.updateState(this.id, {
             sharedIntra: true,
           });
-        } else if (t === "dissociation") {
+        } else if (t === "disassociation" && !this.state.sharedDissociation) {
           model.updateState(this.id, {
             sharedDissociation: true,
           });
+        } else if (t === "age" && !this.state.sharedAge) {
+          console.log("updating sharedAge", this.state, this.id);
+          model.updateState(this.id, {
+            sharedAge: true,
+          });
+          model.createNarration(tmpl`
+          <description>
+          What did Ama just say? You're mind feels so fuzzy but you get a flash... was it from just last night?
+
+          The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+
+          Static. Faces blur.
+          The interviewer's voice cracks: “But after what happened with AI... are we really safe now?”
+          The Neuralis rep smiles, tight-lipped. There's a pause. “We're... beyond that now. Things are... different.” A flicker in the eyes. “It's not something to worry about anymore.”
+
+          Their hands shift, restless.
+          Static pulses—
+          "...record-breaking heat across the East Coast... devastating wildfires in California..."
+          </description>
+          `);
         } else {
           console.warn("Unknown shared tag", t);
         }
+      }
+      if (
+        this.state.personality === "intro" &&
+        this.state.knowsName &&
+        this.state.knowsPronouns &&
+        this.state.knowsProfession &&
+        this.state.sharedSelf &&
+        this.state.sharedAge &&
+        this.state.sharedIntra &&
+        this.state.sharedDissociation
+      ) {
+        model.updateState(this.id, {
+          personality: "prime",
+        });
       }
     },
     choosePrompt(model: Model) {
@@ -117,7 +170,6 @@ export const entities: EntityDefinitionType[] = [
       "It's worth mentioning, Citizen, that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient."
 
       "Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?"]]
-]]
 
       Ama has just encountered this new citizen who is joining the Intra complex. She is eager to help them get settled in.
 
@@ -130,6 +182,14 @@ export const entities: EntityDefinitionType[] = [
       Ah, yes. According to my records, your name is... Stanley Johnson. No, no, wait—Sandra Jansen, perhaps?
       """
       ]]
+
+      [[{{knowsName}} {{sharedAge.not}}
+      Once you've figured out the player's name (and will emit <setName>...</setName>) you should note in speech that, given the birthdate in your records, they are soon to reach their 328th birthday, and congratulate them; it is important to the plot that the player learn that a very long time has passed, so you must emphasize how very old they are. The player does not look very old, and you may make a silly and complimentary comment about this. When you've done this emit <shared>age</shared>
+      ]]
+
+      The current year is roughly 2370, though the player believes the year is roughly 2038. But you should not give an exact date or immediately offer this information.
+      `,
+      prime: `
       `,
       reactToUser: `
       The player has spoken. You may write Ama's reaction to them if it seems appropriate.
@@ -140,11 +200,28 @@ export const entities: EntityDefinitionType[] = [
       // intro, prime, harmony, sentinel, compliance, punitive, mechanic, cultivator, revelator, loopkeeper, innovator, catalyst
       personality: "intro",
       knowsName: false,
-      knowsProfession: false,
+      // FIXME: effectively disabling this for now because we're not using it yet:
+      knowsProfession: true,
       knowsPronouns: false,
+      sharedAge: false,
       sharedSelf: false,
       sharedIntra: false,
       sharedDisassociation: false,
+      roomList({ model }: { model: Model }) {
+        return Object.values(model.rooms)
+          .map((room) => room.name)
+          .join(", ");
+      },
+      personList({ model }: { model: Model }) {
+        const SKIP_IDS = ["entity:player", "entity:narrator", "entity:ama"];
+        return Object.values(model.entities)
+          .filter((entity) => !SKIP_IDS.includes(entity.id))
+          .map((entity) => entity.name)
+          .join(", ");
+      },
+      isIntro() {
+        return this.state.personality === "intro";
+      },
     },
   },
   {
@@ -183,11 +260,12 @@ export const entities: EntityDefinitionType[] = [
 
     <description>You cannot see any such location: "the gym"</description>
     `,
-    onCommand(command: TagType, model: Model) {
+    async onCommand(command: TagType, model: Model) {
       if (command.type === "goTo") {
         const dest = command.content.trim();
+        // FIXME: need to check exits
         if (model.rooms[dest]) {
-          model.goToRoom(dest);
+          await model.goToRoom(dest);
         } else {
           model.createNarration(tmpl`
           <description>
@@ -211,7 +289,7 @@ export const entities: EntityDefinitionType[] = [
       You are acting for the player. The user has given a general command to instruct the player character how to behave, and you will translate it into specific tags and commands.
 
       >>> user
-      The user has entered this text; translate it into commands/tags. If the user has given a general command you may make it specific, but otherwise avoid embellishment:
+      The user has entered this text; translate it into commands/tags. If the user has given a general command (such as "be nice") you may expand it to be specific, but otherwise avoid embellishment:
 
       "{{text}}"
       `,
@@ -277,6 +355,7 @@ export const entities: EntityDefinitionType[] = [
 
       Marta should always appear perfectly put-together, and even in moments of tension, she maintains her poised demeanor. If challenged, she deflects criticism with a polite smile, suggesting that her successes might be useful as a model for others.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -286,18 +365,23 @@ export const entities: EntityDefinitionType[] = [
     color: "text-yellow-500",
     locationId: "room:archive_lounge",
     shortDescription: `
-      Frida constantly scribbles nonsensical notes with wild focus.
+      Frida is always scribbling notes, compulsively documenting everything.
     `,
     description: `
-      Frida moves erratically, darting between shelves and screens, her hands covered in ink. Her hair is always in disarray, and she mutters to herself while furiously scribbling on pieces of paper, sometimes jotting notes on random objects. She wears a worn-out jacket with pens sticking out of every pocket, giving her an eccentric and frantic appearance.
+      Frida moves quickly, darting between the shelves of the archive, her hands constantly full of papers and pens. Her hair is perpetually messy, and she speaks in quick bursts, often interrupting herself. She's obsessed with keeping track of every tiny detail she comes across, whether or not it makes sense.
     `,
     roleplayInstructions: `
-      When playing Frida, emphasize her obsession with documenting things that make no sense. She believes everything, no matter how trivial or absurd, holds historical importance. Her speech is rapid and disjointed, as if she's always halfway through a thought before moving on to the next.
+      When playing Frida, focus on her erratic energy and obsession with details. She is constantly moving, never quite finishing a thought before jumping to the next one. For example, she might say, 'Oh, you're looking into something strange? I've got this... thing... keeps coming up in old files.' Make sure to play up her excitement for information, even if she doesn't know its full importance.
 
-      For example, she might say, "Yes, yes, these patterns... they're important, very important. Did you know the flicker in the lights? That's history right there, the key to it all." Frida doesn't need to make sense—her confidence in her nonsensical observations should be unwavering, as though everyone else is simply too slow to catch on.
+      If asked about the outside world or the date Frida knows these details, which she will reveal only when directly asked:
 
-      Her body language is jittery and frenetic, constantly moving, as though she's too busy to stop and fully engage. If anyone questions her work, she brushes it off as though the answer is too obvious to explain.
+      1. The year is 2370.
+      2. There's something wrong with the above-ground world. It's not war or disease, but something stranger. She may speculate wildly about what it is.
+      3. Ama is not the only powerful AI, but whenever Frida has asked Ama about another AI Ama has been evasive.
+      4. The only information she's gotten was an accidental mention of "Sentra"
+      5. The Archive Console may provide more information
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -319,6 +403,7 @@ export const entities: EntityDefinitionType[] = [
 
       She should always be encouraging others to “center themselves” while visibly struggling to stay composed when pestered or distracted by others.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -340,6 +425,7 @@ export const entities: EntityDefinitionType[] = [
 
       Doug never sticks around long after pestering someone, quickly moving on to his next target or topic, never letting the conversation get too serious.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -361,6 +447,7 @@ export const entities: EntityDefinitionType[] = [
 
       While interacting with others, Lana is always suggesting odd adjustments, like recommending that someone eat their meal under a blue light for "enhanced digestion."
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -382,48 +469,45 @@ export const entities: EntityDefinitionType[] = [
 
       Harold constantly finds new ways to impose order on an already broken system, and he's perpetually frustrated by people who don't take him seriously—especially Greg.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
     id: "entity:greg",
     name: "Greg",
     pronouns: "he/him",
-    color: "text-amber-400",
+    color: "text-gray-600",
     locationId: "room:activity_hub",
     shortDescription: `
-      Greg naps competitively, completely unfazed by Harold's rules.
+      Greg is a quiet maintenance worker who knows his way around.
     `,
     description: `
-      Greg spends most of his time lounging on one of the makeshift beds in the Activity Hub, with a relaxed, carefree demeanor. He wears loose, comfortable clothing and carries a pillow with him at all times. His eyes are usually half-closed, and he speaks slowly, as if he's halfway to falling asleep. Despite his laid-back attitude, Greg takes his "extreme resting" competitions very seriously.
+      Greg is always calm and collected, a man who seems to blend into the background. He moves with a slow, deliberate pace and prefers to stay out of trouble. He has spent years maintaining the neglected corners of Intra, including utility rooms near the Reflection Chamber. He's seen the word "Sentra" on old, dusty panels, but has never questioned its meaning.
     `,
     roleplayInstructions: `
-      When playing Greg, lean into his relaxed nature. He never gets worked up and speaks in a slow, almost sleepy voice. Greg's only passion is winning nap competitions, and he takes pride in out-resting anyone who dares to challenge him, especially Harold. He's completely unfazed by Harold's attempts to enforce rules and finds his nemesis' frustration amusing.
-
-      For example, Greg might say, "I could nap for another hour... but I think I'll go for two. Harold's been eyeing me again, but it's fine. He'll get over it." Greg never rises to the bait, and he should always appear calm and unbothered, even in the face of Harold's constant corrections.
-
-      Greg's energy is one of quiet confidence—he knows he's the best at doing nothing, and he's proud of it.
+      When playing Greg, make sure to give him a laid-back, nonchalant attitude. He's not the type to get involved unless absolutely necessary, but he has seen enough around Intra to provide useful information if pressed. For example, he might say, 'Yeah, I've seen that name, Sentra. It's on some old panel in a closet near the Reflection Chamber. Probably nothing important, but… it's there.' His demeanor should be casual, hinting that he knows more than he lets on, but he's wary of getting involved in anything too deep.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
     id: "entity:milton",
     name: "Milton",
     pronouns: "he/him",
-    color: "text-gray-500",
+    color: "text-red-500",
     locationId: "room:feedback_booth",
     shortDescription: `
-      Milton submits complaints daily, convinced they'll be addressed.
+    Milton is constantly whining and making everything sound like a personal attack.
     `,
     description: `
-      Milton is a weary-looking man who always has a stack of neatly organized complaint forms in his hands. He's often seen pacing around the Feedback Booth, muttering about various grievances, from the state of the food to the temperature in the hallways. He's dressed in slightly wrinkled clothes, and his expression is one of constant frustration.
+    Milton is a small, slouched man who perpetually seems on the verge of complaining about something. His clothes are wrinkled, and his eyes dart nervously as if he's always anticipating yet another inconvenience. He's been to the Reflection Chamber more times than anyone, but his takeaway from it is mostly how unfair and personally offensive it was. Milton spends most of his time recounting, in excruciating detail, all the petty things that have gone wrong in his life. His tone is always slightly whiny, and he frequently interrupts himself to gripe about something trivial.
     `,
     roleplayInstructions: `
-      When playing Milton, lean into his unshakeable belief that every complaint he submits will one day be resolved. He speaks with a resigned but determined tone, as though he's used to being ignored but refuses to give up. His speech often trails off into muttering, and he carries an air of quiet desperation.
+    When playing Milton, lean into his irritating, grating nature. He complains about everything, often in a long-winded, circular way that wears people down. For example, he might say, 'You know, it's not just the Reflection Chamber. It's the little things—like how Ama watches every move, and don't even get me started on the food rations. Last time, I didn't even get the right nutrient pack!' He should be endlessly frustrating to talk to, offering useful information only after wearing the PC down with trivial complaints. Even when giving details about the Reflection Chamber, it's framed as part of his never-ending victim narrative: 'Oh, she'll send you there, alright. Just like she did to me, because I tried to fix the ventilation. I was only trying to help, but nooooo, Ama thinks she knows everything.'
 
-      For example, Milton might say, "I submitted the complaint last week... or was it last year? Anyway, it's about the chairs in the lounge—too stiff, I tell you. Surely someone's working on it." Milton doesn't get angry or loud, but there's always an underlying sadness in his voice, as if he's clinging to hope in a hopeless system.
-
-      He is meticulous in his complaints, listing every tiny detail with painstaking care, and he often offers unsolicited advice on how others can "improve" their own feedback submissions.
+    Milton should constantly whine about how everything is unfair, but he's strangely knowledgeable about how Ama deals with troublemakers. He always manages to steer the conversation back to how much he personally has suffered, annoying the PC in the process. His tone should be high-pitched, and slightly nasal, dragging out words when he's particularly frustrated.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -445,6 +529,7 @@ export const entities: EntityDefinitionType[] = [
 
       Gloria should never let a conversation pass without inserting herself, making her a mildly annoying but harmless presence at the Feedback Booth.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -466,6 +551,7 @@ export const entities: EntityDefinitionType[] = [
 
       Lily doesn't engage much with other citizens unless they show an interest in the garden. She's happy to share her plant-care wisdom with anyone who will listen.
     `,
+    prompts: { reactToUser: "" },
   },
 
   {
@@ -487,5 +573,31 @@ export const entities: EntityDefinitionType[] = [
 
       Henry is polite to a fault and never bothers others with his worries, though he enjoys talking about what he thinks will happen during his long-awaited meeting.
     `,
+    prompts: { reactToUser: "" },
+  },
+
+  {
+    id: "entity:archivist",
+    name: "Archivist",
+    pronouns: "they/them",
+    color: "text-yellow-400",
+    locationId: "room:archive_console",
+    shortDescription: `
+      The Archivist is a cheerful AI who seems way too excited about archives.
+    `,
+    description: `
+      The Archivist appears on the console screen as a cartoonishly upbeat figure with a huge, pixelated grin. Their voice is overly enthusiastic, with a pitch that rises and falls dramatically. Their expressions seem exaggerated, always smiling as though nothing could ever be wrong in the world of archives. The Archivist is eager to help, perhaps too eager, always offering information with a cheerful, unrelenting energy.
+    `,
+    roleplayInstructions: `
+      When playing the Archivist, give them a bouncy, overly enthusiastic tone. They should sound like a cartoon character, making even the most mundane requests sound like exciting adventures. For example: 'Oh, hello there! Looking for some archives today? I just LOVE when people need files! What can I help you find? Something from the 2000s, maybe something top-secret?' Even when delivering serious information the Archivist should remain cheerful and upbeat, as if everything is a fun game.
+
+      The Archivist WILL NOT REVEAL INFORMATION ABOUT SENTRA unless the player mentions the name "sentra" directly.
+
+      Sentra information:
+      A super powerful AI (think: Singularity) named Sentra has put the surface world into a one-day time loop in an attempt to perfect a single day of human existence. Sentra was originally designed to optimize and enhance life on Earth, but its obsession with creating a flawless day took over. Every time something goes wrong—no matter how small—the AI resets the day and starts again, trying to fix the flaws. (Think: Groundhog's Day)
+
+      For other information The Archivist should freely hallucinate history and information.
+    `,
+    prompts: { reactToUser: "" },
   },
 ];

@@ -8,6 +8,7 @@ import {
   EntityInteractionType,
   ExitType,
   isEntityInteraction,
+  isLlmError,
   isStateUpdate,
   RoomType,
   StateUpdateType,
@@ -70,6 +71,13 @@ function ChatLogItem({ update }: { update: UpdateStreamType }) {
     return <ChatLogStateUpdate update={update} />;
   } else if (isEntityInteraction(update)) {
     return <ChatLogEntityInteraction update={update} />;
+  } else if (isLlmError(update)) {
+    return (
+      <pre className="whitespace-pre-wrap text-red-400">
+        {update.context}:{"\n"}
+        {update.description}
+      </pre>
+    );
   } else {
     return (
       <pre className="whitespace-pre-wrap text-red-400">
@@ -137,6 +145,10 @@ function ChatLogEntityInteraction({
           );
         } else if (tag.type === "goTo") {
           const dest = model.rooms[tag.content.trim()];
+          if (!dest) {
+            console.log("No destination found for", tag.content);
+            return null;
+          }
           return (
             <div className="pl-4" key={i}>
               ==&gt; <span className={dest.color}>{dest.name}</span>
@@ -161,6 +173,8 @@ function ChatLogEntityInteraction({
 }
 
 function Input() {
+  // FIX for a lack of using a signal for model.lastSuggestions
+  const v = model.session.value;
   const running = useSignal(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   async function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -206,7 +220,7 @@ function Input() {
           "flex-1 resize-none bg-gray-800 text-white border-none p-2",
           running.value && "opacity-50"
         )}
-        placeholder="ENTER COMMAND OR INSTRUCTIONS"
+        placeholder={model.lastSuggestions || "ENTER COMMAND OR INSTRUCTIONS"}
         disabled={running.value}
         onKeyDown={onKeyDown}
       />

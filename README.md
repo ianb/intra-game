@@ -47,6 +47,12 @@ There's a little more UI in [components/](./components/) and some libraries in [
 
 # FAQ
 
+## What are you trying to accomplish with this?
+
+There's lots of LLM-based games that let the LLM hallucinate the entire story. But these have a dreamlike quality to them... things come into existance only as they are imagined. They are ungrounded. A normal text adventure has a very strict structure, with a set of formal commands to navigate that structure.
+
+In this game I'm trying to have a bit of both. There's an underlying game model and a grounding to the story, but with opportunities for the user and LLM to navigate that together in imaginative ways.
+
 ## Why Gemini?
 
 Entirely because Gemini offers a generous free tier, making it possible to share this application without much risk of large API charges.
@@ -70,6 +76,8 @@ Also when getting an LLM to simulate some fictional entity it's very useful to p
 
 ## What's with the update stream?
 
+If you look at the code you'll notice that the only real mutable structure is a stream of updates. There are "views" of the current state of the game given all the updates, but all edits are new updates added to the stream.
+
 I find it's easier to work with and debug the system if the whole things is one long list of updates:
 
 1. You get a chance to see all the changes; the changes become concrete saved objects. You don't just have to use lots of console.log statements and try to figure out how state updates.
@@ -84,8 +92,8 @@ The actual code I brought over from other projects is persistentsignal.ts, parse
 
 ## Is this generated with AI?
 
-I use Copilot and GPT extensively, but no large chunks are created independently. Much of the game dossier was created in close collaboration with GPT, but every item included a lot of back-and-forth.
+I use Copilot and GPT extensively, but no large chunks are created independently by AI. There has been a lot of design work in creating the game, which is to say: I didn't know what this should be when I started. But much of the game [dossier](./docs/dossier.txt) was created in close collaboration with GPT.
 
 ## Security?
 
-Because it all runs in the browser locally it's mostly fine... but it also means that there's a way to run arbitrary Gemini LLM calls with the deployed API key because the server isn't aware of what makes up a valid prompt. Pretty please don't abuse this. It's not even worth it, right? There's so many easier ways to run things on an LLM.
+Because it all runs in the browser locally it's mostly fine... but it also means that there's a way to run arbitrary Gemini LLM calls with the deployed API key because the server isn't aware of what makes up a valid prompt or the state of any particular game. Pretty please don't abuse this. It's not even worth it, right? There's so many easier ways to run things on an LLM.

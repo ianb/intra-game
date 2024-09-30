@@ -8,6 +8,27 @@ export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
 
 export const logSignal = signal<LlmLogType[]>([]);
 
+export class LlmError extends Error {
+  candidates: any;
+
+  constructor(message: string, candidates: any) {
+    super(message);
+    this.candidates = candidates;
+  }
+
+  describe() {
+    const c = this.candidates[0];
+    const lines = [`Request was rejected due to: ${c.finishReason}`];
+    for (const item of c.safetyRatings) {
+      if (item.probability === "NEGLIGIBLE") {
+        continue;
+      }
+      lines.push(`  ${item.category}: prob ${item.probability}`);
+    }
+    return lines.join("\n");
+  }
+}
+
 export async function chat(request: GeminiChatType) {
   request = fixText(request);
   const log = {
@@ -33,7 +54,11 @@ export async function chat(request: GeminiChatType) {
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    text = (await response.json()).response;
+    const json = await response.json();
+    if (!json.response && json.candidates) {
+      throw new LlmError("Bad Response", json.candidates);
+    }
+    text = json.response;
   } catch (e) {
     const newLog = {
       ...log,

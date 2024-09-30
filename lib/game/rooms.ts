@@ -95,6 +95,26 @@ export const rooms: RoomDefinitionType[] = [
       {
         roomId: "room:tranquil_pool",
       },
+      {
+        roomId: "room:archive_console",
+      },
+    ],
+  },
+
+  {
+    id: "room:archive_console",
+    name: "Archive Console",
+    shortDescription: `
+      A bright room with a chirpy, overly friendly console interface.
+    `,
+    description: tmpl`
+      The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
+    `,
+    color: "text-pink-500",
+    exits: [
+      {
+        roomId: "room:archive_lounge",
+      },
     ],
   },
 
@@ -322,6 +342,44 @@ export const rooms: RoomDefinitionType[] = [
     exits: [
       {
         roomId: "room:quiet_plaza",
+      },
+    ],
+  },
+
+  {
+    id: "room:reflection_chamber",
+    name: "Reflection Chamber",
+    shortDescription: `
+      A stark room with a looping, condescending "reform" video.
+    `,
+    description: tmpl`
+    The Reflection Chamber is a cold, featureless room with metal walls and a single hard bench. There are no screens or distractions, only the sound of Ama's voice echoing from hidden speakers. Ama is constantly present, offering an endless stream of advice in her soothing, passive-aggressive tone.
+
+    She speaks without pause, suggesting ways you can be a "better citizen," offering superficial insights like, "Remember, smiling makes you a more approachable person," and "It's important to always put the community first, don't you agree?" Despite the sweet tone, her words feel more like a scolding.
+
+    The constant droning of her voice and the starkness of the room make it impossible to focus on anything but the absurdity of her advice.
+    `,
+    color: "text-gray-600",
+    exits: [
+      {
+        roomId: "room:utility_closet",
+      },
+    ],
+  },
+
+  {
+    id: "room:utility_closet",
+    name: "Utility Closet",
+    shortDescription: `
+      A cramped, cluttered utility room filled with old, decaying equipment.
+    `,
+    description: tmpl`
+      The Utility Closet is dimly lit, barely large enough to stand in. The walls are lined with rusting shelves stacked with broken tools, cracked pipes, and frayed wires. Dust coats every surface, and the air smells of stale metal and mildew. In the corner, half-hidden behind old cleaning supplies, is an exposed wire that leads to a heavy, flickering panel—the plug for something important, though it's not immediately clear what.
+    `,
+    color: "text-brown-600",
+    exits: [
+      {
+        roomId: "room:reflection_chamber",
       },
     ],
   },

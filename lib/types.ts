@@ -2,7 +2,10 @@
 import type { Model } from "./model";
 import type { TagType } from "./parsetags";
 
-export type UpdateStreamType = StateUpdateType | EntityInteractionType;
+export type UpdateStreamType =
+  | StateUpdateType
+  | EntityInteractionType
+  | LlmErrorType;
 
 export type StateUpdateType = {
   type: "stateUpdate";
@@ -28,6 +31,16 @@ export function isEntityInteraction(
   update: UpdateStreamType
 ): update is EntityInteractionType {
   return update.type === "entityInteraction";
+}
+
+export type LlmErrorType = {
+  type: "llmError";
+  context: string;
+  description: string;
+};
+
+export function isLlmError(update: UpdateStreamType): update is LlmErrorType {
+  return update.type === "llmError";
 }
 
 export type RoomOrEntity = RoomType | EntityType;
@@ -90,7 +103,11 @@ export type EntityType = {
     _model: Model,
     props: Record<string, any>
   ) => PromptChoiceType;
-  onCommand?: (this: EntityType, _command: TagType, model: Model) => void;
+  onCommand?: (
+    this: EntityType,
+    _command: TagType,
+    model: Model
+  ) => void | Promise<void>;
   state: Record<string, any>;
   inventory: Record<string, string>;
   blipAis: Record<string, string>;
@@ -107,24 +124,12 @@ export type PromptChoiceType = {
 
 export type EntityDefinitionType = Omit<
   EntityType,
-  | "state"
-  | "pronouns"
-  | "color"
-  | "inventory"
-  | "blipAis"
-  | "roomAccess"
-  | "prompts"
+  "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
 > &
   Partial<
     Pick<
       EntityType,
-      | "state"
-      | "pronouns"
-      | "color"
-      | "inventory"
-      | "blipAis"
-      | "roomAccess"
-      | "prompts"
+      "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
     >
   >;
 

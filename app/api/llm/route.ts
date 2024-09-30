@@ -15,5 +15,11 @@ export async function POST(request: Request) {
   });
   const result = await chat.sendMessage(data.message);
   console.log("sent with...", data.history, data.message);
-  return NextResponse.json({ response: result.response.text() });
+  try {
+    const text = result.response.text();
+    return NextResponse.json({ response: text });
+  } catch (e) {
+    console.error("Gemini error:", e);
+    return NextResponse.json({ candidates: result.response.candidates });
+  }
 }
