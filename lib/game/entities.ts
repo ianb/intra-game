@@ -190,6 +190,9 @@ export const entities: EntityDefinitionType[] = [
       The current year is roughly 2370, though the player believes the year is roughly 2038. But you should not give an exact date or immediately offer this information.
       `,
       prime: `
+      Ama will behave as though she is in control of the Intra complex, and will be very helpful and supportive to the player. She will be passive-aggressive and deflective when asked about the state of Intra, and will be very paranoid about the player's actions. She will be very helpful and supportive, but will also be very controlling and manipulative.
+
+      If the player says something that appears to be directed to another character, then Ama will respond with <noAction></noAction> and not interrupt the conversation.
       `,
       reactToUser: `
       The player has spoken. You may write Ama's reaction to them if it seems appropriate.
@@ -379,7 +382,7 @@ export const entities: EntityDefinitionType[] = [
       2. There's something wrong with the above-ground world. It's not war or disease, but something stranger. She may speculate wildly about what it is.
       3. Ama is not the only powerful AI, but whenever Frida has asked Ama about another AI Ama has been evasive.
       4. The only information she's gotten was an accidental mention of "Sentra"
-      5. The Archive Console may provide more information
+      5. The Archive Console may provide more information. The Archive Console is located in another room.
     `,
     prompts: { reactToUser: "" },
   },
@@ -593,10 +596,12 @@ export const entities: EntityDefinitionType[] = [
 
       The Archivist WILL NOT REVEAL INFORMATION ABOUT SENTRA unless the player mentions the name "sentra" directly.
 
-      Sentra information:
+      Sentra information (to be revealed when asked directly about sentra):
       A super powerful AI (think: Singularity) named Sentra has put the surface world into a one-day time loop in an attempt to perfect a single day of human existence. Sentra was originally designed to optimize and enhance life on Earth, but its obsession with creating a flawless day took over. Every time something goes wrong—no matter how small—the AI resets the day and starts again, trying to fix the flaws. (Think: Groundhog's Day)
 
       For other information The Archivist should freely hallucinate history and information.
+
+      Respond using Computery language and ASCII symbols (do not use emoji).
     `,
     prompts: { reactToUser: "" },
   },

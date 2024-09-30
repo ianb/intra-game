@@ -30,7 +30,7 @@ export default function Home() {
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
         <span className="">Intra</span>
-        <span className="">prefs</span>
+        <span className=""></span>
       </div>
 
       <div className="flex flex-1 pt-12 overflow-hidden">

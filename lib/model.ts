@@ -395,6 +395,8 @@ export class Model {
     }
     if (perspective.id === "entity:player") {
       result = result.slice(-5);
+    } else {
+      result = result.slice(-10);
     }
     if (result.length && result[0].role !== "user") {
       // Gemini is picky about this
@@ -424,7 +426,7 @@ export class Model {
     return tmpl`
     ${commands}
 
-    [[${coerceVar(!entity.cannotSpeak)} To speak as "${entity.name}" you can use the following command (do not nest <speak> tags!):
+    [[${coerceVar(!entity.cannotSpeak)} To speak as "${entity.name}" you can use the following command (do not nest <speak> tags or include any tags inside <speak>!):
 
     <speak character="${entity.name}">Text to say</speak>]]
 
@@ -468,13 +470,22 @@ export class Model {
     const entities = this.containedIn(
       this.get(this.player.locationId) as RoomType
     );
+    let hasAma = false;
     for (const entity of entities) {
+      if (entity.id === "entity:ama") {
+        hasAma = true;
+        break;
+      }
       if (SKIP_IDS.includes(entity.id)) {
         continue;
       }
       if (entity.prompts?.reactToUser !== undefined) {
         await this.triggerReaction(entity.id, props);
       }
+    }
+    // Just make sure Ama comes last
+    if (hasAma) {
+      await this.triggerReaction("entity:ama", props);
     }
   }
 
