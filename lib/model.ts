@@ -441,7 +441,7 @@ export class Model {
     Finally conclude with 2 suggestions for how the player may wish to reply. The two replies should be different and should not reveal any special information, but follow naturally from the situation. A command is typically 1-3 words (full grammar is not required!) Write these like:
 
     <suggestion>
-    Punch him in face
+    Stomp off angrily
     </suggestion>
 
     <suggestion>
