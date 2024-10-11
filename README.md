@@ -100,7 +100,7 @@ I've done other similar projects in the past, much of which I wrote about in [Ro
 
 ## Is this generated with AI?
 
-I use Copilot and GPT extensively, but no large chunks are created independently by AI. But much of the game [dossier](./docs/dossier.txt) was created in close collaboration with GPT.
+I use Copilot and GPT extensively, but no large chunks are created independently by AI. But much of the game [dossier](./docs/dossier.md) was created in close collaboration with GPT.
 
 ## Security?
 
