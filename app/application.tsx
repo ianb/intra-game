@@ -1,15 +1,9 @@
 import { Button, CheckButton } from "@/components/input";
 import LlmLog, { clearLogs } from "@/components/llmlog";
 import ScrollOnUpdate from "@/components/scrollonupdate";
-import {
-  Entity,
-  Exit,
-  isStoryDescription,
-  isStoryDialog,
-  Person,
-  Room,
-  StoryEventType,
-} from "@/lib/game/classes";
+import { Entity, Exit, Person, Room } from "@/lib/game/classes";
+import { isPerson, isStoryDescription, isStoryDialog } from "@/lib/types";
+import { StoryEventType } from "@/lib/types";
 import { model } from "@/lib/game/model";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { persistentSignal } from "@/lib/persistentsignal";
@@ -402,7 +396,7 @@ function Controls() {
   // FIXME: actually collect the people:
   const folks: Person[] = model.world
     .entitiesInRoom(room)
-    .filter((x) => Person.isPerson(x))
+    .filter((x) => isPerson(x))
     .filter((x) => !x.invisible && x.id !== "player");
   async function onGoToRoom(room: Room, exit: Exit) {
     await model.sendText(`Go to ${room.name}`);

@@ -1,150 +1,93 @@
-/* Chat game types */
-import type { Model } from "./model";
-import type { TagType } from "./parsetags";
+import type { Entity, Room, Person } from "./game/classes";
+export { Entity, Room, Person };
 
-export type UpdateStreamType =
-  | StateUpdateType
-  | EntityInteractionType
-  | LlmErrorType;
+export type StoryEventType = {
+  id: EntityId;
+  roomId: EntityId;
+  changes: ChangesType;
+  actions: StoryActionType[];
+  actionRequests?: ActionRequestType[];
+  llmTitle?: string;
+  llmResponse?: string;
+  llmParameters?: any;
+  llmError?: { context: string; description: string };
+  suggestions?: string;
+};
+export type StoryActionType = StoryDialogType | StoryDescriptionType;
 
-export type StateUpdateType = {
-  type: "stateUpdate";
-  id: string;
-  updates: Record<string, any>;
+export type StoryDialogType = {
+  type: "dialog";
+  id: EntityId;
+  toId?: EntityId;
+  toOther?: string;
+  text: string;
 };
 
-export function isStateUpdate(
-  update: UpdateStreamType
-): update is StateUpdateType {
-  return update.type === "stateUpdate";
+export function isStoryDialog(
+  storyAction: StoryActionType
+): storyAction is StoryDialogType {
+  return storyAction.type === "dialog";
 }
 
-export type EntityInteractionType = {
-  type: "entityInteraction";
-  entityId: string;
-  inputVariables?: Record<string, any>;
-  response: string;
-  tags: TagType[];
+export type StoryDescriptionType = {
+  type: "description";
+  text: string;
 };
 
-export function isEntityInteraction(
-  update: UpdateStreamType
-): update is EntityInteractionType {
-  return update.type === "entityInteraction";
+export function isStoryDescription(
+  storyAction: StoryActionType
+): storyAction is StoryDescriptionType {
+  return storyAction.type === "description";
 }
 
-export type LlmErrorType = {
-  type: "llmError";
-  context: string;
-  description: string;
+export type ChangesType = Record<EntityId, ChangeType>;
+
+export type ChangeType = {
+  before: Record<string, any>;
+  after: Record<string, any>;
 };
 
-export function isLlmError(update: UpdateStreamType): update is LlmErrorType {
-  return update.type === "llmError";
+export type ActionRequestType<T = {}> = StoryEventType | PromptRequestType<T>;
+
+export type PromptRequestType<T = {}> = {
+  type: "promptRequest";
+  id: EntityId;
+  parameters: T;
+};
+
+export function isStoryEvent(
+  actionRequest: ActionRequestType
+): actionRequest is StoryEventType {
+  return (actionRequest as StoryEventType).changes !== undefined;
 }
 
-export type RoomOrEntity = RoomType | EntityType;
-
-export type RoomType = {
-  id: string;
-  name: string;
-  shortDescription: string;
-  description: string;
-  color: string;
-  exits: ExitType[];
-  onEvent?: (this: RoomType, _event: string, _model: Model) => Promise<void>;
-  onGlobalEvent?: (
-    this: RoomType,
-    _event: string,
-    _model: Model
-  ) => Promise<void>;
-  state: Record<string, any>;
-  prompts: Record<string, string>;
-};
-
-export function isRoom(roomOrEntity: RoomOrEntity): roomOrEntity is RoomType {
-  return roomOrEntity.id.startsWith("room:");
+export function isPromptRequest(
+  actionRequest: ActionRequestType
+): actionRequest is PromptRequestType {
+  return (actionRequest as PromptRequestType).type === "promptRequest";
 }
 
-export function isEntity(
-  roomOrEntity: RoomOrEntity
-): roomOrEntity is EntityType {
-  return roomOrEntity.id.startsWith("entity:");
+export type PromptStateType = Record<string, PromptStateDescriptorType>;
+
+export type PromptStateDescriptorType = {
+  value: any;
+  write?: boolean;
+  description?: string;
+  writeInstructions?: string;
+};
+
+// I wish this was keyof AllEntitiesType but can't quite make it work:
+export type EntityId = string;
+
+/* Some class testers... */
+
+export function isRoom(entity: Entity<any>): entity is Room {
+  return entity.type === "room" || entity.type.startsWith("room/");
 }
 
-export type RoomDefinitionType = Omit<RoomType, "state" | "prompts" | "color"> &
-  Partial<Pick<RoomType, "state" | "prompts" | "color">>;
-
-export type ExitType = {
-  roomId: string;
-  name?: string;
-  restriction?: string;
-};
-
-export type EntityType = {
-  id: string;
-  name: string;
-  pronouns: string;
-  shortDescription: string;
-  description: string;
-  roleplayInstructions: string;
-  color: string;
-  locationId: string;
-  commands?: string;
-  prompts: Record<string, string>;
-  onEvent?: (this: EntityType, _event: string, _model: Model) => Promise<void>;
-  onGlobalEvent?: (
-    this: EntityType,
-    _event: string,
-    _model: Model
-  ) => Promise<void>;
-  choosePrompt?: (
-    this: EntityType,
-    _model: Model,
-    props: Record<string, any>
-  ) => PromptChoiceType;
-  onCommand?: (
-    this: EntityType,
-    _command: TagType,
-    model: Model
-  ) => void | Promise<void>;
-  state: Record<string, any>;
-  inventory: Record<string, string>;
-  blipAis: Record<string, string>;
-  roomAccess: Record<string, string>;
-  cannotSpeak?: boolean;
-  cannotDescribe?: boolean;
-  cannotThink?: boolean;
-};
-
-export type PromptChoiceType = {
-  id: string;
-  props?: Record<string, any>;
-};
-
-export type EntityDefinitionType = Omit<
-  EntityType,
-  "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
-> &
-  Partial<
-    Pick<
-      EntityType,
-      "state" | "pronouns" | "color" | "inventory" | "blipAis" | "roomAccess"
-    >
-  >;
-
-export type CommandType = {
-  id: string;
-  example: string;
-};
-
-/* Session types */
-
-export type PhaseType = "intro" | "characterCreation" | "gameplay";
-
-export type SessionType = {
-  updates: UpdateStreamType[];
-};
+export function isPerson(entity: Entity): entity is Person {
+  return entity.type === "person" || entity.type.startsWith("person/");
+}
 
 /* Gemini types */
 

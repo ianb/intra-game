@@ -1,13 +1,8 @@
 import { persistentSignal, SignalType } from "../persistentsignal";
 import { TrackSettled } from "../tracksettled";
-import {} from "../types";
-import {
-  ActionRequestType,
-  isPromptRequest,
-  isStoryEvent,
-  StoryEventType,
-  World,
-} from "./classes";
+import { ActionRequestType, isPromptRequest, isStoryEvent } from "../types";
+import { StoryEventType } from "../types";
+import { World } from "./world";
 import { AllEntitiesType, entities } from "./gameobjs";
 
 export class Model {

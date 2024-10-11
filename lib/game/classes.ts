@@ -2,89 +2,24 @@ import React from "react";
 import { chat, LlmSafetyError } from "../llm";
 import { parseTags, TagType } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
-import { GeminiChatType, GeminiHistoryType } from "../types";
-import type { AllEntitiesType } from "./gameobjs";
+import {
+  ActionRequestType,
+  ChangeType,
+  EntityId,
+  GeminiChatType,
+  GeminiHistoryType,
+  isPerson,
+  isPromptRequest,
+  isRoom,
+  isStoryDescription,
+  isStoryDialog,
+  PromptStateType,
+  StoryActionType,
+  StoryEventType,
+} from "../types";
 import type { Model } from "./model";
 import { WithBlinkingCursor } from "@/components/input";
-
-export type StoryEventType = {
-  id: EntityId;
-  roomId: EntityId;
-  changes: ChangesType;
-  actions: StoryActionType[];
-  actionRequests?: ActionRequestType[];
-  llmTitle?: string;
-  llmResponse?: string;
-  llmParameters?: any;
-  llmError?: { context: string; description: string };
-  suggestions?: string;
-};
-
-export type StoryActionType = StoryDialogType | StoryDescriptionType;
-
-export type StoryDialogType = {
-  type: "dialog";
-  id: EntityId;
-  toId?: EntityId;
-  toOther?: string;
-  text: string;
-};
-
-export function isStoryDialog(
-  storyAction: StoryActionType
-): storyAction is StoryDialogType {
-  return storyAction.type === "dialog";
-}
-
-export type StoryDescriptionType = {
-  type: "description";
-  text: string;
-};
-
-export function isStoryDescription(
-  storyAction: StoryActionType
-): storyAction is StoryDescriptionType {
-  return storyAction.type === "description";
-}
-
-export type ChangesType = Record<EntityId, ChangeType>;
-
-export type ChangeType = {
-  before: Record<string, any>;
-  after: Record<string, any>;
-};
-
-export type ActionRequestType<T = {}> = StoryEventType | PromptRequestType<T>;
-
-export type PromptRequestType<T = {}> = {
-  type: "promptRequest";
-  id: EntityId;
-  parameters: T;
-};
-
-export function isStoryEvent(
-  actionRequest: ActionRequestType
-): actionRequest is StoryEventType {
-  return (actionRequest as StoryEventType).changes !== undefined;
-}
-
-export function isPromptRequest(
-  actionRequest: ActionRequestType
-): actionRequest is PromptRequestType {
-  return (actionRequest as PromptRequestType).type === "promptRequest";
-}
-
-export type PromptStateType = Record<string, PromptStateDescriptorType>;
-
-export type PromptStateDescriptorType = {
-  value: any;
-  write?: boolean;
-  description?: string;
-  writeInstructions?: string;
-};
-
-export type EntityId = string;
-// FIXME: I wish I could do: keyof AllEntitiesType;
+import type { World } from "./world";
 
 export type EntityInitType = {
   id: EntityId;
@@ -150,7 +85,7 @@ export abstract class Entity<ParametersT = {}> {
   }
 
   myRoom(): Room {
-    if (Room.isRoom(this)) {
+    if (isRoom(this)) {
       return this as Room;
     }
     const room = this.world.entityRoom(this.id);
@@ -169,7 +104,7 @@ export abstract class Entity<ParametersT = {}> {
         continue;
       }
       if (key === "exits") {
-        if (!Room.isRoom(this)) {
+        if (!isRoom(this)) {
           throw new Error("Tried to update exits on a non-room");
         }
         const existing = (this as unknown as Room).exits;
@@ -199,7 +134,7 @@ export abstract class Entity<ParametersT = {}> {
         continue;
       }
       if (key === "relationships") {
-        if (!Person.isPerson(this as Entity<any>)) {
+        if (!isPerson(this as Entity<any>)) {
           throw new Error("Tried to update relationships on a non-person");
         }
         for (const [id, relationship] of Object.entries(value)) {
@@ -423,7 +358,7 @@ export abstract class Entity<ParametersT = {}> {
     }
     const entities = this.world
       .entitiesInRoom(room)
-      .filter((x) => Person.isPerson(x))
+      .filter((x) => isPerson(x))
       .filter((x) => !x.invisible && x.id !== this.id);
     const lines = [];
     for (const entity of entities) {
@@ -621,10 +556,6 @@ export class Room extends Entity {
       return action.text;
     }
   }
-
-  static isRoom(entity: Entity<any>): entity is Room {
-    return entity.type === "room" || entity.type.startsWith("room/");
-  }
 }
 
 export class ArchivistRoom extends Room {
@@ -699,10 +630,6 @@ export class Person<ParametersT = {}> extends Entity<ParametersT> {
     if (relationships) {
       this.relationships = relationships;
     }
-  }
-
-  static isPerson(entity: Entity): entity is Person {
-    return entity.type === "person" || entity.type.startsWith("person/");
   }
 
   assemblePrompt(parameters: ParametersT): GeminiChatType {
@@ -1236,7 +1163,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     const entityLines: string[] = [];
     for (const entity of entities) {
       entityLines.push(`"${entity.name}" {`);
-      if (Person.isPerson(entity)) {
+      if (isPerson(entity)) {
         entityLines.push(`  pronouns: ${entity.pronouns}`);
       }
       entityLines.push(`  description: ${entity.description}`);
@@ -1340,7 +1267,7 @@ export class PlayerClass extends Person<PlayerInputType> {
         });
         return storyEvent;
       }
-      const currentRoom = model.world.entityRoom(this.id);
+      const currentRoom = this.world.entityRoom(this.id);
       const exit = (currentRoom?.exits || []).find(
         (exit) => exit.roomId === room.id
       );
@@ -1370,9 +1297,9 @@ export class PlayerClass extends Person<PlayerInputType> {
           inside: room.id,
         },
       };
-      const folks = model.world
+      const folks = this.world
         .entitiesInRoom(room)
-        .filter((x) => Person.isPerson(x))
+        .filter((x) => isPerson(x))
         .filter((x) => x.id !== this.id && !x.invisible);
       const peopleLines = [];
       for (const person of folks) {
@@ -1433,186 +1360,6 @@ export class NarratorClass extends Entity {
   description = "";
   inside = "player";
   invisible = true;
-}
-
-export class World {
-  entities: AllEntitiesType;
-  original: AllEntitiesType;
-  rooms: string[];
-  lastSuggestions: string = "";
-  model: Model;
-
-  constructor({
-    entities,
-    original,
-    model,
-  }: {
-    entities?: AllEntitiesType;
-    original: AllEntitiesType;
-    model: Model;
-  }) {
-    this.entities = entities || original;
-    this.original = original;
-    this.rooms = [];
-    this.model = model;
-    this.initWorld();
-  }
-
-  getEntity(entityId: string): Entity | null {
-    return (this.entities as any)[entityId] || null;
-  }
-
-  getRoom(roomId: string): Room | null {
-    const room = this.getEntity(roomId);
-    if (!room) {
-      return null;
-    }
-    if (!Room.isRoom(room)) {
-      console.error("Tried to get entity as room:", roomId, room);
-      return null;
-    }
-    return room;
-  }
-
-  entitiesInRoom(room: string | Room) {
-    if (typeof room === "string") {
-      const aRoom = this.getRoom(room);
-      if (!aRoom) {
-        throw new Error(`No room with id: ${room}`);
-      }
-      room = aRoom;
-    }
-    return Object.values(this.entities).filter((entity) =>
-      this.isInside(entity, room)
-    );
-  }
-
-  isInside(entity: Entity | string, container: Entity | string) {
-    if (typeof entity === "string") {
-      entity = this.getEntity(entity)!;
-      if (!entity) {
-        throw new Error(`No entity with id: ${entity}`);
-      }
-    }
-    if (typeof container === "string") {
-      container = this.getEntity(container)!;
-      if (!container) {
-        throw new Error(`No room with id: ${container}`);
-      }
-    }
-    let pos = entity;
-    while (pos) {
-      if (pos.inside === container.id) {
-        return true;
-      }
-      if (!pos.inside) {
-        return false;
-      }
-      pos = this.getEntity(pos.inside)!;
-      if (!pos) {
-        throw new Error(
-          `Entity ${entity.id} is inside ${entity.inside} but ${entity.inside} does not exist`
-        );
-      }
-    }
-  }
-
-  entityRoom(entityId: string): Room | null {
-    const entity = this.getEntity(entityId);
-    if (!entity) {
-      throw new Error(`No entity with id "${entityId}"`);
-    }
-    let pos = entity;
-    while (pos && !Room.isRoom(pos)) {
-      if (!pos.inside) {
-        return null;
-      }
-      const nextPos = this.getEntity(pos.inside);
-      if (!nextPos) {
-        throw new Error(
-          `Entity ${entityId} is inside ${pos.id}->${pos.inside} but ${pos.inside} does not exist `
-        );
-      }
-      pos = nextPos;
-    }
-    if (!pos) {
-      return null;
-    }
-    return pos;
-  }
-
-  initWorld() {
-    for (const [key, obj] of Object.entries(this.original)) {
-      if (obj.id !== key) {
-        throw new Error(`Object id ${obj.id} does not match key ${key}`);
-      }
-      obj.world = this;
-      if (obj.inside && !(this.original as any)[obj.inside]) {
-        throw new Error(
-          `Object ${key} is inside ${obj.inside} which does not exist`
-        );
-      }
-      if (Room.isRoom(obj)) {
-        this.rooms.push(obj.id);
-        for (const exit of obj.exits) {
-          if (!(this.original as any)[exit.roomId]) {
-            throw new Error(
-              `Room ${obj.id} has exit to ${exit.roomId} which does not exist`
-            );
-          }
-        }
-      }
-      if (Person.isPerson(obj)) {
-        const inside = obj.inside;
-        if (!inside) {
-          throw new Error(`Person ${obj.id} has no inside`);
-        } else if (inside === "Void") {
-          console.error("Person", obj.id, "is in Void");
-        } else if (!(this.original as any)[inside]) {
-          throw new Error(
-            `Person ${obj.id} is inside ${JSON.stringify(inside)} which does not exist`
-          );
-        }
-      }
-    }
-    this.applyUpdates();
-  }
-
-  applyUpdates() {
-    const newEntities: Record<string, Entity> = {};
-    for (const [key, obj] of Object.entries(this.original)) {
-      newEntities[key] = obj.clone();
-      newEntities[key].world = this;
-    }
-    this.entities = newEntities as AllEntitiesType;
-    for (const update of this.model.updates.value) {
-      this.applyStoryEvent(update);
-    }
-  }
-
-  applyStoryEvent(storyEvent: StoryEventType) {
-    for (const [entityId, changes] of Object.entries(storyEvent.changes)) {
-      const entity = this.getEntity(entityId);
-      if (!entity) {
-        console.warn(`Update for entity ${entityId} which does not exist`);
-        continue;
-      }
-      entity.applyChange(changes);
-      if (
-        entityId === "player" &&
-        changes.after.inside &&
-        changes.before.inside !== changes.after.inside
-      ) {
-        const room = this.entityRoom(changes.after.inside);
-        if (room) {
-          room.visits++;
-        }
-      }
-    }
-    if (storyEvent.suggestions) {
-      this.lastSuggestions = storyEvent.suggestions;
-    }
-  }
 }
 
 function coerceBoolean(v: string) {
