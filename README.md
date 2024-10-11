@@ -51,6 +51,8 @@ There's a little more UI in [components/](./components/) and some libraries in [
 
 ## What are you trying to accomplish with this?
 
+This began as a submission to the [RetroAI Quest](https://textadventurehack.com/) Hackathon, which asked for an AI-powered retro-feeling text game. I had already been thinking a lot about this subject, so my appreciation to the hackathon runners for inspiring me to actually do it!
+
 There's lots of LLM-based games that let the LLM hallucinate the entire story. But these have a dreamlike quality to them... things come into existance only as they are imagined. They are ungrounded. A normal text adventure has a very strict structure, with a set of formal commands to navigate that structure.
 
 In this game I'm trying to have a bit of both. There's an underlying game model and a grounding to the story, but with opportunities for the user and LLM to navigate that together in imaginative ways.
@@ -61,16 +63,22 @@ Entirely because Gemini offers a generous free tier, making it possible to share
 
 Is Gemini good? Eh. It's no GPT or Claude. But it'll do.
 
+## Are Gemini safety controls a problem?
+
+Why yes they are, I'm glad ~~I~~ you asked!
+
+I am entirely ok with this being a PG-rated game. Unfortunately the safety controls often enforce something closer to a G rating. Even the most minor insults will trigger safety controls, such as "you are dumb." It's hard to get any characters to fight, or to get the narrator to describe anything but de-escalation... I'm mostly okay with this, but even attempting will often lead to a safety violation. Once I get to implementing the dance-off battle will Gemini thwart my attemps with its safety controls? Time will tell!
+
 ## How does the LLM interaction work?
 
-In general the LLM will always output responses enclosed in tags. It's not "real" HTML or XML or any kind of markup, it's just ways to wrap different kinds of output that can appear in a single response.
+In general the LLM should always output responses enclosed in tags. It's not "real" HTML or XML or any kind of markup, it's just ways to wrap different kinds of output that can appear in a single response.
 
 I deliberately did not use Tools or function calls for this. In part because Gemini isn't very good at them. But also the basic model of how a tool works isn't good for a game. The providers all generally expect:
 
 1. Setup the situation as a prompt
 2. Get the LLM to emit one or more tool calls (and handling the LLM's reluctance to actually emit multiple calls)
 3. "Return" the "execution" of the tool call. This makes sense if the LLM is looking up information, but for a game it's mostly just updating game state and there's not interesting results.
-4. Prod the LLM into finishing the response.
+4. Prod the LLM into finishing the response given the result of those executions.
 
 I really want the LLM to simply state what should happen, and then make it happen, and not return to the LLM at all.
 
@@ -88,13 +96,11 @@ I find it's easier to work with and debug the system if the whole things is one 
 
 ## Is this based on something?
 
-I've written almost all of this code from scratch for this hackathon. But I've done other similar projects in the past, much of which I wrote about in [Roleplaying driven by an LLM: observations & open questions](https://ianbicking.org/blog/2024/04/roleplaying-by-llm)
-
-The actual code I brought over from other projects is persistentsignal.ts, parsetags.ts, template.ts, scrollonupdate.tsx
+I've done other similar projects in the past, much of which I wrote about in [Roleplaying driven by an LLM: observations & open questions](https://ianbicking.org/blog/2024/04/roleplaying-by-llm), but this is an independent piece of code. I do feel like I'm developing a "game engine" of sorts, but for now I'm developing a game that happens to have an engine as part of it.
 
 ## Is this generated with AI?
 
-I use Copilot and GPT extensively, but no large chunks are created independently by AI. There has been a lot of design work in creating the game, which is to say: I didn't know what this should be when I started. But much of the game [dossier](./docs/dossier.txt) was created in close collaboration with GPT.
+I use Copilot and GPT extensively, but no large chunks are created independently by AI. But much of the game [dossier](./docs/dossier.txt) was created in close collaboration with GPT.
 
 ## Security?
 
