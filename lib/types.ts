@@ -47,9 +47,11 @@ export type ChangeType = {
   after: Record<string, any>;
 };
 
-export type ActionRequestType<T = {}> = StoryEventType | PromptRequestType<T>;
+export type ActionRequestType<T = object> =
+  | StoryEventType
+  | PromptRequestType<T>;
 
-export type PromptRequestType<T = {}> = {
+export type PromptRequestType<T = object> = {
   type: "promptRequest";
   id: EntityId;
   parameters: T;

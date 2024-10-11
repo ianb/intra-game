@@ -120,6 +120,8 @@ const LlmResponse = forwardRef<HTMLPreElement, { response?: string }>(
   }
 );
 
+LlmResponse.displayName = "LlmResponse";
+
 function RequestTime({ start, end }: { start: number; end?: number }) {
   if (end) {
     return <span>{timeElapsed(end - start)}</span>;
