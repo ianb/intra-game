@@ -31,7 +31,7 @@ export type EntityInitType = {
   invisible?: boolean;
 };
 
-export abstract class Entity<ParametersT = {}> {
+export abstract class Entity<ParametersT = object> {
   name: string = "";
   shortDescription: string = "";
   description: string = "";
@@ -229,7 +229,7 @@ export abstract class Entity<ParametersT = {}> {
     let originallyPlayer = false;
     if (inside === "player") {
       inside = this.world.original.player.inside;
-      let originallyPlayer = true;
+      originallyPlayer = true;
     }
     for (const storyEvent of this.world.model.updates.value) {
       if (storyEvent.roomId === inside || storyEvent.id === inside) {
@@ -572,9 +572,14 @@ export class ArchivistRoom extends Room {
         // Instantiate <WithBlinkingCursor>{action.text}</WithBlinkingCursor>
         // But without JSX:
         if (storyEvent.id === "player") {
-          return React.createElement(WithBlinkingCursor, {
-            children: action.text,
-          });
+          // eslint-disable-next-line react/no-children-prop
+          return React.createElement(
+            WithBlinkingCursor,
+            {
+              children: action.text,
+            },
+            action.text
+          );
         }
         return `\u00A0${action.text}`;
       }
@@ -600,7 +605,7 @@ export type RelationshipType = {
   trustworthy?: RelationshipRatingType;
 };
 
-export class Person<ParametersT = {}> extends Entity<ParametersT> {
+export class Person<ParametersT = object> extends Entity<ParametersT> {
   type = "person";
   pronouns: string = "they/them";
   roleplayInstructions: string = "";
