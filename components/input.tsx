@@ -9,15 +9,15 @@ export function Button({
   onClick,
   ...props
 }: {
-  onClick: () => void | Promise<void>;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const cls = twMerge("bg-green-600 text-white p-2", className);
   const error = useSignal<Error | null>(null);
   const running = useSignal(false);
-  function handleClick() {
+  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     let resp: any;
     try {
-      resp = onClick();
+      resp = onClick(event);
       error.value = null;
     } catch (e) {
       error.value = e as Error;
@@ -59,8 +59,8 @@ export function CheckButton({
   onClass?: string;
   offClass?: string;
 }) {
-  onClass = onClass || "bg-green-600 border border-green-700";
-  offClass = offClass || "bg-green-950 border border-green-700";
+  onClass = onClass || "bg-green-600 border border-green-700 p-1";
+  offClass = offClass || "bg-green-950 border border-green-700 p-1";
   const cls = twMerge(className, signal.value ? onClass : offClass);
   return (
     <Button
@@ -71,5 +71,18 @@ export function CheckButton({
     >
       {signal.value ? on : off}
     </Button>
+  );
+}
+
+export function WithBlinkingCursor({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <span>
+      &nbsp;{children}
+      <span className="blinking-cursor">█</span>
+    </span>
   );
 }
