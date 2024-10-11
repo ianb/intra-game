@@ -37,10 +37,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 There are only a few important parts of the code! Note that many contain spoilers.
 
-- [types.ts](./lib/types.ts) defines (almost) all the types used throughout the game
-- [model.ts](./lib/model.ts) actually runs the game and manages game state
+- [types.ts](./lib/types.ts) defines (almost) all the types used throughout the game, outside of classes
+- [model.ts](./lib/game/model.ts) manages game state in the browser and the user/game interaction
+- [world.ts](./lib/game/world.ts) represents a moment in the world, and is a getter for most objects
+- [classes.ts](./lib/game/classes.ts) has the class for Entity and its children (e.g., Room, Person, Player). These manage most of the actual game play!
+- [gameobjs.ts](./lib/game/gameobjs.ts) is the instantiation of all the actual game state, individual people and rooms, etc. (though all logic is in classes.ts)
 - [application.tsx](./app/application.tsx) is the entire UI
-- [game/](./lib/game/) contains the game setup, [entities.ts](./lib/game/entities.ts) for all the autonomous entities (people and AI), and [rooms.ts](./lib/game/rooms.ts) for all the locations.
 - [dossier.txt](./docs/dossier.txt) is the game background. I wasn't able to use much of this given the constrained implementation time, but I hope to eventually!
 
 There's a little more UI in [components/](./components/) and some libraries in [lib/](./lib/), but they are mostly generic and secondary. Besides application.tsx [app/](./app/) is mostly boilerplate or glue.
