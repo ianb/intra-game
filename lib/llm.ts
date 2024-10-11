@@ -29,6 +29,8 @@ export class LlmError extends Error {
   }
 }
 
+export class LlmSafetyError extends LlmError {}
+
 export async function chat(request: GeminiChatType) {
   request = fixText(request);
   const log = {
@@ -56,6 +58,10 @@ export async function chat(request: GeminiChatType) {
     }
     const json = await response.json();
     if (!json.response && json.candidates) {
+      console.error("Bad Response", json);
+      if (json.candidates[0].finishReason === "SAFETY") {
+        throw new LlmSafetyError("Safety Issue", json.candidates);
+      }
       throw new LlmError("Bad Response", json.candidates);
     }
     text = json.response;
