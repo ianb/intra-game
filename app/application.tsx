@@ -1,26 +1,29 @@
 import { Button, CheckButton } from "@/components/input";
-import LlmLog from "@/components/llmlog";
+import LlmLog, { clearLogs } from "@/components/llmlog";
 import ScrollOnUpdate from "@/components/scrollonupdate";
-import { model } from "@/lib/model";
-import { serializeAttrs } from "@/lib/parsetags";
-import { persistentSignal } from "@/lib/persistentsignal";
 import {
-  EntityInteractionType,
-  ExitType,
-  isEntityInteraction,
-  isLlmError,
-  isStateUpdate,
-  RoomType,
-  StateUpdateType,
-  UpdateStreamType,
-} from "@/lib/types";
+  Entity,
+  Exit,
+  isStoryDescription,
+  isStoryDialog,
+  Person,
+  Room,
+  StoryEventType,
+} from "@/lib/game/classes";
+import { model } from "@/lib/game/model";
+import { parseTags, serializeAttrs } from "@/lib/parsetags";
+import { persistentSignal } from "@/lib/persistentsignal";
 import { useSignal } from "@preact/signals-react";
-import { on } from "events";
+import compare from "just-compare";
+import sortBy from "just-sort-by";
+import React from "react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
+
+let textareaRef: React.RefObject<HTMLTextAreaElement>;
 
 export default function Home() {
   useEffect(() => {
@@ -40,7 +43,7 @@ export default function Home() {
           {/* Scrollable log */}
           <ScrollOnUpdate
             className="flex-1 overflow-y-auto border-b border-gray-700 p-2"
-            watch={model.session.value.updates}
+            watch={model.updates.value}
           >
             <ChatLog />
           </ScrollOnUpdate>
@@ -59,42 +62,49 @@ export default function Home() {
 function ChatLog() {
   return (
     <div>
-      {model.session.value.updates.map((update, i) => (
+      {model.updates.value.map((update, i) => (
         <ChatLogItem update={update} key={i} />
       ))}
     </div>
   );
 }
 
-function ChatLogItem({ update }: { update: UpdateStreamType }) {
-  if (isStateUpdate(update)) {
-    return <ChatLogStateUpdate update={update} />;
-  } else if (isEntityInteraction(update)) {
-    return <ChatLogEntityInteraction update={update} />;
-  } else if (isLlmError(update)) {
-    return (
-      <pre className="whitespace-pre-wrap text-red-400">
-        {update.context}:{"\n"}
-        {update.description}
-      </pre>
-    );
-  } else {
-    return (
-      <pre className="whitespace-pre-wrap text-red-400">
-        Unknown update: {"\n"}
-        {JSON.stringify(update, null, 2)}
-      </pre>
-    );
-  }
+function ChatLogItem({ update }: { update: StoryEventType }) {
+  return (
+    <>
+      {Object.keys(update?.changes || {}).length > 0 && (
+        <ChatLogStateUpdate update={update} />
+      )}
+      {update.actions.length > 0 && (
+        <ChatLogEntityInteraction update={update} />
+      )}
+      {update.llmError && (
+        <pre className="whitespace-pre-wrap text-red-400">
+          <button
+            className="float-right text-lg font-bold opacity-75 hover:opacity-100"
+            onClick={() => model.removeStoryEvent(update)}
+          >
+            ×
+          </button>
+          {update.llmError.context}:{"\n"}
+          {update.llmError.description}
+        </pre>
+      )}
+    </>
+  );
 }
 
-function ChatLogStateUpdate({ update }: { update: StateUpdateType }) {
+function ChatLogStateUpdate({ update }: { update: StoryEventType }) {
   if (!showInternals.value) {
     return null;
   }
   const lines = [`Update ${update.id}:`];
-  for (const [key, value] of Object.entries(update.updates)) {
-    lines.push(`  ${key}: ${JSON.stringify(value)}`);
+  for (const [entityId, changes] of Object.entries(update.changes)) {
+    for (const attr of Object.keys(changes.after || {})) {
+      const before = changes.before ? changes.before[attr] : null;
+      const after = changes.after ? changes.after[attr] : null;
+      lines.push(`  ${entityId}.${attr}: ${before} => ${after}`);
+    }
   }
   return (
     <pre className="text-xs whitespace-pre-wrap text-purple-600">
@@ -103,17 +113,13 @@ function ChatLogStateUpdate({ update }: { update: StateUpdateType }) {
   );
 }
 
-function ChatLogEntityInteraction({
-  update,
-}: {
-  update: EntityInteractionType;
-}) {
-  const entity = model.entities[update.entityId];
-  let children: React.ReactNode;
-  if (showInternals.value) {
-    children = (
-      <div>
-        {update.tags.map((tag, i) => (
+function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
+  let children: React.ReactNode[];
+  if (showInternals.value && update.llmResponse) {
+    const tags = parseTags(update.llmResponse);
+    children = [
+      <div key="states">
+        {tags.map((tag, i) => (
           <div key={i}>
             <pre className="whitespace-pre-wrap text-xs pl-2">
               {`<${tag.type}${serializeAttrs(tag.attrs)}>`}
@@ -123,49 +129,76 @@ function ChatLogEntityInteraction({
             </pre>
           </div>
         ))}
-      </div>
-    );
+      </div>,
+    ];
   } else {
-    children = update.tags
-      .map((tag, i) => {
-        if (tag.type === "speak") {
-          return (
-            <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2" key={i}>
-              &quot;{tag.content}&quot;
-            </pre>
-          );
-        } else if (tag.type === "description") {
-          return (
-            <pre
-              className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700"
-              key={i}
-            >
-              {tag.content}
-            </pre>
-          );
-        } else if (tag.type === "goTo") {
-          const dest = model.rooms[tag.content.trim()];
-          if (!dest) {
-            console.log("No destination found for", tag.content);
-            return null;
+    const room = model.world.getRoom(update.roomId);
+    children = update.actions.map((action, i) => {
+      if (isStoryDialog(action)) {
+        // Should also use id, toId, toOther
+        let dest = "";
+        let destColor = "";
+        if (action.toId) {
+          const person = model.world.getEntity(action.toId);
+          if (person) {
+            dest = person.name;
+            destColor = person.color;
           }
-          return (
-            <div className="pl-4" key={i}>
+        } else if (action.toOther) {
+          dest = action.toOther;
+          destColor = "font-bold";
+        }
+        let text: React.ReactNode = action.text;
+        if (room) {
+          text = room.formatStoryAction(update, action);
+        }
+        return (
+          <React.Fragment key={i}>
+            {dest && (
+              <div className="text-xs">
+                to <span className={destColor}>{dest}</span>
+              </div>
+            )}
+            <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2">
+              {text}
+            </pre>
+          </React.Fragment>
+        );
+      } else if (isStoryDescription(action)) {
+        let text: React.ReactNode = action.text;
+        if (room) {
+          text = room.formatStoryAction(update, action);
+        }
+        return (
+          <pre
+            className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700"
+            key={i}
+          >
+            {text}
+          </pre>
+        );
+      } else {
+        throw new Error("Unknown action");
+      }
+    });
+    for (const [entityId, changes] of Object.entries(update.changes)) {
+      if (changes.before.inside !== changes.after.inside) {
+        const dest = model.world.getRoom(changes.after.inside);
+        if (dest) {
+          children.push(
+            <div className="pl-4" key={`move-${entityId}`}>
               ==&gt; <span className={dest.color}>{dest.name}</span>
             </div>
           );
         }
-        return null;
-      })
-      .filter((x) => x);
-    if (!(children as React.ReactNode[]).length) {
-      return null;
+      }
     }
   }
+  const entity = model.world.getEntity(update.id);
   return (
-    <div className={entity.color}>
-      {entity.id !== "entity:narrator" && (
-        <div className={twMerge("font-bold")}>{entity.name}</div>
+    <div className={entity?.color}>
+      {entity?.id !== "entity:narrator" && (
+        <div className={twMerge("font-bold")}>{entity?.name}</div>
       )}
       {children}
     </div>
@@ -174,9 +207,13 @@ function ChatLogEntityInteraction({
 
 function Input() {
   // FIX for a lack of using a signal for model.lastSuggestions
-  const v = model.session.value;
-  const running = useSignal(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const v = model.updates.value;
+  textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (textareaRef.current && !model.runningSignal.value) {
+      textareaRef.current.focus();
+    }
+  }, [model.runningSignal.value]);
   async function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return;
@@ -187,29 +224,44 @@ function Input() {
     }
   }
   async function onSubmit() {
-    if (running.value) {
+    if (model.runningSignal.value) {
       return;
     }
     if (!textareaRef.current) {
       return;
     }
     const text = textareaRef.current.value;
-    running.value = true;
-    await model.sendText(text);
+    if (!text) {
+      return;
+    }
+    if (text === "/reset") {
+      model.reset();
+    } else {
+      await model.sendText(text);
+    }
     textareaRef.current.value = "";
-    running.value = false;
     setTimeout(() => {
       textareaRef.current!.focus();
     }, 0);
   }
-  async function onUndo() {
-    if (running.value) {
+  async function onUndo(event: React.MouseEvent<HTMLButtonElement>) {
+    if (model.runningSignal.value) {
+      return;
+    }
+    if (event.shiftKey) {
+      // Perform the special behavior for shift-click
+      await model.redo();
       return;
     }
     const lastInput = model.undo();
     if (lastInput) {
       textareaRef.current!.value = lastInput;
     }
+  }
+  let placeholder = "Waiting...";
+  if (!model.runningSignal.value) {
+    placeholder =
+      model.world.lastSuggestions || "ENTER COMMAND OR INSTRUCTIONS";
   }
   return (
     <div className="flex mt-4">
@@ -218,10 +270,10 @@ function Input() {
         rows={2}
         className={twMerge(
           "flex-1 resize-none bg-gray-800 text-white border-none p-2",
-          running.value && "opacity-50"
+          model.runningSignal.value && "opacity-50 bg-gray-600"
         )}
-        placeholder={model.lastSuggestions || "ENTER COMMAND OR INSTRUCTIONS"}
-        disabled={running.value}
+        placeholder={placeholder}
+        disabled={model.runningSignal.value}
         onKeyDown={onKeyDown}
       />
       <div className="flex flex-col ml-2">
@@ -239,9 +291,20 @@ function Input() {
 function HeadsUpDisplay() {
   const activeClass = "text-black bg-gray-100 cursor-pointer";
   const inactiveClass = "cursor-pointer";
+  const showLogs = true; // Could be based on showInternals or something, but I don't want it to be
   return (
-    <div className="flex-1 p-4 border-b border-gray-700 overflow-y-auto">
+    <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
       <div>
+        {activeTab.value === "log" && (
+          <span className="float-right">
+            <Button
+              className="bg-red-800 text-xs p-1 opacity-50 hover:opacity-100"
+              onClick={clearLogs}
+            >
+              clear
+            </Button>
+          </span>
+        )}
         <span
           onClick={() => {
             activeTab.value = "inv";
@@ -250,7 +313,7 @@ function HeadsUpDisplay() {
         >
           (i)nv
         </span>{" "}
-        <span
+        {/* <span
           onClick={() => {
             activeTab.value = "access";
           }}
@@ -265,8 +328,8 @@ function HeadsUpDisplay() {
           className={activeTab.value === "blips" ? activeClass : inactiveClass}
         >
           (b)lips
-        </span>{" "}
-        {(showInternals.value || activeTab.value === "log" || true) && (
+        </span>{" "} */}
+        {(showLogs || activeTab.value === "log") && (
           <span
             onClick={() => {
               activeTab.value = "log";
@@ -275,6 +338,16 @@ function HeadsUpDisplay() {
           >
             (l)og
           </span>
+        )}{" "}
+        {(showLogs || activeTab.value === "objs") && (
+          <span
+            onClick={() => {
+              activeTab.value = "objs";
+            }}
+            className={activeTab.value === "objs" ? activeClass : inactiveClass}
+          >
+            (o)bjs
+          </span>
         )}
       </div>
       <div>
@@ -282,6 +355,7 @@ function HeadsUpDisplay() {
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
         {activeTab.value === "log" && <LlmLog />}
+        {activeTab.value === "objs" && <ViewObjects />}
       </div>
     </div>
   );
@@ -289,113 +363,200 @@ function HeadsUpDisplay() {
 
 function Inventory() {
   // This is *based* on updates, so I'm using this to keep it updated:
-  const updates = model.session.value.updates;
-  const player = model.entities["entity:player"];
+  const updates = model.updates.value;
+  const player = model.world.entities.player;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Inventory</div>
-      {Object.values(player.inventory).map((item, i) => (
-        <div key={i}>- {item}</div>
-      ))}
+      (no inventory implemented)
       <div>- Key card</div>
     </div>
   );
 }
 
 function AccessControl() {
-  const updates = model.session.value.updates;
-  const player = model.entities["entity:player"];
+  const updates = model.updates.value;
+  const player = model.world.entities.player;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Access Control</div>
-      {Object.entries(player.roomAccess).map(([roomId, access], i) => {
-        const room = model.rooms[roomId];
-        return <div key={i}>- {room.name}</div>;
-      })}
+      (no access control implemented)
     </div>
   );
 }
 
 function Blips() {
-  const updates = model.session.value.updates;
-  const player = model.entities["entity:player"];
+  const updates = model.updates.value;
+  const player = model.world.entities.player;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Blips</div>
-      {Object.entries(player.blipAis).map(([entityId, info], i) => {
-        const entity = model.entities[entityId];
-        return <div key={i}>- {entity.name}</div>;
-      })}
+      (no blips implemented)
     </div>
   );
 }
 
 function Controls() {
   const SKIP_IDS = ["entity:narrator", "entity:player", "entity:ama"];
-  const room = model.get(model.player.locationId) as RoomType;
-  const folks = model
-    .containedIn(model.player.locationId)
-    .filter((x) => !SKIP_IDS.includes(x.id));
-  async function onGoToRoom(room: RoomType, exit: ExitType) {
-    if (!exit.restriction) {
-      model.appendUpdate({
-        type: "entityInteraction",
-        entityId: "entity:player",
-        tags: [{ type: "goTo", attrs: {}, content: room.id }],
-        response: `<goTo>${room.id}</goTo>`,
-      });
-      model.goToRoom(exit.roomId);
-      return;
-    }
+  const room = model.world.entityRoom("player")!;
+  // FIXME: actually collect the people:
+  const folks: Person[] = model.world
+    .entitiesInRoom(room)
+    .filter((x) => Person.isPerson(x))
+    .filter((x) => !x.invisible && x.id !== "player");
+  async function onGoToRoom(room: Room, exit: Exit) {
     await model.sendText(`Go to ${room.name}`);
   }
+  function onConverse(entity: Person) {
+    if (!textareaRef?.current) {
+      return;
+    }
+    if (textareaRef.current.value.includes(`${entity.name}:`)) {
+      textareaRef.current.focus();
+      return;
+    }
+    if (textareaRef.current.value) {
+      textareaRef.current.value += "\n";
+    }
+    textareaRef.current.value += `${entity.name}: `;
+    textareaRef.current.focus();
+  }
   return (
-    <div className="flex-1 p-4 overflow-y-auto">
+    <div className="h-1/3 p-4 overflow-y-auto">
       <CheckButton
         signal={showInternals}
-        className="float-right"
+        className="float-right text-xs"
         on="Internals (Spoilers)"
         off="Normal Mode"
       />
       <div className="mb-2">Controls</div>
       <div className="border-b border-gray-400">
-        Location: <strong className={room.color}>{room.name}</strong>
+        Location:{" "}
+        <strong className={room?.color}>{room?.name || "In the void"}</strong>
       </div>
-      <div className="flex space-x-4">
-        <div className="flex-1">
-          Exits:
-          <ul>
-            {room.exits.map((exit, i) => {
-              const targetRoom = model.rooms[exit.roomId];
-              return (
-                <li key={i}>
-                  -{" "}
-                  <button
-                    className={twMerge("", targetRoom.color)}
-                    onClick={() => {
-                      onGoToRoom(targetRoom, exit);
-                    }}
-                  >
-                    {exit.name || targetRoom.name}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        {folks.length > 0 && (
+      {room && (
+        <div className="flex space-x-4">
           <div className="flex-1">
-            People:
+            Exits:
             <ul>
-              {folks.map((entity, i) => (
-                <li key={i}>
-                  - <span className={entity.color}>{entity.name}</span>
-                </li>
-              ))}
+              {room!.exits.map((exit, i) => {
+                const targetRoom = model.world.getRoom(exit.roomId);
+                if (!targetRoom) {
+                  return <li key={i}>- Missing exit: {exit.roomId}</li>;
+                }
+                return (
+                  <li key={i}>
+                    -{" "}
+                    <Button
+                      className={twMerge(
+                        "p-0 bg-inherit hover:bg-gray-700",
+                        targetRoom.color
+                      )}
+                      onClick={() => {
+                        return onGoToRoom(targetRoom, exit);
+                      }}
+                    >
+                      {exit.name || targetRoom.name}
+                    </Button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
-        )}
+          {folks.length > 0 && (
+            <div className="flex-1">
+              People:
+              <ul>
+                {folks.map((entity, i) => (
+                  <li key={i}>
+                    -{" "}
+                    <Button
+                      className={twMerge(
+                        "p-0 bg-inherit hover:bg-gray-700",
+                        entity.color
+                      )}
+                      onClick={() => {
+                        return onConverse(entity);
+                      }}
+                    >
+                      {entity.name}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ViewObjects() {
+  const idList = model.updates.value
+    .map((update) => Object.keys(update.changes))
+    .flat();
+  const unsortedEntities = Object.values(model.world.entities);
+  const entities = sortBy(unsortedEntities, (entity) => {
+    let index = idList.lastIndexOf(entity.id);
+    index = idList.length - index;
+    index *= 1000;
+    index += unsortedEntities.indexOf(entity);
+    return index;
+  });
+  return (
+    <div>
+      {entities.map((entity) => {
+        return (
+          <ViewObject
+            key={entity.id}
+            id={entity.id}
+            entity={entity}
+            updates={model.updates.value}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function ViewObject({
+  id,
+  entity,
+  updates,
+}: {
+  id: string;
+  entity: Entity;
+  updates: StoryEventType[];
+}) {
+  const hide = useSignal(true);
+  const lines = [];
+  for (const [key, value] of Object.entries(entity)) {
+    if (key === "world") {
+      continue;
+    }
+    if (!compare(value, (model.world.original as any)[id][key])) {
+      lines.push(`${key}: ${JSON.stringify(value)}`);
+    }
+  }
+  return (
+    <div className="p-2 text-xs">
+      <div
+        className="bg-blue-900 text-white p-1 cursor-default"
+        onClick={() => {
+          hide.value = !hide.value;
+        }}
+      >
+        {entity.id} {entity.name !== entity.id ? entity.name : ""}{" "}
+        {lines.length > 0 && `(${lines.length})`}
       </div>
+      {!hide.value && (
+        <>
+          <pre className="whitespace-pre-wrap text-white bg-gray-900 pl-1">
+            {lines.join("\n")}
+          </pre>
+        </>
+      )}
     </div>
   );
 }

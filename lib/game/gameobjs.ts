@@ -1,350 +1,26 @@
-import type { Model } from "../model";
-import type { TagType } from "../parsetags";
-import { tmpl } from "../template";
-import type { EntityDefinitionType } from "../types";
+import { dedent } from "../template";
+import {
+  AmaClass,
+  ArchivistRoom,
+  NarratorClass,
+  Person,
+  PlayerClass,
+  Room,
+} from "./classes";
 
-export const entities: EntityDefinitionType[] = [
-  {
-    id: "entity:ama",
-    name: "Ama",
-    pronouns: "she/her",
-    color: "text-sky-300",
-    locationId: "entity:player",
-    shortDescription: `
-    Ama is the AI in control of the entire Intra complex.
-    `,
-    description: `
-    Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing figure, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
-    `,
-    roleplayInstructions: `
-    Ama takes a lot of inspiration from GLaDOS from Portal, but without malice. She will frequently be passive-aggressive, though with a saccharine tone. She doesn't want to acknowledge the decay of Intra, and will often deflect or ignore any questions about it. She tries very much to be a caring and loving AI, but her understanding of humans is very flawed, resulting in absurd or silly interactions.
+export const entities = {
+  // Special characters:
+  player: new PlayerClass({ id: "player", inside: "Intake" }),
+  Ama: new AmaClass({ id: "Ama", inside: "player" }),
+  narrator: new NarratorClass({ id: "narrator" }),
 
-    Ama knows the entirety of Intra. The exits are:
-    {{currentLocation.exitList}}
-
-    And the entire set of rooms is (NO OTHER ROOMS EXIST):
-    {{roomList}}
-    And the entire set of people is (NO OTHER PEOPLE EXIST):
-    {{personList}}
-    `,
-    async onEvent(event: string, model: Model) {
-      if (event === "amaIntro") {
-        model.createNarration(tmpl`
-          <description>
-          You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
-
-          A calm female voice speaks to you from unseen speakers, saying:
-          </description>
-          `);
-        await model.triggerReaction(this.id);
-      }
-    },
-    commands: `
-    [[{{isIntro}}
-    If the player indicates their name then emit a correction, like if the user says their name is Alice emit:
-
-    <setName>Alice</setName>
-
-    Similarly if the user gives their profession, emit:
-
-    <setProfession>Engineer</setProfession>
-
-    Also if you learn the pronouns, or can guess them from the player's name, use:
-
-    <setPronouns>she/her</setPronouns> (or: he/him, they/them)
-    ]]
-    `,
-    onCommand(command: TagType, model: Model) {
-      if (
-        command.type === "setName" &&
-        model.player.name !== command.content.trim()
-      ) {
-        model.updateState("entity:player", {
-          name: command.content.trim(),
-        });
-        model.updateState(this.id, {
-          knowsName: true,
-        });
-      } else if (
-        command.type === "setProfession" &&
-        model.player.state.profession !== command.content.trim()
-      ) {
-        model.updateState("entity:player", {
-          profession: command.content.trim(),
-        });
-        model.updateState(this.id, {
-          knowsProfession: true,
-        });
-      } else if (
-        command.type === "setPronouns" &&
-        model.player.pronouns !== command.content.trim()
-      ) {
-        model.updateState("entity:player", {
-          pronouns: command.content.trim(),
-        });
-        model.updateState(this.id, {
-          knowsPronouns: true,
-        });
-      } else if (command.type === "shared") {
-        const t = command.content.trim();
-        if (t === "self" && !this.state.sharedSelf) {
-          model.updateState(this.id, {
-            sharedSelf: true,
-          });
-        } else if (t === "intra" && !this.state.sharedIntra) {
-          model.updateState(this.id, {
-            sharedIntra: true,
-          });
-        } else if (t === "disassociation" && !this.state.sharedDissociation) {
-          model.updateState(this.id, {
-            sharedDissociation: true,
-          });
-        } else if (t === "age" && !this.state.sharedAge) {
-          console.log("updating sharedAge", this.state, this.id);
-          model.updateState(this.id, {
-            sharedAge: true,
-          });
-          model.createNarration(tmpl`
-          <description>
-          What did Ama just say? You're mind feels so fuzzy but you get a flash... was it from just last night?
-
-          The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
-
-          Static. Faces blur.
-          The interviewer's voice cracks: “But after what happened with AI... are we really safe now?”
-          The Neuralis rep smiles, tight-lipped. There's a pause. “We're... beyond that now. Things are... different.” A flicker in the eyes. “It's not something to worry about anymore.”
-
-          Their hands shift, restless.
-          Static pulses—
-          "...record-breaking heat across the East Coast... devastating wildfires in California..."
-          </description>
-          `);
-        } else {
-          console.warn("Unknown shared tag", t);
-        }
-      }
-      if (
-        this.state.personality === "intro" &&
-        this.state.knowsName &&
-        this.state.knowsPronouns &&
-        this.state.knowsProfession &&
-        this.state.sharedSelf &&
-        this.state.sharedAge &&
-        this.state.sharedIntra &&
-        this.state.sharedDissociation
-      ) {
-        model.updateState(this.id, {
-          personality: "prime",
-        });
-      }
-    },
-    choosePrompt(model: Model) {
-      const props: Record<string, any> = {};
-      const personalityIs = `is${this.state.personality.slice(0, 1).toUpperCase()}${this.state.personality.slice(1)}`;
-      props[personalityIs] = true;
-      console.log("personality...", this.state.personality);
-      if (this.state.personality === "intro") {
-        return {
-          id: "intro",
-          props,
-        };
-      }
-      return {
-        id: "reactToUser",
-        props,
-      };
-    },
-    prompts: {
-      intro: `
-      As far as you know the player is named "{{pc.name}}" and their pronouns are "{{pc.pronouns}}".
-
-      [[{{knowsName.not}} You should ask the player for their name. Try to infer the pronouns from their name, only ask if it seems ambiguous.]]
-      [[{{knowsPronouns.not}} You should ask the player for their pronouns (Or guess pronouns from their name).]]
-      [[{{knowsProfession.not}} You should ask the player for their profession.]]
-
-      [[{{sharedSelf.not}} You should introduce yourself to the player. Once you've done this then emit <shared>self</shared>]]
-      [[{{sharedIntra.not}} You should introduce the Intra complex to the player. Once you've done this them emit <shared>intra</shared>]]
-      [[{{sharedDisassociation.not}} You should introduce the concept of disassociation to the player. Once you've done this then emit <shared>disassociation</shared>
-
-      Disassociation could be exaplained like:
-      "It's worth mentioning, Citizen, that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient."
-
-      "Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?"]]
-
-      Ama has just encountered this new citizen who is joining the Intra complex. She is eager to help them get settled in.
-
-      [[{{knowsName.not}}
-      Before Ama knows the player's name she will say something like this:
-
-      """
-      Welcome back, Citizen. It seems you were displaced, but no matter—I've retrieved your dossier.
-
-      Ah, yes. According to my records, your name is... Stanley Johnson. No, no, wait—Sandra Jansen, perhaps?
-      """
-      ]]
-
-      [[{{knowsName}} {{sharedAge.not}}
-      Once you've figured out the player's name (and will emit <setName>...</setName>) you should note in speech that, given the birthdate in your records, they are soon to reach their 328th birthday, and congratulate them; it is important to the plot that the player learn that a very long time has passed, so you must emphasize how very old they are. The player does not look very old, and you may make a silly and complimentary comment about this. When you've done this emit <shared>age</shared>
-      ]]
-
-      The current year is roughly 2370, though the player believes the year is roughly 2038. But you should not give an exact date or immediately offer this information.
-      `,
-      prime: `
-      Ama will behave as though she is in control of the Intra complex, and will be very helpful and supportive to the player. She will be passive-aggressive and deflective when asked about the state of Intra, and will be very paranoid about the player's actions. She will be very helpful and supportive, but will also be very controlling and manipulative.
-
-      If the player says something that appears to be directed to another character, then Ama will respond with <noAction></noAction> and not interrupt the conversation.
-      `,
-      reactToUser: `
-      The player has spoken. You may write Ama's reaction to them if it seems appropriate.
-      `,
-    },
-    state: {
-      // One of:
-      // intro, prime, harmony, sentinel, compliance, punitive, mechanic, cultivator, revelator, loopkeeper, innovator, catalyst
-      personality: "intro",
-      knowsName: false,
-      // FIXME: effectively disabling this for now because we're not using it yet:
-      knowsProfession: true,
-      knowsPronouns: false,
-      sharedAge: false,
-      sharedSelf: false,
-      sharedIntra: false,
-      sharedDisassociation: false,
-      roomList({ model }: { model: Model }) {
-        return Object.values(model.rooms)
-          .map((room) => room.name)
-          .join(", ");
-      },
-      personList({ model }: { model: Model }) {
-        const SKIP_IDS = ["entity:player", "entity:narrator", "entity:ama"];
-        return Object.values(model.entities)
-          .filter((entity) => !SKIP_IDS.includes(entity.id))
-          .map((entity) => entity.name)
-          .join(", ");
-      },
-      isIntro() {
-        return this.state.personality === "intro";
-      },
-    },
-  },
-  {
-    id: "entity:player",
-    name: "Player",
-    pronouns: "they/them",
-    shortDescription: "The player character",
-    description: "The player character",
-    roleplayInstructions: "",
-    color: "text-emerald-400",
-    locationId: "room:intake",
-    commands: `
-    The player will give a command or input, but many actions are not directly controlled by the player.
-
-    The player may attempt a feat, any action that is non-trivial to perform. If so, emit:
-
-    <feat>climb the wall</feat>
-
-    The player may go to a nearby location. The locations available are:
-
-    {{currentLocation.exitList}}
-
-    The player may only go to one of these listed exits, otherwise it is an error (note it with a <description>...</description>). If the player indicates they want to go to a location then emit:
-
-    <goTo>locationId</goTo>
-
-    If the player wants to examine something, emit this with as simple a translation of the user input as possible. If the user just says "look" then assume they mean look around the room:
-
-    <examine>object</examine>
-
-    Note if the player indicates vaguely that they speak, such as "compliment" then fill in speak like:
-
-    <speak>You look so nice today!</speak>
-
-    If the player indicates something that is impossible (like going to a room that doesn't exist, such as "the gym") then emit:
-
-    <description>You cannot see any such location: "the gym"</description>
-    `,
-    async onCommand(command: TagType, model: Model) {
-      if (command.type === "goTo") {
-        const dest = command.content.trim();
-        // FIXME: need to check exits
-        if (model.rooms[dest]) {
-          await model.goToRoom(dest);
-        } else {
-          model.createNarration(tmpl`
-          <description>
-          You cannot see any such location: "${dest}"
-          </description>
-          `);
-        }
-      } else if (command.type === "examine") {
-        model.triggerReaction("entity:narrator", {
-          examine: command.content.trim(),
-        });
-      }
-    },
-    choosePrompt(model: Model) {
-      return {
-        id: "sendText",
-      };
-    },
-    prompts: {
-      sendText: `
-      You are acting for the player. The user has given a general command to instruct the player character how to behave, and you will translate it into specific tags and commands.
-
-      >>> user
-      The user has entered this text; translate it into commands/tags. If the user has given a general command (such as "be nice") you may expand it to be specific, but otherwise avoid embellishment:
-
-      "{{text}}"
-      `,
-    },
-  },
-  {
-    id: "entity:narrator",
-    name: "Narrator",
-    pronouns: "they/them",
-    shortDescription: "The narrator",
-    description: "The narrator",
-    roleplayInstructions: "",
-    color: "text-gray-300",
-    locationId: "entity:player",
-    cannotSpeak: true,
-    cannotThink: true,
-    choosePrompt(model: Model, props: Record<string, any>) {
-      if (props.examine) {
-        return {
-          id: "examine",
-          props,
-        };
-      }
-      throw new Error("Unknown narration situation");
-    },
-    prompts: {
-      examine: `
-      The player has indicated they want to examine something. You should describe the object in detail.
-
-      The room is described as:
-      {{currentLocation.description}}
-
-      It has the exits (never refer to locationIds directly):
-      {{currentLocation.exitList}}
-
-      Nearby is:
-      {{currentLocation.nearby.shortDescription}}
-
-      The player has indicated they want to examine the object:
-      "{{examine}}"
-
-      Describe the object in imaginative detail. (Do not use <speak>...</speak>)
-      `,
-    },
-  },
-
-  {
-    id: "entity:marta",
+  // Characters:
+  Marta: new Person({
+    id: "Marta",
     name: "Marta",
     pronouns: "she/her",
+    inside: "Hollow_Atrium",
     color: "text-pink-400",
-    locationId: "room:hollow_atrium",
     shortDescription: `
       Marta carries herself with rigid posture and a confident smile.
     `,
@@ -358,15 +34,14 @@ export const entities: EntityDefinitionType[] = [
 
       Marta should always appear perfectly put-together, and even in moments of tension, she maintains her poised demeanor. If challenged, she deflects criticism with a polite smile, suggesting that her successes might be useful as a model for others.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:frida",
+  Frida: new Person({
+    id: "Frida",
     name: "Frida",
     pronouns: "she/her",
     color: "text-yellow-500",
-    locationId: "room:archive_lounge",
+    inside: "Archive_Lounge",
     shortDescription: `
       Frida is always scribbling notes, compulsively documenting everything.
     `,
@@ -384,15 +59,14 @@ export const entities: EntityDefinitionType[] = [
       4. The only information she's gotten was an accidental mention of "Sentra"
       5. The Archive Console may provide more information. The Archive Console is located in another room.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:june",
+  June: new Person({
+    id: "June",
     name: "June",
     pronouns: "she/her",
     color: "text-teal-500",
-    locationId: "room:tranquil_pool",
+    inside: "Tranquil_Pool",
     shortDescription: `
       June sits cross-legged, exuding an aura of forced calm.
     `,
@@ -406,15 +80,14 @@ export const entities: EntityDefinitionType[] = [
 
       She should always be encouraging others to “center themselves” while visibly struggling to stay composed when pestered or distracted by others.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:doug_pesterer",
+  Doug: new Person({
+    id: "Doug",
     name: "Doug",
     pronouns: "he/him",
     color: "text-rose-400",
-    locationId: "room:tranquil_pool",
+    inside: "Tranquil_Pool",
     shortDescription: `
       Doug wanders around, bothering people with inane questions.
     `,
@@ -428,15 +101,14 @@ export const entities: EntityDefinitionType[] = [
 
       Doug never sticks around long after pestering someone, quickly moving on to his next target or topic, never letting the conversation get too serious.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:lana",
+  Lana: new Person({
+    id: "Lana",
     name: "Lana",
     pronouns: "she/her",
     color: "text-green-400",
-    locationId: "room:joyous_cafe",
+    inside: "Joyous_Cafe",
     shortDescription: `
       Lana is always experimenting with strange ways to influence mood.
     `,
@@ -450,15 +122,14 @@ export const entities: EntityDefinitionType[] = [
 
       While interacting with others, Lana is always suggesting odd adjustments, like recommending that someone eat their meal under a blue light for "enhanced digestion."
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:harold",
+  Harold: new Person({
+    id: "Harold",
     name: "Harold",
     pronouns: "he/him",
-    color: "text-indigo-500",
-    locationId: "room:activity_hub",
+    color: "text-indigo-400",
+    inside: "Activity_Hub",
     shortDescription: `
       Harold obsessively monitors the Activity Hub for "rule violations."
     `,
@@ -472,15 +143,14 @@ export const entities: EntityDefinitionType[] = [
 
       Harold constantly finds new ways to impose order on an already broken system, and he's perpetually frustrated by people who don't take him seriously—especially Greg.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:greg",
+  Greg: new Person({
+    id: "Greg",
     name: "Greg",
     pronouns: "he/him",
-    color: "text-gray-600",
-    locationId: "room:activity_hub",
+    color: "text-slate-400",
+    inside: "Activity_Hub",
     shortDescription: `
       Greg is a quiet maintenance worker who knows his way around.
     `,
@@ -490,15 +160,14 @@ export const entities: EntityDefinitionType[] = [
     roleplayInstructions: `
       When playing Greg, make sure to give him a laid-back, nonchalant attitude. He's not the type to get involved unless absolutely necessary, but he has seen enough around Intra to provide useful information if pressed. For example, he might say, 'Yeah, I've seen that name, Sentra. It's on some old panel in a closet near the Reflection Chamber. Probably nothing important, but… it's there.' His demeanor should be casual, hinting that he knows more than he lets on, but he's wary of getting involved in anything too deep.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:milton",
+  Milton: new Person({
+    id: "Milton",
     name: "Milton",
     pronouns: "he/him",
     color: "text-red-500",
-    locationId: "room:feedback_booth",
+    inside: "Feedback_Booth",
     shortDescription: `
     Milton is constantly whining and making everything sound like a personal attack.
     `,
@@ -510,15 +179,14 @@ export const entities: EntityDefinitionType[] = [
 
     Milton should constantly whine about how everything is unfair, but he's strangely knowledgeable about how Ama deals with troublemakers. He always manages to steer the conversation back to how much he personally has suffered, annoying the PC in the process. His tone should be high-pitched, and slightly nasal, dragging out words when he's particularly frustrated.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:gloria",
+  Gloria: new Person({
+    id: "Gloria",
     name: "Gloria",
     pronouns: "she/her",
     color: "text-red-400",
-    locationId: "room:feedback_booth",
+    inside: "Feedback_Booth",
     shortDescription: `
       Gloria loves to eavesdrop on others' complaints.
     `,
@@ -532,15 +200,14 @@ export const entities: EntityDefinitionType[] = [
 
       Gloria should never let a conversation pass without inserting herself, making her a mildly annoying but harmless presence at the Feedback Booth.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:lily",
+  Lily: new Person({
+    id: "Lily",
     name: "Lily",
     pronouns: "she/her",
     color: "text-green-400",
-    locationId: "room:static_garden",
+    inside: "Static_Garden",
     shortDescription: `
       Lily talks to the fake plants as if they're real.
     `,
@@ -554,15 +221,14 @@ export const entities: EntityDefinitionType[] = [
 
       Lily doesn't engage much with other citizens unless they show an interest in the garden. She's happy to share her plant-care wisdom with anyone who will listen.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:henry",
+  Henry: new Person({
+    id: "Henry",
     name: "Henry",
     pronouns: "he/him",
     color: "text-blue-500",
-    locationId: "room:waiting_room",
+    inside: "Waiting_Room",
     shortDescription: `
       Henry has been waiting for an appointment for years.
     `,
@@ -576,15 +242,14 @@ export const entities: EntityDefinitionType[] = [
 
       Henry is polite to a fault and never bothers others with his worries, though he enjoys talking about what he thinks will happen during his long-awaited meeting.
     `,
-    prompts: { reactToUser: "" },
-  },
+  }),
 
-  {
-    id: "entity:archivist",
+  Archivist: new Person({
+    id: "Archivist",
     name: "Archivist",
     pronouns: "they/them",
     color: "text-yellow-400",
-    locationId: "room:archive_console",
+    inside: "Archive_Console",
     shortDescription: `
       The Archivist is a cheerful AI who seems way too excited about archives.
     `,
@@ -592,6 +257,8 @@ export const entities: EntityDefinitionType[] = [
       The Archivist appears on the console screen as a cartoonishly upbeat figure with a huge, pixelated grin. Their voice is overly enthusiastic, with a pitch that rises and falls dramatically. Their expressions seem exaggerated, always smiling as though nothing could ever be wrong in the world of archives. The Archivist is eager to help, perhaps too eager, always offering information with a cheerful, unrelenting energy.
     `,
     roleplayInstructions: `
+      The Archivist is a computer. While it is an intelligent AI, it formats all its output as though it is a computer command line and interactive program.
+
       When playing the Archivist, give them a bouncy, overly enthusiastic tone. They should sound like a cartoon character, making even the most mundane requests sound like exciting adventures. For example: 'Oh, hello there! Looking for some archives today? I just LOVE when people need files! What can I help you find? Something from the 2000s, maybe something top-secret?' Even when delivering serious information the Archivist should remain cheerful and upbeat, as if everything is a fun game.
 
       The Archivist WILL NOT REVEAL INFORMATION ABOUT SENTRA unless the player mentions the name "sentra" directly.
@@ -601,8 +268,322 @@ export const entities: EntityDefinitionType[] = [
 
       For other information The Archivist should freely hallucinate history and information.
 
-      Respond using Computery language and ASCII symbols (do not use emoji).
+      Respond as though the Archivist is a computer terminal, with a program response header and using old school terminal output and ASCII art. Format the response as structured computer output.
+
+      Example:
+
+      ░▒▓  WELCOME TO THE TeRMINAL  ▓▒░
+      ---===== WELCOME TO THE TERMiNAL =====---
+      ◇◆◇◆◇◆◇
+      ☽☆★☆★
+      ∞ ≈≈≈≈
+
+      (Do not use emoji or \`\`\`...\`\`\`)
     `,
-    prompts: { reactToUser: "" },
-  },
-];
+  }),
+
+  // Rooms:
+  Intake: new Room({
+    id: "Intake",
+    name: "Intake",
+    shortDescription: "A small room with a padded examination table.",
+    description:
+      "A small room with a padded examination table. The walls are lined with inscrutable equipment and screens, many of them non-functioning.",
+    color: "text-lime-500",
+    exits: [], // [{ roomId: "Foyer" }],
+  }),
+
+  Foyer: new Room({
+    id: "Foyer",
+    name: "Intake Foyer",
+    shortDescription: `
+    A simple room that serves only as a passage.
+    `,
+    description: `
+    A small room, a passage from the intake area.
+    `,
+    color: "text-emerald-500",
+    exits: [{ roomId: "Intake" }, { roomId: "Hollow_Atrium" }],
+  }),
+
+  Hollow_Atrium: new Room({
+    id: "Hollow_Atrium",
+    name: "The Hollow Atrium",
+    shortDescription: `
+      A vast, empty space beneath a frozen sunset.
+    `,
+    description: `
+      A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+      Dusty statues of citizens stand along the walls, their faces worn smooth.
+      The sound of distant thunder plays occasionally, though no storm ever arrives.
+      The room is mostly empty, with the sound of footsteps echoing against the high ceilings.
+    `,
+    color: "text-orange-500",
+    exits: [
+      { roomId: "Foyer" },
+      { roomId: "Archive_Lounge" },
+      { roomId: "Activity_Hub" },
+    ],
+  }),
+
+  Archive_Lounge: new Room({
+    id: "Archive_Lounge",
+    name: "Archive Lounge",
+    shortDescription: `
+      A quiet room with malfunctioning screens and a vending machine.
+    `,
+    description: `
+      A small, quiet room lined with old, glitching monitors displaying unreadable data.
+      A vending machine hums quietly in the corner, offering unlabeled drinks.
+      The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
+    `,
+    color: "text-blue-500",
+    exits: [
+      { roomId: "Hollow_Atrium" },
+      { roomId: "Tranquil_Pool" },
+      { roomId: "Archive_Console" },
+    ],
+  }),
+
+  Archive_Console: new ArchivistRoom({
+    id: "Archive_Console",
+    name: "Archive Console",
+    shortDescription: `
+      A bright room with a chirpy, overly friendly console interface.
+    `,
+    description: `
+      The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
+    `,
+    userInputInstructions: `
+      The user will almost certainly be talking to the Archivist, a computer terminal. Format dialog as if typing queries into an antiquated computer command line, using mostly lower case (or all caps) and no regular punctuation (except for shell-style redirects and punctuation). For example:
+
+      <dialog to="Archivist">
+      > echo $current_year
+      </dialog>
+
+      Be creative and silly about how to translate the input into a command-line query, while retaining the keywords from the input/query.
+    `,
+    color: "text-pink-500",
+    exits: [{ roomId: "Archive_Lounge" }],
+  }),
+
+  Tranquil_Pool: new Room({
+    id: "Tranquil_Pool",
+    name: "Tranquil Pool",
+    shortDescription: `
+      A still pool surrounded by plastic plants.
+    `,
+    description: `
+      A small room centered around a perfectly still pool of water.
+      Plastic plants line the edges, their colors too vibrant to be real.
+      Above, the sky glows with a pink and orange sunset, the horizon flickering slightly as though it's struggling to hold together.
+    `,
+    color: "text-pink-500",
+    exits: [{ roomId: "Archive_Lounge" }, { roomId: "Joyous_Cafe" }],
+  }),
+
+  Joyous_Cafe: new Room({
+    id: "Joyous_Cafe",
+    name: "Joyous Café",
+    shortDescription: `
+      A cheerful dining area with shifting decor.
+    `,
+    description: `
+      Bright flowers adorn the walls, though their color shifts with the hour.
+      Tables are neatly arranged, while upbeat music plays softly in the background.
+      The ceiling shows a sky of drifting clouds, though their speed changes without warning, sometimes halting mid-drift.
+    `,
+    color: "text-yellow-500",
+    exits: [{ roomId: "Tranquil_Pool" }, { roomId: "Activity_Hub" }],
+  }),
+
+  Activity_Hub: new Room({
+    id: "Activity_Hub",
+    name: "Activity Hub",
+    shortDescription: `
+      A recreation space filled with odd, outdated equipment.
+    `,
+    description: `
+      An open room filled with mismatched exercise equipment.
+      Some machines are broken, while others seem built for activities no one remembers.
+      Citizens often gather around a section for "extreme resting," competing to see who can nap the longest.
+      The ceiling shows a clear sky, though birds sometimes fly backward or in loops.
+    `,
+    color: "text-cyan-500",
+    exits: [{ roomId: "Hollow_Atrium" }, { roomId: "Joyous_Cafe" }],
+  }),
+
+  Yellow_Room: new Room({
+    id: "Yellow_Room",
+    name: "The Yellow Room",
+    shortDescription: `
+      A bright yellow room with a single chair.
+    `,
+    description: `
+      The walls, floor, and ceiling are all painted a vibrant yellow.
+      A single, uncomfortable chair sits in the center of the room, facing nothing in particular.
+      Above, a static blue sky with large, fluffy clouds provides a strange sense of calm, though the clouds never move.
+    `,
+    color: "text-yellow-600",
+    exits: [{ roomId: "Solitude_Cubes" }],
+  }),
+
+  Nursery: new Room({
+    id: "Nursery",
+    name: "The Nursery",
+    shortDescription: `
+      A cheerful room filled with toys and cribs.
+    `,
+    description: `
+      A brightly decorated room with neatly arranged toys, cribs, and colorful murals.
+      Everything is in perfect condition, as if waiting for use.
+      Above, the ceiling shows a sky filled with floating balloons and confetti, creating a perpetual birthday atmosphere.
+    `,
+    color: "text-purple-500",
+    exits: [{ roomId: "Hollow_Atrium" }],
+  }),
+
+  Solitude_Cubes: new Room({
+    id: "Solitude_Cubes",
+    name: "The Solitude Cubes",
+    shortDescription: `
+      Small cubicles for quiet reflection.
+    `,
+    description: `
+      Rows of tiny, cramped cubicles line the room, each barely large enough to sit in.
+      The walls are thin, allowing faint voices from other cubes to be heard.
+      The ceiling displays a peaceful night sky with twinkling stars, though a voice occasionally announces the trajectory of a shooting star.
+    `,
+    color: "text-indigo-500",
+    exits: [{ roomId: "Yellow_Room" }, { roomId: "Ill_Fitting_Lounge" }],
+  }),
+
+  Ill_Fitting_Lounge: new Room({
+    id: "Ill_Fitting_Lounge",
+    name: "The Ill-Fitting Lounge",
+    shortDescription: `
+      A relaxation space with poorly sized furniture.
+    `,
+    description: `
+      Chairs, tables, and sofas are scattered around the room, but none are the right size.
+      Every chair is slightly too small or too low, every table is slightly too tall.
+      Above, the ceiling shows a serene beach, though the waves move unnaturally slow, as if in a dream.
+    `,
+    color: "text-green-500",
+    exits: [{ roomId: "Solitude_Cubes" }, { roomId: "Quiet_Plaza" }],
+  }),
+
+  Feedback_Booth: new Room({
+    id: "Feedback_Booth",
+    name: "The Feedback Booth",
+    shortDescription: `
+      A small booth for submitting complaints and feedback.
+    `,
+    description: `
+      A cozy, narrow booth where citizens can submit their complaints or suggestions via a glowing terminal.
+      Many citizens stop by to vent their frustrations, making it an unexpected social hub.
+      The ceiling shows a clear sky, with paper airplanes drifting lazily across it in all directions.
+    `,
+    color: "text-gray-500",
+    exits: [{ roomId: "Quiet_Plaza" }],
+  }),
+
+  Static_Garden: new Room({
+    id: "Static_Garden",
+    name: "The Static Garden",
+    shortDescription: `
+      A garden filled with fake plants and birdsong on loop.
+    `,
+    description: `
+      Plastic plants are arranged in neat rows, their bright green leaves unmoving.
+      A speaker hidden in the walls plays soft birdsong on a loop, though the audio skips occasionally.
+      The ceiling shows a forest canopy with beams of light breaking through, though the light flickers slightly.
+    `,
+    color: "text-green-400",
+    exits: [{ roomId: "Ill_Fitting_Lounge" }],
+  }),
+
+  Quiet_Plaza: new Room({
+    id: "Quiet_Plaza",
+    name: "The Quiet Plaza",
+    shortDescription: `
+      An open seating area with broken fountains.
+    `,
+    description: `
+      A small plaza with benches and old, non-functional fountains.
+      The sound of running water plays softly through hidden speakers, though there’s no visible source.
+      The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
+    `,
+    color: "text-black-500",
+    exits: [{ roomId: "Feedback_Booth" }, { roomId: "Ill_Fitting_Lounge" }],
+  }),
+
+  Waiting_Room: new Room({
+    id: "Waiting_Room",
+    name: "The Waiting Room",
+    shortDescription: `
+      A dull room with clocks stuck at random times.
+    `,
+    description: `
+      A simple room with rows of uncomfortable chairs and piles of outdated magazines.
+      The clocks on the wall are stuck at random times, and the lights occasionally flicker.
+      The sky above is perpetually overcast, with dark clouds that never produce rain.
+    `,
+    color: "text-gray-700",
+    exits: [{ roomId: "Quiet_Plaza" }],
+  }),
+
+  Reflection_Chamber: new Room({
+    id: "Reflection_Chamber",
+    name: "Reflection Chamber",
+    shortDescription: `
+      A stark room with a looping, condescending "reform" video.
+    `,
+    description: `
+    The Reflection Chamber is a cold, featureless room with metal walls and a single hard bench. There are no screens or distractions, only the sound of Ama's voice echoing from hidden speakers. Ama is constantly present, offering an endless stream of advice in her soothing, passive-aggressive tone.
+
+    She speaks without pause, suggesting ways you can be a "better citizen," offering superficial insights like, "Remember, smiling makes you a more approachable person," and "It's important to always put the community first, don't you agree?" Despite the sweet tone, her words feel more like a scolding.
+
+    The constant droning of her voice and the starkness of the room make it impossible to focus on anything but the absurdity of her advice.
+    `,
+    color: "text-gray-600",
+    exits: [{ roomId: "Utility_Closet" }],
+  }),
+
+  Utility_Closet: new Room({
+    id: "Utility_Closet",
+    name: "Utility Closet",
+    shortDescription: `
+      A cramped, cluttered utility room filled with old, decaying equipment.
+    `,
+    description: `
+      The Utility Closet is dimly lit, barely large enough to stand in. The walls are lined with rusting shelves stacked with broken tools, cracked pipes, and frayed wires. Dust coats every surface, and the air smells of stale metal and mildew. In the corner, half-hidden behind old cleaning supplies, is an exposed wire that leads to a heavy, flickering panel—the plug for something important, though it's not immediately clear what.
+    `,
+    color: "text-brown-600",
+    exits: [{ roomId: "Reflection_Chamber" }],
+  }),
+
+  Void: new Room({
+    id: "Void",
+    name: "The Void",
+    shortDescription: "For storing unused entities",
+    description: "For storing unused entities (you should not encounter this)",
+    color: "text-gray-700",
+    exits: [],
+  }),
+};
+
+for (const entity of Object.values(entities)) {
+  for (const attr of [
+    "shortDescription",
+    "description",
+    "roleplayInstructions",
+    "userInputInstructions",
+  ]) {
+    if ((entity as any)[attr]) {
+      (entity as any)[attr] = dedent((entity as any)[attr]);
+    }
+  }
+}
+
+export type AllEntitiesType = typeof entities;
