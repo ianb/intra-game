@@ -43,7 +43,7 @@ There are only a few important parts of the code! Note that many contain spoiler
 - [classes.ts](./lib/game/classes.ts) has the class for Entity and its children (e.g., Room, Person, Player). These manage most of the actual game play!
 - [gameobjs.ts](./lib/game/gameobjs.ts) is the instantiation of all the actual game state, individual people and rooms, etc. (though all logic is in classes.ts)
 - [application.tsx](./app/application.tsx) is the entire UI
-- [dossier.txt](./docs/dossier.txt) is the game background. I wasn't able to use much of this given the constrained implementation time, but I hope to eventually!
+- [dossier.md](./docs/dossier.md) is the game background. I wasn't able to use much of this given the constrained implementation time, but I hope to eventually!
 
 There's a little more UI in [components/](./components/) and some libraries in [lib/](./lib/), but they are mostly generic and secondary. Besides application.tsx [app/](./app/) is mostly boilerplate or glue.
 
