@@ -2,6 +2,8 @@ import type { Entity, Room } from "./classes";
 import { isPerson, isRoom, StoryEventType } from "../types";
 import type { AllEntitiesType } from "./gameobjs";
 import type { Model } from "./model";
+import { tmpl } from "../template";
+import colors from "tailwindcss/colors";
 
 export class World {
   entities: AllEntitiesType;
@@ -180,5 +182,111 @@ export class World {
     if (storyEvent.suggestions) {
       this.lastSuggestions = storyEvent.suggestions;
     }
+  }
+
+  asGraphviz(fullMap: boolean = false) {
+    const roomList: string[] = [];
+    const connectionList: string[] = [];
+    const playerRoom = this.entityRoom("player");
+    if (window !== undefined) {
+      (window as any).colors = colors;
+    }
+    let rooms = this.rooms;
+    const skipExits: string[] = [];
+    if (!fullMap) {
+      rooms = [];
+      for (const room of this.rooms) {
+        const roomObj = this.getRoom(room);
+        if (!roomObj) {
+          throw new Error(`No room with id: ${room}`);
+        }
+        if (roomObj.visits > 0) {
+          rooms.push(room);
+        }
+      }
+    }
+    for (const room of [...rooms]) {
+      for (const exit of this.getRoom(room)?.exits || []) {
+        if (!rooms.includes(exit.roomId)) {
+          rooms.push(exit.roomId);
+          skipExits.push(exit.roomId);
+        }
+      }
+    }
+    for (const room of rooms) {
+      const roomObj = this.getRoom(room);
+      if (!roomObj) {
+        throw new Error(`No room with id: ${room}`);
+      }
+      const colorName = roomObj.color || "text-white";
+      const color = this._convertColorName(colorName);
+      const occupants = skipExits.includes(room)
+        ? []
+        : this.entitiesInRoom(roomObj).map((entity) => entity.name);
+      const headerColor = skipExits.includes(room) ? "black" : "white";
+      const lines = [`<TABLE BORDER="0">`];
+      lines.push(
+        `<TR><TD ALIGN="CENTER"><FONT COLOR="${headerColor}"><B>${roomObj.name}</B></FONT></TD></TR>`
+      );
+      for (const occupant of occupants) {
+        if (!occupant) {
+          continue;
+        }
+        lines.push(
+          `<TR><TD ALIGN="LEFT"><FONT COLOR="white" POINT-SIZE="8">${occupant}</FONT></TD></TR>`
+        );
+      }
+      lines.push("</TABLE>");
+      const shape =
+        playerRoom!.id == roomObj.id
+          ? '  shape=box, peripheries=2, color="white",'
+          : "";
+      roomList.push(
+        tmpl`
+        ${roomObj.id} [
+          ${shape}
+          label=<${lines.join("\n")}>,
+          fillcolor="${color}",
+          style="filled",
+        ];
+      `
+      );
+      if (!skipExits.includes(room)) {
+        for (const exit of roomObj.exits) {
+          connectionList.push(
+            tmpl`
+          ${roomObj.id} -> ${exit.roomId};
+        `
+          );
+        }
+      }
+    }
+    return tmpl`
+      digraph G {
+        bgcolor="#111827";
+        edge [color="white"];
+        node [shape=record, style=filled, fontsize=12, fontname="Helvetica"];
+
+        ${roomList.join("\n")}
+
+        ${connectionList.join("\n")}
+      }
+    `;
+  }
+
+  _convertColorName(color: string) {
+    const c = color.replace(/^text-/, "");
+    const parts = c.split("-");
+    let pos: any = colors;
+    for (const part of parts) {
+      if (pos) {
+        pos = (pos as any)[part];
+      }
+    }
+    if (!pos) {
+      console.warn("Could not find color", color);
+      return "1.0 1.0 1.0";
+    }
+    return pos;
   }
 }

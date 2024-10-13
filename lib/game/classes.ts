@@ -528,14 +528,22 @@ export class Room extends Entity {
   constructor({
     exits,
     userInputInstructions,
+    visits,
     ...props
-  }: EntityInitType & { exits?: Exit[]; userInputInstructions?: string }) {
+  }: EntityInitType & {
+    exits?: Exit[];
+    userInputInstructions?: string;
+    visits?: number;
+  }) {
     super(props);
     if (exits) {
       this.exits = exits;
     }
     if (userInputInstructions !== undefined) {
       this.userInputInstructions = userInputInstructions;
+    }
+    if (visits !== undefined) {
+      this.visits = visits;
     }
   }
 

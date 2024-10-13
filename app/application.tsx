@@ -16,6 +16,7 @@ import { twMerge } from "tailwind-merge";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
+const revealMap = persistentSignal("revealMap", false);
 
 let textareaRef: React.RefObject<HTMLTextAreaElement>;
 
@@ -299,6 +300,18 @@ function HeadsUpDisplay() {
             </Button>
           </span>
         )}
+        {activeTab.value === "map" && (
+          <span className="float-right">
+            <Button
+              className="bg-teal-800 text-xs p-1 opacity-50 hover:opacity-100"
+              onClick={() => {
+                revealMap.value = !revealMap.value;
+              }}
+            >
+              {revealMap.value ? "revealed" : "normal"}
+            </Button>
+          </span>
+        )}
         <span
           onClick={() => {
             activeTab.value = "inv";
@@ -323,6 +336,16 @@ function HeadsUpDisplay() {
         >
           (b)lips
         </span>{" "} */}
+        {(showLogs || activeTab.value === "map") && (
+          <span
+            onClick={() => {
+              activeTab.value = "map";
+            }}
+            className={activeTab.value === "map" ? activeClass : inactiveClass}
+          >
+            (m)ap
+          </span>
+        )}{" "}
         {(showLogs || activeTab.value === "log") && (
           <span
             onClick={() => {
@@ -348,6 +371,7 @@ function HeadsUpDisplay() {
         {activeTab.value === "inv" && <Inventory />}
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
+        {activeTab.value === "map" && <Map />}
         {activeTab.value === "log" && <LlmLog />}
         {activeTab.value === "objs" && <ViewObjects />}
       </div>
@@ -483,6 +507,16 @@ function Controls() {
         </div>
       )}
     </div>
+  );
+}
+
+function Map() {
+  const g = model.world.asGraphviz(revealMap.value);
+  const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
+  return (
+    <a href={url} target="_blank" rel="noopener">
+      <img className="rounded" src={url} alt="Map" />
+    </a>
   );
 }
 

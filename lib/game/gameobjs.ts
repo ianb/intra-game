@@ -291,6 +291,7 @@ export const entities = {
       "A small room with a padded examination table. The walls are lined with inscrutable equipment and screens, many of them non-functioning.",
     color: "text-lime-500",
     exits: [], // [{ roomId: "Foyer" }],
+    visits: 1,
   }),
 
   Foyer: new Room({
@@ -323,6 +324,7 @@ export const entities = {
       { roomId: "Foyer" },
       { roomId: "Archive_Lounge" },
       { roomId: "Activity_Hub" },
+      { roomId: "Solitude_Cubes" },
     ],
   }),
 
@@ -440,7 +442,7 @@ export const entities = {
       Above, the ceiling shows a sky filled with floating balloons and confetti, creating a perpetual birthday atmosphere.
     `,
     color: "text-purple-500",
-    exits: [{ roomId: "Hollow_Atrium" }],
+    exits: [{ roomId: "Quiet_Plaza" }],
   }),
 
   Solitude_Cubes: new Room({
@@ -455,7 +457,12 @@ export const entities = {
       The ceiling displays a peaceful night sky with twinkling stars, though a voice occasionally announces the trajectory of a shooting star.
     `,
     color: "text-indigo-500",
-    exits: [{ roomId: "Yellow_Room" }, { roomId: "Ill_Fitting_Lounge" }],
+    exits: [
+      { roomId: "Yellow_Room" },
+      { roomId: "Ill_Fitting_Lounge" },
+      { roomId: "Waiting_Room" },
+      { roomId: "Hollow_Atrium" },
+    ],
   }),
 
   Ill_Fitting_Lounge: new Room({
@@ -470,7 +477,11 @@ export const entities = {
       Above, the ceiling shows a serene beach, though the waves move unnaturally slow, as if in a dream.
     `,
     color: "text-green-500",
-    exits: [{ roomId: "Solitude_Cubes" }, { roomId: "Quiet_Plaza" }],
+    exits: [
+      { roomId: "Solitude_Cubes" },
+      { roomId: "Quiet_Plaza" },
+      { roomId: "Static_Garden" },
+    ],
   }),
 
   Feedback_Booth: new Room({
@@ -515,7 +526,11 @@ export const entities = {
       The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
     `,
     color: "text-black-500",
-    exits: [{ roomId: "Feedback_Booth" }, { roomId: "Ill_Fitting_Lounge" }],
+    exits: [
+      { roomId: "Feedback_Booth" },
+      { roomId: "Ill_Fitting_Lounge" },
+      { roomId: "Nursery" },
+    ],
   }),
 
   Waiting_Room: new Room({
@@ -530,7 +545,7 @@ export const entities = {
       The sky above is perpetually overcast, with dark clouds that never produce rain.
     `,
     color: "text-gray-700",
-    exits: [{ roomId: "Quiet_Plaza" }],
+    exits: [{ roomId: "Solitude_Cubes" }],
   }),
 
   Reflection_Chamber: new Room({
