@@ -8,6 +8,24 @@ import {
 const generator = new GoogleGenerativeAI(process.env.GEMINI_KEY as string);
 
 export async function POST(request: Request) {
+  if (process.env.PROXY_LLM) {
+    // Proxy the request to the URL specified in process.env.PROXY_LLM
+    const proxyUrl = process.env.PROXY_LLM;
+    console.info("Proxying request to", proxyUrl);
+    const body = await request.text();
+    const headers = new Headers(request.headers);
+    // Remove 'Accept-Encoding' to prevent the server from compressing the response
+    headers.set("Accept-Encoding", "identity");
+    const init: RequestInit = {
+      method: "POST",
+      headers,
+      body: body,
+      redirect: "manual",
+    };
+    const proxyResponse = await fetch(proxyUrl, init);
+    return proxyResponse;
+  }
+
   const data = await request.json();
   console.log("sending with key", process.env.GEMINI_KEY);
   // threshold:
@@ -33,7 +51,8 @@ export async function POST(request: Request) {
       },
       {
         category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+        // threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
         // threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
       },
       {
@@ -50,7 +69,6 @@ export async function POST(request: Request) {
     history: data.history,
   });
   const result = await chat.sendMessage(data.message);
-  console.log("sent with...", data.history, data.message);
   try {
     const text = result.response.text();
     return NextResponse.json({ response: text });
