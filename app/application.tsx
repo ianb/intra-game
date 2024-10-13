@@ -37,7 +37,7 @@ export default function Home() {
         <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
           {/* Scrollable log */}
           <ScrollOnUpdate
-            className="flex-1 overflow-y-auto border-b border-gray-700 p-2"
+            className="flex-1 overflow-y-auto p-2"
             watch={model.updates.value}
           >
             <ChatLog />
