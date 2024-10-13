@@ -263,6 +263,12 @@ export class World {
     }
     return tmpl`
       digraph G {
+        label="The Intra Complex";
+        labelloc="t";
+        labeljust="r";
+        fontname="Helvetica";
+        fontcolor="white";
+        fontsize=13;
         bgcolor="#111827";
         edge [color="white"];
         node [shape=record, style=filled, fontsize=12, fontname="Helvetica"];
