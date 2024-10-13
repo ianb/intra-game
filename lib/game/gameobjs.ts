@@ -525,7 +525,7 @@ export const entities = {
       The sound of running water plays softly through hidden speakers, though there’s no visible source.
       The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
     `,
-    color: "text-black-500",
+    color: "text-purple-500",
     exits: [
       { roomId: "Feedback_Booth" },
       { roomId: "Ill_Fitting_Lounge" },
@@ -574,7 +574,7 @@ export const entities = {
     description: `
       The Utility Closet is dimly lit, barely large enough to stand in. The walls are lined with rusting shelves stacked with broken tools, cracked pipes, and frayed wires. Dust coats every surface, and the air smells of stale metal and mildew. In the corner, half-hidden behind old cleaning supplies, is an exposed wire that leads to a heavy, flickering panel—the plug for something important, though it's not immediately clear what.
     `,
-    color: "text-brown-600",
+    color: "text-amber-600",
     exits: [{ roomId: "Reflection_Chamber" }],
   }),
 
