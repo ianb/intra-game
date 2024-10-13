@@ -4,7 +4,7 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { isPerson, isStoryDescription, isStoryDialog } from "@/lib/types";
 import { StoryEventType } from "@/lib/types";
-import { model } from "@/lib/game/model";
+import { model, SaveListType } from "@/lib/game/model";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { persistentSignal } from "@/lib/persistentsignal";
 import { useSignal } from "@preact/signals-react";
@@ -13,6 +13,7 @@ import sortBy from "just-sort-by";
 import React from "react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
+import { on } from "events";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
@@ -415,7 +416,55 @@ function Blips() {
 }
 
 function Controls() {
-  const SKIP_IDS = ["entity:narrator", "entity:player", "entity:ama"];
+  const showSave = useSignal(false);
+  const showLoad = useSignal(false);
+  return (
+    <div className="h-1/3 p-4 overflow-y-auto">
+      <div className="float-right text-xs">
+        {!showLoad.value && (
+          <CheckButton
+            signal={showSave}
+            on="Cancel"
+            off="💾"
+            className="mr-1"
+          />
+        )}
+        {!showSave.value && (
+          <CheckButton
+            signal={showLoad}
+            on="Cancel"
+            off="📂"
+            className="mr-1"
+          />
+        )}
+        {!showSave.value && !showLoad.value && (
+          <CheckButton
+            signal={showInternals}
+            on="Internals (Spoilers)"
+            off="Normal Mode"
+          />
+        )}
+      </div>
+      {!showSave.value && !showLoad.value && <NormalControls />}
+      {showSave.value && (
+        <SaveControls
+          onDone={() => {
+            showSave.value = false;
+          }}
+        />
+      )}
+      {showLoad.value && (
+        <LoadControls
+          onDone={() => {
+            showLoad.value = false;
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function NormalControls() {
   const room = model.world.entityRoom("player")!;
   // FIXME: actually collect the people:
   const folks: Person[] = model.world
@@ -440,13 +489,7 @@ function Controls() {
     textareaRef.current.focus();
   }
   return (
-    <div className="h-1/3 p-4 overflow-y-auto">
-      <CheckButton
-        signal={showInternals}
-        className="float-right text-xs"
-        on="Internals (Spoilers)"
-        off="Normal Mode"
-      />
+    <>
       <div className="mb-2">Controls</div>
       <div className="border-b border-gray-400">
         Location:{" "}
@@ -506,6 +549,82 @@ function Controls() {
           )}
         </div>
       )}
+    </>
+  );
+}
+
+function SaveControls({ onDone }: { onDone: () => void }) {
+  const proposedTitle = useSignal("");
+  useEffect(() => {
+    model.proposeTitle().then((title) => {
+      proposedTitle.value = title;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model.updates.value]);
+  return (
+    <div>
+      <div>Save</div>
+      <input
+        type="text"
+        className="bg-gray-800 text-white p-2 border mr-1"
+        value={proposedTitle.value}
+        onInput={(e) =>
+          (proposedTitle.value = (e.target as HTMLInputElement).value)
+        }
+      />
+      <Button
+        onClick={async () => {
+          await model.save(proposedTitle.value);
+          onDone();
+        }}
+      >
+        Save
+      </Button>
+    </div>
+  );
+}
+
+function LoadControls({ onDone }: { onDone: () => void }) {
+  const saves = useSignal<SaveListType[]>([]);
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  function refresh() {
+    model.listSaves().then((loadedSaves) => {
+      saves.value = loadedSaves;
+    });
+  }
+  return (
+    <div>
+      <div>Load</div>
+      <div>
+        {saves.value.map((save) => {
+          return (
+            <div key={save.slug} className="mb-1">
+              <Button
+                className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
+                onClick={async () => {
+                  await model.load(save.slug);
+                  onDone();
+                }}
+              >
+                {save.title} ({save.date})
+              </Button>
+              <Button
+                className="text-xs bg-red-800 text-white hover:bg-red-600"
+                onClick={async () => {
+                  await model.removeSave(save.slug);
+                  refresh();
+                }}
+              >
+                🗑️
+              </Button>
+            </div>
+          );
+        })}
+      </div>
+      {saves.value.length === 0 && <div>No saves found</div>}
     </div>
   );
 }
@@ -514,9 +633,11 @@ function Map() {
   const g = model.world.asGraphviz(revealMap.value);
   const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
   return (
-    <a href={url} target="_blank" rel="noopener">
-      <img className="rounded" src={url} alt="Map" />
-    </a>
+    <div className="flex justify-center mt-1">
+      <a href={url} target="_blank" rel="noopener">
+        <img className="rounded" src={url} alt="Map" />
+      </a>
+    </div>
   );
 }
 

@@ -4,6 +4,7 @@ import { ActionRequestType, isPromptRequest, isStoryEvent } from "../types";
 import { StoryEventType } from "../types";
 import { World } from "./world";
 import { AllEntitiesType, entities } from "./gameobjs";
+import { listSaves, load, removeSave, save } from "../localsaves";
 
 export class Model {
   updates: SignalType<StoryEventType[]>;
@@ -131,10 +132,58 @@ export class Model {
     const redoText = this.undo();
     await this.sendText(redoText);
   }
+
+  async proposeTitle(): Promise<string> {
+    return `${this.world.entities.player.name} ${formatDate(new Date())}`;
+  }
+
+  async save(title: string) {
+    save(title, this.updates.value);
+  }
+
+  async load(slug: string) {
+    this.updates.value = [];
+    const value = load(slug);
+    this.updates.value = value;
+    this.world = new World({
+      original: this.world.original,
+      model: this,
+    });
+    this.checkLaunch();
+  }
+
+  async listSaves(): Promise<SaveListType[]> {
+    return listSaves().map((save) => {
+      return {
+        title: save.title,
+        slug: save.slug,
+        // Make it local time:
+        date: formatDate(save.date),
+      };
+    });
+  }
+
+  async removeSave(slug: string) {
+    return removeSave(slug);
+  }
 }
+
+export type SaveListType = {
+  title: string;
+  slug: string;
+  date: string;
+};
 
 function isUserInput(update: StoryEventType) {
   return update.id === "player";
+}
+
+function formatDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
 }
 
 export const model = new Model(entities);
