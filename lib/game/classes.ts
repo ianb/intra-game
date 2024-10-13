@@ -647,6 +647,7 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
 
   assemblePrompt(parameters: ParametersT): GeminiChatType {
     const lastTo = this.lastSpokeTo()?.id || "";
+    const statePrompt = this.statePrompt(parameters);
     return {
       meta: {
         title: `prompt ${this.id}`,
@@ -669,16 +670,16 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
       The other people in the room are:
       ${this.currentPeoplePrompt(parameters)}
 
-      ${this.statePrompt(parameters)}
+      ${statePrompt}
       `,
       history: this.historyForEntity(parameters, { limit: 10 }),
       message: tmpl`
       Given the above play state, respond as the character "${this.name}"
 
-      Begin by assembling the essential context given the above history, writing one sentence for each item:
+      Begin by assembling the essential context given the above history, writing 4-5 words for each item:
 
       <context>
-      1. ${this.name}'s goals
+      1. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
       2. Relevant facts from the history
       3. How can this response be fun or surprising?
       4. ${this.name}'s reaction to any recent speech or events
@@ -698,6 +699,8 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
       If the character ${this.name} is performing an action, emit:
 
       <description>Describe the action</description>
+
+      [[${IF(statePrompt)} Emit <set attr="...">...</set> if appropriate.]]
 
       Lastly you may offer a suggestion for what the player might do next, as two 2-3 word commands (one per line):
 
@@ -1039,14 +1042,14 @@ export class AmaClass extends Person<AmaParametersType> {
     }
     if (this.personality === "intro") {
       return tmpl`
-      Ada is doing an intake process with the user, and should follow these steps (using <set>...</set> to record information and mark tasks complete):
-      [[${IF(!this.knowsPlayerName)}* Find out the player's name and <set attr="player.name">record it</set>]]
-      [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary and <set attr="player.pronouns">record them</set>]]
-      [[${IF(!this.sharedSelf)}* Introduce yourself and <set attr="Ama.sharedSelf">mark this task complete</set>]]
-      [[${IF(!this.sharedIntra)}* Explain Intra and <set attr="Ama.sharedIntra">mark this task complete</set>]]
-      [[${IF(!this.sharedDisassociation)}* Explain disassociation and <set attr="Ama.sharedDisassociation">mark this task complete</set>]]
-      [[${IF(!this.knowsPlayerProfession)}* Ask the player their profession and <set attr="player.profession">record it</set>]]
-      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age (roughly 350 years old); then <set attr="Ama.sharedPlayerAge">mark this task complete</set>]]
+      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around:
+      [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record it by emitting <set attr="player.name">John Doe</set>]]
+      [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary; whether you ask pronouns or guess them from the name, record it by emitting <set attr="player.pronouns">he/him or she/her</set>]]
+      [[${IF(!this.sharedSelf)}* Introduce yourself and mark it complete: <set attr="Ama.sharedSelf">true</set>]]
+      [[${IF(!this.sharedIntra)}* Explain Intra and mark it complete: <set attr="Ama.sharedIntra">true</set>]]
+      [[${IF(!this.sharedDisassociation)}* Explain disassociation and mark it complete: <set attr="Ama.sharedDisassociation">true</set>]]
+      [[${IF(!this.knowsPlayerProfession)}* Ask the player their profession and record it by emitting <set attr="player.profession">name of profession</set>]]
+      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age (roughly 350 years old); then mark it complete: <set attr="Ama.sharedPlayerAge">true</set>]]
       `;
     }
     return "";
