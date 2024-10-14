@@ -679,11 +679,12 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
       Begin by assembling the essential context given the above history, writing 4-5 words for each item:
 
       <context>
-      1. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
-      2. Relevant facts from the history
-      3. How can this response be fun or surprising?
-      4. ${this.name}'s reaction to any recent speech or events
-      5. ${this.name}'s intention in this response
+      1. Are there any facts that have to be constructed to continue the scene or response? If so then invent those facts and record them.
+      2. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
+      3. Relevant facts from the history
+      4. How can this response be fun or surprising?
+      5. ${this.name}'s reaction to any recent speech or events
+      6. ${this.name}'s intention in this response
       </context>
 
       To generate speech emit:
@@ -953,7 +954,7 @@ export class AmaClass extends Person<AmaParametersType> {
         write: true,
         description: "The player's profession",
         writeInstructions:
-          "Ask the player their profession and then set this value with the response",
+          "Ask the player their general profession and then set this value with the response (or n/a, unemployed, etc)",
       },
       "Ama.sharedSelf": {
         value: this.world.entities.Ama.sharedSelf,
@@ -1048,7 +1049,7 @@ export class AmaClass extends Person<AmaParametersType> {
       [[${IF(!this.sharedSelf)}* Introduce yourself and mark it complete: <set attr="Ama.sharedSelf">true</set>]]
       [[${IF(!this.sharedIntra)}* Explain Intra and mark it complete: <set attr="Ama.sharedIntra">true</set>]]
       [[${IF(!this.sharedDisassociation)}* Explain disassociation and mark it complete: <set attr="Ama.sharedDisassociation">true</set>]]
-      [[${IF(!this.knowsPlayerProfession)}* Ask the player their profession and record it by emitting <set attr="player.profession">name of profession</set>]]
+      [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or unemployed, student, etc) and record it by emitting <set attr="player.profession">name of profession</set>]]
       [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age (roughly 350 years old); then mark it complete: <set attr="Ama.sharedPlayerAge">true</set>]]
       `;
     }

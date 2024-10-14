@@ -599,6 +599,18 @@ function LoadControls({ onDone }: { onDone: () => void }) {
     <div>
       <div>Load</div>
       <div>
+        <div className="mb-1">
+          <Button
+            className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
+            onClick={async () => {
+              model.reset();
+              onDone();
+            }}
+          >
+            New Game
+          </Button>
+        </div>
+
         {saves.value.map((save) => {
           return (
             <div key={save.slug} className="mb-1">
