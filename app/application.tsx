@@ -14,6 +14,7 @@ import React from "react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { on } from "events";
+import { ZoomOverlay } from "@/components/zoom";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
@@ -642,13 +643,34 @@ function LoadControls({ onDone }: { onDone: () => void }) {
 }
 
 function Map() {
+  const zoomed = useSignal(false);
   const g = model.world.asGraphviz(revealMap.value);
   const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
   return (
     <div className="flex justify-center mt-1">
-      <a href={url} target="_blank" rel="noopener">
-        <img className="rounded" src={url} alt="Map" />
-      </a>
+      {zoomed.value && (
+        <ZoomOverlay
+          onDone={() => {
+            zoomed.value = false;
+          }}
+        >
+          <a href={url} target="_blank" rel="noopener">
+            <img
+              className="rounded h-full border-2 border-gray-400"
+              src={url}
+              alt="Map"
+            />
+          </a>
+        </ZoomOverlay>
+      )}
+      <img
+        className="rounded cursor-zoom-in"
+        src={url}
+        alt="Map"
+        onClick={() => {
+          zoomed.value = !zoomed.value;
+        }}
+      />
     </div>
   );
 }
