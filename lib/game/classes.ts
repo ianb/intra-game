@@ -16,6 +16,7 @@ import {
   PersonScheduleType,
   PromptStateType,
   StoryActionType,
+  StoryDescriptionType,
   StoryEventType,
 } from "../types";
 import type { Model } from "./model";
@@ -242,6 +243,7 @@ export abstract class Entity<ParametersT = object> {
           results.push({
             id: storyEvent.id,
             roomId: storyEvent.changes[this.id].after.inside,
+            totalTime: storyEvent.totalTime,
             actions: [
               {
                 type: "description",
@@ -257,10 +259,12 @@ export abstract class Entity<ParametersT = object> {
           results.push({
             id: storyEvent.id,
             roomId: goesTo,
+            totalTime: storyEvent.totalTime,
             actions: [
               {
                 type: "description",
                 text: `${storyEvent.id} leaves to go to ${goesTo}`,
+                minutes: 5,
               },
             ],
             changes: {},
@@ -271,6 +275,7 @@ export abstract class Entity<ParametersT = object> {
         results.push({
           id: storyEvent.id,
           roomId: inside,
+          totalTime: storyEvent.totalTime,
           actions: [
             {
               type: "description",
@@ -299,7 +304,9 @@ export abstract class Entity<ParametersT = object> {
           </dialog>
           `);
       } else if (isStoryDescription(action)) {
-        lines.push(`<description>${action.text}</description>`);
+        const minutes =
+          action.minutes === undefined ? "" : ` minutes="${action.minutes}"`;
+        lines.push(`<description${minutes}>${action.text}</description>`);
       } else {
         console.warn("Unknown action type", action);
       }
@@ -428,6 +435,7 @@ export abstract class Entity<ParametersT = object> {
           id: this.id,
           changes: {},
           actions: [],
+          totalTime: 0,
           roomId: "Void",
           llmTitle: prompt.meta.title,
           llmResponse: "",
@@ -448,6 +456,7 @@ export abstract class Entity<ParametersT = object> {
     const tags = parseTags(resp);
     let result: StoryEventType = {
       id: this.id,
+      totalTime: 0,
       changes: {},
       actions: [],
       roomId,
@@ -496,11 +505,25 @@ export abstract class Entity<ParametersT = object> {
           toOther,
           text,
         });
+        // FIXME: this is pretty arbitrary time
+        result.totalTime += 1 + Math.ceil(text.split(/\s+/).length / 40);
       } else if (tag.type === "description") {
+        let minutes = tag.attrs.minutes
+          ? parseInt(tag.attrs.minutes, 10)
+          : undefined;
+        if (Number.isNaN(minutes)) {
+          console.warn("Could not parse minutes", tag);
+          minutes = undefined;
+        }
+        // FIXME: kind of a hack that should be done in a subclass:
+        const subject = (parameters as any).examine || undefined;
         result.actions.push({
           type: "description",
           text: tag.content,
+          minutes,
+          subject,
         });
+        result.totalTime += minutes || 0;
       } else if (tag.type === "suggestion") {
         result.suggestions = tag.content;
       } else if (tag.type === "context") {
@@ -710,9 +733,9 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
 
       [[${this.name} last spoke directly to ${lastTo}, so it's very likely they are still speaking to them.]]
 
-      If the character ${this.name} is performing an action, emit:
+      If the character ${this.name} is performing an action, emit this (optionally roughly estimating the time it will take in minutes):
 
-      <description>Describe the action</description>
+      <description minutes="5">Describe the action</description>
 
       [[${IF(statePrompt)} Emit <set attr="...">...</set> if appropriate.]]
 
@@ -822,6 +845,7 @@ export class AmaClass extends Person<AmaParametersType> {
         result.push(
           {
             id: "narrator",
+            totalTime: 0,
             roomId: this.myRoom().id,
             changes: {},
             actions: [
@@ -847,6 +871,7 @@ export class AmaClass extends Person<AmaParametersType> {
     ) {
       result.push({
         id: "narrator",
+        totalTime: 10,
         roomId: this.myRoom().id,
         changes: {},
         actions: [
@@ -893,6 +918,7 @@ export class AmaClass extends Person<AmaParametersType> {
       result.push(
         {
           id: "Ama",
+          totalTime: 0,
           roomId: this.myRoom().id,
           changes: {
             Ama: {
@@ -911,6 +937,7 @@ export class AmaClass extends Person<AmaParametersType> {
         }),
         {
           id: "narrator",
+          totalTime: 5,
           roomId: this.myRoom().id,
           changes: {
             Intake: {
@@ -1169,7 +1196,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       IF AND ONLY IF THE USER INDICATES AN ACTION you may describe the ATTEMPT at the action like:
 
-      <description>Player attempts to open the door.</description>
+      <description minutes="10">Player attempts to open the door.</description>
       `,
       history: this.historyForEntity(parameters, { limit: 3 }),
       message: tmpl`
@@ -1226,6 +1253,10 @@ export class PlayerClass extends Person<PlayerInputType> {
       Respond with:
 
       <description>1-2 paragraphs describing the thing</description>
+
+      If examining the thing takes significant time then emit:
+
+      <description minutes="10">1-2 paragraphs describing a careful examination that takes time</description>
       `,
     };
   }
@@ -1263,7 +1294,9 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       Respond with:
 
-      <description>1-2 paragraphs describing the outcome of the move</description>
+      <description minutes="5">1-2 paragraphs describing the outcome of the move</description>
+
+      minutes is how long the attempt took.
 
       IF the player is successful then also emit:
 

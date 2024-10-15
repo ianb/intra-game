@@ -6,6 +6,8 @@ export type StoryEventType = {
   roomId: EntityId;
   changes: ChangesType;
   actions: StoryActionType[];
+  // In minutes:
+  totalTime: number;
   actionRequests?: ActionRequestType[];
   llmTitle?: string;
   llmResponse?: string;
@@ -32,6 +34,8 @@ export function isStoryDialog(
 export type StoryDescriptionType = {
   type: "description";
   text: string;
+  minutes?: number;
+  subject?: string;
 };
 
 export function isStoryDescription(

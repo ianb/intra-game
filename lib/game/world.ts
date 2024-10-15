@@ -5,12 +5,16 @@ import type { Model } from "./model";
 import { tmpl } from "../template";
 import colors from "tailwindcss/colors";
 
+export const ONE_DAY = 24 * 60;
+
 export class World {
   entities: AllEntitiesType;
   original: AllEntitiesType;
   rooms: string[];
   lastSuggestions: string = "";
   model: Model;
+  // Minutes since Midnight the day the game starts
+  timestampMinutes: number = 10 * 60; // 10am
 
   constructor({
     entities,
@@ -192,6 +196,7 @@ export class World {
     if (storyEvent.suggestions) {
       this.lastSuggestions = storyEvent.suggestions;
     }
+    this.timestampMinutes += storyEvent.totalTime;
   }
 
   asGraphviz(fullMap: boolean = false) {
@@ -317,4 +322,36 @@ export class World {
     }
     return pos;
   }
+
+  get timeOfDay(): string {
+    const time = this.timestampMinutes % ONE_DAY;
+    const minutes = (time % 60).toString().padStart(2, "0");
+    let hours = Math.floor(time / 60) % 24;
+    const period = hours < 12 ? "am" : "pm";
+    hours = hours % 12;
+    if (hours === 0) {
+      hours = 12;
+    }
+    return `${hours}:${minutes}${period}`;
+  }
+}
+
+function parseTimeString(time: string): number {
+  const timeRegex = /^(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])$/;
+  const match = time.trim().match(timeRegex);
+  if (!match) {
+    throw new Error("Invalid time format");
+  }
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2] ? parseInt(match[2], 10) : 0;
+  const period = match[3].toLowerCase();
+  if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) {
+    throw new Error("Invalid time range");
+  }
+  if (period === "pm" && hours !== 12) {
+    hours += 12;
+  } else if (period === "am" && hours === 12) {
+    hours = 0;
+  }
+  return hours * 60 + minutes;
 }

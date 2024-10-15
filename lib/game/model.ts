@@ -88,6 +88,7 @@ export class Model {
     if (!this.world.entities.player.launched) {
       this.addStoryEvent({
         id: "narrator",
+        totalTime: 0,
         roomId: "Intake",
         changes: {
           player: {

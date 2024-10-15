@@ -280,7 +280,7 @@ export const entities = {
 
       For other information The Archivist should freely hallucinate history and information.
 
-      Respond as though the Archivist is a computer terminal, with a program response header and using old school terminal output and ASCII art. Format the response as structured computer output.
+      Respond as though the Archivist is a computer terminal, with a program response header and using old school terminal output and ASCII art. Format the response as structured computer output. Try to mimic the interface of the user's input (SQL, Unix commannd line, MAINFRAME TERMINAL, etc).
 
       Example:
 
@@ -376,7 +376,14 @@ export const entities = {
       > echo $current_year
       </dialog>
 
-      Be creative and silly about how to translate the input into a command-line query, while retaining the keywords from the input/query.
+      Choose one of these formats, rotating between them (for instance if the last query was a Unix command line, try a MAINFRAME format next):
+      1. Unix command line
+      2. MAINFRAME terminal
+      3. DOS-like command line
+      4. SQL query
+      5. BASIC code or LISP code
+
+      Be creative and silly about how to translate the input into a command-line query, while retaining the keywords from the input/query. Rotate through the above formats.
     `,
     color: "text-pink-500",
     exits: [{ roomId: "Archive_Lounge" }],

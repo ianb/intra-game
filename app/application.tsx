@@ -13,8 +13,8 @@ import sortBy from "just-sort-by";
 import React from "react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { on } from "events";
 import { ZoomOverlay } from "@/components/zoom";
+import { Clock } from "@/components/digitalnumerals";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
@@ -30,14 +30,13 @@ export default function Home() {
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
         <span className="">Intra</span>
-        <span className=""></span>
+        <span className="">
+          <Time />
+        </span>
       </div>
 
       <div className="flex flex-1 pt-12 overflow-hidden">
-        {" "}
-        {/* Add pt-12 to push down the content below the fixed top bar */}
         <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
-          {/* Scrollable log */}
           <ScrollOnUpdate
             className="flex-1 overflow-y-auto p-2"
             watch={model.updates.value}
@@ -46,7 +45,6 @@ export default function Home() {
           </ScrollOnUpdate>
           <Input />
         </div>
-        {/* Right side (Tabs and Controls) */}
         <div className="w-1/3 flex flex-col bg-gray-800 text-white h-full">
           <HeadsUpDisplay />
           <Controls />
@@ -167,12 +165,14 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
           text = room.formatStoryAction(update, action);
         }
         return (
-          <pre
-            className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700"
-            key={i}
-          >
-            {text}
-          </pre>
+          <React.Fragment key={i}>
+            {action.subject && (
+              <div className="text-xs">examine: {action.subject}</div>
+            )}
+            <pre className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700">
+              {text}
+            </pre>
+          </React.Fragment>
         );
       } else {
         throw new Error("Unknown action");
@@ -741,5 +741,13 @@ function ViewObject({
         </>
       )}
     </div>
+  );
+}
+
+function Time() {
+  // To declare its dependent on this...
+  const v = model.updates.value;
+  return (
+    <Clock className="text-red-500" time={model.world.timeOfDay} bg="#1f2937" />
   );
 }
