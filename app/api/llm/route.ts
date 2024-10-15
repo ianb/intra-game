@@ -5,6 +5,9 @@ import {
   HarmCategory,
 } from "@google/generative-ai";
 
+// This is the maximum free tier duration for a single request:
+export const maxDuration = 60;
+
 const generator = new GoogleGenerativeAI(process.env.GEMINI_KEY as string);
 
 export async function POST(request: Request) {
