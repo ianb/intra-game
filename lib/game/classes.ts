@@ -13,6 +13,7 @@ import {
   isRoom,
   isStoryDescription,
   isStoryDialog,
+  PersonScheduleType,
   PromptStateType,
   StoryActionType,
   StoryEventType,
@@ -524,16 +525,19 @@ export class Room extends Entity {
   exits: Exit[] = [];
   userInputInstructions = "";
   visits: number = 0;
+  excludeFromMap = false;
 
   constructor({
     exits,
     userInputInstructions,
     visits,
+    excludeFromMap,
     ...props
   }: EntityInitType & {
     exits?: Exit[];
     userInputInstructions?: string;
     visits?: number;
+    excludeFromMap?: boolean;
   }) {
     super(props);
     if (exits) {
@@ -544,6 +548,9 @@ export class Room extends Entity {
     }
     if (visits !== undefined) {
       this.visits = visits;
+    }
+    if (excludeFromMap !== undefined) {
+      this.excludeFromMap = excludeFromMap;
     }
   }
 
@@ -619,16 +626,19 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
   roleplayInstructions: string = "";
   inside!: EntityId;
   relationships: Record<EntityId, string> = {};
+  schedule?: PersonScheduleType[];
 
   constructor({
     pronouns,
     roleplayInstructions,
     relationships,
+    schedule,
     ...props
   }: EntityInitType & {
     pronouns?: string;
     roleplayInstructions?: string;
     relationships?: Record<EntityId, string>;
+    schedule?: PersonScheduleType[];
   }) {
     super(props);
     if (pronouns) {
@@ -642,6 +652,9 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
     }
     if (relationships) {
       this.relationships = relationships;
+    }
+    if (schedule) {
+      this.schedule = schedule;
     }
   }
 

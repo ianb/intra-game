@@ -91,6 +91,42 @@ export function isPerson(entity: Entity): entity is Person {
   return entity.type === "person" || entity.type.startsWith("person/");
 }
 
+/* Schedule types */
+
+export type TimeType = string;
+
+export type GeneralScheduleType = {
+  time: TimeType;
+  activity: string;
+  description: string;
+};
+
+/*
+Note: each character has a schedule. It should roughly adhere to the Intra schedule (especially wake-up, meals, and lights-out). Each person wakes has a room assigned to them, Quarters_John/etc, that they sleep in.
+
+Events may overlap, in which case the person may choose different activities on different days.
+
+Each person should have one or more secret activities. These are activities that they don't want other people to know about, which might be embarassing or secret for another reason. These activities can overlap with other activities, and don't need to be long. (E.g., a 10 minute secret activity is fine). Make the secret activities interesting, silly, and fun.
+
+All activities should express the absurdity of the environment and the strong personality of each character.
+*/
+
+export type PersonScheduleType = GeneralScheduleType & {
+  // A single location, or a list of locations if the person can be in one of several locations during this time
+  inside: EntityId | EntityId[];
+  // If attentive is true, then the person is potentially engaged with the player character or other people; if false then the person is probably unlikely to proactively engage socially
+  attentive: boolean;
+  // How many minutes early or late might the person start this activity? E.g., early: 5, late: 10 means the person might start it up to 5 minutes early or 10 minutes late
+  early: number;
+  late: number;
+  // How long will this last (roughly) in minutes?
+  minuteLength: number;
+  // If this is a secret activity that the person might want to hide from other people
+  secret?: boolean;
+  // If secret is true, this is the reason the person wants to keep it secret
+  secretReason?: string;
+};
+
 /* Gemini types */
 
 export type GeminiChatType = {

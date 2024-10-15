@@ -656,7 +656,7 @@ function Map() {
         >
           <a href={url} target="_blank" rel="noopener">
             <img
-              className="rounded h-full border-2 border-gray-400"
+              className="rounded h-full max-h-screen border-2 border-gray-400"
               src={url}
               alt="Map"
             />

@@ -143,6 +143,16 @@ export class World {
             `Person ${obj.id} is inside ${JSON.stringify(inside)} which does not exist`
           );
         }
+        for (const s of obj.schedule || []) {
+          const insides = Array.isArray(s.inside) ? s.inside : [s.inside];
+          for (const inside of insides) {
+            if (!(this.original as any)[inside]) {
+              throw new Error(
+                `Person ${obj.id} has schedule entry with inside ${inside} which does not exist`
+              );
+            }
+          }
+        }
       }
     }
     this.applyUpdates();
@@ -191,7 +201,10 @@ export class World {
     if (window !== undefined) {
       (window as any).colors = colors;
     }
-    let rooms = this.rooms;
+    const allRooms = this.rooms.filter((room) => {
+      return !this.getRoom(room)?.excludeFromMap;
+    });
+    let rooms = allRooms;
     const skipExits: string[] = [];
     if (!fullMap) {
       rooms = [];
@@ -200,6 +213,9 @@ export class World {
         if (!roomObj) {
           throw new Error(`No room with id: ${room}`);
         }
+        if (roomObj.excludeFromMap) {
+          continue;
+        }
         if (roomObj.visits > 0) {
           rooms.push(room);
         }
@@ -207,6 +223,9 @@ export class World {
     }
     for (const room of [...rooms]) {
       for (const exit of this.getRoom(room)?.exits || []) {
+        if (this.getRoom(exit.roomId)?.excludeFromMap) {
+          continue;
+        }
         if (!rooms.includes(exit.roomId)) {
           rooms.push(exit.roomId);
           skipExits.push(exit.roomId);
@@ -253,6 +272,9 @@ export class World {
       );
       if (!skipExits.includes(room)) {
         for (const exit of roomObj.exits) {
+          if (this.getRoom(exit.roomId)?.excludeFromMap) {
+            continue;
+          }
           connectionList.push(
             tmpl`
           ${roomObj.id} -> ${exit.roomId};
