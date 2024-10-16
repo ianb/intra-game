@@ -583,17 +583,61 @@ export const entities = {
     color: "text-emerald-400",
     exits: [
       { roomId: "Hollow_Atrium" },
-      { roomId: "Quarters_Doug" },
-      { roomId: "Quarters_Marta" },
-      { roomId: "Quarters_Frida" },
-      { roomId: "Quarters_June" },
-      { roomId: "Quarters_Lana" },
-      { roomId: "Quarters_Harold" },
-      { roomId: "Quarters_Greg" },
-      { roomId: "Quarters_Milton" },
-      { roomId: "Quarters_Gloria" },
-      { roomId: "Quarters_Lily" },
-      { roomId: "Quarters_Henry" },
+      {
+        roomId: "Quarters_Doug",
+        restriction:
+          "Only Doug is allowed in his quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Doug's privacy",
+      },
+      {
+        roomId: "Quarters_Marta",
+        restriction:
+          "Only Marta is allowed in her quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Marta's privacy",
+      },
+      {
+        roomId: "Quarters_Frida",
+        restriction:
+          "Only Frida is allowed in her quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Frida's privacy",
+      },
+      {
+        roomId: "Quarters_June",
+        restriction:
+          "Only June is allowed in her quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade June's privacy",
+      },
+      {
+        roomId: "Quarters_Lana",
+        restriction:
+          "Only Lana is allowed in her quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Lana's privacy",
+      },
+      {
+        roomId: "Quarters_Harold",
+        restriction:
+          "Only Harold is allowed in his quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Harold's privacy",
+      },
+      {
+        roomId: "Quarters_Greg",
+        restriction:
+          "Only Greg is allowed in his quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Greg's privacy",
+      },
+      {
+        roomId: "Quarters_Milton",
+        restriction:
+          "Only Milton is allowed in his quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Milton's privacy",
+      },
+      {
+        roomId: "Quarters_Gloria",
+        restriction:
+          "Only Gloria is allowed in her quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Gloria's privacy",
+      },
+      {
+        roomId: "Quarters_Lily",
+        restriction:
+          "Only Lily is allowed in her quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Lily's privacy",
+      },
+      {
+        roomId: "Quarters_Henry",
+        restriction:
+          "Only Henry is allowed in his quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Henry's privacy",
+      },
       { roomId: "Quarters_Yours" },
     ],
   }),
