@@ -1,9 +1,17 @@
-import type { Entity, Room } from "./classes";
-import { isPerson, isRoom, StoryEventType } from "../types";
+import type { Entity, Room, Person } from "./classes";
+import {
+  EntityId,
+  isPerson,
+  isRoom,
+  PersonScheduledEventType,
+  PersonScheduleType,
+  StoryEventType,
+} from "../types";
 import type { AllEntitiesType } from "./gameobjs";
 import type { Model } from "./model";
 import { tmpl } from "../template";
 import colors from "tailwindcss/colors";
+import { generateExactSchedule, timeAsString } from "./scheduler";
 
 export const ONE_DAY = 24 * 60;
 
@@ -46,6 +54,22 @@ export class World {
       return null;
     }
     return room;
+  }
+
+  getPerson(personId: string): Person | null {
+    const person = this.getEntity(personId);
+    if (!person) {
+      return null;
+    }
+    if (!isPerson(person)) {
+      console.error("Tried to get entity as person:", personId, person);
+      return null;
+    }
+    return person;
+  }
+
+  allPeople(): Person[] {
+    return Object.values(this.entities).filter(isPerson);
   }
 
   entitiesInRoom(room: string | Room): Entity[] {
@@ -91,7 +115,7 @@ export class World {
     }
   }
 
-  entityRoom(entityId: string): Room | null {
+  entityRoom(entityId: string): Room {
     const entity = this.getEntity(entityId);
     if (!entity) {
       throw new Error(`No entity with id "${entityId}"`);
@@ -99,7 +123,7 @@ export class World {
     let pos = entity;
     while (pos && !isRoom(pos)) {
       if (!pos.inside) {
-        return null;
+        return this.entities.Void;
       }
       const nextPos = this.getEntity(pos.inside);
       if (!nextPos) {
@@ -110,7 +134,7 @@ export class World {
       pos = nextPos;
     }
     if (!pos) {
-      return null;
+      return this.entities.Void;
     }
     return pos;
   }
@@ -147,7 +171,7 @@ export class World {
             `Person ${obj.id} is inside ${JSON.stringify(inside)} which does not exist`
           );
         }
-        for (const s of obj.schedule || []) {
+        for (const s of obj.scheduleTemplate || []) {
           const insides = Array.isArray(s.inside) ? s.inside : [s.inside];
           for (const inside of insides) {
             if (!(this.original as any)[inside]) {
@@ -207,7 +231,7 @@ export class World {
       (window as any).colors = colors;
     }
     const allRooms = this.rooms.filter((room) => {
-      return !this.getRoom(room)?.excludeFromMap;
+      return !this.getRoom(room)?.excludeFromMap && room !== playerRoom.id;
     });
     let rooms = allRooms;
     const skipExits: string[] = [];
@@ -218,7 +242,7 @@ export class World {
         if (!roomObj) {
           throw new Error(`No room with id: ${room}`);
         }
-        if (roomObj.excludeFromMap) {
+        if (roomObj.excludeFromMap && playerRoom.id !== roomObj.id) {
           continue;
         }
         if (roomObj.visits > 0) {
@@ -228,7 +252,10 @@ export class World {
     }
     for (const room of [...rooms]) {
       for (const exit of this.getRoom(room)?.exits || []) {
-        if (this.getRoom(exit.roomId)?.excludeFromMap) {
+        if (
+          this.getRoom(exit.roomId)?.excludeFromMap &&
+          playerRoom.id !== exit.roomId
+        ) {
           continue;
         }
         if (!rooms.includes(exit.roomId)) {
@@ -277,7 +304,10 @@ export class World {
       );
       if (!skipExits.includes(room)) {
         for (const exit of roomObj.exits) {
-          if (this.getRoom(exit.roomId)?.excludeFromMap) {
+          if (
+            this.getRoom(exit.roomId)?.excludeFromMap &&
+            playerRoom.id !== exit.roomId
+          ) {
             continue;
           }
           connectionList.push(
@@ -323,35 +353,21 @@ export class World {
     return pos;
   }
 
-  get timeOfDay(): string {
-    const time = this.timestampMinutes % ONE_DAY;
-    const minutes = (time % 60).toString().padStart(2, "0");
-    let hours = Math.floor(time / 60) % 24;
-    const period = hours < 12 ? "am" : "pm";
-    hours = hours % 12;
-    if (hours === 0) {
-      hours = 12;
+  setupDailySchedules(): Record<EntityId, PersonScheduledEventType[]> {
+    const result: Record<EntityId, PersonScheduledEventType[]> = {};
+    for (const entity of Object.values(this.entities)) {
+      if (isPerson(entity)) {
+        const template = entity.scheduleTemplate || [];
+        const schedule = generateExactSchedule(template);
+        if (schedule.length > 0) {
+          result[entity.id] = schedule;
+        }
+      }
     }
-    return `${hours}:${minutes}${period}`;
+    return result;
   }
-}
 
-function parseTimeString(time: string): number {
-  const timeRegex = /^(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])$/;
-  const match = time.trim().match(timeRegex);
-  if (!match) {
-    throw new Error("Invalid time format");
+  get timeOfDay(): string {
+    return timeAsString(this.timestampMinutes);
   }
-  let hours = parseInt(match[1], 10);
-  const minutes = match[2] ? parseInt(match[2], 10) : 0;
-  const period = match[3].toLowerCase();
-  if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) {
-    throw new Error("Invalid time range");
-  }
-  if (period === "pm" && hours !== 12) {
-    hours += 12;
-  } else if (period === "am" && hours === 12) {
-    hours = 0;
-  }
-  return hours * 60 + minutes;
 }

@@ -97,14 +97,6 @@ export function isPerson(entity: Entity): entity is Person {
 
 /* Schedule types */
 
-export type TimeType = string;
-
-export type GeneralScheduleType = {
-  time: TimeType;
-  activity: string;
-  description: string;
-};
-
 /*
 Note: each character has a schedule. It should roughly adhere to the Intra schedule (especially wake-up, meals, and lights-out). Each person wakes has a room assigned to them, Quarters_John/etc, that they sleep in.
 
@@ -115,20 +107,42 @@ Each person should have one or more secret activities. These are activities that
 All activities should express the absurdity of the environment and the strong personality of each character.
 */
 
+// This is minutes since midnight of the first day of the game
+export type TimeType = number;
+
+export type ScheduleId = string;
+
+export type GeneralScheduleType = {
+  id: ScheduleId;
+  time: TimeType;
+  activity: string;
+  description: string;
+  // How long will this last (roughly) in minutes?
+  minuteLength: number;
+};
+
 export type PersonScheduleType = GeneralScheduleType & {
   // A single location, or a list of locations if the person can be in one of several locations during this time
-  inside: EntityId | EntityId[];
+  inside: EntityId[];
   // If attentive is true, then the person is potentially engaged with the player character or other people; if false then the person is probably unlikely to proactively engage socially
   attentive: boolean;
+  // If secret is true, this is the reason the person wants to keep it secret
+  secret?: boolean;
+  // If this is a secret activity that the person might want to hide from other people
+  secretReason?: string;
+};
+
+export type PersonScheduleTemplateType = PersonScheduleType & {
   // How many minutes early or late might the person start this activity? E.g., early: 5, late: 10 means the person might start it up to 5 minutes early or 10 minutes late
   early: number;
   late: number;
-  // How long will this last (roughly) in minutes?
+};
+
+export type PersonScheduledEventType = {
+  scheduleId: ScheduleId;
+  time: TimeType;
+  inside: EntityId[];
   minuteLength: number;
-  // If this is a secret activity that the person might want to hide from other people
-  secret?: boolean;
-  // If secret is true, this is the reason the person wants to keep it secret
-  secretReason?: string;
 };
 
 /* Gemini types */

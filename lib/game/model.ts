@@ -5,6 +5,9 @@ import { StoryEventType } from "../types";
 import { World } from "./world";
 import { AllEntitiesType, entities } from "./gameobjs";
 import { listSaves, load, removeSave, save } from "../localsaves";
+import { scheduleForTime } from "./scheduler";
+import type { Person } from "../types";
+import { pathTo } from "./pathto";
 
 export class Model {
   updates: SignalType<StoryEventType[]>;
@@ -38,6 +41,79 @@ export class Model {
       model: this,
     });
     this.checkLaunch();
+  }
+
+  async scheduleTick() {
+    const allChanges: any = {};
+    // All the people with schedules, and no change in which schedule:
+    const existingPeople: Person[] = [];
+    for (const person of this.world.allPeople()) {
+      const schedule = scheduleForTime(person, this.world.timestampMinutes);
+      if (!schedule) {
+        continue;
+      }
+      if (schedule.id === person.runningScheduleId) {
+        existingPeople.push(person);
+        continue;
+      }
+      const change: any = {
+        before: {
+          runningScheduleId: person.runningScheduleId,
+        },
+        after: {
+          runningScheduleId: schedule.id,
+        },
+      };
+      allChanges[person.id] = change;
+    }
+    for (const person of existingPeople) {
+      const schedule = scheduleForTime(person, this.world.timestampMinutes);
+      if (!schedule) {
+        throw new Error("No schedule");
+      }
+      if (schedule.inside.includes(person.inside)) {
+        continue;
+      }
+      for (const dest of schedule.inside) {
+        const path = pathTo(this.world, person.inside, dest);
+        if (!path.length) {
+          console.info(
+            `Person ${person.id} can't go from ${person.inside}=>${dest}`
+          );
+          continue;
+        }
+        if (path.length === 1) {
+          console.info(
+            `Person ${person.id} goes directly from ${person.inside}=>${dest}${schedule.inside.length > 1 ? ` of ${schedule.inside}` : ""}`,
+            schedule.inside
+          );
+        } else {
+          console.log(
+            `Person ${person.id} goes from ${person.inside}=>${path[0]} to get to ${dest}${schedule.inside.length > 1 ? ` of ${schedule.inside}` : ""}`,
+            path
+          );
+        }
+        const change: any = {
+          before: {
+            inside: person.inside,
+          },
+          after: {
+            inside: path[0],
+          },
+        };
+        allChanges[person.id] = { ...allChanges[person.id], ...change };
+        break;
+      }
+    }
+    if (Object.keys(allChanges).length > 0) {
+      this.addStoryEvent({
+        id: "narrator",
+        totalTime: 0,
+        roomId: "Intake",
+        changes: allChanges,
+        actions: [],
+      });
+    }
   }
 
   async addStoryEvent(storyEvent: StoryEventType) {
@@ -86,6 +162,38 @@ export class Model {
 
   checkLaunch() {
     if (!this.world.entities.player.launched) {
+      const schedules = this.world.setupDailySchedules();
+      const scheduleChanges = Object.fromEntries(
+        Object.entries(schedules)
+          .filter(([id, schedule]) => schedule.length > 0)
+          .map(([id, schedule]) => {
+            const change: any = { before: {}, after: {} };
+            const person = this.world.getPerson(id)!;
+            const nowSchedule = scheduleForTime(
+              person,
+              this.world.timestampMinutes,
+              schedule
+            );
+            if (!person || !nowSchedule) {
+              return [id, change];
+            }
+            let oldInside: string | undefined = person.inside;
+            let inside = nowSchedule ? nowSchedule.inside[0] : undefined;
+            if (inside === oldInside) {
+              inside = undefined;
+              oldInside = undefined;
+            }
+            if (inside || oldInside) {
+              change.before.inside = oldInside;
+              change.after.inside = inside;
+            }
+            change.before.todaysSchedule = [];
+            change.after.todaysSchedule = schedule;
+            change.before.runningScheduleId = person.runningScheduleId;
+            change.after.runningScheduleId = nowSchedule.id;
+            return [id, change];
+          })
+      );
       this.addStoryEvent({
         id: "narrator",
         totalTime: 0,
@@ -99,6 +207,7 @@ export class Model {
               launched: true,
             },
           },
+          ...scheduleChanges,
         },
         actions: [],
       });
@@ -108,6 +217,7 @@ export class Model {
   async sendText(text: string) {
     const player = this.world.entities.player;
     await this.run(() => player.executePrompt(this, { input: text }));
+    await this.scheduleTick();
   }
 
   undo(): string {

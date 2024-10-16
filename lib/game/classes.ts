@@ -13,15 +13,17 @@ import {
   isRoom,
   isStoryDescription,
   isStoryDialog,
-  PersonScheduleType,
+  PersonScheduledEventType,
+  PersonScheduleTemplateType,
   PromptStateType,
+  ScheduleId,
   StoryActionType,
-  StoryDescriptionType,
   StoryEventType,
 } from "../types";
 import type { Model } from "./model";
 import { WithBlinkingCursor } from "@/components/input";
 import type { World } from "./world";
+import { scheduleForTime, timeAsString } from "./scheduler";
 
 export type EntityInitType = {
   id: EntityId;
@@ -33,7 +35,7 @@ export type EntityInitType = {
   invisible?: boolean;
 };
 
-export abstract class Entity<ParametersT = object> {
+export abstract class Entity<ParametersT extends object = object> {
   name: string = "";
   shortDescription: string = "";
   description: string = "";
@@ -374,7 +376,9 @@ export abstract class Entity<ParametersT = object> {
       if (entity.id !== entity.name) {
         lines.push(`  id = ${JSON.stringify(entity.id)}`);
       }
-      lines.push(`  ${entity.description || entity.shortDescription}`);
+      lines.push(
+        `  ${entity.promptPersonDescription({ includeName: false, join: "\n  ", fullDescription: true })}`
+      );
       lines.push("}");
     }
     lines.push(`Ama is always present {`);
@@ -643,25 +647,29 @@ export type RelationshipType = {
   trustworthy?: RelationshipRatingType;
 };
 
-export class Person<ParametersT = object> extends Entity<ParametersT> {
+export class Person<
+  ParametersT extends object = object,
+> extends Entity<ParametersT> {
   type = "person";
   pronouns: string = "they/them";
   roleplayInstructions: string = "";
   inside!: EntityId;
   relationships: Record<EntityId, string> = {};
-  schedule?: PersonScheduleType[];
+  scheduleTemplate: PersonScheduleTemplateType[] = [];
+  todaysSchedule: PersonScheduledEventType[] = [];
+  runningScheduleId: ScheduleId | null = null;
 
   constructor({
     pronouns,
     roleplayInstructions,
     relationships,
-    schedule,
+    scheduleTemplate,
     ...props
   }: EntityInitType & {
     pronouns?: string;
     roleplayInstructions?: string;
     relationships?: Record<EntityId, string>;
-    schedule?: PersonScheduleType[];
+    scheduleTemplate?: PersonScheduleTemplateType[];
   }) {
     super(props);
     if (pronouns) {
@@ -676,8 +684,8 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
     if (relationships) {
       this.relationships = relationships;
     }
-    if (schedule) {
-      this.schedule = schedule;
+    if (scheduleTemplate) {
+      this.scheduleTemplate = scheduleTemplate;
     }
   }
 
@@ -693,6 +701,11 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
 
       In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
 
+      The user is playing under the name "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}); the id of the player is "player".
+
+      The time is ${timeAsString(this.world.timestampMinutes)}
+      ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
+
       <characterDescription>
       ${this.description}
       </characterDescription>
@@ -702,6 +715,8 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
 
       ${this.roleplayInstructions}
       </roleplayInstructions>
+
+      ${this.activityDescription(parameters)}
 
       The other people in the room are:
       ${this.currentPeoplePrompt(parameters)}
@@ -758,14 +773,22 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
     const hasDescription = storyEvent.actions
       .filter(isStoryDescription)
       .some((x) => x.text.includes(this.id) || x.text.includes(this.name));
+    const schedule = scheduleForTime(this, this.world.timestampMinutes);
+    const isAttentive = !!schedule?.attentive;
     if (storyEvent.id !== "player") {
       return undefined;
     }
-    if (!hasDialog && !hasDescription) {
+    if (!hasDialog && !hasDescription && !isAttentive) {
       return undefined;
     }
-    const myRoom = this.world.entityRoom(this.id);
-    const playerRoom = this.world.entityRoom("player");
+    let myRoom = this.world.entityRoom(this.id);
+    if (storyEvent?.changes?.[this.id]?.after?.inside) {
+      myRoom = this.world.getRoom(storyEvent.changes[this.id].after.inside)!;
+    }
+    let playerRoom = this.world.entityRoom("player");
+    if (storyEvent.changes?.player?.after?.inside) {
+      playerRoom = this.world.getRoom(storyEvent.changes.player.after.inside)!;
+    }
     if (!myRoom || !playerRoom || myRoom.id !== playerRoom.id) {
       return undefined;
     }
@@ -797,6 +820,62 @@ export class Person<ParametersT = object> extends Entity<ParametersT> {
       }
     }
     return undefined;
+  }
+
+  promptPersonDescription({
+    includeName = true,
+    join = "; ",
+    fullDescription = false,
+  } = {}): string {
+    const parts: string[] = [];
+    if (includeName) {
+      parts.push(`${this.name} (${this.pronouns})`);
+      if (this.name !== this.id) {
+        parts[0] += ` id: ${JSON.stringify(this.id)}`;
+      }
+    }
+    if (fullDescription && this.description) {
+      parts.push(this.description);
+    } else if (this.shortDescription) {
+      parts.push(this.shortDescription);
+    }
+    const schedule = scheduleForTime(this, this.world.timestampMinutes);
+    if (schedule) {
+      if (schedule.inside.includes(this.inside)) {
+        // Arrived at the location where the activity takes place
+        parts.push(`${this.name} is: ${schedule.description}`);
+        if (schedule.secret) {
+          // FIXME: not sure what we'd include here?
+          // Maybe it's only for the self-prompt?
+        }
+      } else {
+        // Traveling to the location where the activity takes place
+        parts.push(`${this.name} is on their way to: ${schedule.inside[0]}`);
+        parts.push(
+          `When ${this.name} arrives they intend to: ${schedule.description}`
+        );
+      }
+    }
+    return parts.join(join);
+  }
+
+  activityDescription(parameters: ParametersT): string {
+    const schedule = scheduleForTime(this, this.world.timestampMinutes);
+    if (!schedule) {
+      return "";
+    }
+    let basicDesc = `${this.name} is currently: ${schedule.description}`;
+    if (!schedule.inside.includes(this.inside)) {
+      basicDesc = `${this.name} is on their way to: ${schedule.inside[0]} so that they can: ${schedule.description}`;
+    }
+    return tmpl`
+      <activity>
+      ${basicDesc}
+      ${this.name} plans to do this activity from ${timeAsString(schedule.time)} to ${timeAsString(schedule.time + schedule.minuteLength)}
+      [[${this.name} is secretive about this activity because: ${schedule.secretReason}]]
+      [[${IF(schedule.attentive)}${this.name} doesn't mind being interrupted.]]
+      </activity>
+      `;
   }
 }
 
@@ -1083,7 +1162,7 @@ export class AmaClass extends Person<AmaParametersType> {
     }
     if (this.personality === "intro") {
       return tmpl`
-      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around:
+      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set>:
       [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record it by emitting <set attr="player.name">John Doe</set>]]
       [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary; whether you ask pronouns or guess them from the name, record it by emitting <set attr="player.pronouns">he/him or she/her</set>]]
       [[${IF(!this.sharedSelf)}* Introduce yourself and mark it complete: <set attr="Ama.sharedSelf">true</set>]]
@@ -1091,6 +1170,8 @@ export class AmaClass extends Person<AmaParametersType> {
       [[${IF(!this.sharedDisassociation)}* Explain disassociation and mark it complete: <set attr="Ama.sharedDisassociation">true</set>]]
       [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or unemployed, student, etc) and record it by emitting <set attr="player.profession">name of profession</set>]]
       [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age (roughly 350 years old); then mark it complete: <set attr="Ama.sharedPlayerAge">true</set>]]
+
+      Stay focused on completing these tasks!
       `;
     }
     return "";
@@ -1369,7 +1450,18 @@ export class PlayerClass extends Person<PlayerInputType> {
         if (!peopleLines.length) {
           peopleLines.push("You see:");
         }
-        peopleLines.push(`  ${person.name}: ${person.shortDescription}`);
+        const schedule = scheduleForTime(person, this.world.timestampMinutes);
+        let extra = "";
+        if (schedule) {
+          if (schedule.inside.includes(room.id)) {
+            extra = `\n    ${person.name} is: ${schedule.description}`;
+          } else {
+            extra = `\n    ${person.name} is on their way elsewhere`;
+          }
+        }
+        peopleLines.push(
+          `  ${person.name}: ${person.shortDescription}${extra}`
+        );
       }
       if (room.visits === 0) {
         storyEvent.actions.push({

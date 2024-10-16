@@ -22,7 +22,7 @@ export const entities = {
     pronouns: "she/her",
     inside: "Hollow_Atrium",
     color: "text-pink-400",
-    schedule: schedules.Marta,
+    scheduleTemplate: schedules.Marta,
     shortDescription: `
       Marta carries herself with rigid posture and a confident smile.
     `,
@@ -44,7 +44,7 @@ export const entities = {
     pronouns: "she/her",
     color: "text-yellow-500",
     inside: "Archive_Lounge",
-    schedule: schedules.Frida,
+    scheduleTemplate: schedules.Frida,
     shortDescription: `
       Frida is always scribbling notes, compulsively documenting everything.
     `,
@@ -70,7 +70,7 @@ export const entities = {
     pronouns: "she/her",
     color: "text-teal-500",
     inside: "Tranquil_Pool",
-    schedule: schedules.June,
+    scheduleTemplate: schedules.June,
     shortDescription: `
       June sits cross-legged, exuding an aura of forced calm.
     `,
@@ -92,7 +92,7 @@ export const entities = {
     pronouns: "he/him",
     color: "text-rose-400",
     inside: "Tranquil_Pool",
-    schedule: schedules.Doug,
+    scheduleTemplate: schedules.Doug,
     shortDescription: `
       Doug wanders around, bothering people with inane questions.
     `,
@@ -114,7 +114,7 @@ export const entities = {
     pronouns: "she/her",
     color: "text-green-400",
     inside: "Joyous_Cafe",
-    schedule: schedules.Lana,
+    scheduleTemplate: schedules.Lana,
     shortDescription: `
       Lana is always experimenting with strange ways to influence mood.
     `,
@@ -136,7 +136,7 @@ export const entities = {
     pronouns: "he/him",
     color: "text-indigo-400",
     inside: "Activity_Hub",
-    schedule: schedules.Harold,
+    scheduleTemplate: schedules.Harold,
     shortDescription: `
       Harold obsessively monitors the Activity Hub for "rule violations."
     `,
@@ -158,7 +158,7 @@ export const entities = {
     pronouns: "he/him",
     color: "text-slate-400",
     inside: "Activity_Hub",
-    schedule: schedules.Greg,
+    scheduleTemplate: schedules.Greg,
     shortDescription: `
       Greg is a quiet maintenance worker who knows his way around.
     `,
@@ -176,7 +176,7 @@ export const entities = {
     pronouns: "he/him",
     color: "text-red-500",
     inside: "Feedback_Booth",
-    schedule: schedules.Milton,
+    scheduleTemplate: schedules.Milton,
     shortDescription: `
     Milton is constantly whining and making everything sound like a personal attack.
     `,
@@ -196,7 +196,7 @@ export const entities = {
     pronouns: "she/her",
     color: "text-red-400",
     inside: "Feedback_Booth",
-    schedule: schedules.Gloria,
+    scheduleTemplate: schedules.Gloria,
     shortDescription: `
       Gloria loves to eavesdrop on others' complaints.
     `,
@@ -218,7 +218,7 @@ export const entities = {
     pronouns: "she/her",
     color: "text-green-400",
     inside: "Static_Garden",
-    schedule: schedules.Lily,
+    scheduleTemplate: schedules.Lily,
     shortDescription: `
       Lily talks to the fake plants as if they're real.
     `,
@@ -240,7 +240,7 @@ export const entities = {
     pronouns: "he/him",
     color: "text-blue-500",
     inside: "Waiting_Room",
-    schedule: schedules.Henry,
+    scheduleTemplate: schedules.Henry,
     shortDescription: `
       Henry has been waiting for an appointment for years.
     `,
@@ -564,7 +564,7 @@ export const entities = {
       The clocks on the wall are stuck at random times, and the lights occasionally flicker.
       The sky above is perpetually overcast, with dark clouds that never produce rain.
     `,
-    color: "text-gray-700",
+    color: "text-stone-400",
     exits: [{ roomId: "Solitude_Cubes" }],
   }),
 
@@ -580,7 +580,7 @@ export const entities = {
       A narrow, sterile corridor lined with identical doors, each one labeled clearly with the name of a citizen. The automated access control system ensures that only the assigned resident can enter their quarters, regardless of any invitation or request.
       The ceiling simulates a clear, calm sky, though the occasional flicker of static disrupts the illusion. Overhead lights hum quietly, with a few flickering sporadically, casting long, shifting shadows down the hall.
     `,
-    color: "text-gray-500",
+    color: "text-emerald-400",
     exits: [
       { roomId: "Hollow_Atrium" },
       { roomId: "Quarters_Doug" },

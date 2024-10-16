@@ -58,7 +58,7 @@ function Digit({
     <svg
       viewBox="-1 -1 12 20"
       stroke={bg}
-      stroke-width=".25"
+      strokeWidth=".25"
       fill="currentColor"
       {...props}
     >
@@ -92,7 +92,7 @@ function DigitalColon({ ...props }: React.SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="-1 -1 12 20"
-      stroke-width="1"
+      strokeWidth="1"
       stroke="currentColor"
       fill="currentColor"
       {...props}
@@ -108,7 +108,7 @@ function DigitalAM({ ...props }: React.SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="-1 -1 12 20"
-      stroke-width=".25"
+      strokeWidth=".25"
       stroke="currentColor"
       fill="currentColor"
       {...props}
@@ -116,9 +116,9 @@ function DigitalAM({ ...props }: React.SVGProps<SVGSVGElement>) {
       <text
         x="5"
         y="7"
-        font-size="10"
-        text-anchor="middle"
-        font-family="Helvetica"
+        fontSize="10"
+        textAnchor="middle"
+        fontFamily="Helvetica"
       >
         AM
       </text>
@@ -131,7 +131,7 @@ function DigitalPM({ ...props }: React.SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="-1 -1 12 20"
-      stroke-width=".25"
+      strokeWidth=".25"
       stroke="currentColor"
       fill="currentColor"
       {...props}
@@ -139,9 +139,9 @@ function DigitalPM({ ...props }: React.SVGProps<SVGSVGElement>) {
       <text
         x="5"
         y="17"
-        font-size="10"
-        text-anchor="middle"
-        font-family="Helvetica"
+        fontSize="10"
+        textAnchor="middle"
+        fontFamily="Helvetica"
       >
         PM
       </text>

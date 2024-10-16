@@ -2,7 +2,13 @@ import { Button, CheckButton } from "@/components/input";
 import LlmLog, { clearLogs } from "@/components/llmlog";
 import ScrollOnUpdate from "@/components/scrollonupdate";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
-import { isPerson, isStoryDescription, isStoryDialog } from "@/lib/types";
+import {
+  isPerson,
+  isStoryDescription,
+  isStoryDialog,
+  PersonScheduledEventType,
+  PersonScheduleType,
+} from "@/lib/types";
 import { StoryEventType } from "@/lib/types";
 import { model, SaveListType } from "@/lib/game/model";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
@@ -15,6 +21,7 @@ import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { ZoomOverlay } from "@/components/zoom";
 import { Clock } from "@/components/digitalnumerals";
+import { timeAsString } from "@/lib/game/scheduler";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
@@ -73,6 +80,7 @@ function ChatLogItem({ update }: { update: StoryEventType }) {
       {update.actions.length > 0 && (
         <ChatLogEntityInteraction update={update} />
       )}
+      <ChatLogMovement update={update} />
       {update.llmError && (
         <pre className="whitespace-pre-wrap text-red-400">
           <button
@@ -90,19 +98,34 @@ function ChatLogItem({ update }: { update: StoryEventType }) {
 }
 
 function ChatLogStateUpdate({ update }: { update: StoryEventType }) {
+  function formatSchedule(schedule: PersonScheduledEventType[]) {
+    if (!schedule || schedule.length === 0) {
+      return "no schedule";
+    }
+    return schedule
+      .map((item) => `${timeAsString(item.time)} ${item.scheduleId}`)
+      .join(", ");
+  }
   if (!showInternals.value) {
     return null;
   }
   const lines = [`Update ${update.id}:`];
   for (const [entityId, changes] of Object.entries(update.changes)) {
     for (const attr of Object.keys(changes.after || {})) {
-      const before = changes.before ? changes.before[attr] : null;
-      const after = changes.after ? changes.after[attr] : null;
+      let before = JSON.stringify(changes.before ? changes.before[attr] : null);
+      let after = JSON.stringify(changes.after ? changes.after[attr] : null);
+      if (before === "undefined" && after === "undefined") {
+        continue;
+      }
+      if (attr === "todaysSchedule") {
+        before = formatSchedule(changes.before.todaysSchedule);
+        after = formatSchedule(changes.after.todaysSchedule);
+      }
       lines.push(`  ${entityId}.${attr}: ${before} => ${after}`);
     }
   }
   return (
-    <pre className="text-xs whitespace-pre-wrap text-purple-600">
+    <pre className="text-xs whitespace-pre-wrap text-purple-400">
       {lines.join("\n")}
     </pre>
   );
@@ -200,6 +223,58 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
       {children}
     </div>
   );
+}
+
+function ChatLogMovement({ update }: { update: StoryEventType }) {
+  const children: React.ReactNode[] = [];
+  const playerRoom = model.world.entityRoom("player");
+  for (const [entityId, changes] of Object.entries(update.changes)) {
+    if (entityId === "player") {
+      continue;
+    }
+    const before = changes?.before?.inside;
+    const after = changes?.after?.inside;
+    if (
+      before === after ||
+      !after ||
+      (playerRoom.id !== before && playerRoom.id !== after)
+    ) {
+      continue;
+    }
+    const person = model.world.getPerson(entityId);
+    if (!person) {
+      continue;
+    }
+    if (before === playerRoom.id) {
+      const afterRoom = model.world.getRoom(after);
+      if (!afterRoom) {
+        console.error("Missing room", after);
+        continue;
+      }
+      children.push(
+        <div key={entityId} className="text-xs">
+          <span className={person.color}>{person.name}</span> goes to{" "}
+          <span className={afterRoom.color}>{afterRoom.name}</span>
+        </div>
+      );
+    } else {
+      const beforeRoom = model.world.getRoom(before);
+      if (!beforeRoom) {
+        console.error("Missing room", before);
+        continue;
+      }
+      children.push(
+        <div key={entityId} className={twMerge("text-xs", person.color)}>
+          <span className={person.color}>{person.name}</span> leaves to{" "}
+          <span className={beforeRoom.color}>{beforeRoom.name}</span>
+        </div>
+      );
+    }
+  }
+  if (children.length) {
+    return <div className="mb-2">{children}</div>;
+  }
+  return null;
 }
 
 function Input() {
@@ -716,6 +791,21 @@ function ViewObject({
   const lines = [];
   for (const [key, value] of Object.entries(entity)) {
     if (key === "world") {
+      continue;
+    }
+    if (key === "schedule") {
+      lines.push(`schedule:`);
+      for (const item of value as PersonScheduleType[]) {
+        lines.push(
+          `  ${timeAsString(item.time)}-${timeAsString(item.time + item.minuteLength)}: ${item.activity}`
+        );
+        lines.push(
+          `    ${item.description}${item.attentive ? " (attentive)" : ""}`
+        );
+        if (item.secret) {
+          lines.push(`    secret: ${item.secretReason}`);
+        }
+      }
       continue;
     }
     if (!compare(value, (model.world.original as any)[id][key])) {
