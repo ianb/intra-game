@@ -6,13 +6,15 @@ import { World } from "./world";
 import { AllEntitiesType, entities } from "./gameobjs";
 import { listSaves, load, removeSave, save } from "../localsaves";
 import { scheduleForTime } from "./scheduler";
-import type { Person } from "../types";
+import type { Person, StoryEventWithPositionsType } from "../types";
 import { pathTo } from "./pathto";
+import { computed } from "@preact/signals-react";
 
 export class Model {
   updates: SignalType<StoryEventType[]>;
   world: World;
   promiseQueue: TrackSettled;
+  updatesWithPositions: SignalType<StoryEventWithPositionsType[]>;
 
   constructor(startingEntities: AllEntitiesType) {
     if (typeof window !== "undefined") {
@@ -20,6 +22,7 @@ export class Model {
     }
     this.promiseQueue = new TrackSettled();
     this.updates = persistentSignal<StoryEventType[]>("updates", []);
+    this.updatesWithPositions = computed(() => this._eventsWithPositions());
     this.world = new World({
       original: startingEntities,
       model: this,
@@ -160,6 +163,69 @@ export class Model {
     }
   }
 
+  _eventsWithPositions(): StoryEventWithPositionsType[] {
+    let lastPositions = new Map<string, string>();
+    let lastPositionsInRoom = new Map<string, string>();
+    let notInRooms = new Set<string>();
+    const result: StoryEventWithPositionsType[] = [];
+    for (const entity of Object.values(this.world.original)) {
+      if (!entity.inside) {
+        continue;
+      }
+      lastPositions.set(entity.id, entity.inside);
+      lastPositionsInRoom.set(entity.id, entity.inside);
+      if (!this.world.rooms.includes(entity.inside)) {
+        notInRooms.add(entity.id);
+      }
+    }
+    for (const notInRoom of Array.from(notInRooms)) {
+      let pos = lastPositions.get(notInRoom);
+      while (pos && !this.world.rooms.includes(pos)) {
+        pos = lastPositions.get(pos);
+      }
+      if (pos) {
+        lastPositionsInRoom.set(notInRoom, pos);
+      } else {
+        console.warn("Entity not in room and no path to room", notInRoom);
+      }
+    }
+    for (const update of this.updates.value) {
+      const insideUpdates = new Map<string, string>();
+      for (const [id, change] of Object.entries(update.changes)) {
+        if (change.after.inside) {
+          insideUpdates.set(id, change.after.inside);
+        }
+      }
+      if (!insideUpdates.size) {
+        result.push({ event: update, positions: lastPositionsInRoom });
+        continue;
+      }
+      lastPositions = new Map(lastPositions);
+      lastPositionsInRoom = new Map(lastPositionsInRoom);
+      const notInRoom = new Set<string>();
+      for (const [id, inside] of Array.from(insideUpdates)) {
+        if (!this.world.rooms.includes(inside)) {
+          notInRoom.add(id);
+        }
+        lastPositions.set(id, inside);
+        lastPositionsInRoom.set(id, inside);
+      }
+      for (const notInRoomId of Array.from(notInRoom)) {
+        let pos = lastPositions.get(notInRoomId);
+        while (pos && !this.world.rooms.includes(pos)) {
+          pos = lastPositions.get(pos);
+        }
+        if (pos) {
+          lastPositionsInRoom.set(notInRoomId, pos);
+        } else {
+          console.warn("Entity not in room and no path to room", notInRoomId);
+        }
+      }
+      result.push({ event: update, positions: lastPositionsInRoom });
+    }
+    return result;
+  }
+
   checkLaunch() {
     if (!this.world.entities.player.launched) {
       const schedules = this.world.setupDailySchedules();
@@ -243,6 +309,8 @@ export class Model {
     const redoText = this.undo();
     await this.sendText(redoText);
   }
+
+  /* Load/save: */
 
   async proposeTitle(): Promise<string> {
     return `${this.world.entities.player.name} ${formatDate(new Date())}`;

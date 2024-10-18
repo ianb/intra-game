@@ -1,11 +1,14 @@
 import { useSignal } from "@preact/signals-react";
 import React, { useEffect } from "react";
+import { twMerge } from "tailwind-merge";
 
 export function ZoomOverlay({
   onDone,
+  className,
   children,
 }: {
   onDone: () => void;
+  className?: string;
   children: React.ReactNode;
 }) {
   const handleBackgroundClick = () => {
@@ -13,6 +16,9 @@ export function ZoomOverlay({
   };
   const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation(); // Prevent the background click event
+    if ((e.target as HTMLDivElement).className.includes("done")) {
+      onDone();
+    }
   };
   useEffect(() => {
     // Escape will close
@@ -31,7 +37,10 @@ export function ZoomOverlay({
       onClick={handleBackgroundClick}
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
     >
-      <div onClick={handleContentClick} className="relative">
+      <div
+        onClick={handleContentClick}
+        className={twMerge("relative", className)}
+      >
         {children}
       </div>
       <button

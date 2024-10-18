@@ -223,76 +223,16 @@ export abstract class Entity<ParametersT extends object = object> {
 
   updatesSeenByMe(): StoryEventType[] {
     const results: StoryEventType[] = [];
-    const startMe = (this.world.original as any)[this.id];
-    if (!startMe) {
-      console.warn("Could not find original entity", this.id);
-      return [];
-    }
-    // This ONLY works for containment for the player (like Ama) but for now eh.
-    let inside: EntityId = startMe.inside;
-    let originallyPlayer = false;
-    if (inside === "player") {
-      inside = this.world.original.player.inside;
-      originallyPlayer = true;
-    }
-    for (const storyEvent of this.world.model.updates.value) {
-      if (storyEvent.roomId === inside || storyEvent.id === inside) {
-        results.push(storyEvent);
-        if (originallyPlayer && storyEvent.changes.player?.after?.inside) {
-          inside = storyEvent.changes.player.after.inside;
-        }
-        if (storyEvent.changes[this.id]?.after?.inside) {
-          results.push({
-            id: storyEvent.id,
-            roomId: storyEvent.changes[this.id].after.inside,
-            totalTime: storyEvent.totalTime,
-            actions: [
-              {
-                type: "description",
-                text: `${storyEvent.id} enters ${storyEvent.changes[this.id].after.inside}`,
-              },
-            ],
-            changes: {},
-          });
-          inside = storyEvent.changes[this.id].after.inside;
-        }
-        if (storyEvent.changes[storyEvent.id]?.after?.inside) {
-          const goesTo = storyEvent.changes[storyEvent.id].after.inside;
-          results.push({
-            id: storyEvent.id,
-            roomId: goesTo,
-            totalTime: storyEvent.totalTime,
-            actions: [
-              {
-                type: "description",
-                text: `${storyEvent.id} leaves to go to ${goesTo}`,
-                minutes: 5,
-              },
-            ],
-            changes: {},
-          });
-        }
-      } else if (storyEvent.changes[storyEvent.id]?.after?.inside === inside) {
-        const cameFrom = storyEvent.roomId;
-        results.push({
-          id: storyEvent.id,
-          roomId: inside,
-          totalTime: storyEvent.totalTime,
-          actions: [
-            {
-              type: "description",
-              text: `${storyEvent.id} comes from ${cameFrom}`,
-            },
-          ],
-          changes: {},
-        });
+    for (const eventPos of this.world.model.updatesWithPositions.value) {
+      if (eventPos.positions.get(this.id) === eventPos.event.roomId) {
+        results.push(eventPos.event);
       }
     }
     return results;
   }
 
   updateToHistory(update: StoryEventType): GeminiHistoryType[] {
-    const lines: string[] = [];
+    const parts: string[] = [];
     // for (const id of Object.keys(update.changes)) {
     //   for (const [key, value] of Object.entries(update.changes[id].after)) {
     //     lines.push(`<set attr="${id}.${key}">${value}</set>`);
@@ -300,7 +240,7 @@ export abstract class Entity<ParametersT extends object = object> {
     // }
     for (const action of update.actions) {
       if (isStoryDialog(action)) {
-        lines.push(tmpl`
+        parts.push(tmpl`
           <dialog character="${action.id}"[[ to="${action.toId}"]]>
           ${action.text}
           </dialog>
@@ -308,18 +248,21 @@ export abstract class Entity<ParametersT extends object = object> {
       } else if (isStoryDescription(action)) {
         const minutes =
           action.minutes === undefined ? "" : ` minutes="${action.minutes}"`;
-        lines.push(`<description${minutes}>${action.text}</description>`);
+        const text = action.text.trim().includes("\n")
+          ? `\n${action.text.trim()}\n`
+          : action.text.trim();
+        parts.push(`<description${minutes}>${text}</description>`);
       } else {
         console.warn("Unknown action type", action);
       }
     }
-    if (!lines.length) {
+    if (!parts.length) {
       return [];
     }
     return [
       {
-        role: "model",
-        text: lines.join("\n"),
+        role: update.id === "player" ? "user" : "model",
+        text: parts.join("\n\n"),
       },
     ];
   }
@@ -797,6 +740,10 @@ export class Person<
 
   lastSpokeTo(): Person | undefined {
     const checkReturn = (person: Person) => {
+      if (!person) {
+        console.warn("No person?");
+        return undefined;
+      }
       const thisRoom = this.world.entityRoom(this.id);
       const personRoom = this.world.entityRoom(person.id);
       if (!thisRoom || !personRoom || thisRoom.id !== personRoom.id) {

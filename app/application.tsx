@@ -8,6 +8,7 @@ import {
   isStoryDialog,
   PersonScheduledEventType,
   PersonScheduleType,
+  StoryEventWithPositionsType,
 } from "@/lib/types";
 import { StoryEventType } from "@/lib/types";
 import { model, SaveListType } from "@/lib/game/model";
@@ -26,6 +27,7 @@ import { timeAsString } from "@/lib/game/scheduler";
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
 const revealMap = persistentSignal("revealMap", false);
+const seenHelp = persistentSignal("seenHelp", false);
 
 let textareaRef: React.RefObject<HTMLTextAreaElement>;
 
@@ -33,14 +35,35 @@ export default function Home() {
   useEffect(() => {
     model.checkLaunch();
   }, []);
+  const openHelp = useSignal(!seenHelp.value);
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
         <span className="">Intra</span>
         <span className="">
           <Time />
+          <Button
+            className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
+            onClick={() => {
+              openHelp.value = !openHelp.value;
+            }}
+          >
+            ?
+          </Button>
         </span>
       </div>
+
+      {openHelp.value && (
+        <ZoomOverlay
+          className="w-3/4 h-3/4"
+          onDone={() => {
+            openHelp.value = false;
+            seenHelp.value = true;
+          }}
+        >
+          <Help />
+        </ZoomOverlay>
+      )}
 
       <div className="flex flex-1 pt-12 overflow-hidden">
         <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
@@ -64,14 +87,15 @@ export default function Home() {
 function ChatLog() {
   return (
     <div>
-      {model.updates.value.map((update, i) => (
-        <ChatLogItem update={update} key={i} />
+      {model.updatesWithPositions.value.map((eventPos, i) => (
+        <ChatLogItem eventPos={eventPos} key={i} />
       ))}
     </div>
   );
 }
 
-function ChatLogItem({ update }: { update: StoryEventType }) {
+function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
+  const update = eventPos.event;
   return (
     <>
       {Object.keys(update?.changes || {}).length > 0 && (
@@ -80,7 +104,7 @@ function ChatLogItem({ update }: { update: StoryEventType }) {
       {update.actions.length > 0 && (
         <ChatLogEntityInteraction update={update} />
       )}
-      <ChatLogMovement update={update} />
+      <ChatLogMovement eventPos={eventPos} />
       {update.llmError && (
         <pre className="whitespace-pre-wrap text-red-400">
           <button
@@ -225,10 +249,14 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
   );
 }
 
-function ChatLogMovement({ update }: { update: StoryEventType }) {
+function ChatLogMovement({
+  eventPos,
+}: {
+  eventPos: StoryEventWithPositionsType;
+}) {
   const children: React.ReactNode[] = [];
-  const playerRoom = model.world.entityRoom("player");
-  for (const [entityId, changes] of Object.entries(update.changes)) {
+  const playerPos = eventPos.positions.get("player");
+  for (const [entityId, changes] of Object.entries(eventPos.event.changes)) {
     if (entityId === "player") {
       continue;
     }
@@ -237,7 +265,7 @@ function ChatLogMovement({ update }: { update: StoryEventType }) {
     if (
       before === after ||
       !after ||
-      (playerRoom.id !== before && playerRoom.id !== after)
+      (playerPos !== before && playerPos !== after)
     ) {
       continue;
     }
@@ -245,7 +273,7 @@ function ChatLogMovement({ update }: { update: StoryEventType }) {
     if (!person) {
       continue;
     }
-    if (before === playerRoom.id) {
+    if (before === playerPos) {
       const afterRoom = model.world.getRoom(after);
       if (!afterRoom) {
         console.error("Missing room", after);
@@ -839,5 +867,48 @@ function Time() {
   const v = model.updates.value;
   return (
     <Clock className="text-red-500" time={model.world.timeOfDay} bg="#1f2937" />
+  );
+}
+
+function Help() {
+  return (
+    <div className="w-full h-full bg-blue-900 text-white py-4 px-8 border-white border-8 overflow-scroll">
+      <div className="flex justify-center mb-4">░░▒▒▓▓ Intra ▓▓▒▒░░</div>
+      <div className="mb-4">
+        Welcome to the Intra Complex! Everything here is just perfect. No need
+        to worry about a thing... except figuring out where you are. But don't
+        worry, you're in good hands.
+      </div>
+      <div className="mb-4">
+        You will play a character from a time not unlike today, except maybe
+        with more smart fridges that talk back. You decide your name and
+        profession - don't overthink it, just pick something and keep an eye out
+        for suspiciously friendly fridges.
+      </div>
+      <div className="mb-4">
+        This is a text adventure (or as it's now more fashionably called,
+        "interactive fiction"). Whether you're exploring strange rooms,
+        questioning fellow citizens, or trying to outwit the AI, type whatever
+        comes to mind. The system is smart enough to figure it out (most of the
+        time).
+      </div>
+      <div className="flex justify-center mb-4">
+        <pre>
+          {"+-------------------------+\n"}
+          {"| story         | map     |\n"}
+          {"| ...           |         |\n"}
+          {"| ...           |         |\n"}
+          {"| ...           +---------|\n"}
+          {"+---------------+ rooms & |\n"}
+          {"| TYPE HERE     | people  |\n"}
+          {"+---------------+---------+\n"}
+        </pre>
+      </div>
+      <div className="flex justify-center">
+        <span className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4">
+          DONE
+        </span>
+      </div>
+    </div>
   );
 }

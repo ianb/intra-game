@@ -1,6 +1,11 @@
 import type { Entity, Room, Person } from "./game/classes";
 export { Entity, Room, Person };
 
+export type StoryEventWithPositionsType = {
+  event: StoryEventType;
+  positions: Map<EntityId, EntityId>;
+};
+
 export type StoryEventType = {
   id: EntityId;
   roomId: EntityId;
