@@ -166,7 +166,7 @@ export class Model {
   _eventsWithPositions(): StoryEventWithPositionsType[] {
     let lastPositions = new Map<string, string>();
     let lastPositionsInRoom = new Map<string, string>();
-    let notInRooms = new Set<string>();
+    const notInRooms = new Set<string>();
     const result: StoryEventWithPositionsType[] = [];
     for (const entity of Object.values(this.world.original)) {
       if (!entity.inside) {
