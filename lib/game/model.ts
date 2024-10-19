@@ -354,7 +354,7 @@ export type SaveListType = {
 };
 
 function isUserInput(update: StoryEventType) {
-  return update.id === "player";
+  return !!(update.id === "player" && update.llmParameters?.input);
 }
 
 function formatDate(date: Date) {
