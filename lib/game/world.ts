@@ -23,7 +23,7 @@ export class World {
   model: Model;
   // Minutes since Midnight the day the game starts
   timestampMinutes: number = 10 * 60; // 10am
-  nameRegex: RegExp;
+  nameRegex!: RegExp;
 
   constructor({
     entities,
