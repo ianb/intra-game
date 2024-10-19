@@ -728,7 +728,7 @@ export class Person<
     if (storyEvent?.changes?.[this.id]?.after?.inside) {
       myRoom = this.world.getRoom(storyEvent.changes[this.id].after.inside)!;
     }
-    let playerRoom = this.world.entityRoom("player");
+    const playerRoom = this.world.entityRoom("player");
     if (storyEvent.changes?.player?.after?.inside) {
       // Just don't chat with the player if they are moving around...
       return undefined;
