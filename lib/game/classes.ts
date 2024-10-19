@@ -177,7 +177,7 @@ export abstract class Entity<ParametersT extends object = object> {
     return undefined;
   }
 
-  processTag({
+  async processTag({
     tag,
     model,
     parameters,
@@ -189,7 +189,7 @@ export abstract class Entity<ParametersT extends object = object> {
     parameters: ParametersT;
     storyEvent: StoryEventType;
     llmResponse: string;
-  }): StoryEventType {
+  }): Promise<StoryEventType> {
     console.warn("Got unexpected tag:", tag);
     return storyEvent;
   }
@@ -476,7 +476,7 @@ export abstract class Entity<ParametersT extends object = object> {
       } else if (tag.type === "context") {
         // We can ignore these
       } else {
-        result = this.processTag({
+        result = await this.processTag({
           tag,
           model,
           parameters,
@@ -1378,7 +1378,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     };
   }
 
-  processTag({
+  async processTag({
     tag,
     model,
     parameters,
@@ -1390,7 +1390,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     parameters: PlayerInputType;
     storyEvent: StoryEventType;
     llmResponse: string;
-  }): StoryEventType {
+  }): Promise<StoryEventType> {
     if (tag.type === "goto") {
       const room = model.world.getRoom(tag.content);
       if (!room) {
@@ -1455,6 +1455,9 @@ export class PlayerClass extends Person<PlayerInputType> {
           `  ${person.name}: ${person.shortDescription}${extra}`
         );
       }
+      const peopleDescription = folks.length
+        ? await this.formatPeopleDescription(room, folks)
+        : "";
       if (room.visits === 0) {
         storyEvent.actions.push({
           type: "description",
@@ -1462,7 +1465,7 @@ export class PlayerClass extends Person<PlayerInputType> {
             ==> ${room.name} <==
             ${room.description}
 
-            ${peopleLines.join("\n")}
+            ${peopleDescription}
             `,
         });
       } else if (room.visits < 4) {
@@ -1470,14 +1473,15 @@ export class PlayerClass extends Person<PlayerInputType> {
           type: "description",
           text: tmpl`
             ==> ${room.name}: ${room.shortDescription}
-            ${peopleLines.join("\n")}
+
+            ${peopleDescription}
             `,
         });
       } else if (peopleLines.length > 0) {
         storyEvent.actions.push({
           type: "description",
           text: tmpl`
-            ${peopleLines.join("\n")}
+            ${peopleDescription}
             `,
         });
       }
@@ -1490,6 +1494,40 @@ export class PlayerClass extends Person<PlayerInputType> {
       ];
     }
     return storyEvent;
+  }
+
+  async formatPeopleDescription(room: Room, people: Person[]): Promise<string> {
+    const sourceLines: string[] = [];
+    for (const person of people) {
+      const schedule = scheduleForTime(person, this.world.timestampMinutes);
+      let text = `${person.name}: ${person.shortDescription}`;
+      if (schedule) {
+        if (schedule.inside.includes(room.id)) {
+          text += ` Currently doing: ${schedule.description}`;
+        } else {
+          text += ` ${person.name} is on their way elsewhere`;
+        }
+      }
+      sourceLines.push(text);
+    }
+    const resp = await chat({
+      meta: {
+        title: "describe people",
+      },
+      model: "flash",
+      systemInstruction: tmpl`
+      You are helping run a text adventure game.
+
+      The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
+
+      You will be given a list of people and the activities they are doing. You will respond with a series of lines that describe everything that is happening (in about one sentence/line per person). You may group together people doing similar activities.
+
+      Make sure to include all the names: ${people.map((x) => x.name).join(", ")} (you may reorder them to improve the flow of the paragraph)
+      `,
+      history: [],
+      message: sourceLines.join("\n"),
+    });
+    return resp;
   }
 
   // This suppresses the normal Person response

@@ -23,6 +23,7 @@ export class World {
   model: Model;
   // Minutes since Midnight the day the game starts
   timestampMinutes: number = 10 * 60; // 10am
+  nameRegex: RegExp;
 
   constructor({
     entities,
@@ -140,6 +141,7 @@ export class World {
   }
 
   initWorld() {
+    const regexParts: string[] = [];
     for (const [key, obj] of Object.entries(this.original)) {
       if (obj.id !== key) {
         throw new Error(`Object id ${obj.id} does not match key ${key}`);
@@ -181,8 +183,13 @@ export class World {
             }
           }
         }
+        regexParts.push(obj.name);
       }
     }
+    this.nameRegex = new RegExp(
+      `(^|[^a-zA-Z])(${regexParts.join("|")})([^a-zA-Z]|$)`,
+      "ig"
+    );
     this.applyUpdates();
   }
 
