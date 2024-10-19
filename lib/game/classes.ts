@@ -710,6 +710,10 @@ export class Person<
   }
 
   onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
+    if (!storyEvent.actions.length && !Object.keys(storyEvent.changes).length) {
+      // This is probably an examination or something, not a "real" event
+      return undefined;
+    }
     const hasDialog = storyEvent.actions
       .filter(isStoryDialog)
       .some((x) => x.toId === this.id || !x.toId);
@@ -1214,9 +1218,9 @@ export class PlayerClass extends Person<PlayerInputType> {
       systemInstruction: tmpl`
       You are a computer assisting in running a text adventure game.
 
-      The player ("${this.name}") is a character in the game, controlled by the user. The user has entered a command, and you will be interpreting that command in the context of the game.
+      The player ("${this.name}", id: "player") is a character in the game, controlled by the user. The user has entered a command, and you will be interpreting that command in the context of the game.
 
-      The player may is located in: ${this.currentLocationPrompt(parameters)}
+      The player is located in: ${this.currentLocationPrompt(parameters)}
 
       The player may go to any of these location:
       ${this.exitsPrompt(parameters)}
@@ -1229,10 +1233,21 @@ export class PlayerClass extends Person<PlayerInputType> {
       Move to a new location:
       <goto>locationId</goto>
 
-      Examine something (an object, person, the environment):
-      <examine>thing</examine>
+      Example:
+      \`leave here\`
+      <goto>${room.exits[0].roomId}</goto>
 
-      If the user indicates they will speak (like typing "Hello") you will emit:
+      Examine something (an object, person, the environment); emit this only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
+      <examine>look at thing</examine>
+
+      \`examine the room\`
+      <examine>examine the room</example>
+      \`inspect the door\`
+      <examine>inspect the door</examine>
+      [[\`look at ${this.lastSpokeTo()?.name}\`
+      <examine>look at ${lastTo}</examine>]]
+
+      The most likely case is that the user is speaking. For instance if they type \`hello\` you will emit:
 
       <dialog character="${this.name}">Hello!</dialog>
 
@@ -1248,7 +1263,11 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       IF AND ONLY IF THE USER INDICATES AN ACTION you may describe the ATTEMPT at the action like:
 
-      <description minutes="10">Player attempts to open the door.</description>
+      <description minutes="10">${this.name} attempts to open the door.</description>
+
+      For example:
+      \`buy a drink\`
+      <description minutes="5">${this.name} goes to the vending machine to buy a drink.</description>
       `,
       history: this.historyForEntity(parameters, { limit: 3 }),
       message: tmpl`
@@ -1425,7 +1444,7 @@ export class PlayerClass extends Person<PlayerInputType> {
         let extra = "";
         if (schedule) {
           if (schedule.inside.includes(room.id)) {
-            extra = `\n    ${person.name} is: ${schedule.description}`;
+            extra = `\n    ${schedule.description}`;
           } else {
             extra = `\n    ${person.name} is on their way elsewhere`;
           }
