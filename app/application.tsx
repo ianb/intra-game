@@ -575,9 +575,6 @@ function NormalControls() {
     .entitiesInRoom(room)
     .filter((x) => isPerson(x))
     .filter((x) => !x.invisible && x.id !== "player");
-  async function onGoToRoom(room: Room, exit: Exit) {
-    await model.sendText(`Go to ${room.name}`);
-  }
   function onConverse(entity: Person) {
     if (!textareaRef?.current) {
       return;
@@ -601,33 +598,11 @@ function NormalControls() {
       </div>
       {room && (
         <div className="flex space-x-4">
-          <div className="flex-1">
-            Exits:
-            <ul>
-              {room!.exits.map((exit, i) => {
-                const targetRoom = model.world.getRoom(exit.roomId);
-                if (!targetRoom) {
-                  return <li key={i}>- Missing exit: {exit.roomId}</li>;
-                }
-                return (
-                  <li key={i}>
-                    -{" "}
-                    <Button
-                      className={twMerge(
-                        "p-0 bg-inherit hover:bg-gray-700",
-                        targetRoom.color
-                      )}
-                      onClick={() => {
-                        return onGoToRoom(targetRoom, exit);
-                      }}
-                    >
-                      {exit.name || targetRoom.name}
-                    </Button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          {model.world.entities.Ama.personality === "intro" ? (
+            <IntroList />
+          ) : (
+            <ExitList room={room} />
+          )}
           {folks.length > 0 && (
             <div className="flex-1">
               People:
@@ -654,6 +629,76 @@ function NormalControls() {
         </div>
       )}
     </>
+  );
+}
+
+function IntroList() {
+  function checkText(cond: boolean) {
+    return cond ? "[x]" : "[ ]";
+  }
+  function extraCheck(cond: boolean) {
+    return cond ? " ✓" : "";
+  }
+  // Dependency thing...
+  const u = model.updates.value;
+  const ama = model.world.entities.Ama;
+  return (
+    <div className="flex-1">
+      Welcome to Intra!
+      <ul>
+        <li>1. {checkText(ama.sharedSelf)} Meet Ama</li>
+        <li>2. {checkText(ama.sharedIntra)} Meet Intra</li>
+        <li>
+          3. {checkText(ama.knowsPlayerName)} Name?
+          {extraCheck(ama.knowsPlayerPronouns)}
+        </li>
+        <li>4. {checkText(ama.knowsPlayerProfession)} Profession?</li>
+        <li>
+          5. {checkText(ama.sharedDisassociation && ama.sharedPlayerAge)} Know
+          about yourself?{extraCheck(ama.sharedDisassociation)}
+          {extraCheck(ama.sharedPlayerAge)}
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+function ExitList({ room }: { room: Room }) {
+  async function onGoToRoom(room: Room, exit: Exit) {
+    if (model.runningSignal.value) {
+      return;
+    }
+    await model.sendText(`Go to ${room.name}`);
+  }
+  return (
+    <div className="flex-1">
+      Exits:
+      <ul>
+        {room!.exits.map((exit, i) => {
+          const targetRoom = model.world.getRoom(exit.roomId);
+          if (!targetRoom) {
+            return <li key={i}>- Missing exit: {exit.roomId}</li>;
+          }
+          return (
+            <li key={i}>
+              -{" "}
+              <Button
+                className={twMerge(
+                  "p-0 bg-inherit hover:bg-gray-700",
+                  targetRoom.color
+                )}
+                onClick={() => {
+                  return onGoToRoom(targetRoom, exit);
+                }}
+                disabled={model.runningSignal.value}
+              >
+                {exit.name || targetRoom.name}
+              </Button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

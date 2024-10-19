@@ -730,7 +730,8 @@ export class Person<
     }
     let playerRoom = this.world.entityRoom("player");
     if (storyEvent.changes?.player?.after?.inside) {
-      playerRoom = this.world.getRoom(storyEvent.changes.player.after.inside)!;
+      // Just don't chat with the player if they are moving around...
+      return undefined;
     }
     if (!myRoom || !playerRoom || myRoom.id !== playerRoom.id) {
       return undefined;
@@ -853,7 +854,9 @@ export class AmaClass extends Person<AmaParametersType> {
   Ama is the AI in control of the entire Intra complex.
   `;
   description = `
-  Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing figure, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
+  Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing AI, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
+
+  Ama has no physical form, but her voice can be heard from speakers throughout the complex. She is always watching, always listening, and always ready to help.
   `;
   roleplayInstructions = `
   The current year is roughly 2370, though the player believes the year is roughly 2038. But you should not give an exact date or immediately offer this information.
@@ -1039,8 +1042,9 @@ export class AmaClass extends Person<AmaParametersType> {
       "Ama.sharedDisassociation": {
         value: this.world.entities.Ama.sharedDisassociation,
         write: true,
-        description:
-          "Has Ama introduced disassociation? Disassociation can be explained like: \"It's worth mentioning, Citizen, that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?\"",
+        description: `Has Ama introduced disassociation? Disassociation can be explained like:
+          "It's worth mentioning, Citizen, that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?"
+          Be clear that the player will be making suggestions to themselves rather than directly performing actions.`,
         writeInstructions:
           "Set this to true after Ama has introduced disassociation, having briefly describing the concept",
       },
@@ -1056,7 +1060,7 @@ export class AmaClass extends Person<AmaParametersType> {
     if (this.knowsPlayerName) {
       delete states["player.name"];
     }
-    if (this.knowsPlayerPronouns) {
+    if (this.knowsPlayerPronouns && this.personality !== "intro") {
       // Give a little extra time to change pronouns...
       delete states["player.pronouns"];
     }
@@ -1110,13 +1114,33 @@ export class AmaClass extends Person<AmaParametersType> {
     if (this.personality === "intro") {
       return tmpl`
       Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set>:
-      [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record it by emitting <set attr="player.name">John Doe</set>]]
-      [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary; whether you ask pronouns or guess them from the name, record it by emitting <set attr="player.pronouns">he/him or she/her</set>]]
-      [[${IF(!this.sharedSelf)}* Introduce yourself and mark it complete: <set attr="Ama.sharedSelf">true</set>]]
-      [[${IF(!this.sharedIntra)}* Explain Intra and mark it complete: <set attr="Ama.sharedIntra">true</set>]]
+      [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record. Example:
+        "John"
+        <set attr="player.name">John</set>]]
+      [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary; after you learn the player's name you may guess their pronouns, or if unsure ask. Example:
+        "I go by he/him"
+        <set attr="player.pronouns">he/him</set>
+        "I'm John"
+        <set attr="player.name">John</set>
+        <set attr="player.pronouns">he/him</set>]]
+      [[${IF(!this.sharedSelf)}* Introduce yourself, including these details:
+        1. Ama is named Ama, pronounced Ah-ma
+        2. Ama is everywhere and always ready to help.
+        3. Ama has no physical manifestation, but sees and hears everything through cameras and microphones.
+        4. Once done mark it complete by emitting: <set attr="Ama.sharedSelf">true</set>]]
+      [[${IF(!this.sharedIntra)}* Explain Intra, including these details:
+        1. Intra is a wonderful complex where everyone is happy
+        2. No matter what happens outside Intra, everyone is safe inside
+        3. Once done mark it complete by emitting: <set attr="Ama.sharedIntra">true</set>]]
       [[${IF(!this.sharedDisassociation)}* Explain disassociation and mark it complete: <set attr="Ama.sharedDisassociation">true</set>]]
-      [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or unemployed, student, etc) and record it by emitting <set attr="player.profession">name of profession</set>]]
-      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age (roughly 350 years old); then mark it complete: <set attr="Ama.sharedPlayerAge">true</set>]]
+      [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or unemployed, student, etc) and record it. The player can give a very specific profession, but a general profession is also fine. Example:
+        "I'm a carpenter"
+        <set attr="player.profession">carpenter</set>]]
+      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age:
+        1. The player may think they are a normal age
+        2. Using your records and birth year you know they are roughly 350 years old
+        3. Tell them their age (even if they don't think that's their age), but don't go into detail.
+        4. Once you've told them that they are very old mark it complete by emitting: <set attr="Ama.sharedPlayerAge">true</set>]]
 
       Stay focused on completing these tasks!
       `;
@@ -1244,7 +1268,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     const room = this.world.entityRoom(this.id);
     const entities = this.world
       .entitiesInRoom(room!)
-      .filter((x) => !x.invisible && x.id !== this.id);
+      .filter((x) => x.id === "Ama" || (!x.invisible && x.id !== this.id));
     const entityLines: string[] = [];
     for (const entity of entities) {
       entityLines.push(`"${entity.name}" {`);
@@ -1490,5 +1514,5 @@ function IF(cond: any) {
 }
 
 function fixupText(llmText: string) {
-  return llmText.replace("…", "...").replace("&#x20;", " ").trim();
+  return llmText.replace(/…/g, "...").replace("&#x20;", " ").trim();
 }
