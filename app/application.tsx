@@ -39,7 +39,13 @@ export default function Home() {
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
-        <span className="">Intra</span>
+        <span className="">
+          Intra
+          <span className="text-gray-500 text-sm">
+            {" "}
+            !alpha: save games will break periodically
+          </span>
+        </span>
         <span className="">
           <Time />
           <Button
@@ -357,6 +363,7 @@ function Input() {
     if (lastInput) {
       textareaRef.current!.value = lastInput;
     }
+    textareaRef.current!.focus();
   }
   let placeholder = "Waiting...";
   if (!model.runningSignal.value) {
