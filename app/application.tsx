@@ -217,12 +217,27 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
         if (room) {
           text = room.formatStoryAction(update, action);
         }
+        const time = action.minutes;
+        let timeChar = "";
+        if (time && time >= 10) {
+          const timePeriod = Math.min(Math.round(time / 5), 11);
+          timeChar =
+            (CLOCK_CHARS as any)[timePeriod.toString()] || CLOCK_CHARS["11"];
+        }
         return (
           <React.Fragment key={i}>
             {action.subject && (
               <div className="text-xs">examine: {action.subject}</div>
             )}
             <pre className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700">
+              {timeChar && (
+                <div
+                  className="float-right cursor-help opacity-50 hover:opacity-100"
+                  title={`${time} minutes`}
+                >
+                  {timeChar}
+                </div>
+              )}
               {text}
             </pre>
           </React.Fragment>
@@ -964,3 +979,18 @@ function Help() {
     </div>
   );
 }
+
+const CLOCK_CHARS = {
+  "12": "🕛",
+  "1": "🕐",
+  "2": "🕑",
+  "3": "🕒",
+  "4": "🕓",
+  "5": "🕔",
+  "6": "🕕",
+  "7": "🕖",
+  "8": "🕗",
+  "9": "🕘",
+  "10": "🕙",
+  "11": "🕚",
+};

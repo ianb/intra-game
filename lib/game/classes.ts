@@ -1268,6 +1268,8 @@ export class PlayerClass extends Person<PlayerInputType> {
       For example:
       \`buy a drink\`
       <description minutes="5">${this.name} goes to the vending machine to buy a drink.</description>
+      \`sleep in bed\`
+      <description minutes="90">${this.name} lays down on the bed to sleep.</description>
       `,
       history: this.historyForEntity(parameters, { limit: 3 }),
       message: tmpl`
