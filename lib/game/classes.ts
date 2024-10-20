@@ -1123,7 +1123,7 @@ export class AmaClass extends Person<AmaParametersType> {
     }
     if (this.personality === "intro") {
       return tmpl`
-      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set>:
+      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set> (you may do multiple steps in one response):
       [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record. Example:
         <dialog character="player">John</dialog>
         output:
@@ -1160,7 +1160,7 @@ export class AmaClass extends Person<AmaParametersType> {
         3. Tell them their age (even if they don't think that's their age), but don't go into detail.
         4. Once you've told them that they are very old mark it complete by emitting: <set attr="Ama.sharedPlayerAge">true</set>]]
 
-      Stay focused on completing these tasks!
+      Stay focused on completing these tasks and emit <set> at the end of the response if you complete them.
       `;
     }
     return "";
