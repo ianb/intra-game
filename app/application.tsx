@@ -317,7 +317,7 @@ function ChatLogMovement({
       }
       children.push(
         <div key={entityId} className={twMerge("text-xs", person.color)}>
-          <span className={person.color}>{person.name}</span> leaves to{" "}
+          <span className={person.color}>{person.name}</span> comes from{" "}
           <span className={beforeRoom.color}>{beforeRoom.name}</span>
         </div>
       );
@@ -425,7 +425,7 @@ function HeadsUpDisplay() {
     <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
       <div>
         {activeTab.value === "log" && (
-          <span className="float-right">
+          <span className="float-right z-50 pl-4 pr-1">
             <Button
               className="bg-red-800 text-xs p-1 opacity-50 hover:opacity-100"
               onClick={clearLogs}
