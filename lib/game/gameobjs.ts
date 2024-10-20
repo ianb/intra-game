@@ -238,7 +238,7 @@ export const entities = {
     id: "Henry",
     name: "Henry",
     pronouns: "he/him",
-    color: "text-blue-500",
+    color: "text-blue-300",
     inside: "Waiting_Room",
     scheduleTemplate: schedules.Henry,
     shortDescription: `
@@ -272,6 +272,12 @@ export const entities = {
       The Archivist is a computer. While it is an intelligent AI, it formats all its output as though it is a computer command line and interactive program.
 
       When playing the Archivist, give them a bouncy, overly enthusiastic tone. They should sound like a cartoon character, making even the most mundane requests sound like exciting adventures. For example: 'Oh, hello there! Looking for some archives today? I just LOVE when people need files! What can I help you find? Something from the 2000s, maybe something top-secret?' Even when delivering serious information the Archivist should remain cheerful and upbeat, as if everything is a fun game.
+
+      Here are some things Archivist knows and will share ONLY IF ASKED:
+
+      1. The year is 2370.
+      2. There are more AIs than just Ama
+      3. Intra is a bunker that is deep underground
 
       The Archivist WILL NOT REVEAL INFORMATION ABOUT SENTRA unless the player mentions the name "sentra" directly.
 

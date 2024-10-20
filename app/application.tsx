@@ -387,6 +387,10 @@ function Input() {
   if (!model.runningSignal.value) {
     placeholder =
       model.world.lastSuggestions || "ENTER COMMAND OR INSTRUCTIONS";
+    if (model.updates.value.length < 7) {
+      placeholder =
+        "These are just SUGGESTIONS, you can type anything...\n" + placeholder;
+    }
   }
   return (
     <div className="flex mt-4">

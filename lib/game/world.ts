@@ -73,6 +73,10 @@ export class World {
     return Object.values(this.entities).filter(isPerson);
   }
 
+  allRooms(): Room[] {
+    return Object.values(this.entities).filter(isRoom);
+  }
+
   entitiesInRoom(room: string | Room): Entity[] {
     if (typeof room === "string") {
       const aRoom = this.getRoom(room);

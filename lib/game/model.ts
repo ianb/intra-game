@@ -91,7 +91,7 @@ export class Model {
             schedule.inside
           );
         } else {
-          console.log(
+          console.info(
             `Person ${person.id} goes from ${person.inside}=>${path[0]} to get to ${dest}${schedule.inside.length > 1 ? ` of ${schedule.inside}` : ""}`,
             path
           );
@@ -143,7 +143,7 @@ export class Model {
       if (isStoryEvent(action)) {
         await this.run(() => this.addStoryEvent(action));
       } else if (isPromptRequest(action)) {
-        console.log(
+        console.info(
           `Executing prompt request for ${action.id}:`,
           action.parameters
         );
@@ -204,20 +204,22 @@ export class Model {
       lastPositionsInRoom = new Map(lastPositionsInRoom);
       const notInRoom = new Set<string>();
       for (const [id, inside] of Array.from(insideUpdates)) {
+        lastPositions.set(id, inside);
+        lastPositionsInRoom.set(id, inside);
+      }
+      for (const [id, inside] of Array.from(lastPositions)) {
         if (!this.world.rooms.includes(inside)) {
           notInRoom.add(id);
         }
-        lastPositions.set(id, inside);
-        lastPositionsInRoom.set(id, inside);
       }
       for (const notInRoomId of Array.from(notInRoom)) {
         let pos = lastPositions.get(notInRoomId);
         while (pos && !this.world.rooms.includes(pos)) {
           pos = lastPositions.get(pos);
         }
-        if (pos) {
+        if (pos && lastPositionsInRoom.get(notInRoomId) !== pos) {
           lastPositionsInRoom.set(notInRoomId, pos);
-        } else {
+        } else if (!pos) {
           console.warn("Entity not in room and no path to room", notInRoomId);
         }
       }
@@ -283,7 +285,7 @@ export class Model {
   async sendText(text: string) {
     const player = this.world.entities.player;
     await this.run(() => player.executePrompt(this, { input: text }));
-    await this.scheduleTick();
+    await this.run(() => this.scheduleTick());
   }
 
   undo(): string {

@@ -206,6 +206,10 @@ export abstract class Entity<ParametersT extends object = object> {
     return "";
   }
 
+  additionalSystemInstructions(parameters: ParametersT): string {
+    return "";
+  }
+
   historyForEntity(
     parameters: ParametersT,
     { limit }: { limit?: number } = {}
@@ -486,7 +490,7 @@ export abstract class Entity<ParametersT extends object = object> {
       }
     }
     result = this.afterPrompt(result);
-    model.addStoryEvent(result);
+    await model.addStoryEvent(result);
   }
 }
 
@@ -665,6 +669,8 @@ export class Person<
       ${this.currentPeoplePrompt(parameters)}
 
       ${statePrompt}
+
+      ${this.additionalSystemInstructions(parameters)}
       `,
       history: this.historyForEntity(parameters, { limit: 10 }),
       message: tmpl`
@@ -994,7 +1000,7 @@ export class AmaClass extends Person<AmaParametersType> {
           actions: [
             {
               type: "description",
-              text: "You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.",
+              text: "You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.\n\n*** Look to the right and you'll see a list of rooms you can go to from here ---->",
             },
           ],
         }
@@ -1119,12 +1125,15 @@ export class AmaClass extends Person<AmaParametersType> {
       return tmpl`
       Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set>:
       [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record. Example:
-        "John"
+        <dialog character="player">John</dialog>
+        output:
         <set attr="player.name">John</set>]]
       [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary; after you learn the player's name you may guess their pronouns, or if unsure ask. Example:
-        "I go by he/him"
+        <dialog character="player">I go by he/him</dialog>
+        output:
         <set attr="player.pronouns">he/him</set>
-        "I'm John"
+        <dialog character="player">I'm John</dialog>
+        output:
         <set attr="player.name">John</set>
         <set attr="player.pronouns">he/him</set>]]
       [[${IF(!this.sharedSelf)}* Introduce yourself, including these details:
@@ -1136,9 +1145,14 @@ export class AmaClass extends Person<AmaParametersType> {
         1. Intra is a wonderful complex where everyone is happy
         2. No matter what happens outside Intra, everyone is safe inside
         3. Once done mark it complete by emitting: <set attr="Ama.sharedIntra">true</set>]]
-      [[${IF(!this.sharedDisassociation)}* Explain disassociation and mark it complete: <set attr="Ama.sharedDisassociation">true</set>]]
-      [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or unemployed, student, etc) and record it. The player can give a very specific profession, but a general profession is also fine. Example:
-        "I'm a carpenter"
+      [[${IF(!this.sharedDisassociation)}* Explain these aspects of disassociation (you can explain them all at once):
+        1. Explain to the player that they have been through a traumatic experience (the nature of which is hidden)
+        2. The player will experience Disassociation Syndrome
+        3. The MOST IMPORTANT part: for the player it will feel like you are making suggestions to yourself rather than directly performing actions
+        4. Once explained emit:<set attr="Ama.sharedDisassociation">true</set>]]
+      [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or it can be "unemployed", "student", etc) and record it. The player can give a very specific profession, but a general profession is also fine. Don't argue with the player about their profession, just accept whatever the player says. Example:
+        <dialog character="player">I'm a carpenter</dialog>
+        output:
         <set attr="player.profession">carpenter</set>]]
       [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age:
         1. The player may think they are a normal age
@@ -1150,6 +1164,34 @@ export class AmaClass extends Person<AmaParametersType> {
       `;
     }
     return "";
+  }
+
+  additionalSystemInstructions(parameters: AmaParametersType): string {
+    const info: string[] = [
+      "This is a list of ALL people in the Intra Complex:",
+    ];
+    for (const person of this.world.allPeople()) {
+      if (person.invisible || person.id === "player" || person.id === this.id) {
+        continue;
+      }
+      info.push(
+        `- ${person.name} (${person.pronouns}): ${person.shortDescription}`
+      );
+    }
+    info.push("\nAnd this is a list of ALL the rooms:");
+    for (const room of this.world.allRooms()) {
+      if (room.excludeFromMap) {
+        continue;
+      }
+      info.push(
+        `- ${room.name}: ${room.shortDescription} (can go to: ${room.exits.map((x) => x.roomId).join(", ")})`
+      );
+    }
+    return tmpl`
+    Ama knows almost everything about the Intra Complex, including about all the people and rooms.
+
+    ${info.join("\n")}
+    `;
   }
 
   afterPrompt(storyEvent: StoryEventType): StoryEventType {
@@ -1235,7 +1277,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       Example:
       \`leave here\`
-      <goto>${room.exits[0].roomId}</goto>
+      <goto>${room.exits.length ? room.exits[0].roomId : "A_Room"}</goto>
 
       Examine something (an object, person, the environment); emit this only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
       <examine>look at thing</examine>
