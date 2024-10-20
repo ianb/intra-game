@@ -947,7 +947,29 @@ function Time() {
 function Help() {
   return (
     <div className="w-full h-full bg-blue-900 text-white py-4 px-8 border-white border-8 overflow-scroll">
-      <div className="flex justify-center mb-4">░░▒▒▓▓ Intra ▓▓▒▒░░</div>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex-1 text-left text-sm">
+          <a
+            className="text-cyan-300 hover:underline"
+            href="https://github.com/ianb/intra-game"
+            target="_blank"
+            rel="noopener"
+          >
+            github
+          </a>
+        </div>
+        <div className="flex-1 text-center">░░▒▒▓▓ Intra ▓▓▒▒░░</div>
+        <div className="flex-1 text-right text-sm">
+          <a
+            className="text-cyan-300 hover:underline"
+            href="https://ianbicking.org"
+            target="_blank"
+            rel="noopener"
+          >
+            by Ian Bicking
+          </a>
+        </div>
+      </div>
       <div className="mb-4">
         Welcome to the Intra Complex! Everything here is just perfect. No need
         to worry about a thing... except figuring out where you are. But don't
