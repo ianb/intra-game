@@ -28,6 +28,7 @@ import { WithBlinkingCursor } from "@/components/input";
 import type { World } from "./world";
 import { scheduleForTime, timeAsString } from "./scheduler";
 import { pronounsForGender } from "./pronouns";
+import { pathTo } from "./pathto";
 
 export type EntityInitType = {
   id: EntityId;
@@ -996,7 +997,7 @@ export class Person<
 
 type AmaParametersType = {
   intro?: boolean;
-  prompt: "intro" | "goExplore";
+  prompt?: "intro" | "goExplore" | "wakeup";
 };
 
 export class AmaClass extends Person<AmaParametersType> {
@@ -1163,10 +1164,50 @@ export class AmaClass extends Person<AmaParametersType> {
         }
       );
     }
+    if (
+      this.world.timestampOfDay >= 5.5 * 60 &&
+      this.world.timestampOfDay <= 7 * 60
+    ) {
+      // Previous 4am time:
+      const earlyDate =
+        Math.floor(this.world.timestampMinutes / (60 * 24)) * (60 * 24) +
+        4 * 60;
+      let goBackMinutes = this.world.timestampMinutes - earlyDate;
+      // Maybe we need a wakeup...
+      for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
+        const update = this.world.model.updates.value[i];
+        goBackMinutes -= update.totalTime;
+        if (goBackMinutes < 0) {
+          // She hasn't woken the user up yet
+          result.push(this.makePromptRequest({ prompt: "wakeup" }));
+          break;
+        }
+        if (update.id === this.id) {
+          // Ama did wake up the user
+          break;
+        }
+      }
+    }
     if (!result.find((x) => isPromptRequest(x))) {
       result.push(...(super.onStoryEvent(storyEvent) || []));
     }
+    if (!result.find((x) => isPromptRequest(x)) && storyEvent.id === "player") {
+      if (this.playerShouldBeInBed() && !this.playerIsInBed()) {
+        // Ama wants you to be in bed!
+        result.push(this.makePromptRequest({}));
+      }
+    }
     return result;
+  }
+
+  playerShouldBeInBed() {
+    return (
+      this.world.timestampOfDay > 20 * 60 || this.world.timestampOfDay < 6 * 60
+    );
+  }
+
+  playerIsInBed() {
+    return this.world.entities.player.inside === "Quarters_Yours";
   }
 
   promptState(parameters: AmaParametersType): PromptStateType {
@@ -1281,6 +1322,11 @@ export class AmaClass extends Person<AmaParametersType> {
       <dialog character="${this.id}" speaking="Intra">Citizens of Intra, I am pleased to announce the arrival of a new citizen, ${player.name}. Please join me in welcoming them to our community.</dialog>
       `;
     }
+    if (parameters.prompt === "wakeup") {
+      return tmpl`
+      It's time for everyone to get up! Ama will wake the player up and encourage them to get moving. AMA WILL BE SUPER OVER THE TOP EXCITED!
+      `;
+    }
     if (this.personality === "intro") {
       return tmpl`
       Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set> (you may do multiple steps in one response):
@@ -1323,7 +1369,28 @@ export class AmaClass extends Person<AmaParametersType> {
       Stay focused on completing these tasks and emit <set> at the end of the response if you complete them.
       `;
     }
-    return "";
+    let getToBed = this.playerShouldBeInBed() && !this.playerIsInBed();
+    let nextPos = "";
+    let youAreStuck = "";
+    if (getToBed) {
+      const path = pathTo(
+        this.world,
+        this.world.entities.player.inside,
+        "Quarters_Yours"
+      );
+      if (!path.length) {
+        getToBed = false;
+        youAreStuck =
+          "The player should be getting to bed, but there's no way to get to their quarters from the current location!";
+      } else {
+        nextPos = path[0];
+      }
+    }
+    return tmpl`
+    [[${IF(getToBed)}Ama REALLY wants the player to go to bed. Everyone else is in bed. It's bedtime. Ama will be very insistent. To get to bed the player should next go to: ${nextPos} and Ama should suggest moving in that direction]]
+
+    [[${youAreStuck}]]
+    `;
   }
 
   additionalSystemInstructions(parameters: AmaParametersType): string {
@@ -1416,6 +1483,11 @@ export class PlayerClass extends Person<PlayerInputType> {
     }
     const lastTo = this.lastSpokeTo()?.id || null;
     const room = this.myRoom();
+    const shouldSleep =
+      this.world.entities.Ama.playerShouldBeInBed() &&
+      this.world.entities.Ama.playerIsInBed();
+    const timeUntilWake =
+      8 * 60 - ((this.world.timestampMinutes + 120) % (24 * 60));
     return {
       meta: {
         title: "player input",
@@ -1466,7 +1538,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       <dialog character="${this.name}">You look great today!</dialog>
 
-      IF AND ONLY IF THE USER INDICATES AN ACTION you may describe the ATTEMPT at the action like:
+      IF AND ONLY IF THE USER INDICATES AN ACTION (that is not covered by <goto></goto>) you may describe the ATTEMPT at the action like:
 
       <action minutes="10">${this.name} attempts to open the door.</action>
 
@@ -1487,13 +1559,19 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       <context>
       1. Is the user trying to go somewhere? If so emit goto
-      2. Does this indicate an action?
+      2. Does this indicate an action BESIDES going somewhere?
       3. Is the user trying to examine something? If so emit examine
       4. Does the user responding to recent dialog? If so emit dialog with to="..."
       5. Is this other speech? If so emit dialog
       </context>
 
       Based on these questions emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags.
+
+      [[${IF(shouldSleep)}The player should be sleeping for the night. If the player indicates they want to sleep then emit a description like this (but you may change the description text):
+
+      <description minutes="${timeUntilWake}">You fall to sleep until you are awoken by a voice...</description>
+
+      This should be a description and not an action.]]
 
       Respond by emitting the appropriate tags, following the user's input as closely as possible. ONLY speak as ${this.name}. Do not RESPOND to the input, responses will happen in follow-up requests, only emit tags to describe the player's actions when doing:
       \`${parameters.input}\`
@@ -1772,13 +1850,21 @@ export class PlayerClass extends Person<PlayerInputType> {
             ${peopleDescription}
             `,
         });
-      } else if (peopleLines.length > 0) {
-        storyEvent.actions.push({
-          type: "description",
-          text: tmpl`
+      } else {
+        if (peopleDescription) {
+          storyEvent.actions.push({
+            type: "description",
+            text: tmpl`
             ${peopleDescription}
             `,
-        });
+          });
+        } else {
+          // FIXME: I can't figure out why this is necessary, but without it the indication that the player has moved doesn't show up
+          storyEvent.actions.push({
+            type: "description",
+            text: "",
+          });
+        }
       }
     } else if (tag.type === "examine") {
       storyEvent.actionRequests = [

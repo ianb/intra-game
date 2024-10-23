@@ -381,4 +381,8 @@ export class World {
   get timeOfDay(): string {
     return timeAsString(this.timestampMinutes);
   }
+
+  get timestampOfDay(): number {
+    return this.timestampMinutes % ONE_DAY;
+  }
 }
