@@ -673,7 +673,9 @@ export class ArchivistRoom extends Room {
             action.text
           );
         }
-        return `\u00A0${action.text}`;
+        let text = action.text;
+        text = text.trim().replace(/^\`+/, "").replace(/\`+$/, "").trim();
+        return `\u00A0${text}`;
       }
     }
     return super.formatStoryAction(storyEvent, action);
