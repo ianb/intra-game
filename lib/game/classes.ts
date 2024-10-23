@@ -593,8 +593,10 @@ export class Room extends Entity {
     if (isStoryDialog(action)) {
       const text = action.text.replace(/^"*/, "").replace(/"*$/, "");
       return `"${text}"`;
-    } else {
+    } else if (isStoryDescription(action)) {
       return action.text;
+    } else if (isStoryActionAttempt(action)) {
+      return action.attempt + "\n\n" + action.resolution;
     }
   }
 }

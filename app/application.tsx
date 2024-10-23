@@ -163,7 +163,7 @@ function ChatLogStateUpdate({ update }: { update: StoryEventType }) {
 }
 
 function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
-  let children: React.ReactNode[] = [];
+  const children: React.ReactNode[] = [];
   if (showInternals.value && update.llmResponse) {
     const tags = parseTags(update.llmResponse);
     children.push(
