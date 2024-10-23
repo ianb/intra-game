@@ -120,7 +120,7 @@ export class Model {
       this.addStoryEvent({
         id: "narrator",
         totalTime: 0,
-        roomId: "Intake",
+        roomId: "Void",
         changes: allChanges,
         actions: [],
       });
@@ -140,7 +140,10 @@ export class Model {
       if (update.id === person.id && update.deferSchedule) {
         return true;
       }
-      if (playerEvents > 2 || personEvents > 4) {
+      if (update.id === person.id && update.deferSchedule === false) {
+        return false;
+      }
+      if (playerEvents > 2 || personEvents > 2) {
         break;
       }
     }

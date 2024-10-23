@@ -4,6 +4,7 @@ import { parseTags, TagType } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
 import {
   ActionRequestType,
+  ChangesType,
   ChangeType,
   EntityId,
   GeminiChatType,
@@ -20,6 +21,7 @@ import {
   ScheduleId,
   StoryActionType,
   StoryEventType,
+  StoryEventWithPositionsType,
 } from "../types";
 import type { Model } from "./model";
 import { WithBlinkingCursor } from "@/components/input";
@@ -237,11 +239,53 @@ export abstract class Entity<ParametersT extends object = object> {
   updatesSeenByMe(): StoryEventType[] {
     const results: StoryEventType[] = [];
     for (const eventPos of this.world.model.updatesWithPositions.value) {
+      if (
+        eventPos.event.id === "narrator" &&
+        eventPos.event.roomId === "Void"
+      ) {
+        results.push(
+          ...this.movementUpdatesForPosition(
+            eventPos,
+            eventPos.positions.get(this.id)
+          )
+        );
+      }
       if (eventPos.positions.get(this.id) === eventPos.event.roomId) {
         results.push(eventPos.event);
       }
     }
     return results;
+  }
+
+  movementUpdatesForPosition(
+    eventPos: StoryEventWithPositionsType,
+    position: EntityId | undefined
+  ): StoryEventType[] {
+    const changes: ChangesType = {};
+    if (!position) {
+      return [];
+    }
+    for (const [entityId, change] of Object.entries(eventPos.event.changes)) {
+      if (
+        change.before.inside === position ||
+        change.after.inside === position
+      ) {
+        changes[entityId] = {
+          before: change.before,
+          after: change.after,
+        };
+      }
+    }
+    if (Object.keys(changes)) {
+      return [
+        {
+          ...eventPos.event,
+          roomId: position,
+          changes,
+        },
+      ];
+    }
+    return [];
   }
 
   updateToHistory(
@@ -251,7 +295,7 @@ export abstract class Entity<ParametersT extends object = object> {
     const parts: string[] = [];
     if (!lastUpdate || lastUpdate.roomId !== update.roomId) {
       const thisRoom = this.world.getRoom(update.roomId);
-      if (thisRoom) {
+      if (thisRoom && thisRoom.id !== "Void") {
         parts.push(
           tmpl`
           [The following events occur in room ${thisRoom.id}]
@@ -271,7 +315,7 @@ export abstract class Entity<ParametersT extends object = object> {
       if (changes.after.inside && changes.after.inside === update.roomId) {
         parts.push(
           tmpl`
-          [${this.world.getEntity(entityId)?.name} arrives]
+          [${this.world.getEntity(entityId)?.name} arrives from ${changes.before.inside}]
           `
         );
       } else if (
@@ -280,7 +324,7 @@ export abstract class Entity<ParametersT extends object = object> {
       ) {
         parts.push(
           tmpl`
-          [${this.world.getEntity(entityId)?.name} leaves]
+          [${this.world.getEntity(entityId)?.name} leaves to ${changes.after.inside}]
           `
         );
       }
@@ -422,7 +466,7 @@ export abstract class Entity<ParametersT extends object = object> {
       // Gemini is dumb about this
       prompt.history.unshift({
         role: "user",
-        text: "<beginStory></beginStory>",
+        text: "<continueStory></continueStory>",
       });
     }
     let resp = "";
@@ -531,6 +575,8 @@ export abstract class Entity<ParametersT extends object = object> {
         result.suggestions = tag.content;
       } else if (tag.type === "deferSchedule") {
         result.deferSchedule = true;
+      } else if (tag.type === "leaveNow") {
+        result.deferSchedule = false;
       } else if (tag.type === "context") {
         // We can ignore these
       } else {
@@ -775,7 +821,7 @@ export class Person<
 
       [[${IF(statePrompt)} Emit <set attr="...">...</set> if appropriate.]]
 
-      [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule!.inside[0]} (so they can: ${schedule!.activity}). If ${this.name} decides to stay a little longer then emit <deferSchedule></deferSchedule>]]
+      [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then emit <deferSchedule></deferSchedule> or to definitely leave now emit <leaveNow></leaveNow>]]
 
       Lastly you may offer a suggestion for what the player might do next, as two 2-3 word commands (one per line):
 
@@ -972,7 +1018,7 @@ export class AmaClass extends Person<AmaParametersType> {
   sharedPlayerAge = false;
 
   shortDescription = `
-  Ama is the AI in control of the entire Intra complex.
+  Ama is the AI in control of the entire Intra complex. She has no physical form, only a disembodied voice.
   `;
   description = `
   Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing AI, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
@@ -1437,11 +1483,11 @@ export class PlayerClass extends Person<PlayerInputType> {
       The user has typed this input:
       \`${parameters.input}\`
 
-      Begin by answering these questions:
+      Begin by answering these questions and writing just the answers in <context>...</context>:
 
       <context>
       1. Is the user trying to go somewhere? If so emit goto
-      2. Does this indicate an action? If so emit action
+      2. Does this indicate an action?
       3. Is the user trying to examine something? If so emit examine
       4. Does the user responding to recent dialog? If so emit dialog with to="..."
       5. Is this other speech? If so emit dialog
