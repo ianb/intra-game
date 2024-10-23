@@ -40,14 +40,15 @@ export default function Home() {
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
-        <span className="">
+        <span className="flex-shrink">
           Intra
-          <span className="text-gray-500 text-sm">
+          <span className="text-gray-500 text-sm hidden md:inline">
             {" "}
             !alpha: save games will break periodically
           </span>
+          <span className="text-gray-500 text-sm md:hidden"> !alpha</span>
         </span>
-        <span className="">
+        <span className="whitespace-nowrap bg-gray-800">
           <Time />
           <Button
             className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
@@ -72,8 +73,8 @@ export default function Home() {
         </ZoomOverlay>
       )}
 
-      <div className="flex flex-1 pt-12 overflow-hidden">
-        <div className="w-2/3 flex flex-col p-4 bg-gray-900 text-white">
+      <div className="flex flex-1 pt-12 md:overflow-hidden flex-col md:flex-row">
+        <div className="w-full md:w-2/3 flex flex-col p-4 bg-gray-900 text-white">
           <ScrollOnUpdate
             className="flex-1 overflow-y-auto p-2"
             watch={model.updates.value}
@@ -82,7 +83,7 @@ export default function Home() {
           </ScrollOnUpdate>
           <Input />
         </div>
-        <div className="w-1/3 flex flex-col bg-gray-800 text-white h-full">
+        <div className="w-full md:w-1/3 flex flex-col bg-gray-800 text-white h-full">
           <HeadsUpDisplay />
           <Controls />
         </div>

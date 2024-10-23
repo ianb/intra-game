@@ -5,6 +5,8 @@ import { GeminiChatType, GeminiModelType, LlmLogType } from "./types";
 // export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash-exp-0827";
 export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro";
 export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
+// export const DEFAULT_MODEL = DEFAULT_FLASH_MODEL;
+export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
 
 export const logSignal = signal<LlmLogType[]>([]);
 
@@ -41,7 +43,9 @@ export async function chat(request: GeminiChatType) {
     : 0;
   request.meta.index = (lastIndex || 0) + 1;
   request.meta.start = Date.now();
-  if (!request.model || request.model === "pro") {
+  if (!request.model) {
+    request.model = DEFAULT_MODEL;
+  } else if (request.model === "pro") {
     request.model = DEFAULT_PRO_MODEL;
   } else if (request.model === "flash") {
     request.model = DEFAULT_FLASH_MODEL;
