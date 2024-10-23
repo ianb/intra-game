@@ -14,6 +14,7 @@ export type StoryEventType = {
   // In minutes:
   totalTime: number;
   actionRequests?: ActionRequestType[];
+  deferSchedule?: boolean;
   llmTitle?: string;
   llmResponse?: string;
   llmParameters?: any;

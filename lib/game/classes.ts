@@ -529,6 +529,8 @@ export abstract class Entity<ParametersT extends object = object> {
         result.totalTime += minutes || 0;
       } else if (tag.type === "suggestion") {
         result.suggestions = tag.content;
+      } else if (tag.type === "deferSchedule") {
+        result.deferSchedule = true;
       } else if (tag.type === "context") {
         // We can ignore these
       } else {
@@ -705,6 +707,8 @@ export class Person<
         }
       }
     }
+    const schedule = scheduleForTime(this, this.world.timestampMinutes);
+    const willLeave = schedule && !schedule.inside.includes(this.inside);
     return {
       meta: {
         title: `prompt ${this.id}`,
@@ -770,6 +774,8 @@ export class Person<
       <description minutes="5">Describe the action</description>
 
       [[${IF(statePrompt)} Emit <set attr="...">...</set> if appropriate.]]
+
+      [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule!.inside[0]} (so they can: ${schedule!.activity}). If ${this.name} decides to stay a little longer then emit <deferSchedule></deferSchedule>]]
 
       Lastly you may offer a suggestion for what the player might do next, as two 2-3 word commands (one per line):
 

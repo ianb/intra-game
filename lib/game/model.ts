@@ -60,6 +60,9 @@ export class Model {
       if (!schedule) {
         continue;
       }
+      if (this.isDeferringSchedule(person)) {
+        continue;
+      }
       if (schedule.id === person.runningScheduleId) {
         existingPeople.push(person);
         continue;
@@ -122,6 +125,26 @@ export class Model {
         actions: [],
       });
     }
+  }
+
+  isDeferringSchedule(person: Person) {
+    let playerEvents = 0;
+    let personEvents = 0;
+    for (let i = this.updates.value.length - 1; i >= 0; i--) {
+      const update = this.updates.value[i];
+      if (update.id === "player") {
+        playerEvents++;
+      } else if (update.id === person.id) {
+        personEvents++;
+      }
+      if (update.id === person.id && update.deferSchedule) {
+        return true;
+      }
+      if (playerEvents > 2 || personEvents > 4) {
+        break;
+      }
+    }
+    return false;
   }
 
   async addStoryEvent(storyEvent: StoryEventType) {
