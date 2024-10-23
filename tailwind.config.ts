@@ -8,6 +8,12 @@ const config: Config = {
     "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    listStyleType: {
+      none: "none",
+      disc: "disc",
+      decimal: "decimal",
+      dash: '"- "',
+    },
     extend: {
       colors: {
         background: "var(--background)",

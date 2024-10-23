@@ -99,7 +99,7 @@ function LlmRequest({
 function LlmRequestItem({ role, text }: { role: string; text: string }) {
   return (
     <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-2">
-      <strong>{role}:</strong> {text}
+      <strong className="text-cyan-300">{role}:</strong> {text}
     </pre>
   );
 }

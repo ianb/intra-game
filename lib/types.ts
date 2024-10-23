@@ -20,7 +20,10 @@ export type StoryEventType = {
   llmError?: { context: string; description: string };
   suggestions?: string;
 };
-export type StoryActionType = StoryDialogType | StoryDescriptionType;
+export type StoryActionType =
+  | StoryDialogType
+  | StoryDescriptionType
+  | StoryActionAttemptType;
 
 export type StoryDialogType = {
   type: "dialog";
@@ -47,6 +50,21 @@ export function isStoryDescription(
   storyAction: StoryActionType
 ): storyAction is StoryDescriptionType {
   return storyAction.type === "description";
+}
+
+export type StoryActionAttemptType = {
+  type: "actionAttempt";
+  id: EntityId;
+  attempt: string;
+  success: boolean;
+  minutes: number;
+  resolution: string;
+};
+
+export function isStoryActionAttempt(
+  actionRequest: StoryActionType
+): actionRequest is StoryActionAttemptType {
+  return actionRequest.type === "actionAttempt";
 }
 
 export type ChangesType = Record<EntityId, ChangeType>;

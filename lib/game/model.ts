@@ -1,12 +1,17 @@
 import { persistentSignal, SignalType } from "../persistentsignal";
 import { TrackSettled } from "../tracksettled";
-import { ActionRequestType, isPromptRequest, isStoryEvent } from "../types";
+import {
+  ActionRequestType,
+  isPromptRequest,
+  isStoryDialog,
+  isStoryEvent,
+} from "../types";
 import { StoryEventType } from "../types";
 import { World } from "./world";
 import { AllEntitiesType, entities } from "./gameobjs";
 import { listSaves, load, removeSave, save } from "../localsaves";
 import { scheduleForTime } from "./scheduler";
-import type { Person, StoryEventWithPositionsType } from "../types";
+import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
 import { pathTo } from "./pathto";
 import { computed } from "@preact/signals-react";
 
@@ -123,7 +128,22 @@ export class Model {
     this.updates.value = [...this.updates.value, storyEvent];
     const actions: ActionRequestType<any>[] = storyEvent.actionRequests || [];
     delete storyEvent.actionRequests;
+    const recent = this.recentReferencedEntities();
+    for (const entityId of recent) {
+      const entity = this.world.getEntity(entityId);
+      if (!entity) {
+        console.warn(`Entity ${entityId} not found`);
+        continue;
+      }
+      const newActions = entity.onStoryEvent(storyEvent);
+      if (newActions) {
+        actions.push(...(newActions || []));
+      }
+    }
     for (const entity of Object.values(this.world.entities)) {
+      if (recent.includes(entity.id)) {
+        continue;
+      }
       const newActions = entity.onStoryEvent(storyEvent);
       if (newActions) {
         actions.push(...(newActions || []));
@@ -131,6 +151,25 @@ export class Model {
     }
     this.world.applyStoryEvent(storyEvent);
     await this.run(() => this.applyActions(actions));
+  }
+
+  recentReferencedEntities(): EntityId[] {
+    const result: EntityId[] = [];
+    for (let i = this.updates.value.length - 1; i >= 0; i--) {
+      const update = this.updates.value[i];
+      for (let j = update.actions.length - 1; j >= 0; j--) {
+        const action = update.actions[j];
+        if (isStoryDialog(action) && action.toId) {
+          if (!result.includes(action.toId)) {
+            result.push(action.toId);
+          }
+        }
+      }
+      if (result.length >= 5) {
+        break;
+      }
+    }
+    return result;
   }
 
   removeStoryEvent(storyEvent: StoryEventType) {

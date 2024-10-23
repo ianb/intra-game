@@ -4,6 +4,7 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import {
   isPerson,
+  isStoryActionAttempt,
   isStoryDescription,
   isStoryDialog,
   PersonScheduledEventType,
@@ -162,10 +163,10 @@ function ChatLogStateUpdate({ update }: { update: StoryEventType }) {
 }
 
 function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
-  let children: React.ReactNode[];
+  let children: React.ReactNode[] = [];
   if (showInternals.value && update.llmResponse) {
     const tags = parseTags(update.llmResponse);
-    children = [
+    children.push(
       <div key="states">
         {tags.map((tag, i) => (
           <div key={i}>
@@ -177,78 +178,9 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
             </pre>
           </div>
         ))}
-      </div>,
-    ];
+      </div>
+    );
   } else {
-    const room = model.world.getRoom(update.roomId);
-    children = update.actions.map((action, i) => {
-      if (isStoryDialog(action)) {
-        // Should also use id, toId, toOther
-        let dest = "";
-        let destColor = "";
-        if (action.toId) {
-          const person = model.world.getEntity(action.toId);
-          if (person) {
-            dest = person.name;
-            destColor = person.color;
-          }
-        } else if (action.toOther) {
-          dest = action.toOther;
-          destColor = "font-bold";
-        }
-        let text: React.ReactNode = action.text;
-        if (room) {
-          text = room.formatStoryAction(update, action);
-        }
-        return (
-          <React.Fragment key={i}>
-            {dest && (
-              <div className="text-xs">
-                to <span className={destColor}>{dest}</span>
-              </div>
-            )}
-            <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2">
-              {text}
-            </pre>
-          </React.Fragment>
-        );
-      } else if (isStoryDescription(action)) {
-        let text: React.ReactNode = action.text;
-        if (room) {
-          text = room.formatStoryAction(update, action);
-        }
-        if (typeof text === "string") {
-          text = <ColorizedText text={action.text} />;
-        }
-        const time = action.minutes;
-        let timeChar = "";
-        if (time && time >= 10) {
-          const timePeriod = Math.min(Math.round(time / 5), 11);
-          timeChar =
-            (CLOCK_CHARS as any)[timePeriod.toString()] || CLOCK_CHARS["11"];
-        }
-        return (
-          <React.Fragment key={i}>
-            {action.subject && (
-              <div className="text-xs">examine: {action.subject}</div>
-            )}
-            <pre className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700">
-              {timeChar && (
-                <div
-                  className="float-right cursor-help opacity-50 hover:opacity-100"
-                  title={`${time} minutes passed`}
-                >
-                  {timeChar}
-                </div>
-              )}
-              {text}
-            </pre>
-          </React.Fragment>
-        );
-      } else {
-        throw new Error("Unknown action");
-      }
-    });
     for (const [entityId, changes] of Object.entries(update.changes)) {
       if (changes.before.inside !== changes.after.inside) {
         const dest = model.world.getRoom(changes.after.inside);
@@ -261,6 +193,94 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
         }
       }
     }
+    const room = model.world.getRoom(update.roomId);
+    children.push(
+      ...update.actions.map((action, i) => {
+        if (isStoryDialog(action)) {
+          // Should also use id, toId, toOther
+          let dest = "";
+          let destColor = "";
+          if (action.toId) {
+            const person = model.world.getEntity(action.toId);
+            if (person) {
+              dest = person.name;
+              destColor = person.color;
+            }
+          } else if (action.toOther) {
+            dest = action.toOther;
+            destColor = "font-bold";
+          }
+          let text: React.ReactNode = action.text;
+          if (room) {
+            text = room.formatStoryAction(update, action);
+          }
+          return (
+            <React.Fragment key={i}>
+              {dest && (
+                <div className="text-xs">
+                  to <span className={destColor}>{dest}</span>
+                </div>
+              )}
+              <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2">
+                {text}
+              </pre>
+            </React.Fragment>
+          );
+        } else if (isStoryDescription(action)) {
+          let text: React.ReactNode = action.text;
+          if (room) {
+            text = room.formatStoryAction(update, action);
+          }
+          if (typeof text === "string") {
+            text = <ColorizedText text={action.text} />;
+          }
+          return (
+            <React.Fragment key={i}>
+              {action.subject && (
+                <div className="text-xs">examine: {action.subject}</div>
+              )}
+              <pre className="px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 border-gray-600 text-justify bg-gray-700">
+                <TimePeriod
+                  minutes={action.minutes}
+                  limit={5}
+                  className="float-right"
+                />
+                {text}
+              </pre>
+            </React.Fragment>
+          );
+        } else if (isStoryActionAttempt(action)) {
+          const attempt = <ColorizedText text={action.attempt} />;
+          const performedBy = model.world.getEntity(action.id);
+          return (
+            <React.Fragment key={i}>
+              {performedBy?.id !== update.id && (
+                <div className={twMerge("text-xs", performedBy?.color)}>
+                  {performedBy?.name || "?"}:
+                </div>
+              )}
+              <div
+                className={twMerge(
+                  "px-2 mb-2 mx-8 whitespace-pre-wrap text-sm border-x-4 text-justify bg-gray-700",
+                  action.success ? "border-green-600" : "border-red-600"
+                )}
+              >
+                <TimePeriod
+                  minutes={action.minutes}
+                  limit={5}
+                  className="float-right"
+                />
+                {attempt}
+                <hr className="my-2" />
+                <ColorizedText text={action.resolution} />
+              </div>
+            </React.Fragment>
+          );
+        } else {
+          throw new Error("Unknown action");
+        }
+      })
+    );
   }
   const entity = model.world.getEntity(update.id);
   return (
@@ -635,10 +655,9 @@ function NormalControls() {
           {folks.length > 0 && (
             <div className="flex-1">
               People:
-              <ul>
+              <ul className="list-dash ml-4">
                 {folks.map((entity, i) => (
                   <li key={i}>
-                    -{" "}
                     <Button
                       className={twMerge(
                         "p-0 bg-inherit hover:bg-gray-700",
@@ -702,7 +721,7 @@ function ExitList({ room }: { room: Room }) {
   return (
     <div className="flex-1">
       Exits:
-      <ul>
+      <ul className="list-dash ml-4">
         {room!.exits.map((exit, i) => {
           const targetRoom = model.world.getRoom(exit.roomId);
           if (!targetRoom) {
@@ -710,7 +729,6 @@ function ExitList({ room }: { room: Room }) {
           }
           return (
             <li key={i}>
-              -{" "}
               <Button
                 className={twMerge(
                   "p-0 bg-inherit hover:bg-gray-700",
@@ -944,6 +962,36 @@ function Time() {
   );
 }
 
+function TimePeriod({
+  minutes,
+  limit,
+  className,
+}: {
+  minutes?: number;
+  limit?: number;
+  className?: string;
+}) {
+  if (minutes === undefined) {
+    return null;
+  }
+  let timeChar = "";
+  if (minutes && minutes >= 10) {
+    const timePeriod = Math.min(Math.round(minutes / 5), 11);
+    timeChar = (CLOCK_CHARS as any)[timePeriod.toString()] || CLOCK_CHARS["11"];
+  }
+  if (limit !== undefined && minutes < limit) {
+    return null;
+  }
+  return (
+    <div
+      className={twMerge("cursor-help opacity-50 hover:opacity-100", className)}
+      title={`${minutes} minutes passed`}
+    >
+      {timeChar}
+    </div>
+  );
+}
+
 function Help() {
   return (
     <div className="w-full h-full bg-blue-900 text-white py-4 px-8 border-white border-8 overflow-scroll">
@@ -1025,6 +1073,9 @@ const CLOCK_CHARS = {
 };
 
 function ColorizedText({ text }: { text: string }) {
+  if (!text) {
+    return null;
+  }
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   const nameRegex = model.world.nameRegex;

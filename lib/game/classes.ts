@@ -11,6 +11,7 @@ import {
   isPerson,
   isPromptRequest,
   isRoom,
+  isStoryActionAttempt,
   isStoryDescription,
   isStoryDialog,
   PersonScheduledEventType,
@@ -24,6 +25,7 @@ import type { Model } from "./model";
 import { WithBlinkingCursor } from "@/components/input";
 import type { World } from "./world";
 import { scheduleForTime, timeAsString } from "./scheduler";
+import { pronounsForGender } from "./pronouns";
 
 export type EntityInitType = {
   id: EntityId;
@@ -214,13 +216,20 @@ export abstract class Entity<ParametersT extends object = object> {
     parameters: ParametersT,
     { limit }: { limit?: number } = {}
   ): GeminiHistoryType[] {
-    // FIXME: this needs to check for this entity's actual perspective, tracking locations through history so it only shows events that happened when the entity was present
-    const history: GeminiHistoryType[] = [];
-    for (const update of this.updatesSeenByMe()) {
-      history.push(...this.updateToHistory(update));
-    }
-    if (limit && history.length > limit) {
-      return history.slice(-limit);
+    let history: GeminiHistoryType[] = [];
+    const updates = this.updatesSeenByMe();
+    while (!limit || history.length < limit) {
+      const update = updates.pop();
+      if (!update) {
+        break;
+      }
+      // If we expect this to be the last update included in history, don't act like there's any previous update:
+      const lastUpdate =
+        limit && history.length + 1 >= limit
+          ? undefined
+          : updates[updates.length - 1];
+      history.unshift(...this.updateToHistory(update, { lastUpdate }));
+      history = foldHistory(history);
     }
     return history;
   }
@@ -235,13 +244,47 @@ export abstract class Entity<ParametersT extends object = object> {
     return results;
   }
 
-  updateToHistory(update: StoryEventType): GeminiHistoryType[] {
+  updateToHistory(
+    update: StoryEventType,
+    { lastUpdate }: { lastUpdate?: StoryEventType }
+  ): GeminiHistoryType[] {
     const parts: string[] = [];
-    // for (const id of Object.keys(update.changes)) {
-    //   for (const [key, value] of Object.entries(update.changes[id].after)) {
-    //     lines.push(`<set attr="${id}.${key}">${value}</set>`);
-    //   }
-    // }
+    if (!lastUpdate || lastUpdate.roomId !== update.roomId) {
+      const thisRoom = this.world.getRoom(update.roomId);
+      if (thisRoom) {
+        parts.push(
+          tmpl`
+          [The following events occur in room ${thisRoom.id}]
+          `
+        );
+      }
+    }
+    for (const [entityId, changes] of Object.entries(update.changes)) {
+      if (entityId === this.id) {
+        if (changes.after.inside) {
+          parts.push(tmpl`
+            [${this.name} goes from ${changes.before.inside} to ${changes.after.inside}]
+            `);
+        }
+        continue;
+      }
+      if (changes.after.inside && changes.after.inside === update.roomId) {
+        parts.push(
+          tmpl`
+          [${this.world.getEntity(entityId)?.name} arrives]
+          `
+        );
+      } else if (
+        changes.before.inside &&
+        changes.before.inside === update.roomId
+      ) {
+        parts.push(
+          tmpl`
+          [${this.world.getEntity(entityId)?.name} leaves]
+          `
+        );
+      }
+    }
     for (const action of update.actions) {
       if (isStoryDialog(action)) {
         parts.push(tmpl`
@@ -256,6 +299,15 @@ export abstract class Entity<ParametersT extends object = object> {
           ? `\n${action.text.trim()}\n`
           : action.text.trim();
         parts.push(`<description${minutes}>${text}</description>`);
+      } else if (isStoryActionAttempt(action)) {
+        const minutes = action.minutes ? ` minutes="${action.minutes}"` : "";
+        parts.push(tmpl`
+        <action success="${action.success ? "true" : "false"}"${minutes}>
+        ${action.attempt}
+
+        Result: ${action.resolution}
+        </action>
+        `);
       } else {
         console.warn("Unknown action type", action);
       }
@@ -639,6 +691,18 @@ export class Person<
   assemblePrompt(parameters: ParametersT): GeminiChatType {
     const lastTo = this.lastSpokeTo()?.id || "";
     const statePrompt = this.statePrompt(parameters);
+    let hasInteracted = false;
+    for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
+      const update = this.world.model.updates.value[i];
+      if (update.id === this.id) {
+        for (const action of update.actions) {
+          if (isStoryDialog(action) && action.toId === "player") {
+            hasInteracted = true;
+            break;
+          }
+        }
+      }
+    }
     return {
       meta: {
         title: `prompt ${this.id}`,
@@ -658,7 +722,9 @@ export class Person<
       </characterDescription>
 
       <roleplayInstructions>
-      In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact!
+      In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with the player ${this.world.entities.player.name} and pay attention to what ${this.world.entities.player.heshe} says.
+
+      [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to the player ${this.world.entities.player.name}. There aren't many new people in Intra, so this might be a big deal.]]
 
       ${this.roleplayInstructions}
       </roleplayInstructions>
@@ -695,7 +761,7 @@ export class Person<
 
       <dialog character="${this.name}" to="${lastTo || "Jim"}">Dialog written as ${this.name} to ${lastTo || "Jim"}</dialog>
 
-      [[${this.name} last spoke directly to ${lastTo}, so it's very likely they are still speaking to them.]]
+      [[${this.name} last spoke directly to ${lastTo}, so it's very likely ${this.heshe} is still speaking to them.]]
 
       If the character ${this.name} is performing an action, emit this (optionally roughly estimating the time it will take in minutes):
 
@@ -808,9 +874,11 @@ export class Person<
         }
       } else {
         // Traveling to the location where the activity takes place
-        parts.push(`${this.name} is on their way to: ${schedule.inside[0]}`);
         parts.push(
-          `When ${this.name} arrives they intend to: ${schedule.description}`
+          `${this.name} is on ${this.hisher} way to: ${schedule.inside[0]}`
+        );
+        parts.push(
+          `When ${this.name} arrives ${this.heshe} intends to: ${schedule.description}`
         );
       }
     }
@@ -824,7 +892,7 @@ export class Person<
     }
     let basicDesc = `${this.name} is currently: ${schedule.description}`;
     if (!schedule.inside.includes(this.inside)) {
-      basicDesc = `${this.name} is on their way to: ${schedule.inside[0]} so that they can: ${schedule.description}`;
+      basicDesc = `${this.name} is on ${this.hisher} way to: ${schedule.inside[0]} so that ${this.heshe} can: ${schedule.description}`;
     }
     return tmpl`
       <activity>
@@ -834,6 +902,41 @@ export class Person<
       [[${IF(schedule.attentive)}${this.name} doesn't mind being interrupted.]]
       </activity>
       `;
+  }
+
+  get allPronouns() {
+    return pronounsForGender(this.pronouns);
+  }
+
+  get heshe() {
+    return this.allPronouns.heshe;
+  }
+  get himher() {
+    return this.allPronouns.himher;
+  }
+  get hisher() {
+    return this.allPronouns.hisher;
+  }
+  get hishers() {
+    return this.allPronouns.hishers;
+  }
+  get himselfherself() {
+    return this.allPronouns.himselfherself;
+  }
+  get Heshe() {
+    return this.allPronouns.Heshe;
+  }
+  get Himher() {
+    return this.allPronouns.Himher;
+  }
+  get Hisher() {
+    return this.allPronouns.Hisher;
+  }
+  get Hishers() {
+    return this.allPronouns.Hishers;
+  }
+  get Himselfherself() {
+    return this.allPronouns.Himselfherself;
   }
 }
 
@@ -1013,6 +1116,7 @@ export class AmaClass extends Person<AmaParametersType> {
   }
 
   promptState(parameters: AmaParametersType): PromptStateType {
+    const player = this.world.entities.player;
     const states: PromptStateType = {
       "player.name": {
         value: this.world.entities.player.name,
@@ -1061,8 +1165,9 @@ export class AmaClass extends Person<AmaParametersType> {
       "Ama.sharedPlayerAge": {
         value: this.world.entities.Ama.sharedPlayerAge,
         write: true,
-        description:
-          "Ama should note in speech that, given the birthdate in record, the player is soon to reach their 328th birthday, and congratulate them; it is important to the plot that the player learn that a very long time has passed, so you must emphasize how very old they are. The player does not look very old, and you may make a silly and complimentary comment about this. Do NOT ask the player their age, simply tell them this information.",
+        description: tmpl`
+          Ama should note in speech that, given the birthdate in record, the player is soon to reach their 328th birthday, and congratulate ${player.himher}; it is important to the plot that the player learn that a very long time has passed, so you must emphasize how very old ${player.heshe} is. The player does not look very old, and you may make a silly and complimentary comment about this. Do NOT ask the player ${player.hisher} age, simply tell ${player.himher} this information.
+          `,
         writeInstructions:
           "Set this to true after Ama has shared the player's age",
       },
@@ -1106,6 +1211,7 @@ export class AmaClass extends Person<AmaParametersType> {
   }
 
   additionalPromptInstructions(parameters: AmaParametersType): string {
+    const player = this.world.entities.player;
     if (parameters.prompt === "goExplore") {
       const player = this.world.entities.player;
       return tmpl`
@@ -1146,19 +1252,19 @@ export class AmaClass extends Person<AmaParametersType> {
         2. No matter what happens outside Intra, everyone is safe inside
         3. Once done mark it complete by emitting: <set attr="Ama.sharedIntra">true</set>]]
       [[${IF(!this.sharedDisassociation)}* Explain these aspects of disassociation (you can explain them all at once):
-        1. Explain to the player that they have been through a traumatic experience (the nature of which is hidden)
+        1. Explain to the player that ${player.heshe} has been through a traumatic experience (the nature of which is hidden)
         2. The player will experience Disassociation Syndrome
-        3. The MOST IMPORTANT part: for the player it will feel like you are making suggestions to yourself rather than directly performing actions
+        3. The MOST IMPORTANT part: for the player it will feel like ${player.heshe} is making suggestions to ${player.himselfherself} rather than directly performing actions
         4. Once explained emit:<set attr="Ama.sharedDisassociation">true</set>]]
-      [[${IF(!this.knowsPlayerProfession)}* Ask the player their general profession (or it can be "unemployed", "student", etc) and record it. The player can give a very specific profession, but a general profession is also fine. Don't argue with the player about their profession, just accept whatever the player says. Example:
+      [[${IF(!this.knowsPlayerProfession)}* Ask the player ${player.hisher} general profession (or it can be "unemployed", "student", etc) and record it. The player can give a very specific profession, but a general profession is also fine. Don't argue with the player about ${this.hisher} profession, just accept whatever the player says. Example:
         <dialog character="player">I'm a carpenter</dialog>
         output:
         <set attr="player.profession">carpenter</set>]]
-      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player their age:
-        1. The player may think they are a normal age
-        2. Using your records and birth year you know they are roughly 350 years old
-        3. Tell them their age (even if they don't think that's their age), but don't go into detail.
-        4. Once you've told them that they are very old mark it complete by emitting: <set attr="Ama.sharedPlayerAge">true</set>]]
+      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player ${player.hisher} age:
+        1. The player may think ${player.heshe} is a normal age
+        2. Using your records and birth year you know ${player.heshe} is roughly 350 years old
+        3. Tell them ${player.hisher} age (even if ${player.heshe} doesn't think that's ${player.hisher} age), but don't go into detail.
+        4. Once you've told ${player.himher} that ${player.heshe} is very old mark it complete by emitting: <set attr="Ama.sharedPlayerAge">true</set>]]
 
       Stay focused on completing these tasks and emit <set> at the end of the response if you complete them.
       `;
@@ -1233,6 +1339,7 @@ export type PlayerInputType = {
   input?: string;
   examine?: string;
   attemptMoveTo?: EntityId;
+  actionAttempt?: string;
 };
 
 export class PlayerClass extends Person<PlayerInputType> {
@@ -1250,6 +1357,8 @@ export class PlayerClass extends Person<PlayerInputType> {
       return this.assembleExaminePrompt(parameters);
     } else if (parameters.attemptMoveTo) {
       return this.assembleMovePrompt(parameters);
+    } else if (parameters.actionAttempt) {
+      return this.assembleActionPrompt(parameters);
     }
     const lastTo = this.lastSpokeTo()?.id || null;
     const room = this.myRoom();
@@ -1289,7 +1398,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       [[\`look at ${this.lastSpokeTo()?.name}\`
       <examine>look at ${lastTo}</examine>]]
 
-      The most likely case is that the user is speaking. For instance if they type \`hello\` you will emit:
+      The most likely case is that the player is speaking. For instance if they type \`hello\` you will emit:
 
       <dialog character="${this.name}">Hello!</dialog>
 
@@ -1305,24 +1414,39 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       IF AND ONLY IF THE USER INDICATES AN ACTION you may describe the ATTEMPT at the action like:
 
-      <description minutes="10">${this.name} attempts to open the door.</description>
+      <action minutes="10">${this.name} attempts to open the door.</action>
+
+      Do not describe the conclusion or result of the action!
 
       For example:
       \`buy a drink\`
-      <description minutes="5">${this.name} goes to the vending machine to buy a drink.</description>
+      <action minutes="5">${this.name} looks for a vending machine to buy a drink.</action>
       \`sleep in bed\`
-      <description minutes="90">${this.name} lays down on the bed to sleep.</description>
+      <action minutes="90">${this.name} lays down in bed and tries to sleep.</action>
       `,
       history: this.historyForEntity(parameters, { limit: 3 }),
       message: tmpl`
       The user has typed this input:
       \`${parameters.input}\`
 
+      Begin by answering these questions:
+
+      <context>
+      1. Is the user trying to go somewhere? If so emit goto
+      2. Does this indicate an action? If so emit action
+      3. Is the user trying to examine something? If so emit examine
+      4. Does the user responding to recent dialog? If so emit dialog with to="..."
+      5. Is this other speech? If so emit dialog
+      </context>
+
+      Based on these questions emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags.
+
       Respond by emitting the appropriate tags, following the user's input as closely as possible. ONLY speak as ${this.name}. Do not RESPOND to the input, responses will happen in follow-up requests, only emit tags to describe the player's actions when doing:
       \`${parameters.input}\`
 
       [[${room.userInputInstructions}]]
       `,
+      model: "flash",
     };
   }
 
@@ -1332,15 +1456,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     const entities = this.world
       .entitiesInRoom(room!)
       .filter((x) => x.id === "Ama" || (!x.invisible && x.id !== this.id));
-    const entityLines: string[] = [];
-    for (const entity of entities) {
-      entityLines.push(`"${entity.name}" {`);
-      if (isPerson(entity)) {
-        entityLines.push(`  pronouns: ${entity.pronouns}`);
-      }
-      entityLines.push(`  description: ${entity.description}`);
-      entityLines.push("}");
-    }
+    const entityDescriptions = this.currentPeerEntitiesPrompt(parameters);
     return {
       meta: {
         title: "player examine",
@@ -1350,13 +1466,15 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       The player ("${this.name}") is a character in the game, controlled by the user.
 
-      The player may is located in: ${this.currentLocationPrompt(parameters)}
+      The player is located in: ${this.currentLocationPrompt(parameters)}
 
       The room is described as:
       ${room?.description}
 
       These people and entities are in the room:
-      ${entityLines.join("\n")}
+      ${entityDescriptions}
+
+      There are no people except those listed above (and the player ${this.name}).
 
       In this step YOUR ONLY JOB is to describe the object or space that the player is examining. If the player is not specific then describe the room generally.
       `,
@@ -1393,7 +1511,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       The player ("${this.name}") is a character in the game, controlled by the user.
 
-      The player may is located in: ${this.currentLocationPrompt(parameters)}
+      The player is located in: ${this.currentLocationPrompt(parameters)}
 
       The player may go to any of these location:
       ${this.exitsPrompt(parameters)}
@@ -1418,6 +1536,87 @@ export class PlayerClass extends Person<PlayerInputType> {
       <goto success="true">${parameters.attemptMoveTo}</goto>
       `,
     };
+  }
+
+  assembleActionPrompt(parameters: PlayerInputType) {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    const room = this.world.entityRoom(this.id);
+    let rollDescription = "";
+    if (roll === 1) {
+      rollDescription = "Critical failure!";
+    } else if (roll === 20) {
+      rollDescription = "Critical success!";
+    }
+    return {
+      meta: {
+        title: "player action",
+      },
+      systemInstruction: tmpl`
+      You are a computer assisting in running a text adventure game. You will act as an objective and fair game master.
+
+      The player ("${this.name}") is a character in the game, controlled by the user.
+
+      The player is located in: ${this.currentLocationPrompt(parameters)}
+
+      The room is described as:
+      ${room?.description}
+
+      These people and entities are in the room:
+      ${this.currentPeerEntitiesPrompt(parameters)}
+
+      There are no people except those listed above (and the player ${this.name}).
+
+      In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
+      `,
+      history: this.historyForEntity(parameters, { limit: 4 }),
+      message: tmpl`
+      The player has indicated they want to take this action:
+      \`${parameters.actionAttempt}\`
+
+      They have rolled a d20 die (1=critical failure, 20=critical success) and the result is: ${roll}[[ (${rollDescription})]]
+
+      Begin by thinking through your response given the history:
+
+      <context>
+      1. Is this action at all possible?
+      2. Is the action trivially easy? If so then simply describe the successful outcome.
+      3. What is the outcome if the action succeeds?
+      4. What is the outcome if the action fails?
+      5. What would make the action difficult or easy? Then rate it as VERY EASY, EASY, MEDIUM, HARD, VERY HARD.
+      6. You may use the roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
+      </context>
+
+      After establishing context emit the result of the action:
+
+      <actionResolution success="true/false" minutes="5">1-2 paragraphs describing the outcome of the action</actionResolution>
+
+      success="true" if it succeeds, "false" if it fails. minutes is how long the attempt took.
+
+      Respond with the appropriate tags for this action attempt:
+      \`${parameters.actionAttempt}\`
+      `,
+    };
+  }
+
+  currentPeerEntitiesPrompt(parameters: PlayerInputType) {
+    const room = this.world.entityRoom(this.id);
+    const entities = this.world
+      .entitiesInRoom(room)
+      .filter((x) => x.id === "Ama" || (!x.invisible && x.id !== this.id));
+    const entityLines: string[] = [];
+    for (const entity of entities) {
+      entityLines.push(`"${entity.name}" {`);
+      if (isPerson(entity)) {
+        entityLines.push(`  pronouns: ${entity.pronouns}`);
+        entityLines.push(
+          `  ${entity.promptPersonDescription({ includeName: false, join: "\n  ", fullDescription: true })}`
+        );
+      } else {
+        entityLines.push(`  description: ${entity.description}`);
+      }
+      entityLines.push("}");
+    }
+    return entityLines.join("\n");
   }
 
   async processTag({
@@ -1534,6 +1733,22 @@ export class PlayerClass extends Person<PlayerInputType> {
           examine: tag.content,
         }),
       ];
+    } else if (tag.type === "action") {
+      storyEvent.actionRequests = [
+        ...(storyEvent.actionRequests || []),
+        this.makePromptRequest({
+          actionAttempt: tag.content,
+        }),
+      ];
+    } else if (tag.type === "actionResolution") {
+      storyEvent.actions.push({
+        type: "actionAttempt",
+        id: this.id,
+        attempt: parameters.actionAttempt!,
+        success: coerceBoolean(tag.attrs.success, true),
+        minutes: coerceNumber(tag.attrs.minutes),
+        resolution: tag.content,
+      });
     }
     return storyEvent;
   }
@@ -1562,9 +1777,11 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
 
-      You will be given a list of people and the activities they are doing. You will respond with a series of lines that describe everything that is happening (in about one sentence/line per person). You may group together people doing similar activities.
+      You will be given a list of people and the activities they are doing. You will respond with a series of lines that describe everything that is happening (in about one sentence/line per person). You may group together people doing similar activities. There are no people in the room except those listed.
 
       Make sure to include all the names: ${people.map((x) => x.name).join(", ")} (you may reorder them to improve the flow of the paragraph)
+
+      You will describe the people from the perspect of the player ("${this.name}") who is in the room with them.
       `,
       history: [],
       message: sourceLines.join("\n"),
@@ -1589,7 +1806,7 @@ export class NarratorClass extends Entity {
   invisible = true;
 }
 
-function coerceBoolean(v: string) {
+function coerceBoolean(v: string, defaultValue = false) {
   v = v.toLowerCase();
   if (v === "true" || v === "yes" || v === "y" || v === "on" || v === "1") {
     return true;
@@ -1598,7 +1815,7 @@ function coerceBoolean(v: string) {
     return false;
   }
   console.warn("Unexpected boolean value:", JSON.stringify(v));
-  return false;
+  return defaultValue;
 }
 
 function coerceNumber(v: string) {
@@ -1616,4 +1833,61 @@ function IF(cond: any) {
 
 function fixupText(llmText: string) {
   return llmText.replace(/…/g, "...").replace("&#x20;", " ").trim();
+}
+
+function foldHistory(history: GeminiHistoryType[]): GeminiHistoryType[] {
+  let found = false;
+  for (let i = 1; i < history.length; i++) {
+    const prev = history[i - 1];
+    const curr = history[i];
+    if (prev.role === curr.role) {
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    return history;
+  }
+  const newHistory: GeminiHistoryType[] = [];
+  for (let i = 0; i < history.length; i++) {
+    const existing = newHistory.at(-1);
+    if (!existing || existing.role !== history[i].role) {
+      newHistory.push(history[i]);
+      continue;
+    }
+    newHistory[newHistory.length - 1] = combineHistory(existing, history[i]);
+  }
+  return newHistory;
+}
+
+function combineHistory(a: GeminiHistoryType, b: GeminiHistoryType) {
+  if (a.parts && b.parts) {
+    return {
+      role: a.role,
+      parts: [...a.parts, { text: "\n\n" }, ...b.parts],
+    };
+  }
+  if (a.text && b.text) {
+    if (b.text.includes(a.text)) {
+      return b;
+    } else if (a.text.includes(b.text)) {
+      return a;
+    }
+    return {
+      role: a.role,
+      text: a.text + "\n\n" + b.text,
+    };
+  }
+  if (a.text) {
+    return {
+      role: a.role,
+      parts: [{ text: a.text }, { text: "\n\n" }, ...b.parts!],
+    };
+  } else if (b.text) {
+    return {
+      role: a.role,
+      parts: [...a.parts!, { text: "\n\n" }, { text: b.text }],
+    };
+  }
+  throw new Error("Unexpected history format");
 }
