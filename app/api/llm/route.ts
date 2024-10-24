@@ -4,13 +4,26 @@ import {
   HarmBlockThreshold,
   HarmCategory,
 } from "@google/generative-ai";
+import OpenAI from "openai";
 
 // This is the maximum free tier duration for a single request:
 export const maxDuration = 60;
 
 const generator = new GoogleGenerativeAI(process.env.GEMINI_KEY as string);
 
+const GEMINI_BASE_URL = `https://${process.env.GEMINI_REGION}-aiplatform.googleapis.com/v1beta1/projects/${process.env.GEMINI_PROJECT_ID}/locations/${process.env.GEMINI_REGION}/endpoints/openapi',
+`;
+
+const openai = new OpenAI({
+  // baseURL: GEMINI_BASE_URL,
+  // apiKey: process.env.GEMINI_KEY,
+  apiKey: process.env.OPENAI_KEY,
+});
+
 export async function POST(request: Request) {
+  if (request.url.includes("openai=1")) {
+    return POST_OpenAI(request);
+  }
   if (process.env.PROXY_LLM) {
     // Proxy the request to the URL specified in process.env.PROXY_LLM
     const proxyUrl = process.env.PROXY_LLM;
@@ -79,4 +92,12 @@ export async function POST(request: Request) {
     console.error("Gemini error:", e);
     return NextResponse.json({ candidates: result.response.candidates });
   }
+}
+
+async function POST_OpenAI(request: Request) {
+  const data = await request.json();
+  const response = await openai.chat.completions.create(data);
+  return NextResponse.json({
+    response: response.choices[0].message.content,
+  });
 }

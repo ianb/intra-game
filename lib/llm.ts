@@ -1,5 +1,12 @@
 import { signal } from "@preact/signals-react";
-import { GeminiChatType, GeminiModelType, LlmLogType } from "./types";
+import {
+  GeminiChatType,
+  GeminiHistoryType,
+  GeminiModelType,
+  LlmLogType,
+} from "./types";
+import OpenAI from "openai";
+import { DEFAULT_CIPHERS } from "tls";
 
 // export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro-exp-0827";
 // export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash-exp-0827";
@@ -53,9 +60,9 @@ export async function chat(request: GeminiChatType) {
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
   let text = "";
   try {
-    const response = await fetch("/api/llm", {
+    const response = await fetch("/api/llm?openai=1", {
       method: "POST",
-      body: JSON.stringify(request),
+      body: JSON.stringify(convertRequest(request)),
     });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
@@ -98,4 +105,36 @@ function fixText(request: GeminiChatType) {
     return h;
   });
   return request;
+}
+
+function convertRequest(
+  request: GeminiChatType
+): OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming {
+  return {
+    model: "gpt-4o-mini", // request.model || DEFAULT_MODEL,
+    messages: [
+      {
+        role: "system",
+        content: request.systemInstruction || "",
+      },
+      ...request.history.map((h) => convertMessage(h)),
+      {
+        role: "user",
+        content: request.message,
+      },
+    ],
+  };
+}
+
+function convertMessage(
+  h: GeminiHistoryType
+): OpenAI.Chat.Completions.ChatCompletionMessageParam {
+  let text = h.text;
+  if (h.parts) {
+    text = h.parts.map((p) => p.text).join("\n");
+  }
+  return {
+    role: h.role === "user" ? "user" : "assistant",
+    content: text || "",
+  };
 }
