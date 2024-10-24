@@ -14,11 +14,11 @@ const generator = new GoogleGenerativeAI(process.env.GEMINI_KEY as string);
 const GEMINI_BASE_URL = `https://${process.env.GEMINI_REGION}-aiplatform.googleapis.com/v1beta1/projects/${process.env.GEMINI_PROJECT_ID}/locations/${process.env.GEMINI_REGION}/endpoints/openapi',
 `;
 
-const openai = new OpenAI({
+const openai = process.env.NEXT_PUBLIC_USE_OPENAI ? new OpenAI({
   // baseURL: GEMINI_BASE_URL,
   // apiKey: process.env.GEMINI_KEY,
   apiKey: process.env.OPENAI_KEY,
-});
+}) : null;
 
 export async function POST(request: Request) {
   if (request.url.includes("openai=1")) {
@@ -95,6 +95,9 @@ export async function POST(request: Request) {
 }
 
 async function POST_OpenAI(request: Request) {
+  if (openai === null) {
+    throw new Error("OpenAI is not enabled");
+  }
   const data = await request.json();
   const response = await openai.chat.completions.create(data);
   return NextResponse.json({

@@ -6,7 +6,6 @@ import {
   LlmLogType,
 } from "./types";
 import OpenAI from "openai";
-import { DEFAULT_CIPHERS } from "tls";
 
 // export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro-exp-0827";
 // export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash-exp-0827";
@@ -60,10 +59,15 @@ export async function chat(request: GeminiChatType) {
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
   let text = "";
   try {
-    const response = await fetch("/api/llm?openai=1", {
-      method: "POST",
-      body: JSON.stringify(convertRequest(request)),
-    });
+    const response = process.env.NEXT_PUBLIC_USE_OPENAI
+      ? await fetch("/api/llm?openai=1", {
+          method: "POST",
+          body: JSON.stringify(convertRequest(request)),
+        })
+      : await fetch("/api/llm", {
+          method: "POST",
+          body: JSON.stringify(request),
+        });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
