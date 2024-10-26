@@ -4,7 +4,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
 } from "@google/generative-ai";
-import OpenAI from "openai";
+import OpenAI, { AuthenticationError } from "openai";
 
 // This is the maximum free tier duration for a single request:
 export const maxDuration = 60;
@@ -14,15 +14,20 @@ const generator = new GoogleGenerativeAI(process.env.GEMINI_KEY as string);
 const GEMINI_BASE_URL = `https://${process.env.GEMINI_REGION}-aiplatform.googleapis.com/v1beta1/projects/${process.env.GEMINI_PROJECT_ID}/locations/${process.env.GEMINI_REGION}/endpoints/openapi',
 `;
 
-const openai = process.env.NEXT_PUBLIC_USE_OPENAI ? new OpenAI({
-  // baseURL: GEMINI_BASE_URL,
-  // apiKey: process.env.GEMINI_KEY,
-  apiKey: process.env.OPENAI_KEY,
-}) : null;
+const openai = process.env.NEXT_PUBLIC_USE_OPENAI
+  ? new OpenAI({
+      // baseURL: GEMINI_BASE_URL,
+      // apiKey: process.env.GEMINI_KEY,
+      apiKey: process.env.OPENAI_KEY,
+    })
+  : null;
 
 export async function POST(request: Request) {
   if (request.url.includes("openai=1")) {
     return POST_OpenAI(request);
+  }
+  if (request.url.includes("openrouter=1")) {
+    return POST_OpenRouter(request);
   }
   if (process.env.PROXY_LLM) {
     // Proxy the request to the URL specified in process.env.PROXY_LLM
@@ -100,6 +105,51 @@ async function POST_OpenAI(request: Request) {
   }
   const data = await request.json();
   const response = await openai.chat.completions.create(data);
+  return NextResponse.json({
+    response: response.choices[0].message.content,
+  });
+}
+
+async function POST_OpenRouter(request: Request) {
+  const data = await request.json();
+  const key = data.key;
+  delete data.key;
+  console.log("sending with key", key);
+  const provider = new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: key || process.env.OPENROUTER_KEY,
+    defaultHeaders: {
+      // "HTTP-Referer": "", // Optional, for including your app on openrouter.ai rankings.
+      "X-Title": "Intra",
+    },
+  });
+  console.log("send req", data.model);
+  let response: OpenAI.Chat.Completions.ChatCompletion;
+  try {
+    response = await provider.chat.completions.create(data);
+  } catch (e) {
+    if (e instanceof AuthenticationError) {
+      // Probably an error with the account or cost
+      return NextResponse.json({
+        error: {
+          message: e.toString(),
+        },
+      });
+    }
+  }
+  if (!response!) {
+    return NextResponse.json({
+      error: {
+        message: "No response from OpenRouter",
+      },
+    });
+  }
+  console.log("result", response);
+  if ((response as any).error) {
+    return NextResponse.json({
+      error: (response as any).error,
+    });
+  }
   return NextResponse.json({
     response: response.choices[0].message.content,
   });

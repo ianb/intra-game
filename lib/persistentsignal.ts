@@ -32,6 +32,17 @@ export function persistentSignal<T>(
     value = defaultValue;
   }
   const s = signal(value);
+  (s as any).refresh = () => {
+    const rawValue = storage.getItem(`signal.${name}`);
+    let value: T;
+    if (rawValue) {
+      value = JSON.parse(rawValue);
+      // value = deserialize(value);
+    } else {
+      value = defaultValue;
+    }
+    s.value = value;
+  };
   effect(() => {
     try {
       storage.setItem(`signal.${name}`, JSON.stringify(s.value));

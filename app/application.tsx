@@ -24,6 +24,9 @@ import { twMerge } from "tailwind-merge";
 import { ZoomOverlay } from "@/components/zoom";
 import { Clock } from "@/components/digitalnumerals";
 import { timeAsString } from "@/lib/game/scheduler";
+import { ModelSelector, ModelType } from "@/components/modelselector";
+import { openrouterModel } from "@/lib/llm";
+import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
@@ -37,6 +40,7 @@ export default function Home() {
     model.checkLaunch();
   }, []);
   const openHelp = useSignal(!seenHelp.value);
+  const openSettings = useSignal(false);
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
@@ -53,6 +57,16 @@ export default function Home() {
           <Button
             className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
             onClick={() => {
+              openHelp.value = false;
+              openSettings.value = !openSettings.value;
+            }}
+          >
+            ⚙
+          </Button>
+          <Button
+            className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
+            onClick={() => {
+              openSettings.value = false;
               openHelp.value = !openHelp.value;
             }}
           >
@@ -70,6 +84,17 @@ export default function Home() {
           }}
         >
           <Help />
+        </ZoomOverlay>
+      )}
+
+      {openSettings.value && (
+        <ZoomOverlay
+          className="w-3/4 h-3/4"
+          onDone={() => {
+            openSettings.value = false;
+          }}
+        >
+          <Settings />
         </ZoomOverlay>
       )}
 
@@ -1048,6 +1073,58 @@ function Help() {
           {"| TYPE HERE     | people  |\n"}
           {"+---------------+---------+\n"}
         </pre>
+      </div>
+      <div className="flex justify-center">
+        <span className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4">
+          DONE
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Settings() {
+  return (
+    <div className="w-full h-full bg-blue-900 text-white py-4 px-8 border-white border-8 overflow-scroll flex flex-col">
+      <div className="flex justify-center mb-4">Settings</div>
+      <div className="flex-1 overflow-y-auto">
+        <div>
+          Choose a model:
+          <br />
+          <ModelSelector
+            signal={openrouterModel}
+            freeOnly={!openrouterCode.value}
+          />
+        </div>
+        <div className="mt-4">
+          {openrouterCode.value ? (
+            <>
+              You have a code from OpenRouter.ai: <br />
+              <code>
+                {openrouterCode.value.slice(0, 12)}...
+                {openrouterCode.value.slice(-3)}
+              </code>
+              <Button
+                className="ml-4"
+                onClick={() => {
+                  openrouterCode.value = null;
+                }}
+              >
+                Remove code
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="mb-4">
+                To have access to paid models and more features, you can get a
+                code from OpenRouter.ai.{" "}
+              </div>
+              <div>
+                <OpenRouterConnect />
+              </div>
+            </>
+          )}
+        </div>
       </div>
       <div className="flex justify-center">
         <span className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4">

@@ -6,6 +6,9 @@ import {
   LlmLogType,
 } from "./types";
 import OpenAI from "openai";
+import { ModelType } from "@/components/modelselector";
+import { persistentSignal } from "./persistentsignal";
+import { openrouterCode } from "@/components/openrouter";
 
 // export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro-exp-0827";
 // export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash-exp-0827";
@@ -13,6 +16,11 @@ export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro";
 export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
 // export const DEFAULT_MODEL = DEFAULT_FLASH_MODEL;
 export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
+
+export const openrouterModel = persistentSignal<ModelType | null>(
+  "openrouter",
+  null
+);
 
 export const logSignal = signal<LlmLogType[]>([]);
 
@@ -39,6 +47,26 @@ export class LlmError extends Error {
 
 export class LlmSafetyError extends LlmError {}
 
+export class LlmServiceError extends Error {
+  body: any;
+
+  constructor(message: string, body: any) {
+    if (typeof message !== "string") {
+      if ((message as any)?.error?.message) {
+        message = (message as any).error.message;
+      }
+    } else {
+      message = JSON.stringify(message);
+    }
+    super(message);
+    this.body = body;
+  }
+
+  toString() {
+    return JSON.stringify(this.body, null, 2);
+  }
+}
+
 export async function chat(request: GeminiChatType) {
   request = fixText(request);
   const log = {
@@ -59,19 +87,50 @@ export async function chat(request: GeminiChatType) {
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
   let text = "";
   try {
-    const response = process.env.NEXT_PUBLIC_USE_OPENAI
-      ? await fetch("/api/llm?openai=1", {
-          method: "POST",
-          body: JSON.stringify(convertRequest(request)),
-        })
-      : await fetch("/api/llm", {
-          method: "POST",
-          body: JSON.stringify(request),
-        });
+    let response: Response;
+    if (process.env.NEXT_PUBLIC_USE_OPENAI) {
+      response = await fetch("/api/llm?openai=1", {
+        method: "POST",
+        body: JSON.stringify(convertRequest(request)),
+      });
+    } else if (openrouterModel.value) {
+      response = await fetch("/api/llm?openrouter=1", {
+        method: "POST",
+        body: JSON.stringify({
+          ...convertRequest(request),
+          model: openrouterModel.value.id,
+          key: openrouterCode.value,
+        }),
+      });
+    } else {
+      response = await fetch("/api/llm", {
+        method: "POST",
+        body: JSON.stringify(request),
+      });
+    }
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
     const json = await response.json();
+    if (json.error) {
+      let msg: any = json.error?.message;
+      if (msg && typeof msg === "string") {
+        try {
+          msg = JSON.parse(msg);
+        } catch (e) {}
+      }
+      if (!msg) {
+        if (typeof json.error === "string") {
+          msg = json.error;
+        } else {
+          msg = JSON.stringify(json.error);
+        }
+      }
+      if (typeof json.error === "object") {
+        json.error.message = msg;
+      }
+      throw new LlmServiceError(msg?.message || msg, json.error);
+    }
     if (!json.response && json.candidates) {
       console.error("Bad Response", json);
       if (json.candidates[0].finishReason === "SAFETY") {
