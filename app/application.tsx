@@ -1116,8 +1116,14 @@ function Settings() {
           ) : (
             <>
               <div className="mb-4">
-                To have access to paid models and more features, you can get a
-                code from OpenRouter.ai.{" "}
+                To have access to paid models you can get a code from
+                <a
+                  href="https://openrouter.ai/"
+                  target="_blank"
+                  className="underline"
+                >
+                  OpenRouter.ai
+                </a>
               </div>
               <div>
                 <OpenRouterConnect />

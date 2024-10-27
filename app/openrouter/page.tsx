@@ -5,6 +5,14 @@ import { useEffect } from "react";
 import { Suspense } from "react";
 
 export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HandleCode />
+    </Suspense>
+  );
+}
+
+function HandleCode() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
   useEffect(() => {
@@ -22,9 +30,5 @@ export default function Page() {
         }, 3000);
       });
   }, [code]);
-  return (
-    <Suspense>
-      <div>Code received, closing window...</div>
-    </Suspense>
-  );
+  return <div>Code received, closing window...</div>;
 }
