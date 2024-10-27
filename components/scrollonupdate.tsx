@@ -4,11 +4,16 @@ import { useSignal } from "@preact/signals-react";
 type ScrollOnUpdateProps = {
   children: React.ReactNode;
   watch: any;
+  // Must be a better way, but a list will change every time...
+  watch2?: any;
+  watch3?: any;
 } & React.HTMLProps<HTMLDivElement>;
 
 export default function ScrollOnUpdate({
   children,
   watch,
+  watch2,
+  watch3,
   ...props
 }: ScrollOnUpdateProps) {
   const firstScroll = useSignal(true);
@@ -36,7 +41,7 @@ export default function ScrollOnUpdate({
       scrollDown();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch, ref.current]);
+  }, [watch, watch2, watch3, ref.current]);
   return (
     <div ref={ref} {...props}>
       {children}

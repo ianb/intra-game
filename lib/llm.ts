@@ -28,6 +28,8 @@ export const openrouterModel = persistentSignal<ModelType | null>(
 
 export const logSignal = signal<LlmLogType[]>([]);
 
+export const lastLlmError = signal<string | null>(null);
+
 export class LlmError extends Error {
   candidates: any;
 
@@ -118,6 +120,7 @@ export async function chat(request: GeminiChatType) {
       });
     }
     if (!response.ok) {
+      lastLlmError.value = `LLM service error ${response.status}: ${response.url}`;
       throw new Error(`HTTP ${response.status}: ${response.url}`);
     }
     const json = await response.json();
@@ -138,6 +141,7 @@ export async function chat(request: GeminiChatType) {
       if (typeof json.error === "object") {
         json.error.message = msg;
       }
+      lastLlmError.value = `${msg?.message || msg}`;
       throw new LlmServiceError(msg?.message || msg, json.error);
     }
     if (!json.response && json.candidates && !json.choices) {
@@ -145,6 +149,7 @@ export async function chat(request: GeminiChatType) {
       if (json.candidates[0].finishReason === "SAFETY") {
         throw new LlmSafetyError("Safety Issue", json.candidates);
       }
+      lastLlmError.value = `Bad response: ${json?.candidates?.[0]?.finishReason || "unknown"}`;
       throw new LlmError("Bad Response", json.candidates);
     }
     if (json.choices) {
@@ -159,6 +164,7 @@ export async function chat(request: GeminiChatType) {
       errorMessage: `${e}`,
     };
     logSignal.value = logSignal.value.map((l) => (l === log ? newLog : l));
+    lastLlmError.value = `Unexpected LLM error: ${e}`;
     throw e;
   }
   const newLog = {

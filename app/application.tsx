@@ -23,10 +23,11 @@ import { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { ZoomOverlay } from "@/components/zoom";
 import { Clock } from "@/components/digitalnumerals";
-import { timeAsString } from "@/lib/game/scheduler";
+import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import { ModelSelector, ModelType } from "@/components/modelselector";
-import { customEndpoint, openrouterModel } from "@/lib/llm";
+import { customEndpoint, lastLlmError, openrouterModel } from "@/lib/llm";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
+import { CalculatingThrobber } from "@/components/throbber";
 
 const activeTab = persistentSignal("activeTab", "inv");
 const showInternals = persistentSignal("showInternals", false);
@@ -103,6 +104,8 @@ export default function Home() {
           <ScrollOnUpdate
             className="flex-1 overflow-y-auto p-2"
             watch={model.updates.value}
+            watch2={lastLlmError.value}
+            watch3={model.runningSignal.value}
           >
             <ChatLog />
           </ScrollOnUpdate>
@@ -123,6 +126,23 @@ function ChatLog() {
       {model.updatesWithPositions.value.map((eventPos, i) => (
         <ChatLogItem eventPos={eventPos} key={i} />
       ))}
+      {lastLlmError.value && (
+        <div className="bg-red-900 text-white mx-8">
+          <button
+            className="float-right text-xs"
+            onClick={() => {
+              lastLlmError.value = "";
+            }}
+          >
+            &times;
+          </button>
+          <div className="text-xs text-center">LLM error:</div>
+          <pre className="text-sm whitespace-pre-wrap p-2">
+            {lastLlmError.value}
+          </pre>
+        </div>
+      )}
+      {model.runningSignal.value && <CalculatingThrobber />}
     </div>
   );
 }
@@ -498,7 +518,7 @@ function HeadsUpDisplay() {
           }}
           className={activeTab.value === "inv" ? activeClass : inactiveClass}
         >
-          (i)nv
+          inv
         </span>{" "}
         {/* <span
           onClick={() => {
@@ -523,7 +543,7 @@ function HeadsUpDisplay() {
             }}
             className={activeTab.value === "map" ? activeClass : inactiveClass}
           >
-            (m)ap
+            map
           </span>
         )}{" "}
         {(showLogs || activeTab.value === "log") && (
@@ -533,7 +553,7 @@ function HeadsUpDisplay() {
             }}
             className={activeTab.value === "log" ? activeClass : inactiveClass}
           >
-            (l)og
+            log
           </span>
         )}{" "}
         {(showLogs || activeTab.value === "objs") && (
@@ -543,7 +563,7 @@ function HeadsUpDisplay() {
             }}
             className={activeTab.value === "objs" ? activeClass : inactiveClass}
           >
-            (o)bjs
+            objs
           </span>
         )}
       </div>
@@ -910,6 +930,10 @@ function ViewObjects() {
   });
   return (
     <div>
+      <div className="text-xs text-gray-300 mx-2">
+        Below is a list of all objects, and the edits made to those objects over
+        the course of the game
+      </div>
       {entities.map((entity) => {
         return (
           <ViewObject
@@ -939,17 +963,15 @@ function ViewObject({
     if (key === "world") {
       continue;
     }
-    if (key === "schedule") {
-      lines.push(`schedule:`);
-      for (const item of value as PersonScheduleType[]) {
+    if (key === "todaysSchedule") {
+      lines.push(`todaysSchedule:`);
+      for (const item of value as PersonScheduledEventType[]) {
+        const schedule = scheduleForTime(entity as Person, item.time);
         lines.push(
-          `  ${timeAsString(item.time)}-${timeAsString(item.time + item.minuteLength)}: ${item.activity}`
+          `  ${timeAsString(item.time)}-${timeAsString(item.time + item.minuteLength)}: ${schedule?.activity || item.scheduleId}${schedule?.attentive ? " (attentive)" : ""}`
         );
-        lines.push(
-          `    ${item.description}${item.attentive ? " (attentive)" : ""}`
-        );
-        if (item.secret) {
-          lines.push(`    secret: ${item.secretReason}`);
+        if (schedule?.secret) {
+          lines.push(`    secret: ${schedule?.secretReason}`);
         }
       }
       continue;
