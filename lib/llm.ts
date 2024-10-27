@@ -17,6 +17,10 @@ export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
 // export const DEFAULT_MODEL = DEFAULT_FLASH_MODEL;
 export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
 
+export const customEndpoint = persistentSignal<string | null>(
+  "customEndpoint",
+  null
+);
 export const openrouterModel = persistentSignal<ModelType | null>(
   "openrouter",
   null
@@ -88,7 +92,12 @@ export async function chat(request: GeminiChatType) {
   let text = "";
   try {
     let response: Response;
-    if (process.env.NEXT_PUBLIC_USE_OPENAI) {
+    if (customEndpoint.value) {
+      response = await fetch(`${customEndpoint.value}/chat/completions`, {
+        method: "POST",
+        body: JSON.stringify(convertRequest(request)),
+      });
+    } else if (process.env.NEXT_PUBLIC_USE_OPENAI) {
       response = await fetch("/api/llm?openai=1", {
         method: "POST",
         body: JSON.stringify(convertRequest(request)),
@@ -109,7 +118,7 @@ export async function chat(request: GeminiChatType) {
       });
     }
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${response.url}`);
     }
     const json = await response.json();
     if (json.error) {
@@ -131,14 +140,18 @@ export async function chat(request: GeminiChatType) {
       }
       throw new LlmServiceError(msg?.message || msg, json.error);
     }
-    if (!json.response && json.candidates) {
+    if (!json.response && json.candidates && !json.choices) {
       console.error("Bad Response", json);
       if (json.candidates[0].finishReason === "SAFETY") {
         throw new LlmSafetyError("Safety Issue", json.candidates);
       }
       throw new LlmError("Bad Response", json.candidates);
     }
-    text = json.response;
+    if (json.choices) {
+      text = json.choices[0].message.content;
+    } else {
+      text = json.response;
+    }
   } catch (e) {
     const newLog = {
       ...log,

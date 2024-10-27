@@ -1,4 +1,4 @@
-import { Button, CheckButton } from "@/components/input";
+import { A, Button, CheckButton } from "@/components/input";
 import LlmLog, { clearLogs } from "@/components/llmlog";
 import ScrollOnUpdate from "@/components/scrollonupdate";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
@@ -25,7 +25,7 @@ import { ZoomOverlay } from "@/components/zoom";
 import { Clock } from "@/components/digitalnumerals";
 import { timeAsString } from "@/lib/game/scheduler";
 import { ModelSelector, ModelType } from "@/components/modelselector";
-import { openrouterModel } from "@/lib/llm";
+import { customEndpoint, openrouterModel } from "@/lib/llm";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 
 const activeTab = persistentSignal("activeTab", "inv");
@@ -1099,7 +1099,11 @@ function Settings() {
         <div className="mt-4">
           {openrouterCode.value ? (
             <>
-              You have a code from OpenRouter.ai: <br />
+              You have a code from{" "}
+              <A href="https://openrouter.ai/keys" blank>
+                OpenRouter.ai
+              </A>
+              : <br />
               <code>
                 {openrouterCode.value.slice(0, 12)}...
                 {openrouterCode.value.slice(-3)}
@@ -1117,19 +1121,27 @@ function Settings() {
             <>
               <div className="mb-4">
                 To have access to paid models you can get a code from
-                <a
-                  href="https://openrouter.ai/"
-                  target="_blank"
-                  className="underline"
-                >
+                <A href="https://openrouter.ai/" blank>
                   OpenRouter.ai
-                </a>
+                </A>
               </div>
               <div>
                 <OpenRouterConnect />
               </div>
             </>
           )}
+          <div className="mt-4">
+            Set a custom endpoint: <br />
+            <input
+              type="text"
+              className="bg-gray-800 text-white p-2 w-2/3"
+              value={customEndpoint.value || ""}
+              onInput={(e) => {
+                customEndpoint.value = (e.target as HTMLInputElement).value;
+              }}
+              placeholder="http://localhost:5001/v1"
+            />
+          </div>
         </div>
       </div>
       <div className="flex justify-center">

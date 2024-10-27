@@ -86,3 +86,17 @@ export function WithBlinkingCursor({
     </span>
   );
 }
+
+export function A({
+  blank,
+  className,
+  ...props
+}: { blank?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  const p = { ...props };
+  if (blank) {
+    p.target = "_blank";
+  }
+  return (
+    <a className={twMerge("text-cyan-300 hover:underline", className)} {...p} />
+  );
+}
