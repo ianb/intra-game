@@ -1,93 +1,129 @@
-/* Parses a string that has <tag attrs...>...</tag>, but not nested and
+/* Parses a string that has <tag attrs...>...</tag>, but
    permissive */
 
 export type TagType = {
   type: string;
   attrs: Record<string, string>;
   content: string;
+  subTags?: TagType[];
 };
 
 export function parseTags(s: string, allowTags?: string[]): TagType[] {
   s = s.trim().replace(/^`+/, "").replace(/`+$/, "").trim();
-  const parts: TagType[] = [];
-  let openTag = "";
-  function appendText(text: string) {
-    if (openTag) {
-      parts[parts.length - 1].content += text;
-    } else {
-      parts.push({
-        type: "comment",
-        content: text,
-        attrs: {},
-      });
-    }
-  }
-  do {
-    const nextMatch = s.match(/<(\/)?([^\s>/]+)([^>]*?)(\/)?>/);
+  const root: TagType = { type: "root", attrs: {}, content: "" };
+  const stack: { tag: TagType; startPos: number; contentStart: number }[] = [];
+  let pos = 0;
+
+  while (pos < s.length) {
+    const restOfString = s.slice(pos);
+    const nextMatch = restOfString.match(/<(\/)?([^\s>/]+)([^>]*?)(\/)?>/);
     if (!nextMatch) {
-      appendText(s);
+      // No more tags, the rest is text
+      const text = s.slice(pos);
+      const currentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+      currentTag.content += text;
+      const trimmedText = text.trim();
+      if (trimmedText) {
+        if (!currentTag.subTags) {
+          currentTag.subTags = [];
+        }
+        currentTag.subTags.push({
+          type: "comment",
+          attrs: {},
+          content: trimmedText,
+        });
+      }
+      pos = s.length;
       break;
     }
-    const endIndex = nextMatch.index! + nextMatch[0].length;
+
+    const matchStart = pos + nextMatch.index!;
+    const matchEnd = matchStart + nextMatch[0].length;
     const isEnd = !!nextMatch[1];
     const tagName = nextMatch[2];
     const tagAttrs = nextMatch[3];
     const isSelfClosing = !!nextMatch[4];
-    let invalidTag = false;
-    if (allowTags && !allowTags.includes(tagName)) {
-      console.warn(
-        "Disallowed tag",
-        nextMatch[0],
-        `allowed: ${allowTags.join(", ")}`
-      );
-      invalidTag = true;
-    } else if (isEnd && !openTag) {
-      console.warn(
-        "Unexpected closing tag",
-        nextMatch[0],
-        `expected </${openTag}>`
-      );
-      invalidTag = true;
-    } else if (isEnd && openTag !== tagName) {
-      console.warn(
-        "Mismatched closing tag",
-        nextMatch[0],
-        `expected </${openTag}>`
-      );
-      invalidTag = true;
+
+    // Text before the tag
+    if (matchStart > pos) {
+      const text = s.slice(pos, matchStart);
+      const currentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+      currentTag.content += text;
+      const trimmedText = text.trim();
+      if (trimmedText) {
+        if (!currentTag.subTags) {
+          currentTag.subTags = [];
+        }
+        currentTag.subTags.push({
+          type: "comment",
+          attrs: {},
+          content: trimmedText,
+        });
+      }
     }
-    if (invalidTag) {
-      const text = s.slice(0, endIndex);
-      appendText(text);
-      s = s.slice(endIndex);
-      continue;
-    }
+
     if (isEnd) {
-      const text = s.slice(0, nextMatch.index!);
-      appendText(text);
-      openTag = "";
-      s = s.slice(endIndex);
+      // Closing tag
+      if (stack.length === 0) {
+        console.warn("Unexpected closing tag", nextMatch[0]);
+        pos = matchEnd;
+        continue;
+      }
+      const currentItem = stack.pop()!;
+      const currentTag = currentItem.tag;
+      if (tagName === currentTag.type) {
+        // Correct closing tag
+        // Set content between contentStart and matchStart
+        currentTag.content = s.slice(currentItem.contentStart, matchStart);
+        // Append from startPos to matchEnd to parent content
+        const parentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+        parentTag.content += s.slice(currentItem.startPos, matchEnd);
+        pos = matchEnd;
+        continue;
+      } else {
+        console.warn("Mismatched closing tag", nextMatch[0]);
+        pos = matchEnd;
+        continue;
+      }
+    }
+
+    if (allowTags && !allowTags.includes(tagName)) {
+      console.warn("Disallowed tag", nextMatch[0]);
+      pos = matchEnd;
       continue;
     }
-    const leading = s.slice(0, nextMatch.index!).trim();
-    if (leading) {
-      appendText(leading);
-    }
+
+    // Opening tag
     const attrs = parseAttrs(tagAttrs);
-    parts.push({
-      type: tagName,
-      attrs,
-      content: "",
-    });
-    s = s.slice(endIndex);
-    if (!isSelfClosing) {
-      openTag = tagName;
+    const newTag: TagType = { type: tagName, attrs, content: "" };
+
+    // Append opening tag to parent content
+    const parentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+    parentTag.content += s.slice(matchStart, matchEnd);
+
+    // Add newTag to parent subTags
+    if (!parentTag.subTags) {
+      parentTag.subTags = [];
     }
-  } while (s.trim());
-  for (const p of parts) {
-    p.content = p.content.trim();
+    parentTag.subTags.push(newTag);
+
+    if (!isSelfClosing) {
+      // Push onto stack
+      stack.push({ tag: newTag, startPos: matchStart, contentStart: matchEnd });
+    } else {
+      // Self-closing tag, content is empty
+      newTag.content = "";
+    }
+
+    pos = matchEnd;
   }
-  return parts;
+
+  if (root.subTags) {
+    cleanUpTags(root.subTags);
+    return root.subTags;
+  } else {
+    return [];
+  }
 }
 
 function parseAttrs(s: string): Record<string, string> {
@@ -95,17 +131,26 @@ function parseAttrs(s: string): Record<string, string> {
     return {};
   }
   const attrsText = s.trim();
-  const attrs: any = {};
+  const attrs: Record<string, string> = {};
   Array.from(attrsText.matchAll(/([^=\s]+)="([^"]*)"/g)).forEach((match) => {
     const v = match[2];
-    // if (v.startsWith("[") && v.endsWith("]")) {
-    //   v = JSON.parse(v);
-    // } else if (v.startsWith("{") && v.endsWith("}")) {
-    //   v = JSON.parse(v);
-    // }
     attrs[match[1].trim()] = v;
   });
   return attrs;
+}
+
+function cleanUpTags(tags: TagType[]): TagType[] {
+  for (const tag of tags) {
+    if (tag.subTags) {
+      cleanUpTags(tag.subTags);
+      tag.content = tag.content.trim();
+      // Remove subTags if they only contain comments
+      if (!tag.subTags.find((x) => x.type !== "comment")) {
+        delete tag.subTags;
+      }
+    }
+  }
+  return tags;
 }
 
 export function serializeTags(tags: TagType[], omit?: OmitArgument) {

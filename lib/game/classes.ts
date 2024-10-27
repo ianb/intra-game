@@ -518,7 +518,12 @@ export abstract class Entity<ParametersT extends object = object> {
           console.warn("Got set tag with no attr", tag);
           continue;
         }
-        const [id, key] = tag.attrs.attr.split(".");
+        const [maybeId, key] = tag.attrs.attr.split(".");
+        const id = this.world.makeId(maybeId);
+        if (id === null) {
+          console.warn(`Could not parse id ${maybeId}`, tag);
+          continue;
+        }
         const entity = model.world.getEntity(id);
         if (!entity) {
           console.warn(`Set tag for entity ${id} which does not exist`);
@@ -542,8 +547,8 @@ export abstract class Entity<ParametersT extends object = object> {
         }
       } else if (tag.type === "dialog") {
         // FIXME: should validate some ids
-        const id = tag.attrs.id || this.id;
-        const toId = tag.attrs.to || undefined;
+        const id = this.world.makeId(tag.attrs.id) || this.id;
+        const toId = this.world.makeId(tag.attrs.to) || undefined;
         const toOther = tag.attrs.speaking || undefined;
         const text = tag.content;
         if (text.trim()) {
@@ -559,7 +564,7 @@ export abstract class Entity<ParametersT extends object = object> {
         }
       } else if (tag.type === "description") {
         let minutes = tag.attrs.minutes
-          ? parseInt(tag.attrs.minutes, 10)
+          ? coerceNumber(tag.attrs.minutes)
           : undefined;
         if (Number.isNaN(minutes)) {
           console.warn("Could not parse minutes", tag);

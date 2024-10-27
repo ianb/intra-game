@@ -385,4 +385,32 @@ export class World {
   get timestampOfDay(): number {
     return this.timestampMinutes % ONE_DAY;
   }
+
+  /* This will ONLY return a valid id, or null
+     If the given name isn't already an id, it will search
+     for entities with that name (case insensitive)
+     */
+  makeId(name: string | null): EntityId | null {
+    if (!name) {
+      return null;
+    }
+    if ((this.entities as any)[name]) {
+      return name;
+    }
+    const lowerName = name.toLowerCase().replace(/\s\s+/g, " ");
+    for (const [key, entity] of Object.entries(this.entities)) {
+      if (entity.name.toLowerCase() === lowerName) {
+        return key;
+      }
+    }
+    for (const [key, entity] of Object.entries(this.entities)) {
+      if (entity.name.toLowerCase().includes(lowerName)) {
+        return key;
+      }
+    }
+    if (lowerName === "You") {
+      return "player";
+    }
+    return null;
+  }
 }
