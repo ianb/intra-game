@@ -22,6 +22,23 @@ const openai = process.env.NEXT_PUBLIC_USE_OPENAI
     })
   : null;
 
+const ALLOWED_FREE_MODELS = [
+  "liquid/lfm-40b:free",
+  "meta-llama/llama-3-8b-instruct:free",
+  "meta-llama/llama-3.1-8b-instruct:free",
+  "meta-llama/llama-3.2-3b-instruct:free",
+  "gryphe/mythomax-l2-13b:free",
+  "meta-llama/llama-3.1-405b-instruct:free",
+  "meta-llama/llama-3.1-70b-instruct:free",
+  "mistralai/mistral-7b-instruct:free",
+  "openchat/openchat-7b:free",
+  "microsoft/phi-3-mini-128k-instruct:free",
+  "qwen/qwen-2-7b-instruct:free",
+  "google/gemma-2-9b-it:free",
+];
+
+const DEFAULT_FREE_MODEL = "meta-llama/llama-3.1-70b-instruct:free";
+
 export async function POST(request: Request) {
   if (request.url.includes("openai=1")) {
     return POST_OpenAI(request);
@@ -112,9 +129,15 @@ async function POST_OpenAI(request: Request) {
 
 async function POST_OpenRouter(request: Request) {
   const data = await request.json();
-  const key = data.key;
+  let key = data.key;
   delete data.key;
-  console.log("sending with key", key);
+  // console.log("sending with key", key);
+  if (!key) {
+    key = process.env.OPENROUTER_KEY;
+    if (!data.model || !ALLOWED_FREE_MODELS.includes(data.model)) {
+      data.model = DEFAULT_FREE_MODEL;
+    }
+  }
   const provider = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
     apiKey: key || process.env.OPENROUTER_KEY,
