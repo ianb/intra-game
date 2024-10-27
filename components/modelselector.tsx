@@ -138,7 +138,7 @@ const RATINGS: Record<string, RatingType> = {
   "lizpreciatior/lzlv-70b-fp16-hf": "bad",
   "alpindale/magnum-72b": "ok",
   "anthracite-org/magnum-v2-72b": "bad",
-  "anthracite-org/magnum-v4-72b": "bad",
+  "anthracite-org/magnum-v4-72b": "ok",
   "mancer/weaver": "error",
   // Outdated models...
   "meta-llama/llama-3-70b-instruct": "bad",

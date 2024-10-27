@@ -546,15 +546,17 @@ export abstract class Entity<ParametersT extends object = object> {
         const toId = tag.attrs.to || undefined;
         const toOther = tag.attrs.speaking || undefined;
         const text = tag.content;
-        result.actions.push({
-          type: "dialog",
-          id,
-          toId,
-          toOther,
-          text,
-        });
-        // FIXME: this is pretty arbitrary time
-        result.totalTime += 1 + Math.ceil(text.split(/\s+/).length / 40);
+        if (text.trim()) {
+          result.actions.push({
+            type: "dialog",
+            id,
+            toId,
+            toOther,
+            text,
+          });
+          // FIXME: this is pretty arbitrary time
+          result.totalTime += 1 + Math.ceil(text.split(/\s+/).length / 40);
+        }
       } else if (tag.type === "description") {
         let minutes = tag.attrs.minutes
           ? parseInt(tag.attrs.minutes, 10)

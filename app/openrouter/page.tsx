@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { openrouterCode } from "@/components/openrouter";
 import { useEffect } from "react";
+import { Suspense } from "react";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -21,5 +22,9 @@ export default function Page() {
         }, 3000);
       });
   }, [code]);
-  return <div>Code received, closing window...</div>;
+  return (
+    <Suspense>
+      <div>Code received, closing window...</div>
+    </Suspense>
+  );
 }
