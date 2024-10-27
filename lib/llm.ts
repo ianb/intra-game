@@ -104,13 +104,26 @@ export async function chat(request: GeminiChatType) {
         method: "POST",
         body: JSON.stringify(convertRequest(request)),
       });
-    } else if (openrouterModel.value) {
+    } else if (openrouterModel.value && !openrouterCode.value) {
       response = await fetch("/api/llm?openrouter=1", {
         method: "POST",
         body: JSON.stringify({
           ...convertRequest(request),
           model: openrouterModel.value.id,
           key: openrouterCode.value,
+        }),
+      });
+    } else if (openrouterModel.value && openrouterCode.value) {
+      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "X-Title": "Intra",
+          "HTTP-Referer": location.origin,
+          Authorization: `Bearer ${openrouterCode.value}`,
+        },
+        body: JSON.stringify({
+          ...convertRequest(request),
+          model: openrouterModel.value.id,
         }),
       });
     } else {
