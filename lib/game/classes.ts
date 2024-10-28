@@ -602,24 +602,32 @@ export abstract class Entity<ParametersT extends object = object> {
   }
 }
 
+export type SoundTrackType = {
+  url: string;
+  sunoUrl: string;
+};
+
 export class Room extends Entity {
   type = "room";
   exits: Exit[] = [];
   userInputInstructions = "";
   visits: number = 0;
   excludeFromMap = false;
+  soundtrack?: SoundTrackType;
 
   constructor({
     exits,
     userInputInstructions,
     visits,
     excludeFromMap,
+    soundtrack,
     ...props
   }: EntityInitType & {
     exits?: Exit[];
     userInputInstructions?: string;
     visits?: number;
     excludeFromMap?: boolean;
+    soundtrack?: SoundTrackType;
   }) {
     super(props);
     if (exits) {
@@ -633,6 +641,9 @@ export class Room extends Entity {
     }
     if (excludeFromMap !== undefined) {
       this.excludeFromMap = excludeFromMap;
+    }
+    if (soundtrack) {
+      this.soundtrack = soundtrack;
     }
   }
 
@@ -1981,7 +1992,10 @@ function IF(cond: any) {
 }
 
 function fixupText(llmText: string) {
-  return llmText.replace(/…/g, "...").replace("&#x20;", " ").trim();
+  return llmText
+    .replace(/…/g, "...")
+    .replace(/&#x20;/g, " ")
+    .trim();
 }
 
 function foldHistory(history: GeminiHistoryType[]): GeminiHistoryType[] {

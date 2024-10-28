@@ -404,7 +404,10 @@ export class World {
       }
     }
     for (const [key, entity] of Object.entries(this.entities)) {
-      if (entity.name.toLowerCase().includes(lowerName)) {
+      if (
+        entity.name.toLowerCase().includes(lowerName) ||
+        entity.id.toLowerCase().includes(lowerName)
+      ) {
         return key;
       }
     }

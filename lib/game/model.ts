@@ -13,13 +13,15 @@ import { listSaves, load, removeSave, save } from "../localsaves";
 import { scheduleForTime } from "./scheduler";
 import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
 import { pathTo } from "./pathto";
-import { computed } from "@preact/signals-react";
+import { computed, effect } from "@preact/signals-react";
+import { SoundtrackPlayer } from "../soundtrack";
 
 export class Model {
   updates: SignalType<StoryEventType[]>;
   world: World;
   promiseQueue: TrackSettled;
   updatesWithPositions: SignalType<StoryEventWithPositionsType[]>;
+  soundtrackPlayer: SoundtrackPlayer;
 
   constructor(startingEntities: AllEntitiesType) {
     if (typeof window !== "undefined") {
@@ -31,6 +33,16 @@ export class Model {
     this.world = new World({
       original: startingEntities,
       model: this,
+    });
+    this.soundtrackPlayer = new SoundtrackPlayer();
+    effect(() => {
+      const updates = this.updates.value;
+      const currentRoom = this.world.getRoom(this.world.entities.player.inside);
+      if (currentRoom?.soundtrack?.url) {
+        this.soundtrackPlayer.playUrl(currentRoom.soundtrack.url);
+      } else {
+        this.soundtrackPlayer.playUrl(null);
+      }
     });
   }
 

@@ -15,7 +15,7 @@ import { StoryEventType } from "@/lib/types";
 import { model, SaveListType } from "@/lib/game/model";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { persistentSignal } from "@/lib/persistentsignal";
-import { useSignal } from "@preact/signals-react";
+import { effect, signal, useSignal } from "@preact/signals-react";
 import compare from "just-compare";
 import sortBy from "just-sort-by";
 import React from "react";
@@ -29,10 +29,20 @@ import { customEndpoint, lastLlmError, openrouterModel } from "@/lib/llm";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 import { CalculatingThrobber } from "@/components/throbber";
 
-const activeTab = persistentSignal("activeTab", "inv");
+const activeTab = persistentSignal("activeTab", "map");
 const showInternals = persistentSignal("showInternals", false);
 const revealMap = persistentSignal("revealMap", false);
 const seenHelp = persistentSignal("seenHelp", false);
+const soundOn = signal(false);
+
+effect(() => {
+  const s = soundOn.value;
+  if (s) {
+    model.soundtrackPlayer.unpause();
+  } else {
+    model.soundtrackPlayer.pause();
+  }
+});
 
 let textareaRef: React.RefObject<HTMLTextAreaElement>;
 
@@ -63,6 +73,17 @@ export default function Home() {
             }}
           >
             ⚙
+          </Button>
+          <Button
+            className={twMerge(
+              "bg-inherit py-0 ml-4 px-1 hover:text-cyan-300",
+              soundOn.value ? "" : "opacity-25"
+            )}
+            onClick={() => {
+              soundOn.value = !soundOn.value;
+            }}
+          >
+            🔊
           </Button>
           <Button
             className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
@@ -382,7 +403,7 @@ function ChatLogMovement({
         continue;
       }
       children.push(
-        <div key={entityId} className={twMerge("text-xs", person.color)}>
+        <div key={entityId} className="text-xs">
           <span className={person.color}>{person.name}</span> comes from{" "}
           <span className={beforeRoom.color}>{beforeRoom.name}</span>
         </div>
