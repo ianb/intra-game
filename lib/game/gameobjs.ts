@@ -313,7 +313,7 @@ export const entities = {
     exits: [], // [{ roomId: "Foyer" }],
     visits: 1,
     soundtrack: {
-      url: "https://assets.playintra.win/Room_Intake.mp3",
+      url: "Room_Intake.mp3",
       sunoUrl: "https://suno.com/song/658cd753-31db-4c4e-9e84-3f387a5a25a6",
     },
   }),
@@ -330,7 +330,7 @@ export const entities = {
     color: "text-emerald-500",
     exits: [{ roomId: "Intake" }, { roomId: "Hollow_Atrium" }],
     soundtrack: {
-      url: "https://assets.playintra.win/Room_Foyer.mp3",
+      url: "Room_Foyer.mp3",
       sunoUrl: "https://suno.com/song/be9aea2b-34d6-4d24-833f-69f84d6433d0",
     },
   }),

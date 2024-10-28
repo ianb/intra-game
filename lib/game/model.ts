@@ -37,12 +37,18 @@ export class Model {
     this.soundtrackPlayer = new SoundtrackPlayer();
     effect(() => {
       const updates = this.updates.value;
-      const currentRoom = this.world.getRoom(this.world.entities.player.inside);
-      if (currentRoom?.soundtrack?.url) {
-        this.soundtrackPlayer.playUrl(currentRoom.soundtrack.url);
-      } else {
-        this.soundtrackPlayer.playUrl(null);
-      }
+      setTimeout(() => {
+        const currentRoom = this.world.getRoom(
+          this.world.entities.player.inside
+        );
+        if (currentRoom?.soundtrack?.url) {
+          this.soundtrackPlayer.playUrl(
+            convertSoundtrackUrl(currentRoom.soundtrack.url)
+          );
+        } else {
+          this.soundtrackPlayer.playUrl(null);
+        }
+      });
     });
   }
 
@@ -442,6 +448,13 @@ function formatDate(date: Date) {
   const day = String(date.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
+}
+
+function convertSoundtrackUrl(url: string) {
+  if (url.startsWith("http") || url.startsWith("/")) {
+    return url;
+  }
+  return `/api/assets?url=${encodeURIComponent(url)}`;
 }
 
 export const model = new Model(entities);
