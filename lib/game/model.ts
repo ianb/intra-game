@@ -454,7 +454,7 @@ function convertSoundtrackUrl(url: string) {
   if (url.startsWith("http") || url.startsWith("/")) {
     return url;
   }
-  return `/api/assets?url=${encodeURIComponent(url)}`;
+  return `/api/assets?url=${encodeURIComponent(`soundtrack/${url}`)}`;
 }
 
 export const model = new Model(entities);

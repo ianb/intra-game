@@ -331,7 +331,7 @@ export const entities = {
     exits: [{ roomId: "Intake" }, { roomId: "Hollow_Atrium" }],
     soundtrack: {
       url: "Room_Foyer.mp3",
-      sunoUrl: "https://suno.com/song/be9aea2b-34d6-4d24-833f-69f84d6433d0",
+      sunoUrl: "https://suno.com/song/27d71b3d-304c-42d7-ab13-56f608c1a5c0",
     },
   }),
 
@@ -355,6 +355,10 @@ export const entities = {
       { roomId: "Solitude_Cubes" },
       { roomId: "Hallway" },
     ],
+    soundtrack: {
+      url: "Room_Hollow_Atrium.mp3",
+      sunoUrl: "https://suno.com/song/98538e39-e39f-458c-9358-611b014c8fde",
+    },
   }),
 
   Archive_Lounge: new Room({
@@ -374,6 +378,10 @@ export const entities = {
       { roomId: "Tranquil_Pool" },
       { roomId: "Archive_Console" },
     ],
+    soundtrack: {
+      url: "Room_Archive_Lounge.mp3",
+      sunoUrl: "https://suno.com/song/6ef1cfd2-f469-4c2a-adc7-fa61f284e9b9",
+    },
   }),
 
   Archive_Console: new ArchivistRoom({
@@ -403,6 +411,10 @@ export const entities = {
     `,
     color: "text-pink-500",
     exits: [{ roomId: "Archive_Lounge" }],
+    soundtrack: {
+      url: "Room_Archive_Console.mp3",
+      sunoUrl: "https://suno.com/song/b84d2ba1-3457-4835-8f3d-69060d19ec11",
+    },
   }),
 
   Tranquil_Pool: new Room({
@@ -418,6 +430,10 @@ export const entities = {
     `,
     color: "text-pink-500",
     exits: [{ roomId: "Archive_Lounge" }, { roomId: "Joyous_Cafe" }],
+    soundtrack: {
+      url: "Room_Tranquil_Pool.mp3",
+      sunoUrl: "https://suno.com/song/76ac70bb-fcef-4abc-870c-f47bcfa632af",
+    },
   }),
 
   Joyous_Cafe: new Room({
@@ -433,6 +449,10 @@ export const entities = {
     `,
     color: "text-yellow-500",
     exits: [{ roomId: "Tranquil_Pool" }, { roomId: "Activity_Hub" }],
+    soundtrack: {
+      url: "Room_Joyous_Cafe.mp3",
+      sunoUrl: "https://suno.com/song/658cd753-31db-4c4e-9e84-3f387a5a25a6",
+    },
   }),
 
   Activity_Hub: new Room({
@@ -449,6 +469,10 @@ export const entities = {
     `,
     color: "text-cyan-500",
     exits: [{ roomId: "Hollow_Atrium" }, { roomId: "Joyous_Cafe" }],
+    soundtrack: {
+      url: "Room_Activity_Hub.mp3",
+      sunoUrl: "https://suno.com/song/65ab7467-9b9a-4823-bcaa-b733b777f240",
+    },
   }),
 
   Yellow_Room: new Room({
@@ -464,6 +488,10 @@ export const entities = {
     `,
     color: "text-yellow-600",
     exits: [{ roomId: "Solitude_Cubes" }],
+    soundtrack: {
+      url: "Room_Yellow_Room.mp3",
+      sunoUrl: "https://suno.com/song/a087e653-9efa-4d40-8ef9-b92d2e1065d8",
+    },
   }),
 
   Nursery: new Room({
@@ -479,6 +507,10 @@ export const entities = {
     `,
     color: "text-purple-500",
     exits: [{ roomId: "Quiet_Plaza" }],
+    soundtrack: {
+      url: "Room_Nursery.mp3",
+      sunoUrl: "https://suno.com/song/42b44906-a9e4-4dfb-a16f-bd1145ce9e4f",
+    },
   }),
 
   Solitude_Cubes: new Room({
@@ -499,6 +531,10 @@ export const entities = {
       { roomId: "Waiting_Room" },
       { roomId: "Hollow_Atrium" },
     ],
+    soundtrack: {
+      url: "Room_Solitude_Cubes.mp3",
+      sunoUrl: "",
+    },
   }),
 
   Ill_Fitting_Lounge: new Room({
@@ -533,6 +569,10 @@ export const entities = {
     `,
     color: "text-gray-500",
     exits: [{ roomId: "Quiet_Plaza" }],
+    soundtrack: {
+      url: "Room_Feedback_Booth.mp3",
+      sunoUrl: "",
+    },
   }),
 
   Static_Garden: new Room({
@@ -548,6 +588,10 @@ export const entities = {
     `,
     color: "text-green-400",
     exits: [{ roomId: "Ill_Fitting_Lounge" }],
+    soundtrack: {
+      url: "Room_Static_Garden.mp3",
+      sunoUrl: "https://suno.com/song/5e9063bf-ece4-441f-9bbc-7cbe9d9f646b",
+    },
   }),
 
   Quiet_Plaza: new Room({
@@ -582,6 +626,10 @@ export const entities = {
     `,
     color: "text-stone-400",
     exits: [{ roomId: "Solitude_Cubes" }],
+    soundtrack: {
+      url: "Room_Waiting_Room.mp3",
+      sunoUrl: "",
+    },
   }),
 
   /* Personal quarters: */
@@ -656,6 +704,10 @@ export const entities = {
       },
       { roomId: "Quarters_Yours" },
     ],
+    soundtrack: {
+      url: "Room_Hallway.mp3",
+      sunoUrl: "https://suno.com/song/d6eb7501-2295-4d8a-b879-1b95e29b199e",
+    },
   }),
 
   Quarters_Doug: new Room({
@@ -719,10 +771,10 @@ export const entities = {
     name: "Quarters: Lana",
     excludeFromMap: true,
     shortDescription: `
-      Lana’s quarters, carefully optimized for mood.
+      Lana's quarters, carefully optimized for mood.
     `,
     description: `
-      Lana’s room is meticulously arranged, with every detail carefully planned to optimize mood and productivity. Subtle lighting changes and soft background music constantly shift the atmosphere.
+      Lana's room is meticulously arranged, with every detail carefully planned to optimize mood and productivity. Subtle lighting changes and soft background music constantly shift the atmosphere.
     `,
     color: "text-green-400",
     exits: [{ roomId: "Hallway" }],
@@ -733,10 +785,10 @@ export const entities = {
     name: "Quarters: Harold",
     excludeFromMap: true,
     shortDescription: `
-      Harold’s quarters, strictly organized with rulebooks everywhere.
+      Harold's quarters, strictly organized with rulebooks everywhere.
     `,
     description: `
-      Harold’s quarters are rigidly structured, with neatly stacked rulebooks and guidelines on every surface. It’s clear that order and control dominate every aspect of his personal space.
+      Harold's quarters are rigidly structured, with neatly stacked rulebooks and guidelines on every surface. It's clear that order and control dominate every aspect of his personal space.
     `,
     color: "text-indigo-400",
     exits: [{ roomId: "Hallway" }],
@@ -747,10 +799,10 @@ export const entities = {
     name: "Quarters: Greg",
     excludeFromMap: true,
     shortDescription: `
-      Greg’s quarters, understated and practical.
+      Greg's quarters, understated and practical.
     `,
     description: `
-      Greg’s quarters are simple and functional, with only the bare necessities neatly arranged. It’s a space that shows no frills, just practical, no-nonsense living.
+      Greg's quarters are simple and functional, with only the bare necessities neatly arranged. It's a space that shows no frills, just practical, no-nonsense living.
     `,
     color: "text-slate-400",
     exits: [{ roomId: "Hallway" }],
@@ -761,10 +813,10 @@ export const entities = {
     name: "Quarters: Milton",
     excludeFromMap: true,
     shortDescription: `
-      Milton’s quarters, filled with personal complaints and grievances.
+      Milton's quarters, filled with personal complaints and grievances.
     `,
     description: `
-      Milton’s quarters are cluttered and unkempt, with piles of written complaints and grievances strewn about. The room feels weighed down by his personal frustrations.
+      Milton's quarters are cluttered and unkempt, with piles of written complaints and grievances strewn about. The room feels weighed down by his personal frustrations.
     `,
     color: "text-red-500",
     exits: [{ roomId: "Hallway" }],
@@ -823,6 +875,10 @@ export const entities = {
     `,
     color: "text-gray-300",
     exits: [{ roomId: "Hallway" }],
+    soundtrack: {
+      url: "Room_Quarters.mp3",
+      sunoUrl: "https://suno.com/song/757602c6-cfa8-4aa4-96cc-e9d964bb4644",
+    },
   }),
 
   /* Isolated area for the conclusion of the game: */
@@ -842,6 +898,10 @@ export const entities = {
     `,
     color: "text-gray-600",
     exits: [{ roomId: "Utility_Closet" }],
+    soundtrack: {
+      url: "Room_Reflection_Chamber.mp3",
+      sunoUrl: "",
+    },
   }),
 
   Utility_Closet: new Room({

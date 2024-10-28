@@ -1785,8 +1785,9 @@ export class PlayerClass extends Person<PlayerInputType> {
     llmResponse: string;
   }): Promise<StoryEventType> {
     if (tag.type === "goto") {
-      const room = model.world.getRoom(tag.content);
-      if (!room) {
+      const roomId = this.world.makeId(tag.content);
+      const room = this.world.getRoom(roomId!);
+      if (!room || !roomId) {
         console.warn("Player tried to go to non-existent room", tag.content);
         storyEvent.actions.push({
           type: "description",

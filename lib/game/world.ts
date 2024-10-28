@@ -397,23 +397,27 @@ export class World {
     if ((this.entities as any)[name]) {
       return name;
     }
-    const lowerName = name.toLowerCase().replace(/\s\s+/g, " ");
+    const lowerName = normalizeName(name);
     for (const [key, entity] of Object.entries(this.entities)) {
-      if (entity.name.toLowerCase() === lowerName) {
+      if (normalizeName(entity.name) === lowerName) {
         return key;
       }
     }
     for (const [key, entity] of Object.entries(this.entities)) {
       if (
-        entity.name.toLowerCase().includes(lowerName) ||
-        entity.id.toLowerCase().includes(lowerName)
+        normalizeName(entity.name).includes(lowerName) ||
+        normalizeName(entity.id).includes(lowerName)
       ) {
         return key;
       }
     }
-    if (lowerName === "You") {
+    if (lowerName === "you") {
       return "player";
     }
     return null;
   }
+}
+
+function normalizeName(name: string): string {
+  return name.toLowerCase().replace(/\s\s+/g, " ").replace("é", "e").trim();
 }
