@@ -445,12 +445,16 @@ function Input() {
     if (!text) {
       return;
     }
+    let newText = "";
     if (text === "/reset") {
       model.reset();
     } else {
-      await model.sendText(text);
+      const undoText = await model.sendText(text);
+      if (typeof undoText === "string") {
+        newText = undoText;
+      }
     }
-    textareaRef.current.value = "";
+    textareaRef.current.value = newText;
     setTimeout(() => {
       textareaRef.current!.focus();
     }, 0);

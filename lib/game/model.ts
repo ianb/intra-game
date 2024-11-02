@@ -16,12 +16,20 @@ import { pathTo } from "./pathto";
 import { computed, effect } from "@preact/signals-react";
 import { SoundtrackPlayer } from "../soundtrack";
 
+type ParsedInputType = {
+  undo?: boolean;
+  redo?: boolean;
+  roll?: number;
+  text?: string;
+};
+
 export class Model {
   updates: SignalType<StoryEventType[]>;
   world: World;
   promiseQueue: TrackSettled;
   updatesWithPositions: SignalType<StoryEventWithPositionsType[]>;
   soundtrackPlayer: SoundtrackPlayer;
+  nextRollOverride: number | null = null;
 
   constructor(startingEntities: AllEntitiesType) {
     if (typeof window !== "undefined") {
@@ -371,10 +379,43 @@ export class Model {
     }
   }
 
-  async sendText(text: string) {
-    const player = this.world.entities.player;
-    await this.run(() => player.executePrompt(this, { input: text }));
-    await this.run(() => this.scheduleTick());
+  async sendText(text: string): Promise<string | undefined> {
+    const parsed = this.parseText(text);
+    if (parsed.undo) {
+      return this.undo();
+    }
+    if (parsed.redo) {
+      await this.redo();
+      return;
+    }
+    if (parsed.roll) {
+      this.nextRollOverride = parsed.roll;
+    }
+    if (parsed.text) {
+      const player = this.world.entities.player;
+      await this.run(() => player.executePrompt(this, { input: parsed.text }));
+      await this.run(() => this.scheduleTick());
+    }
+  }
+
+  parseText(text: string): ParsedInputType {
+    const resp: ParsedInputType = {};
+    if (text.includes("/undo")) {
+      resp.undo = true;
+      text = text.replace("/undo", "").trim();
+    }
+    if (text.includes("/redo")) {
+      resp.redo = true;
+      text = text.replace("/redo", "").trim();
+    }
+    const rollRegex = /\/roll (\d+)$/;
+    if (rollRegex.test(text)) {
+      const match = text.match(rollRegex);
+      resp.roll = parseInt(match![1], 10);
+      text = text.replace(rollRegex, "").trim();
+    }
+    resp.text = text;
+    return resp;
   }
 
   undo(): string {
@@ -435,6 +476,15 @@ export class Model {
 
   async removeSave(slug: string) {
     return removeSave(slug);
+  }
+
+  roll(sides = 20) {
+    if (this.nextRollOverride !== null) {
+      const result = this.nextRollOverride;
+      this.nextRollOverride = null;
+      return result;
+    }
+    return Math.floor(Math.random() * sides) + 1;
   }
 }
 

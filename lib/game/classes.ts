@@ -506,12 +506,16 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     }
     resp = fixupText(resp);
 
-    const tags = unfoldTags(parseTags(resp), {
+    let tags = unfoldTags(parseTags(resp), {
       // We don't want to unfold this, because it's for planning, not action:
       ignoreContainers: ["context"],
       // These sometimes are produced without content, but then they are meaningless:
       trimEmpty: ["dialog", "description"],
     });
+    if (tags.length === 1 && tags[0].type === "context") {
+      // This happens sometimes when it puts *everything* in a context tag. We don't always want to look inside context but if there's only context then we do...
+      tags = unfoldTags(parseTags(tags[0].content), {});
+    }
     let result: StoryEventType = {
       id: this.id,
       totalTime: 0,
@@ -1658,7 +1662,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       5. Is this other speech? If so emit dialog
       </context>
 
-      Based on these questions emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags.
+      After finishing <context></context> then emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags.
 
       [[${IF(shouldSleep)}The player should be sleeping for the night. If the player indicates they want to sleep then emit a description like this (but you may change the description text):
 
@@ -1768,7 +1772,7 @@ export class PlayerClass extends Person<PlayerInputType> {
   }
 
   assembleActionPrompt(parameters: PlayerInputType) {
-    const roll = Math.floor(Math.random() * 20) + 1;
+    const roll = this.world.model.roll();
     const room = this.world.entityRoom(this.id);
     let rollDescription = "";
     if (roll === 1) {
@@ -1820,7 +1824,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       6. You may use the roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
       </context>
 
-      After establishing context emit the result of the action:
+      After finishing <context></context> then write the result of the action:
 
       <actionResolution success="true/false" minutes="5">1-2 paragraphs describing the outcome of the action</actionResolution>
 
@@ -1984,6 +1988,11 @@ export class PlayerClass extends Person<PlayerInputType> {
         }),
       ];
     } else if (tag.type === "actionResolution") {
+      console.log(
+        "handing action resolution",
+        tag,
+        coerceBoolean(tag.attrs.success, true)
+      );
       storyEvent.actions.push({
         type: "actionAttempt",
         id: this.id,

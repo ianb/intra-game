@@ -337,7 +337,7 @@ export const entities = {
       },
     ],
     actionPrompt: `
-    If the player attempts any kind of action related to unlocking the door or manipulating a computer pad, then they successfully "unlock" the door. Emit at the end of the response to signal the door has been unlocked:
+    If the player attempts any kind of action related to unlocking the door or manipulating a computer pad, then they successfully "unlock" the door; it's a very easy task as long as they try. Emit at the end of the response to signal the door has been unlocked:
 
     <removeRestriction>Hollow_Atrim</removeRestriction>
     `,
