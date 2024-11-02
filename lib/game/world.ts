@@ -6,7 +6,7 @@ import {
   PersonScheduledEventType,
   StoryEventType,
 } from "../types";
-import type { AllEntitiesType, AllMysteriesType } from "./gameobjs";
+import type { AllEntitiesType } from "./gameobjs";
 import type { Model } from "./model";
 import { tmpl } from "../template";
 import colors from "tailwindcss/colors";
