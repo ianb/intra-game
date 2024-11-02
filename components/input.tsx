@@ -21,6 +21,7 @@ export function Button({
       error.value = null;
     } catch (e) {
       error.value = e as Error;
+      console.error("Error in handler:", e);
     }
     if (resp && resp.then) {
       running.value = true;

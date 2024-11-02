@@ -1,7 +1,8 @@
-import { dedent } from "../template";
+import { dedent, tmpl } from "../template";
 import {
   AmaClass,
   ArchivistRoom,
+  Mystery,
   NarratorClass,
   Person,
   PlayerClass,
@@ -328,10 +329,32 @@ export const entities = {
     A small room, a passage from the intake area.
     `,
     color: "text-emerald-500",
-    exits: [{ roomId: "Intake" }, { roomId: "Hollow_Atrium" }],
+    exits: [
+      { roomId: "Intake" },
+      {
+        roomId: "Hollow_Atrium",
+        restriction: "The door is locked and doens't open automatically",
+      },
+    ],
+    actionPrompt: `
+    If the player attempts any kind of action related to unlocking the door or manipulating a computer pad, then they successfully "unlock" the door. Emit at the end of the response to signal the door has been unlocked:
+
+    <removeRestriction>Hollow_Atrim</removeRestriction>
+    `,
     soundtrack: {
       url: "Room_Foyer.mp3",
       sunoUrl: "https://suno.com/song/27d71b3d-304c-42d7-ab13-56f608c1a5c0",
+    },
+    promptForPerson: function (this: Room, person: Person) {
+      if (
+        person.id === "Ama" &&
+        this.exits.find((exit) => exit.roomId === "Hollow_Atrium")?.restriction
+      ) {
+        return tmpl`
+        Ama should give the player suggestions that they should try to unlock or disable the door.
+        `;
+      }
+      return "";
     },
   }),
 
@@ -927,6 +950,17 @@ export const entities = {
     color: "text-gray-700",
     exits: [],
   }),
+
+  /* Mysteries */
+
+  yourAge: new Mystery({
+    id: "yourAge",
+    name: "What does she mean you are 350?",
+  }),
+  intraLocation: new Mystery({
+    id: "intraLocation",
+    name: "Where is Intra?",
+  }),
 };
 
 for (const entity of Object.values(entities)) {
@@ -935,6 +969,7 @@ for (const entity of Object.values(entities)) {
     "description",
     "roleplayInstructions",
     "userInputInstructions",
+    "actionPrompt",
   ]) {
     if ((entity as any)[attr]) {
       (entity as any)[attr] = dedent((entity as any)[attr]);

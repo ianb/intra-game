@@ -198,7 +198,7 @@ export class Model {
   }
 
   recentReferencedEntities(): EntityId[] {
-    const result: EntityId[] = [];
+    let result: EntityId[] = [];
     for (let i = this.updates.value.length - 1; i >= 0; i--) {
       const update = this.updates.value[i];
       for (let j = update.actions.length - 1; j >= 0; j--) {
@@ -211,6 +211,12 @@ export class Model {
       }
       if (result.length >= 5) {
         break;
+      }
+    }
+    const lastUpdate = this.updates.value.at(-1);
+    if (lastUpdate && lastUpdate.triggers) {
+      for (const id of Object.keys(lastUpdate.triggers)) {
+        result = [id, ...result.filter((e) => e !== id)];
       }
     }
     return result;

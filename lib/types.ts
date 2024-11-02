@@ -20,6 +20,7 @@ export type StoryEventType = {
   llmParameters?: any;
   llmError?: { context: string; description: string };
   suggestions?: string;
+  triggers?: Record<EntityId, string>;
 };
 export type StoryActionType =
   | StoryDialogType

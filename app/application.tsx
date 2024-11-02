@@ -1163,7 +1163,7 @@ function Settings() {
           ) : (
             <>
               <div className="mb-4">
-                To have access to paid models you can get a code from
+                To have access to paid models you can get a code from{" "}
                 <A href="https://openrouter.ai/" blank>
                   OpenRouter.ai
                 </A>

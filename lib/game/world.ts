@@ -4,10 +4,9 @@ import {
   isPerson,
   isRoom,
   PersonScheduledEventType,
-  PersonScheduleType,
   StoryEventType,
 } from "../types";
-import type { AllEntitiesType } from "./gameobjs";
+import type { AllEntitiesType, AllMysteriesType } from "./gameobjs";
 import type { Model } from "./model";
 import { tmpl } from "../template";
 import colors from "tailwindcss/colors";
@@ -419,5 +418,10 @@ export class World {
 }
 
 function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/\s\s+/g, " ").replace("é", "e").trim();
+  return name
+    .toLowerCase()
+    .replace(/\s\s+/g, " ")
+    .replace("é", "e")
+    .replace(/\s/g, "_")
+    .trim();
 }

@@ -215,6 +215,57 @@ export function addAttributesToTags(
   });
 }
 
+export function unfoldTags(
+  tags: TagType[],
+  {
+    ignoreContainers,
+    ignoreTags,
+    trimEmpty,
+  }: {
+    ignoreContainers?: string[];
+    ignoreTags?: string[];
+    trimEmpty?: string[];
+  } = {}
+): TagType[] {
+  const todo = [...tags];
+  const result: TagType[] = [];
+  ignoreContainers = ignoreContainers || [];
+  ignoreTags = ignoreTags || [];
+  trimEmpty = trimEmpty || [];
+  while (todo.length) {
+    const tag = todo.shift()!;
+    if (ignoreContainers.includes(tag.type)) {
+      // Don't unfold these
+      result.push(tag);
+      continue;
+    }
+    if (trimEmpty.includes(tag.type) && !tag.content.trim()) {
+      // Remove empty tags
+      continue;
+    }
+    if (
+      !tag.subTags ||
+      !tag.subTags.find((x) => !ignoreTags.includes(x.type))
+    ) {
+      // Doesn't have anything relevant
+      result.push(tag);
+      continue;
+    }
+    const newSubTags = tag.subTags.filter((x) => !ignoreTags.includes(x.type));
+    const unfoldTags = tag.subTags.filter((x) => ignoreTags.includes(x.type));
+    const newTag = {
+      ...tag,
+      subTags: newSubTags,
+      content: serializeTags(unfoldTags),
+    };
+    if (!trimEmpty.includes(tag.type) || newTag.content.trim()) {
+      result.push(newTag);
+    }
+    todo.unshift(...unfoldTags);
+  }
+  return result;
+}
+
 if (typeof window !== "undefined") {
   (window as any).parseTags = parseTags;
   (window as any).serializeTags = serializeTags;

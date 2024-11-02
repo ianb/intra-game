@@ -19,24 +19,26 @@ function LogItem({ log, first }: { log: LlmLogType; first: boolean }) {
   const actuallyHide = hide.value === null ? !first : hide.value;
   return (
     <div className="border-b border-gray-700 p-2">
-      <div
-        className="float-right cursor-pointer opacity-75 hover:opacity-100 hover:bg-blue-600 px-3"
-        onClick={() => {
-          if (responseRef.current) {
-            hide.value = false;
-            responseRef.current.scrollIntoView({ behavior: "smooth" });
-          } else if (hide.value || hide.value === null) {
-            hide.value = false;
-            setTimeout(() => {
-              if (responseRef.current) {
-                responseRef.current.scrollIntoView({ behavior: "smooth" });
-              }
-            }, 100);
-          }
-        }}
-      >
-        ↓
-      </div>
+      {log.response && (
+        <div
+          className="float-right cursor-pointer opacity-75 hover:opacity-100 hover:bg-blue-600 px-3"
+          onClick={() => {
+            if (responseRef.current) {
+              hide.value = false;
+              responseRef.current.scrollIntoView({ behavior: "smooth" });
+            } else if (hide.value || hide.value === null) {
+              hide.value = false;
+              setTimeout(() => {
+                if (responseRef.current) {
+                  responseRef.current.scrollIntoView({ behavior: "smooth" });
+                }
+              }, 100);
+            }
+          }}
+        >
+          ↓
+        </div>
+      )}
       <div
         className="bg-blue-900 text-white p-1 cursor-default"
         onClick={() => {

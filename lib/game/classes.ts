@@ -1,6 +1,6 @@
 import React from "react";
 import { chat, LlmSafetyError } from "../llm";
-import { parseTags, TagType } from "../parsetags";
+import { parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
 import {
   ActionRequestType,
@@ -29,6 +29,7 @@ import type { World } from "./world";
 import { scheduleForTime, timeAsString } from "./scheduler";
 import { pronounsForGender } from "./pronouns";
 import { pathTo } from "./pathto";
+import clone from "just-clone";
 
 export type EntityInitType = {
   id: EntityId;
@@ -40,7 +41,11 @@ export type EntityInitType = {
   invisible?: boolean;
 };
 
-export abstract class Entity<ParametersT extends object = object> {
+export type ParametersType = {
+  trigger?: string;
+};
+
+export abstract class Entity<ParametersT extends ParametersType = object> {
   name: string = "";
   shortDescription: string = "";
   description: string = "";
@@ -501,7 +506,12 @@ export abstract class Entity<ParametersT extends object = object> {
     }
     resp = fixupText(resp);
 
-    const tags = parseTags(resp);
+    const tags = unfoldTags(parseTags(resp), {
+      // We don't want to unfold this, because it's for planning, not action:
+      ignoreContainers: ["context"],
+      // These sometimes are produced without content, but then they are meaningless:
+      trimEmpty: ["dialog", "description"],
+    });
     let result: StoryEventType = {
       id: this.id,
       totalTime: 0,
@@ -587,6 +597,30 @@ export abstract class Entity<ParametersT extends object = object> {
         result.deferSchedule = false;
       } else if (tag.type === "context") {
         // We can ignore these
+      } else if (tag.type === "removeRestriction") {
+        const exitLocation = this.world.makeId(tag.content);
+        const exits = this.world.getRoom(roomId)!.exits;
+        if (!exitLocation || !exits.find((x) => x.roomId === exitLocation)) {
+          console.warn("Could not find exit location", tag);
+          continue;
+        }
+        if (!result.changes[roomId]) {
+          result.changes[roomId] = {
+            before: {},
+            after: {},
+          };
+        }
+        result.changes[roomId].before.exits = clone(exits);
+        const newExits = clone(exits);
+        newExits.find((x) => x.roomId === exitLocation)!.restriction =
+          undefined;
+        result.changes[roomId].after.exits = newExits;
+      } else if (tag.type === "trigger") {
+        const entityId = this.world.makeId(tag.attrs.character);
+        if (entityId) {
+          result.triggers = result.triggers || {};
+          result.triggers[entityId] = tag.content;
+        }
       } else {
         result = await this.processTag({
           tag,
@@ -614,6 +648,7 @@ export class Room extends Entity {
   visits: number = 0;
   excludeFromMap = false;
   soundtrack?: SoundTrackType;
+  actionPrompt = "";
 
   constructor({
     exits,
@@ -621,6 +656,8 @@ export class Room extends Entity {
     visits,
     excludeFromMap,
     soundtrack,
+    actionPrompt,
+    promptForPerson,
     ...props
   }: EntityInitType & {
     exits?: Exit[];
@@ -628,6 +665,8 @@ export class Room extends Entity {
     visits?: number;
     excludeFromMap?: boolean;
     soundtrack?: SoundTrackType;
+    actionPrompt?: string;
+    promptForPerson?: (this: Room, person: Person) => string;
   }) {
     super(props);
     if (exits) {
@@ -644,6 +683,12 @@ export class Room extends Entity {
     }
     if (soundtrack) {
       this.soundtrack = soundtrack;
+    }
+    if (actionPrompt) {
+      this.actionPrompt = actionPrompt;
+    }
+    if (promptForPerson) {
+      this.promptForPerson = promptForPerson.bind(this);
     }
   }
 
@@ -665,6 +710,10 @@ export class Room extends Entity {
     } else if (isStoryActionAttempt(action)) {
       return action.attempt + "\n\n" + action.resolution;
     }
+  }
+
+  promptForPerson(person: Person): string {
+    return "";
   }
 }
 
@@ -718,7 +767,7 @@ export type RelationshipType = {
 };
 
 export class Person<
-  ParametersT extends object = object,
+  ParametersT extends ParametersType = ParametersType,
 > extends Entity<ParametersT> {
   type = "person";
   pronouns: string = "they/them";
@@ -776,6 +825,9 @@ export class Person<
     }
     const schedule = scheduleForTime(this, this.world.timestampMinutes);
     const willLeave = schedule && !schedule.inside.includes(this.inside);
+    const promptForPerson = this.world
+      .entityRoom(this.id)
+      ?.promptForPerson(this);
     return {
       meta: {
         title: `prompt ${this.id}`,
@@ -800,6 +852,8 @@ export class Person<
       [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to the player ${this.world.entities.player.name}. There aren't many new people in Intra, so this might be a big deal.]]
 
       ${this.roleplayInstructions}
+
+      ${promptForPerson}
       </roleplayInstructions>
 
       ${this.activityDescription(parameters)}
@@ -814,6 +868,8 @@ export class Person<
       history: this.historyForEntity(parameters, { limit: 10 }),
       message: tmpl`
       Given the above play state, respond as the character "${this.name}"
+
+      [[This character has been triggered to act specifically by: "${parameters.trigger}"]]
 
       Begin by assembling the essential context given the above history, writing 4-5 words for each item:
 
@@ -857,7 +913,15 @@ export class Person<
   }
 
   onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
-    if (!storyEvent.actions.length && !Object.keys(storyEvent.changes).length) {
+    const triggerText =
+      storyEvent.triggers && storyEvent.triggers[this.id] !== undefined
+        ? storyEvent.triggers[this.id]
+        : undefined;
+    if (
+      triggerText === undefined &&
+      !storyEvent.actions.length &&
+      !Object.keys(storyEvent.changes).length
+    ) {
       // This is probably an examination or something, not a "real" event
       return undefined;
     }
@@ -872,7 +936,12 @@ export class Person<
     if (storyEvent.id !== "player") {
       return undefined;
     }
-    if (!hasDialog && !hasDescription && !isAttentive) {
+    if (
+      triggerText === undefined &&
+      !hasDialog &&
+      !hasDescription &&
+      !isAttentive
+    ) {
       return undefined;
     }
     let myRoom = this.world.entityRoom(this.id);
@@ -880,14 +949,16 @@ export class Person<
       myRoom = this.world.getRoom(storyEvent.changes[this.id].after.inside)!;
     }
     const playerRoom = this.world.entityRoom("player");
-    if (storyEvent.changes?.player?.after?.inside) {
-      // Just don't chat with the player if they are moving around...
-      return undefined;
+    if (triggerText === undefined) {
+      if (storyEvent.changes?.player?.after?.inside) {
+        // Just don't chat with the player if they are moving around...
+        return undefined;
+      }
+      if (!myRoom || !playerRoom || myRoom.id !== playerRoom.id) {
+        return undefined;
+      }
     }
-    if (!myRoom || !playerRoom || myRoom.id !== playerRoom.id) {
-      return undefined;
-    }
-    return [this.makePromptRequest({} as ParametersT)];
+    return [this.makePromptRequest({ trigger: triggerText } as ParametersT)];
   }
 
   lastSpokeTo(): Person | undefined {
@@ -1015,7 +1086,7 @@ export class Person<
   }
 }
 
-type AmaParametersType = {
+type AmaParametersType = ParametersType & {
   intro?: boolean;
   prompt?: "intro" | "goExplore" | "wakeup";
 };
@@ -1476,7 +1547,7 @@ export class AmaClass extends Person<AmaParametersType> {
   }
 }
 
-export type PlayerInputType = {
+export type PlayerInputType = ParametersType & {
   input?: string;
   examine?: string;
   attemptMoveTo?: EntityId;
@@ -1569,6 +1640,8 @@ export class PlayerClass extends Person<PlayerInputType> {
       <action minutes="5">${this.name} looks for a vending machine to buy a drink.</action>
       \`sleep in bed\`
       <action minutes="90">${this.name} lays down in bed and tries to sleep.</action>
+
+      Generally if the input starts with \`>\` it is an action, and if it starts with \`"\` it is dialog.
       `,
       history: this.historyForEntity(parameters, { limit: 3 }),
       message: tmpl`
@@ -1679,13 +1752,17 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       Respond with:
 
-      <description minutes="5">1-2 paragraphs describing the outcome of the move</description>
+      <description minutes="5">1-2 sentences describing the outcome of the move</description>
 
       minutes is how long the attempt took.
 
       IF the player is successful then also emit:
 
       <goto success="true">${parameters.attemptMoveTo}</goto>
+
+      Otherwise emit:
+
+      <trigger character="Ama"></trigger>
       `,
     };
   }
@@ -1724,6 +1801,11 @@ export class PlayerClass extends Person<PlayerInputType> {
       message: tmpl`
       The player has indicated they want to take this action:
       \`${parameters.actionAttempt}\`
+
+      [[The room has these notes about actions performed in the room, that may or may not be applicable:
+      """
+      ${room.actionPrompt}
+      """]]
 
       They have rolled a d20 die (1=critical failure, 20=critical success) and the result is: ${roll}[[ (${rollDescription})]]
 
@@ -1965,6 +2047,29 @@ export class NarratorClass extends Entity {
   description = "";
   inside = "player";
   invisible = true;
+}
+
+export type MysteryState = "veiled" | "available" | "revealed" | "solved";
+export const MYSTERY_STATES: MysteryState[] = [
+  "veiled",
+  "available",
+  "revealed",
+  "solved",
+];
+
+export class Mystery extends Entity {
+  type = "mystery";
+  state: MysteryState = "veiled";
+  // Should I put mysteries in a different room?
+  inside = "Void";
+  invisible = true;
+
+  constructor({ state, ...props }: { state?: MysteryState } & EntityInitType) {
+    super(props);
+    if (state) {
+      this.state = state;
+    }
+  }
 }
 
 function coerceBoolean(v: string, defaultValue = false) {
