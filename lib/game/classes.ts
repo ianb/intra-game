@@ -638,6 +638,32 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     result = this.afterPrompt(result);
     await model.addStoryEvent(result);
   }
+
+  changes(values: Partial<this>): Record<string, ChangeType> {
+    const c: ChangeType = {
+      before: {},
+      after: {},
+    };
+    for (const [key, value] of Object.entries(values)) {
+      c.before[key] = (this as any)[key];
+      c.after[key] = value;
+    }
+    return {
+      [this.id]: c,
+    };
+  }
+
+  mergeChanges(event: StoryEventType, values: Partial<this>): StoryEventType {
+    const changes = this.changes(values);
+    if (event.changes[this.id]) {
+      for (const [key, value] of Object.entries(changes[this.id].after)) {
+        event.changes[this.id].after[key] = value;
+      }
+    } else {
+      event.changes[this.id] = changes[this.id];
+    }
+    return event;
+  }
 }
 
 export type SoundTrackType = {
@@ -832,6 +858,7 @@ export class Person<
     const promptForPerson = this.world
       .entityRoom(this.id)
       ?.promptForPerson(this);
+    const mysteryHints = this.myMysteryHints();
     return {
       meta: {
         title: `prompt ${this.id}`,
@@ -862,8 +889,13 @@ export class Person<
 
       ${this.activityDescription(parameters)}
 
-      The other people in the room are:
+      The other people in the room ${this.myRoom().name} are:
       ${this.currentPeoplePrompt(parameters)}
+
+      [[This character has some knowledge of some mysteries; follow these additional instructions:
+      """
+      ${mysteryHints}
+      """]]
 
       ${statePrompt}
 
@@ -1052,6 +1084,22 @@ export class Person<
       [[${IF(schedule.attentive)}${this.name} doesn't mind being interrupted.]]
       </activity>
       `;
+  }
+
+  myMysteryHints(): string {
+    const results: string[] = [];
+    for (const mystery of this.world.unveiledMysteries()) {
+      let hints: Record<EntityId, string> = {};
+      if (mystery.state === "revealed") {
+        hints = mystery.revealedHints;
+      } else if (mystery.state === "available") {
+        hints = mystery.availableHints;
+      }
+      if (hints[this.id]) {
+        results.push(hints[this.id]);
+      }
+    }
+    return results.join("\n");
   }
 
   get allPronouns() {
@@ -1283,6 +1331,29 @@ export class AmaClass extends Person<AmaParametersType> {
         }
       }
     }
+    if (
+      storyEvent.changes.player?.after?.inside === "Hollow_Atrium" &&
+      this.world.entities.Hollow_Atrium.visits === 0
+    ) {
+      // First visit outside Intake, so give the player their first mystery
+      const m = this.world.entities.Ink_And_Echo;
+      result.push({
+        id: this.id,
+        totalTime: 0,
+        roomId: "Hollow_Atrium",
+        changes: m.changes({
+          state: "revealed",
+        }),
+        actions: [
+          {
+            type: "dialog",
+            id: this.id,
+            toId: "player",
+            text: m.introduction,
+          },
+        ],
+      });
+    }
     if (!result.find((x) => isPromptRequest(x))) {
       result.push(...(super.onStoryEvent(storyEvent) || []));
     }
@@ -1497,7 +1568,7 @@ export class AmaClass extends Person<AmaParametersType> {
         continue;
       }
       info.push(
-        `- ${person.name} (${person.pronouns}): ${person.shortDescription}`
+        `- ${person.name} (${person.pronouns}): ${person.shortDescription} in ${person.inside}`
       );
     }
     info.push("\nAnd this is a list of ALL the rooms:");
@@ -1506,7 +1577,7 @@ export class AmaClass extends Person<AmaParametersType> {
         continue;
       }
       info.push(
-        `- ${room.name}: ${room.shortDescription} (can go to: ${room.exits.map((x) => x.roomId).join(", ")})`
+        `- ${room.name}: ${room.shortDescription} (connected to: ${room.exits.map((x) => x.roomId).join(", ")})`
       );
     }
     return tmpl`
@@ -2072,11 +2143,34 @@ export class Mystery extends Entity {
   // Should I put mysteries in a different room?
   inside = "Void";
   invisible = true;
+  introduction = "";
+  availableHints: Record<EntityId, string> = {};
+  revealedHints: Record<EntityId, string> = {};
 
-  constructor({ state, ...props }: { state?: MysteryState } & EntityInitType) {
+  constructor({
+    state,
+    introduction,
+    availableHints,
+    revealedHints,
+    ...props
+  }: {
+    state?: MysteryState;
+    introduction?: string;
+    availableHints?: Record<EntityId, string>;
+    revealedHints?: Record<EntityId, string>;
+  } & EntityInitType) {
     super(props);
     if (state) {
       this.state = state;
+    }
+    if (introduction) {
+      this.introduction = introduction;
+    }
+    if (availableHints) {
+      this.availableHints = availableHints;
+    }
+    if (revealedHints) {
+      this.revealedHints = revealedHints;
     }
   }
 }

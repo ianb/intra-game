@@ -1,8 +1,9 @@
-import type { Entity, Room, Person } from "./classes";
+import type { Entity, Room, Person, Mystery } from "./classes";
 import {
   EntityId,
   isPerson,
   isRoom,
+  isMystery,
   PersonScheduledEventType,
   StoryEventType,
 } from "../types";
@@ -66,6 +67,14 @@ export class World {
       return null;
     }
     return person;
+  }
+
+  allMysteries(): Mystery[] {
+    return Object.values(this.entities).filter(isMystery) as Mystery[];
+  }
+
+  unveiledMysteries() {
+    return this.allMysteries().filter((m) => m.state !== "veiled");
   }
 
   allPeople(): Person[] {
@@ -187,6 +196,17 @@ export class World {
           }
         }
         regexParts.push(obj.name);
+      }
+      if (isMystery(obj)) {
+        for (const hint of [obj.availableHints, obj.revealedHints]) {
+          for (const key of Object.keys(hint)) {
+            if (!(this.original as any)[key]) {
+              throw new Error(
+                `Mystery ${obj.id} has hint ${key} which does not exist`
+              );
+            }
+          }
+        }
       }
     }
     this.nameRegex = new RegExp(

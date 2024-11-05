@@ -1,4 +1,4 @@
-import type { Entity, Room, Person } from "./game/classes";
+import type { Entity, Room, Person, Mystery } from "./game/classes";
 export { Entity, Room, Person };
 
 export type StoryEventWithPositionsType = {
@@ -118,6 +118,10 @@ export function isRoom(entity: Entity<any>): entity is Room {
 
 export function isPerson(entity: Entity): entity is Person {
   return entity.type === "person" || entity.type.startsWith("person/");
+}
+
+export function isMystery(entity: Entity): entity is Mystery {
+  return entity.type === "mystery" || entity.type.startsWith("mystery/");
 }
 
 /* Schedule types */

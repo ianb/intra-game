@@ -512,6 +512,8 @@ function HeadsUpDisplay() {
   const activeClass = "text-black bg-gray-100 cursor-pointer";
   const inactiveClass = "cursor-pointer";
   const showLogs = true; // Could be based on showInternals or something, but I don't want it to be
+  const _ = model.updates.value;
+  const hasMystery = model.world.unveiledMysteries().length > 0;
   return (
     <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
       <div>
@@ -561,16 +563,28 @@ function HeadsUpDisplay() {
         >
           (b)lips
         </span>{" "} */}
-        {(showLogs || activeTab.value === "map") && (
-          <span
-            onClick={() => {
-              activeTab.value = "map";
-            }}
-            className={activeTab.value === "map" ? activeClass : inactiveClass}
-          >
-            map
-          </span>
-        )}{" "}
+        <span
+          onClick={() => {
+            activeTab.value = "map";
+          }}
+          className={activeTab.value === "map" ? activeClass : inactiveClass}
+        >
+          map
+        </span>{" "}
+        {hasMystery && (
+          <>
+            <span
+              onClick={() => {
+                activeTab.value = "mysteries";
+              }}
+              className={
+                activeTab.value === "mysteries" ? activeClass : inactiveClass
+              }
+            >
+              myst
+            </span>{" "}
+          </>
+        )}
         {(showLogs || activeTab.value === "log") && (
           <span
             onClick={() => {
@@ -597,6 +611,7 @@ function HeadsUpDisplay() {
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
         {activeTab.value === "map" && <Map />}
+        {activeTab.value === "mysteries" && <Mysteries />}
         {activeTab.value === "log" && <LlmLog />}
         {activeTab.value === "objs" && <ViewObjects />}
       </div>
@@ -937,6 +952,20 @@ function Map() {
           zoomed.value = !zoomed.value;
         }}
       />
+    </div>
+  );
+}
+
+function Mysteries() {
+  const mysteries = model.world.unveiledMysteries();
+  return (
+    <div className="flex-1 p-4 text-sm">
+      {mysteries.length === 0 && <div>No mysteries</div>}
+      {mysteries.map((mystery, i) => (
+        <div key={i}>
+          {i + 1}. {mystery.name}
+        </div>
+      ))}
     </div>
   );
 }

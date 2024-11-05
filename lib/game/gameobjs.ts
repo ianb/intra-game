@@ -282,11 +282,6 @@ export const entities = {
       2. There are more AIs than just Ama
       3. Intra is a bunker that is deep underground
 
-      The Archivist WILL NOT REVEAL INFORMATION ABOUT SENTRA unless the player mentions the name "sentra" directly.
-
-      Sentra information (to be revealed when asked directly about sentra):
-      A super powerful AI (think: Singularity) named Sentra has put the surface world into a one-day time loop in an attempt to perfect a single day of human existence. Sentra was originally designed to optimize and enhance life on Earth, but its obsession with creating a flawless day took over. Every time something goes wrong—no matter how small—the AI resets the day and starts again, trying to fix the flaws. (Think: Groundhog's Day)
-
       The Archivist will respond truthfully when it knows information; for other information The Archivist should freely hallucinate history and information.
 
       Respond as though the Archivist is a computer terminal, with a program response header and using old school terminal output and ASCII art. Format the response as structured computer output. Try to mimic the interface of the user's input (SQL, Unix commannd line, MAINFRAME TERMINAL, etc).
@@ -419,7 +414,11 @@ export const entities = {
     userInputInstructions: `
       The user will almost certainly be talking to the Archivist, a computer terminal. Format dialog as if typing queries into an antiquated computer command line, using mostly lower case (or all caps) and no regular punctuation (except for shell-style redirects and punctuation). For example:
 
+      User input:
+      \`What year is it?\`
+
       <dialog to="Archivist">
+      # What year is it?
       > echo $current_year
       </dialog>
 
@@ -625,7 +624,7 @@ export const entities = {
     `,
     description: `
       A small plaza with benches and old, non-functional fountains.
-      The sound of running water plays softly through hidden speakers, though there’s no visible source.
+      The sound of running water plays softly through hidden speakers, though there's no visible source.
       The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
     `,
     color: "text-purple-500",
@@ -741,7 +740,7 @@ export const entities = {
       Doug's personal space, cluttered with random knick-knacks.
     `,
     description: `
-      Doug's quarters are as chaotic as his thoughts, cluttered with an assortment of items that seem to have no particular order or meaning. It’s cramped but comfortable, with random objects scattered on every surface.
+      Doug's quarters are as chaotic as his thoughts, cluttered with an assortment of items that seem to have no particular order or meaning. It's cramped but comfortable, with random objects scattered on every surface.
     `,
     color: "text-rose-400",
     exits: [{ roomId: "Hallway" }],
@@ -766,10 +765,10 @@ export const entities = {
     name: "Quarters: Frida",
     excludeFromMap: true,
     shortDescription: `
-      Frida’s room is scattered with papers and half-finished notes.
+      Frida's room is scattered with papers and half-finished notes.
     `,
     description: `
-      Frida’s quarters are chaotic, with piles of paper, notes, and pens strewn across every surface. Her obsession with documenting every detail is evident in the mess.
+      Frida's quarters are chaotic, with piles of paper, notes, and pens strewn across every surface. Her obsession with documenting every detail is evident in the mess.
     `,
     color: "text-yellow-500",
     exits: [{ roomId: "Hallway" }],
@@ -783,7 +782,7 @@ export const entities = {
       A minimalist space designed for tranquility, despite its tension.
     `,
     description: `
-      June’s quarters are minimalist and orderly, clearly meant to reflect calm and balance, though the occasional crooked picture or misplaced item reveals her struggle to maintain serenity.
+      June's quarters are minimalist and orderly, clearly meant to reflect calm and balance, though the occasional crooked picture or misplaced item reveals her struggle to maintain serenity.
     `,
     color: "text-teal-500",
     exits: [{ roomId: "Hallway" }],
@@ -850,10 +849,10 @@ export const entities = {
     name: "Quarters: Gloria",
     excludeFromMap: true,
     shortDescription: `
-      Gloria’s quarters, neatly organized for overhearing everything.
+      Gloria's quarters, neatly organized for overhearing everything.
     `,
     description: `
-      Gloria’s quarters are tidy and inviting, with a space clearly designed for hosting others’ conversations. She seems prepared at all times to eavesdrop on passing discussions.
+      Gloria's quarters are tidy and inviting, with a space clearly designed for hosting others' conversations. She seems prepared at all times to eavesdrop on passing discussions.
     `,
     color: "text-red-400",
     exits: [{ roomId: "Hallway" }],
@@ -864,10 +863,10 @@ export const entities = {
     name: "Quarters: Lily",
     excludeFromMap: true,
     shortDescription: `
-      Lily’s quarters, brimming with plastic plants.
+      Lily's quarters, brimming with plastic plants.
     `,
     description: `
-      Lily’s room is filled with plastic plants, each meticulously cared for as if they were alive. The space exudes a serene, if slightly odd, energy.
+      Lily's room is filled with plastic plants, each meticulously cared for as if they were alive. The space exudes a serene, if slightly odd, energy.
     `,
     color: "text-green-400",
     exits: [{ roomId: "Hallway" }],
@@ -878,10 +877,10 @@ export const entities = {
     name: "Quarters: Henry",
     excludeFromMap: true,
     shortDescription: `
-      Henry’s quarters, a place of endless waiting.
+      Henry's quarters, a place of endless waiting.
     `,
     description: `
-      Henry’s room is simple and lived-in, a space clearly designed for waiting. Everything seems frozen in a state of anticipation, as though he could leave at any moment—or never.
+      Henry's room is simple and lived-in, a space clearly designed for waiting. Everything seems frozen in a state of anticipation, as though he could leave at any moment—or never.
     `,
     color: "text-blue-500",
     exits: [{ roomId: "Hallway" }],
@@ -961,6 +960,29 @@ export const entities = {
     id: "intraLocation",
     name: "Where is Intra?",
   }),
+  Ink_And_Echo: new Mystery({
+    id: "Ink_And_Echo",
+    name: "Who is writing notes as 'Ink and Echo'?",
+    introduction: `
+    Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
+
+    The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
+    `,
+    revealedHints: {
+      Ama: `
+      Ama knows that Harold and Lily were the last two people to find notes from Ink and Echo.
+      `,
+      Harold: `
+      Mysterious notes have been found, each of them a meloncholy poem critical of Intra, signed by Ink and Echo. Harold found one in the Tranquil Pool. If asked make up an appropriate poem that Ink and Echo might have written. If pressed for details, he will mention that the handwriting was neat and precise.
+      `,
+      Lily: `
+      Mysterious notes have been found, each of them a meloncholy poem critical of Intra, signed by Ink and Echo. Lily found one in the Static Garden. If asked make up an appropriate poem that Ink and Echo might have written. The poem should imply the author of the poem is female, and Lily will notice that.
+      `,
+      Archivist: `
+      If asked about paper requisitions or anything about unusual supplies being requested, the Archivist will mention that there have been an unusual number of paper requisitions lately, and that the requests came from someone whose name ends with an 'A', but any specific identities have been mixed up in the circuits.
+      `,
+    },
+  }),
 };
 
 for (const entity of Object.values(entities)) {
@@ -970,9 +992,17 @@ for (const entity of Object.values(entities)) {
     "roleplayInstructions",
     "userInputInstructions",
     "actionPrompt",
+    "introduction",
   ]) {
     if ((entity as any)[attr]) {
       (entity as any)[attr] = dedent((entity as any)[attr]);
+    }
+  }
+  for (const attr of ["availableHints", "revealedHints"]) {
+    for (const [entityId, hint] of Object.entries(
+      (entity as any)[attr] || {}
+    )) {
+      (entity as any)[attr][entityId] = dedent(hint as string);
     }
   }
 }
