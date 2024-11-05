@@ -260,6 +260,14 @@ const RATINGS: Record<string, RatingType> = {
   "microsoft/wizardlm-2-8x22b": "great",
   "x-ai/grok-beta": "error",
   "xwin-lm/xwin-lm-70b": "bad",
+
+  // Some November 2024 options:
+  "meta-llama/llama-3.2-90b-vision-instruct:free": "bad",
+  "anthropic/claude-3-5-haiku": "great",
+  "anthropic/claude-3-5-haiku:beta": "great",
+  // I just don't feel like having dated models in here:
+  "anthropic/claude-3-5-haiku-20241022": "bad",
+  "anthropic/claude-3-5-haiku-20241022:beta": "bad",
 };
 
 export type ModelType = {
