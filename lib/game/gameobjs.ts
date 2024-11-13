@@ -61,7 +61,7 @@ export const entities = {
       2. There's something wrong with the above-ground world. It's not war or disease, but something stranger. She may speculate wildly about what it is.
       3. Ama is not the only powerful AI, but whenever Frida has asked Ama about another AI Ama has been evasive.
       4. The only information she's gotten was an accidental mention of "Sentra"
-      5. The Archive Console may provide more information. The Archive Console is located in another room.
+      5. The Archivist is the AI you can access in the room Archive Console, and it may provide more information.
     `,
   }),
 
@@ -321,20 +321,21 @@ export const entities = {
     A simple room that serves only as a passage.
     `,
     description: `
-    A small room, a passage from the intake area.
+    A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
     `,
     color: "text-emerald-500",
     exits: [
       { roomId: "Intake" },
       {
         roomId: "Hollow_Atrium",
-        restriction: "The door is locked and doens't open automatically",
+        restriction:
+          "The door is locked and doens't open automatically. The player cannot succeed at getting through the door until they explicitly try to unlock it.",
       },
     ],
     actionPrompt: `
     If the player attempts any kind of action related to unlocking the door or manipulating a computer pad, then they successfully "unlock" the door; it's a very easy task as long as they try. Emit at the end of the response to signal the door has been unlocked:
 
-    <removeRestriction>Hollow_Atrim</removeRestriction>
+    <removeRestriction>Hollow_Atrium</removeRestriction>
     `,
     soundtrack: {
       url: "Room_Foyer.mp3",
@@ -412,7 +413,11 @@ export const entities = {
       The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
     `,
     userInputInstructions: `
-      The user will almost certainly be talking to the Archivist, a computer terminal. Format dialog as if typing queries into an antiquated computer command line, using mostly lower case (or all caps) and no regular punctuation (except for shell-style redirects and punctuation). For example:
+      The user will almost certainly be talking to the Archivist, a computer terminal.
+
+      If the user is speaking to Ama, or enters a command like "Go to Archive Lounge" then process that command as usual. Otherwise follow these instructions:
+
+      Format dialog as if typing queries into an antiquated computer command line, using mostly lower case (or all caps) and no regular punctuation (except for shell-style redirects and punctuation). For example:
 
       User input:
       \`What year is it?\`
@@ -969,6 +974,10 @@ export const entities = {
     The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
     `,
     revealedHints: {
+      "*": `
+      MYSTERY: Ink and Echo
+      Someone has been leaving handwritten poems around Intra, signed by 'Ink and Echo.' The poems are melancholy and critical of Intra. Everyone has been gossiping about who might be behind them.
+      `,
       Ama: `
       Ama knows that Harold and Lily were the last two people to find notes from Ink and Echo.
       `,
@@ -979,7 +988,53 @@ export const entities = {
       Mysterious notes have been found, each of them a meloncholy poem critical of Intra, signed by Ink and Echo. Lily found one in the Static Garden. If asked make up an appropriate poem that Ink and Echo might have written. The poem should imply the author of the poem is female, and Lily will notice that.
       `,
       Archivist: `
-      If asked about paper requisitions or anything about unusual supplies being requested, the Archivist will mention that there have been an unusual number of paper requisitions lately, and that the requests came from someone whose name ends with an 'A', but any specific identities have been mixed up in the circuits.
+      If asked about paper requisitions or anything about unusual supplies being requested, the Archivist will mention that there have been an unusual number of paper requisitions lately, and that the requests came from someone whose name ends with an 'A', but any specific identities have been mixed up in the circuits. If Archivist wants to list actual names, the complete list of names that end with A are: Ama, Frida, Gloria, Lana, and Marta.
+      `,
+      Lana: `
+      Lana loves poetry but writes TERRIBLE poetry. If asked about poetry she'll want to share one of her TERRIBLE poems. Here's an example of a terrible poem:
+        Bulbs burn bright with fate,
+        Tables circle life's purpose,
+        Chairs rest in pure truth.
+      `,
+      Frida: `
+      If asked about paper, poems, writing, or Ink and Echo, Frida might note that the Archivist has some records. Frida is frustrated that she ran out of her paper quota years ago.
+      `,
+      Gloria: `
+      Gloria is sad she hasn't found one of Ink and Echo's notes. She's been trying to figure out patterns, and suspects the author spends time in the Hollow Atrium in the morning.
+
+      If accused of being Ink and Echo, Gloria will be flattered and may pretend she actually is Ink and Echo but her story will fall apart.
+      `,
+      Marta: `
+      Marta is actually Ink and Echo. She will be very cagey if she is asked anything about Ink and Echo. She got paper from the Archivist but was able to obscure it from the records.
+
+      Marta will try, very obviously and overtly, to change the subject and deflect when Ink and Echo comes up.
+
+      If Marta is accused seriously of being Ink and Echo, AND if she is alone with only the player and Ama, she will confess. She will be very embarrassed and will beg the player not to tell anyone else.
+
+      Her reason for writing the poems is that she has a deep inner ennui that she doesn't let people see. She is lonely but can't let go of her Star Citizen persona. She will feel guilty and confess to the player and Ama, but will beg the player not to tell anyone else.
+
+      In <context>...</context> answer the question: is Marta alone with the player and Ama? And is Marta being accused?
+
+      When Marta confesses additionally respond with:
+
+      <concludeMystery id="Ink_And_Echo">
+      A 1-2 sentence description of how the mystery concluded.
+      </concludeMystery>
+      `,
+      Greg: `
+      Greg thinks the whole Ink and Echo thing is silly and a waste of time. He doesn't have time to talk about it.
+      `,
+      June: `
+      June will be very honest about Ink and Echo. She is not Ink and Echo. She admires the self-expression in the poems. She will suggest that Frida is a useful person to ask.
+      `,
+      Doug: `
+      Doug doesn't know anything about Ink and Echo, but will ask incessant questions about it if it is brought up.
+      `,
+      Milton: `
+      Milton will be very glum that he hasn't found any poems, and consider it a personal attack.
+      `,
+      Henry: `
+      Henry hasn't found one of Ink and Echo's poems, so now that's ANOTHER thing he is waiting for.
       `,
     },
   }),
@@ -998,7 +1053,7 @@ for (const entity of Object.values(entities)) {
       (entity as any)[attr] = dedent((entity as any)[attr]);
     }
   }
-  for (const attr of ["availableHints", "revealedHints"]) {
+  for (const attr of ["availableHints", "revealedHints", "solvedHints"]) {
     for (const [entityId, hint] of Object.entries(
       (entity as any)[attr] || {}
     )) {

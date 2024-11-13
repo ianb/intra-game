@@ -16,7 +16,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
 
   while (pos < s.length) {
     const restOfString = s.slice(pos);
-    const nextMatch = restOfString.match(/<(\/)?([^\s>/]+)([^>]*?)(\/)?>/);
+    const nextMatch = restOfString.match(/<(\/)?([^\s>\/]+)([^>]*?)(\/)?>/);
     if (!nextMatch) {
       // No more tags, the rest is text
       const text = s.slice(pos);
@@ -64,27 +64,30 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
 
     if (isEnd) {
       // Closing tag
-      if (stack.length === 0) {
+      let foundMatch = false;
+      while (stack.length > 0) {
+        const currentItem = stack.pop()!;
+        const currentTag = currentItem.tag;
+        if (tagName === currentTag.type) {
+          // Correct closing tag
+          foundMatch = true;
+          // Set content between contentStart and matchStart
+          currentTag.content = s.slice(currentItem.contentStart, matchStart);
+          // Append from startPos to matchEnd to parent content
+          const parentTag =
+            stack.length > 0 ? stack[stack.length - 1].tag : root;
+          parentTag.content += s.slice(currentItem.startPos, matchEnd);
+          pos = matchEnd;
+          break;
+        } else {
+          console.warn("Mismatched closing tag, auto-closing", currentTag.type);
+        }
+      }
+      if (!foundMatch) {
         console.warn("Unexpected closing tag", nextMatch[0]);
-        pos = matchEnd;
-        continue;
       }
-      const currentItem = stack.pop()!;
-      const currentTag = currentItem.tag;
-      if (tagName === currentTag.type) {
-        // Correct closing tag
-        // Set content between contentStart and matchStart
-        currentTag.content = s.slice(currentItem.contentStart, matchStart);
-        // Append from startPos to matchEnd to parent content
-        const parentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
-        parentTag.content += s.slice(currentItem.startPos, matchEnd);
-        pos = matchEnd;
-        continue;
-      } else {
-        console.warn("Mismatched closing tag", nextMatch[0]);
-        pos = matchEnd;
-        continue;
-      }
+      pos = matchEnd;
+      continue;
     }
 
     if (allowTags && !allowTags.includes(tagName)) {
@@ -116,6 +119,14 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
     }
 
     pos = matchEnd;
+  }
+
+  // Auto-close any remaining tags
+  while (stack.length > 0) {
+    const currentItem = stack.pop()!;
+    console.warn("Auto-closing unclosed tag", currentItem.tag.type);
+    const parentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+    parentTag.content += s.slice(currentItem.startPos);
   }
 
   if (root.subTags) {

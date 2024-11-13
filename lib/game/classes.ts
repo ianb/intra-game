@@ -560,8 +560,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
           result.changes[id].after[key] = content;
         }
       } else if (tag.type === "dialog") {
-        // FIXME: should validate some ids
-        const id = this.world.makeId(tag.attrs.id) || this.id;
+        const id = this.world.makeId(tag.attrs.character) || this.id;
         const toId = this.world.makeId(tag.attrs.to) || undefined;
         const toOther = tag.attrs.speaking || undefined;
         const text = tag.content;
@@ -920,7 +919,7 @@ export class Person<
 
       To generate speech emit:
 
-      <dialog character="${this.name}">Dialog written as ${this.name}</dialog>
+      <dialog character="${this.name}">1-3 sentences of dialog written as ${this.name}</dialog>
 
       To speak directly TO someone:
 
@@ -1094,6 +1093,11 @@ export class Person<
         hints = mystery.revealedHints;
       } else if (mystery.state === "available") {
         hints = mystery.availableHints;
+      } else if (mystery.state === "solved") {
+        hints = mystery.solvedHints;
+      }
+      if (hints["*"]) {
+        results.push(hints["*"]);
       }
       if (hints[this.id]) {
         results.push(hints[this.id]);
@@ -1496,6 +1500,8 @@ export class AmaClass extends Person<AmaParametersType> {
     if (this.personality === "intro") {
       return tmpl`
       Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set> (you may do multiple steps in one response):
+
+      The following steps have NOT been completed, and should be prioritized:
       [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record. Example:
         <dialog character="player">John</dialog>
         output:
@@ -1560,6 +1566,9 @@ export class AmaClass extends Person<AmaParametersType> {
   }
 
   additionalSystemInstructions(parameters: AmaParametersType): string {
+    if (parameters.prompt === "intro") {
+      return "";
+    }
     const info: string[] = [
       "This is a list of ALL people in the Intra Complex:",
     ];
@@ -1568,7 +1577,7 @@ export class AmaClass extends Person<AmaParametersType> {
         continue;
       }
       info.push(
-        `- ${person.name} (${person.pronouns}): ${person.shortDescription} in ${person.inside}`
+        `- ${person.name} ${person.pronouns} (in room ${person.inside}): ${person.shortDescription}`
       );
     }
     info.push("\nAnd this is a list of ALL the rooms:");
@@ -1733,7 +1742,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       5. Is this other speech? If so emit dialog
       </context>
 
-      After finishing <context></context> then emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags.
+      After finishing <context></context> then emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags. Try to keep dialog to 1-3 sentences.
 
       [[${IF(shouldSleep)}The player should be sleeping for the night. If the player indicates they want to sleep then emit a description like this (but you may change the description text):
 
@@ -2105,6 +2114,8 @@ export class PlayerClass extends Person<PlayerInputType> {
       Make sure to include all the names: ${people.map((x) => x.name).join(", ")} (you may reorder them to improve the flow of the paragraph)
 
       You will describe the people from the perspect of the player ("${this.name}") who is in the room with them.
+
+      Keep the complete result under 500 characters.
       `,
       history: [],
       message: sourceLines.join("\n"),
@@ -2146,18 +2157,21 @@ export class Mystery extends Entity {
   introduction = "";
   availableHints: Record<EntityId, string> = {};
   revealedHints: Record<EntityId, string> = {};
+  solvedHints: Record<EntityId, string> = {};
 
   constructor({
     state,
     introduction,
     availableHints,
     revealedHints,
+    solvedHints,
     ...props
   }: {
     state?: MysteryState;
     introduction?: string;
     availableHints?: Record<EntityId, string>;
     revealedHints?: Record<EntityId, string>;
+    solvedHints?: Record<EntityId, string>;
   } & EntityInitType) {
     super(props);
     if (state) {
@@ -2171,6 +2185,9 @@ export class Mystery extends Entity {
     }
     if (revealedHints) {
       this.revealedHints = revealedHints;
+    }
+    if (solvedHints) {
+      this.solvedHints = solvedHints;
     }
   }
 }

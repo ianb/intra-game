@@ -182,7 +182,7 @@ export const schedules: Record<string, PersonScheduleTemplateType[]> = {
       activity: "Hide and scream",
       description:
         "June sneaks into a secluded corner and lets out a quick scream to release tension.",
-      inside: ["Utility_Closet", "Reflection_Chamber"],
+      inside: ["Hallway", "Foyer"],
       attentive: false,
       early: 5,
       late: 10,
@@ -292,11 +292,23 @@ export const schedules: Record<string, PersonScheduleTemplateType[]> = {
     },
     {
       id: "marta-afternoon-activity",
-      time: time("2:00 PM"),
+      time: time("1:30 PM"),
       activity: "Inspire Others in the Solitude Cubes",
       description:
         "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
       inside: ["Solitude_Cubes"],
+      attentive: true,
+      early: 5,
+      late: 10,
+      minuteLength: 30,
+    },
+    {
+      id: "marta-late-afternoon-activity",
+      time: time("2:00 PM"),
+      activity: "Inspire Others in the Solitude Cubes",
+      description:
+        "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
+      inside: ["Ill_Fitting_Lounge"],
       attentive: true,
       early: 5,
       late: 10,
@@ -308,14 +320,26 @@ export const schedules: Record<string, PersonScheduleTemplateType[]> = {
       activity: "Secret Self-Doubt Session",
       description:
         "In a rare moment of vulnerability, Marta slips into a private corner and practices smiling alone, wondering if anyone truly notices her efforts.",
-      inside: ["Utility_Closet", "Reflection_Chamber"],
+      inside: ["Hallway", "Foyer"],
       attentive: false,
       early: 5,
       late: 15,
-      minuteLength: 10,
+      minuteLength: 30,
       secret: true,
       secretReason:
         "Marta struggles with self-worth, despite her confident exterior.",
+    },
+    {
+      id: "marta-later-afternoon-activity",
+      time: time("3:30 PM"),
+      activity: "Inspire Others in the Solitude Cubes",
+      description:
+        "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
+      inside: ["Activity_Hub"],
+      attentive: true,
+      early: 5,
+      late: 10,
+      minuteLength: 150,
     },
     {
       id: "marta-dinner",

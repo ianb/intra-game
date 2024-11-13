@@ -8,7 +8,6 @@ import {
   isStoryDescription,
   isStoryDialog,
   PersonScheduledEventType,
-  PersonScheduleType,
   StoryEventWithPositionsType,
 } from "@/lib/types";
 import { StoryEventType } from "@/lib/types";
@@ -264,7 +263,6 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
     children.push(
       ...update.actions.map((action, i) => {
         if (isStoryDialog(action)) {
-          // Should also use id, toId, toOther
           let dest = "";
           let destColor = "";
           if (action.toId) {
@@ -281,11 +279,27 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
           if (room) {
             text = room.formatStoryAction(update, action);
           }
+          let fromEntity: Person | undefined;
+          if (action.id && action.id !== update.id) {
+            fromEntity = model.world.getEntity(action.id) as Person;
+          }
           return (
             <React.Fragment key={i}>
-              {dest && (
+              {(dest || fromEntity) && (
                 <div className="text-xs">
-                  to <span className={destColor}>{dest}</span>
+                  {fromEntity && (
+                    <>
+                      <span className={fromEntity.color}>
+                        {fromEntity.name}
+                      </span>{" "}
+                      says{" "}
+                    </>
+                  )}
+                  {dest && (
+                    <>
+                      to <span className={destColor}>{dest}</span>
+                    </>
+                  )}
                 </div>
               )}
               <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2">
@@ -351,7 +365,12 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
   }
   const entity = model.world.getEntity(update.id);
   return (
-    <div className={entity?.color}>
+    <div
+      className={twMerge(
+        entity?.color,
+        entity?.id === "player" && "border-l-2 pl-2 border-emerald-300"
+      )}
+    >
       {entity?.id !== "entity:narrator" && (
         <div className={twMerge("font-bold")}>{entity?.name}</div>
       )}
@@ -826,6 +845,7 @@ function ExitList({ room }: { room: Room }) {
                 disabled={model.runningSignal.value}
               >
                 {exit.name || targetRoom.name}
+                {exit.restriction ? "*" : ""}
               </Button>
             </li>
           );
@@ -1022,7 +1042,7 @@ function ViewObject({
       for (const item of value as PersonScheduledEventType[]) {
         const schedule = scheduleForTime(entity as Person, item.time);
         lines.push(
-          `  ${timeAsString(item.time)}-${timeAsString(item.time + item.minuteLength)}: ${schedule?.activity || item.scheduleId}${schedule?.attentive ? " (attentive)" : ""}`
+          `  ${timeAsString(item.time)}-${timeAsString(item.time + item.minuteLength)}: (${schedule?.inside.join("/")}) ${schedule?.activity || item.scheduleId}${schedule?.attentive ? " (attentive)" : ""}`
         );
         if (schedule?.secret) {
           lines.push(`    secret: ${schedule?.secretReason}`);

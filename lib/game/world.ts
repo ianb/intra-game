@@ -200,6 +200,9 @@ export class World {
       if (isMystery(obj)) {
         for (const hint of [obj.availableHints, obj.revealedHints]) {
           for (const key of Object.keys(hint)) {
+            if (key === "*") {
+              continue;
+            }
             if (!(this.original as any)[key]) {
               throw new Error(
                 `Mystery ${obj.id} has hint ${key} which does not exist`
