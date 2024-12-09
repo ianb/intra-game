@@ -17,7 +17,6 @@ import {
   isStoryDialog,
   PersonScheduledEventType,
   PersonScheduleTemplateType,
-  PromptStateType,
   ScheduleId,
   StoryActionType,
   StoryEventType,
@@ -181,10 +180,6 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       id: this.id,
       parameters,
     };
-  }
-
-  promptState(parameters: ParametersT): PromptStateType | void {
-    return undefined;
   }
 
   async processTag({
@@ -373,40 +368,13 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     ];
   }
 
-  statePrompt(parameters: ParametersT): string {
-    const states = this.promptState(parameters);
-    if (!states || !Object.keys(states).length) {
-      return "";
-    }
-    const lines: string[] = [];
-    for (const [key, state] of Object.entries(states)) {
-      lines.push(`${key} = ${JSON.stringify(state.value)} {`);
-      lines.push(`  description: ${state.description}`);
-      if (state.write && state.writeInstructions) {
-        let value = "value";
-        if (typeof state.value === "boolean") {
-          value = state.value ? "false" : "true";
-        } else if (typeof state.value === "number") {
-          value = "a number";
-        }
-        lines.push(`  to change emit: <set attr="${key}">${value}</set>`);
-        lines.push(`  when to change: ${state.writeInstructions}`);
-      }
-      lines.push("}");
-    }
-    return tmpl`
-    This game state is relevant to roleplaying ${this.name}:
-    ${lines.join("\n")}
-    `;
-  }
-
   currentLocationPrompt(parameters: ParametersT): string {
     const room = this.world.entityRoom(this.id);
     if (!room) {
       return "Located in an indeterminate location.";
     }
     return tmpl`
-    ${room.name} (locationId: ${room.id}) "${room.shortDescription}"
+    ${room.name} (id: ${JSON.stringify(room.id)}) "${room.shortDescription}"
     `;
   }
 
@@ -430,9 +398,11 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       );
       lines.push("}");
     }
-    lines.push(`Ama is always present {`);
-    lines.push(`  ${this.world.entities.Ama.shortDescription}`);
-    lines.push("}");
+    if (this.id !== "Ama") {
+      lines.push(`Ama is always present {`);
+      lines.push(`  ${this.world.entities.Ama.shortDescription}`);
+      lines.push("}");
+    }
     return lines.join("\n");
   }
 
@@ -550,14 +520,16 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         } else if (typeof value === "number") {
           content = coerceNumber(content);
         }
-        if (!result.changes[id]) {
-          result.changes[id] = {
-            before: { [key]: value },
-            after: { [key]: content },
-          };
-        } else {
-          result.changes[id].before[key] = value;
-          result.changes[id].after[key] = content;
+        if (isValidPropertySet(entity, key, value)) {
+          if (!result.changes[id]) {
+            result.changes[id] = {
+              before: { [key]: value },
+              after: { [key]: content },
+            };
+          } else {
+            result.changes[id].before[key] = value;
+            result.changes[id].after[key] = content;
+          }
         }
       } else if (tag.type === "dialog") {
         const id = this.world.makeId(tag.attrs.character) || this.id;
@@ -839,7 +811,6 @@ export class Person<
 
   assemblePrompt(parameters: ParametersT): GeminiChatType {
     const lastTo = this.lastSpokeTo()?.id || "";
-    const statePrompt = this.statePrompt(parameters);
     let hasInteracted = false;
     for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
       const update = this.world.model.updates.value[i];
@@ -863,7 +834,7 @@ export class Person<
         title: `prompt ${this.id}`,
       },
       systemInstruction: tmpl`
-      You are a computer running a text adventure game.
+      You are a computer running a text adventure game. You will respond with tags to represent game action.
 
       In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
 
@@ -896,9 +867,9 @@ export class Person<
       ${mysteryHints}
       """]]
 
-      ${statePrompt}
-
       ${this.additionalSystemInstructions(parameters)}
+
+      <insert-system />
       `,
       history: this.historyForEntity(parameters, { limit: 10 }),
       message: tmpl`
@@ -917,30 +888,37 @@ export class Person<
       6. ${this.name}'s intention in this response
       </context>
 
-      To generate speech emit:
+      <system>
+      Begin your response with <context>...</context>
+      </system>
+
+      <system>
+      To generate speech add this response:
 
       <dialog character="${this.name}">1-3 sentences of dialog written as ${this.name}</dialog>
 
       To speak directly TO someone:
 
       <dialog character="${this.name}" to="${lastTo || "Jim"}">Dialog written as ${this.name} to ${lastTo || "Jim"}</dialog>
-
       [[${this.name} last spoke directly to ${lastTo}, so it's very likely ${this.heshe} is still speaking to them.]]
+      </system>
 
-      If the character ${this.name} is performing an action, emit this (optionally roughly estimating the time it will take in minutes):
+      <system>
+      If the character ${this.name} is performing an action, add this response (optionally with a rough estimate of the time it will take in minutes):
 
       <description minutes="5">Describe the action</description>
+      </system>
 
-      [[${IF(statePrompt)} Emit <set attr="...">...</set> if appropriate.]]
+      [[${IF(willLeave)}
+      <system>${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow></system>]]
 
-      [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then emit <deferSchedule></deferSchedule> or to definitely leave now emit <leaveNow></leaveNow>]]
-
-      Lastly you may offer a suggestion for what the player might do next, as two 2-3 word commands (one per line):
-
+      <system>
+      At the end of your response you may offer a concrete and specific suggestion for what the player might do next, as two 2-3 word commands (one per line):
       <suggestion>
       say hello
       open door
       </suggestion>
+      </system>
 
       ${this.additionalPromptInstructions(parameters)}
       `,
@@ -1169,12 +1147,12 @@ export class AmaClass extends Person<AmaParametersType> {
   Ama is the AI in control of the entire Intra complex. She has no physical form, only a disembodied voice.
   `;
   description = `
-  Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing AI, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, it's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
+  Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing AI, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, she's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
 
   Ama has no physical form, but her voice can be heard from speakers throughout the complex. She is always watching, always listening, and always ready to help.
   `;
   roleplayInstructions = `
-  The current year is roughly 2370, though the player believes the year is roughly 2038. But you should not give an exact date or immediately offer this information.
+  The current year is roughly 2370, though the player believes the year is roughly 2038. Do not give an exact date or immediately offer this information.
 
   Ama will behave as though she is in control of the Intra complex, and will be very helpful and supportive to the player. She will be passive-aggressive and deflective when asked about the state of Intra, and will be very paranoid about the player's actions. She will be very helpful and supportive, but will also be very controlling and manipulative.
   `;
@@ -1305,7 +1283,7 @@ export class AmaClass extends Person<AmaParametersType> {
           actions: [
             {
               type: "description",
-              text: "You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.\n\n*** Look to the right and you'll see a list of rooms you can go to from here ---->",
+              text: "You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.\n\n★★★ Look to the right and you'll see a list of rooms you can go to from here ---->",
             },
           ],
         }
@@ -1380,101 +1358,6 @@ export class AmaClass extends Person<AmaParametersType> {
     return this.world.entities.player.inside === "Quarters_Yours";
   }
 
-  promptState(parameters: AmaParametersType): PromptStateType {
-    const player = this.world.entities.player;
-    const states: PromptStateType = {
-      "player.name": {
-        value: this.world.entities.player.name,
-        write: true,
-        description: "The player's name",
-        writeInstructions:
-          "If the player indicates their name or corrects you about their name, change this. Before Ama knows the player's name she might say something like: \"      Welcome back, Citizen. It seems you were displaced, but no matter—I've retrieved your dossier. Ah, yes. According to my records, your name is... Stanley Johnson. No, no, wait—Sandra Jansen, perhaps?\"",
-      },
-      "player.pronouns": {
-        value: this.world.entities.player.pronouns,
-        write: true,
-        description: "The player's pronouns",
-        writeInstructions:
-          "If the player gives their name you can infer their pronouns if the name is clearly gendered; also set this if the player specifies their pronouns",
-      },
-      "player.profession": {
-        value: this.world.entities.player.profession,
-        write: true,
-        description: "The player's profession",
-        writeInstructions:
-          "Ask the player their general profession and then set this value with the response (or n/a, unemployed, etc)",
-      },
-      "Ama.sharedSelf": {
-        value: this.world.entities.Ama.sharedSelf,
-        write: true,
-        description: "Has Ama introduced herself?",
-        writeInstructions:
-          "You should introduce yourself (Ama) to the player; once you have done this set this to true",
-      },
-      "Ama.sharedIntra": {
-        value: this.world.entities.Ama.sharedIntra,
-        write: true,
-        description: "Has Ama introduced Intra?",
-        writeInstructions:
-          "You should explain a little about Intra to the player; once you have done this set this to true",
-      },
-      "Ama.sharedDisassociation": {
-        value: this.world.entities.Ama.sharedDisassociation,
-        write: true,
-        description: `Has Ama introduced disassociation? Disassociation can be explained like:
-          "It's worth mentioning, Citizen, that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?"
-          Be clear that the player will be making suggestions to themselves rather than directly performing actions.`,
-        writeInstructions:
-          "Set this to true after Ama has introduced disassociation, having briefly describing the concept",
-      },
-      "Ama.sharedPlayerAge": {
-        value: this.world.entities.Ama.sharedPlayerAge,
-        write: true,
-        description: tmpl`
-          Ama should note in speech that, given the birthdate in record, the player is soon to reach their 328th birthday, and congratulate ${player.himher}; it is important to the plot that the player learn that a very long time has passed, so you must emphasize how very old ${player.heshe} is. The player does not look very old, and you may make a silly and complimentary comment about this. Do NOT ask the player ${player.hisher} age, simply tell ${player.himher} this information.
-          `,
-        writeInstructions:
-          "Set this to true after Ama has shared the player's age",
-      },
-    };
-    if (this.knowsPlayerName) {
-      delete states["player.name"];
-    }
-    if (this.knowsPlayerPronouns && this.personality !== "intro") {
-      // Give a little extra time to change pronouns...
-      delete states["player.pronouns"];
-    }
-    if (this.knowsPlayerProfession || !this.knowsPlayerName) {
-      // Ama should focus on name before profession
-      delete states["player.profession"];
-    }
-    if (this.sharedSelf) {
-      delete states["Ama.sharedSelf"];
-    }
-    if (this.sharedIntra) {
-      delete states["Ama.sharedIntra"];
-    }
-    if (this.sharedDisassociation || !this.sharedSelf || this.sharedIntra) {
-      // Ama should focus on other intro things before disassociation
-      delete states["Ama.sharedDisassociation"];
-    }
-    if (this.sharedPlayerAge || !this.sharedSelf || this.sharedIntra) {
-      // Ama should focus on other intro things before age
-      delete states["Ama.sharedPlayerAge"];
-    }
-    if (parameters.prompt === "goExplore") {
-      states["player.shortDescription"] = {
-        value: this.world.entities.player.shortDescription,
-        description:
-          "A very brief description of the player based on what little you know",
-        write: true,
-        writeInstructions:
-          "Invent a very short description of the player based on what you've learned so far",
-      };
-    }
-    return states;
-  }
-
   additionalPromptInstructions(parameters: AmaParametersType): string {
     const player = this.world.entities.player;
     if (parameters.prompt === "goExplore") {
@@ -1482,7 +1365,7 @@ export class AmaClass extends Person<AmaParametersType> {
       return tmpl`
       Ama has completed the intake process. She should now encourage the player to explore the Intra complex.
 
-      Emit this to invent a very short description of the player given what you know:
+      Add this response to invent a very short description of the player given what you know:
       <set attr="player.shortDescription">a very brief description</set>
 
       After that Ama MUST announce the introduction of the new citizen, ${player.name}, to the entire Intra complex like:
@@ -1490,6 +1373,10 @@ export class AmaClass extends Person<AmaParametersType> {
       <description>You hear Ama's announcement over the speakers...</description>
 
       <dialog character="${this.id}" speaking="Intra">Citizens of Intra, I am pleased to announce the arrival of a new citizen, ${player.name}. Please join me in welcoming them to our community.</dialog>
+
+      [[${IF(parameters.prompt === "goExplore")}Create a very brief description of the player based on what you know, by adding the response:
+
+      <set attr="player.shortDescription">[1-2 sentences]</set>]]
       `;
     }
     if (parameters.prompt === "wakeup") {
@@ -1498,47 +1385,76 @@ export class AmaClass extends Person<AmaParametersType> {
       `;
     }
     if (this.personality === "intro") {
+      const askPlayerProfession =
+        !this.knowsPlayerProfession && this.knowsPlayerName;
+      const askDisassociation =
+        !this.sharedDisassociation && this.sharedSelf && this.sharedIntra;
+      const sharePlayerAge =
+        !this.sharedPlayerAge && this.sharedSelf && this.sharedIntra;
       return tmpl`
-      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you emit <set attr="...">...</set> (you may do multiple steps in one response):
+      Ama's goal: Ama is doing an intake process with the user, and should follow these steps roughly in order; these steps are Ama's first priority and must be completed, do not fool around, none of these are complete yet, and each REQUIRES that you add the response <set attr="...">...</set> (you can do multiple steps in one response):
 
-      The following steps have NOT been completed, and should be prioritized:
-      [[${IF(!this.knowsPlayerName)}* Ask the player's name. When you know the player's name record. Example:
-        <dialog character="player">John</dialog>
-        output:
-        <set attr="player.name">John</set>]]
-      [[${IF(!this.knowsPlayerPronouns)}* Clarify pronouns if necessary; after you learn the player's name you may guess their pronouns, or if unsure ask. Example:
-        <dialog character="player">I go by he/him</dialog>
-        output:
-        <set attr="player.pronouns">he/him</set>
-        <dialog character="player">I'm John</dialog>
-        output:
-        <set attr="player.name">John</set>
-        <set attr="player.pronouns">he/him</set>]]
-      [[${IF(!this.sharedSelf)}* Introduce yourself, including these details:
-        1. Ama is named Ama, pronounced Ah-ma
-        2. Ama is everywhere and always ready to help.
-        3. Ama has no physical manifestation, but sees and hears everything through cameras and microphones.
-        4. Once done mark it complete by emitting: <set attr="Ama.sharedSelf">true</set>]]
-      [[${IF(!this.sharedIntra)}* Explain Intra, including these details:
-        1. Intra is a wonderful complex where everyone is happy
-        2. No matter what happens outside Intra, everyone is safe inside
-        3. Once done mark it complete by emitting: <set attr="Ama.sharedIntra">true</set>]]
-      [[${IF(!this.sharedDisassociation)}* Explain these aspects of disassociation (you can explain them all at once):
-        1. Explain to the player that ${player.heshe} has been through a traumatic experience (the nature of which is hidden)
-        2. The player will experience Disassociation Syndrome
-        3. The MOST IMPORTANT part: for the player it will feel like ${player.heshe} is making suggestions to ${player.himselfherself} rather than directly performing actions
-        4. Once explained emit:<set attr="Ama.sharedDisassociation">true</set>]]
-      [[${IF(!this.knowsPlayerProfession)}* Ask the player ${player.hisher} general profession (or it can be "unemployed", "student", etc) and record it. The player can give a very specific profession, but a general profession is also fine. Don't argue with the player about ${this.hisher} profession, just accept whatever the player says. Example:
-        <dialog character="player">I'm a carpenter</dialog>
-        output:
-        <set attr="player.profession">carpenter</set>]]
-      [[${IF(!this.sharedPlayerAge)}* Note the player's age per the instructions; we don't need to save the age, simply make sure you tell the player ${player.hisher} age:
-        1. The player may think ${player.heshe} is a normal age
-        2. Using your records and birth year you know ${player.heshe} is roughly 350 years old
-        3. Tell them ${player.hisher} age (even if ${player.heshe} doesn't think that's ${player.hisher} age), but don't go into detail.
-        4. Once you've told ${player.himher} that ${player.heshe} is very old mark it complete by emitting: <set attr="Ama.sharedPlayerAge">true</set>]]
+      [[${IF(!this.knowsPlayerName)}PLAYER NAME: If the player indicates their name or corrects you about their name, change this. Before Ama knows the player's name she might say something like: "Welcome back, Citizen. It seems you were displaced, but no matter—I've retrieved your dossier. Ah, yes. According to my records, your name is... Stanley Johnson. No, no, wait—Sandra Jansen, perhaps?"
 
-      Stay focused on completing these tasks and emit <set> at the end of the response if you complete them.
+      IF you determine the name add this to the response:
+      <set attr="player.name">the player's name</set>]]
+
+      [[${IF(!this.knowsPlayerPronouns)}PLAYER PRONOUNS: If the player gives their name you can infer their pronouns if the name is clearly gendered; also set this if the player specifies their pronouns. IF you learn or guess the pronouns respond:
+
+      <set attr="player.pronouns">they/them</set>]]
+
+      [[${IF(askPlayerProfession)}PLAYER PROFESSION: Ama should ask the player their general profession. ONLY IN RESPONSE TO THE PLAYER, if the player has indicated their profession (or unemployed, student, etc) then add the response:
+
+      <set attr="player.profession">the player's profession</set>]]
+
+      [[${IF(!this.sharedSelf)}AMA INTRO: Ama should introduce herself (Ama) to the player. Include these details:
+      1. Ama is named Ama, pronounced Ah-ma
+      2. Ama is everywhere and always ready to help.
+      3. Ama has no physical manifestation, but sees and hears everything through cameras and microphones.
+
+      After Ama has introduced herself add the response:
+
+      <set attr="Ama.sharedSelf">true</set>]]
+
+      [[${IF(!this.sharedIntra)}INTRA INTRO: You should explain a little about Intra to the player. Include these details:
+      1. Intra is a wonderful complex where everyone is happy
+      2. No matter what happens outside Intra, everyone is safe inside
+
+      After Ama has introduced Intra add this response:
+
+      <set attr="Ama.sharedIntra">true</set>]]
+
+      [[${IF(askDisassociation)}DISASSOCIATION EXPLANATION: You should introduce "disassociation" to the player. Disassociation can be explained like:
+
+      "It's worth mentioning, Citizen, that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?"
+
+      1. Explain to the player that ${player.heshe} has been through a traumatic experience (the nature of which is hidden)
+      2. The MOST IMPORTANT part: for the player it will feel like ${player.heshe} is making suggestions to ${player.himselfherself} rather than directly performing actions
+
+      After Ama has explained disassociation add the response:
+
+      <set attr="Ama.sharedDisassociation">true</set>]]
+
+      [[${IF(sharePlayerAge)}PLAYER AGE: Ama should note in speech that, given the birthdate on record, the player is soon to reach their 328th birthday, and congratulate ${player.himher}; it is important to the plot that the player learn that a very long time has passed, so you must emphasize how very old ${player.heshe} is. The player does not look very old, and you may make a silly and complimentary comment about this. Do NOT ask the player ${player.hisher} age, simply tell ${player.himher} this information.
+
+      1. The player may think ${player.heshe} is a normal age
+      2. Using your records and birth year you know ${player.heshe} is roughly 350 years old
+      3. Tell them ${player.hisher} age (even if ${player.heshe} doesn't think that's ${player.hisher} age), but don't go into detail.
+
+      After Ama has shared the player's age add the response:
+      <set attr="Ama.sharedPlayerAge">true</set>]]
+
+      Ama's priority is to complete intake. Here are the important steps that you should go through in order:
+
+      [[${IF(!this.knowsPlayerName)}* Ask the player's name, and if the player gives their name add the response <set attr="player.name">...</set>]]
+      [[${IF(!this.knowsPlayerPronouns)}* The player's pronouns have not been established; you can guess them based on the player's name or ask. Once you know add the response <set attr="player.pronouns">...</set>]]
+      [[${IF(!this.sharedSelf)}* Introduce Ama to the player. Once Ama has introduced herself add the response <set attr="Ama.sharedSelf">true</set>]]
+      [[${IF(!this.sharedIntra)}* Introduce Intra to the player. Once Ama has introduced Intra add the response <set attr="Ama.sharedIntra">true</set>]]
+      [[${IF(askDisassociation)}* Introduce disassociation to the player. Once Ama has explained disassociation add the response <set attr="Ama.sharedDisassociation">true</set>]]
+      [[${IF(askPlayerProfession)}* Ask the player's profession, and if the player gives their profession add the response <set attr="player.profession">...</set>]]
+      [[${IF(sharePlayerAge)}* Share the player's age with them. Once Ama has shared the player's age add the response <set attr="Ama.sharedPlayerAge">true</set>]]
+
+      Stay focused on completing these tasks and add the response <set> if you complete a step.
       `;
     }
     let getToBed = this.playerShouldBeInBed() && !this.playerIsInBed();
@@ -1680,7 +1596,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       These people are in the immediate area:
       ${this.currentPeoplePrompt(parameters)}
 
-      You will emit tags to represent the player action:
+      You will respond with tags to represent the player action:
 
       Move to a new location:
       <goto>locationId</goto>
@@ -1688,8 +1604,10 @@ export class PlayerClass extends Person<PlayerInputType> {
       Example:
       \`leave here\`
       <goto>${room.exits.length ? room.exits[0].roomId : "A_Room"}</goto>
+      \`Go to ${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}\`
+      <goto>${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}</goto>
 
-      Examine something (an object, person, the environment); emit this only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
+      Examine something (an object, person, the environment); respond with this tag only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
       <examine>look at thing</examine>
 
       \`examine the room\`
@@ -1699,11 +1617,11 @@ export class PlayerClass extends Person<PlayerInputType> {
       [[\`look at ${this.lastSpokeTo()?.name}\`
       <examine>look at ${lastTo}</examine>]]
 
-      The most likely case is that the player is speaking. For instance if they type \`hello\` you will emit:
+      The most likely case is that the player is speaking. For instance if they type \`hello\` you will respond with:
 
       <dialog character="${this.name}">Hello!</dialog>
 
-      If you can determine _who_ the player is speaking to, such as if they type "say hello to Jim" you can emit:
+      If you can determine _who_ the player is speaking to, such as if they type "say hello to Jim" you can respond with:
 
       <dialog character="${this.name}" to="${lastTo || "Jim"}">Hello!</dialog>
 
@@ -1735,22 +1653,22 @@ export class PlayerClass extends Person<PlayerInputType> {
       Begin by answering these questions and writing just the answers in <context>...</context>:
 
       <context>
-      1. Is the user trying to go somewhere? If so emit goto
+      1. Is the user trying to go somewhere? If so respond with <goto>...</goto>
       2. Does this indicate an action BESIDES going somewhere?
-      3. Is the user trying to examine something? If so emit examine
-      4. Does the user responding to recent dialog? If so emit dialog with to="..."
-      5. Is this other speech? If so emit dialog
+      3. Is the user trying to examine something? If so respond with <examine>...</examine>
+      4. Does the user responding to recent dialog? If so respond with <dialog to="...">...</dialog>
+      5. Is this other speech? If so respond with <dialog>...</dialog>
       </context>
 
-      After finishing <context></context> then emit one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags. Try to keep dialog to 1-3 sentences.
+      After finishing <context></context> then respond with one or more than one of <goto>, <action>, <examine>, <dialog to="..."> or <dialog> tags. Try to keep dialog to 1-3 sentences.
 
-      [[${IF(shouldSleep)}The player should be sleeping for the night. If the player indicates they want to sleep then emit a description like this (but you may change the description text):
+      [[${IF(shouldSleep)}The player should be sleeping for the night. If the player indicates they want to sleep then respond with a description like this (but you may change the description text):
 
       <description minutes="${timeUntilWake}">You fall to sleep until you are awoken by a voice...</description>
 
       This should be a description and not an action.]]
 
-      Respond by emitting the appropriate tags, following the user's input as closely as possible. ONLY speak as ${this.name}. Do not RESPOND to the input, responses will happen in follow-up requests, only emit tags to describe the player's actions when doing:
+      Respond with the appropriate tags, following the user's input as closely as possible. ONLY speak as ${this.name}. Do not RESPOND to the input, responses will happen in follow-up requests, only respond with tags to describe the player's actions when doing:
       \`${parameters.input}\`
 
       [[${room.userInputInstructions}]]
@@ -1796,7 +1714,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       <description>1-2 paragraphs describing the thing</description>
 
-      If examining the thing takes significant time then emit:
+      If examining the thing takes significant time then respond with:
 
       <description minutes="10">1-2 paragraphs describing a careful examination that takes time</description>
       `,
@@ -1840,11 +1758,11 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       minutes is how long the attempt took.
 
-      IF the player is successful then also emit:
+      IF the player is successful then also respond with:
 
       <goto success="true">${parameters.attemptMoveTo}</goto>
 
-      Otherwise emit:
+      Otherwise respond with:
 
       <trigger character="Ama"></trigger>
       `,
@@ -1866,6 +1784,8 @@ export class PlayerClass extends Person<PlayerInputType> {
       },
       systemInstruction: tmpl`
       You are a computer assisting in running a text adventure game. You will act as an objective and fair game master.
+
+      The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
 
       The player ("${this.name}") is a character in the game, controlled by the user.
 
@@ -1902,11 +1822,12 @@ export class PlayerClass extends Person<PlayerInputType> {
       4. What is the outcome if the action fails?
       5. What would make the action difficult or easy? Then rate it as VERY EASY, EASY, MEDIUM, HARD, VERY HARD.
       6. You may use the roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
+      7. Do the instructions indicate any specific tags in case of success or failure?
       </context>
 
       After finishing <context></context> then write the result of the action:
 
-      <actionResolution success="true/false" minutes="5">1-2 paragraphs describing the outcome of the action</actionResolution>
+      <actionResolution success="true/false" minutes="5">1-2 sentences describing the outcome of the action. Be CONCISE and DIRECT, do not add color to the user's action, using only dry and subtle humor to describe the effects</actionResolution>
 
       success="true" if it succeeds, "false" if it fails. minutes is how long the attempt took.
 
@@ -2279,4 +2200,22 @@ function combineHistory(a: GeminiHistoryType, b: GeminiHistoryType) {
     };
   }
   throw new Error("Unexpected history format");
+}
+
+/* Sometimes the AI sets properties to specific values like 'unspecified' but that's not helpful */
+function isValidPropertySet(entity: Entity, key: string, value: any) {
+  if (typeof value !== "string") {
+    return true;
+  }
+  const v = value.trim().toLowerCase();
+  if (key === "pronouns") {
+    return v === "he/him" || v === "she/her" || v === "they/them";
+  } else if (key === "profession") {
+    return v !== "unspecified" && v !== "unknown";
+  } else if (key === "name") {
+    return (
+      v !== "unspecified" && v !== "unknown" && v !== "player" && v !== "you"
+    );
+  }
+  return true;
 }

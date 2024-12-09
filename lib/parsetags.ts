@@ -175,6 +175,10 @@ export function serializeTags(tags: TagType[], omit?: OmitArgument) {
       console.warn("Got serializeTags with no tag", tags);
       continue;
     }
+    if (tag.type === "comment" && Object.keys(tag.attrs).length === 0) {
+      lines.push(tag.content);
+      continue;
+    }
     lines.push(`<${tag.type}${serializeAttrs(tag.attrs, omit)}>`);
     lines.push(tag.content || "");
     lines.push(`</${tag.type}>\n`);
@@ -262,13 +266,21 @@ export function unfoldTags(
       result.push(tag);
       continue;
     }
-    const newSubTags = tag.subTags.filter((x) => !ignoreTags.includes(x.type));
-    const unfoldTags = tag.subTags.filter((x) => ignoreTags.includes(x.type));
+    const newSubTags: TagType[] | undefined = tag.subTags.filter(
+      (x) => ignoreTags.includes(x.type) || x.type === "comment"
+    );
+    const unfoldTags = tag.subTags.filter(
+      (x) => !ignoreTags.includes(x.type) && x.type !== "comment"
+    );
+    const content = serializeTags(newSubTags);
     const newTag = {
       ...tag,
-      subTags: newSubTags,
-      content: serializeTags(unfoldTags),
+      content,
     };
+    delete newTag.subTags;
+    if (newSubTags.some((x) => x.type !== "comment")) {
+      newTag.subTags = unfoldTags;
+    }
     if (!trimEmpty.includes(tag.type) || newTag.content.trim()) {
       result.push(newTag);
     }

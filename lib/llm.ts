@@ -74,6 +74,7 @@ export class LlmServiceError extends Error {
 }
 
 export async function chat(request: GeminiChatType) {
+  request = upliftInstructions(request);
   request = fixText(request);
   const log = {
     request,
@@ -232,4 +233,66 @@ function convertMessage(
     role: h.role === "user" ? "user" : "assistant",
     content: text || "",
   };
+}
+
+function upliftInstructions(chat: GeminiChatType): GeminiChatType {
+  const system = chat.systemInstruction || "";
+  const newChat = { ...chat };
+  // if (/<insert-system\s*\/?>/i.test(system)) {
+  //   // FIXME: should warn if are instructions but no <insert-system/>
+  //   return chat;
+  // }
+  const allInstructions = [];
+  const { repl, instructions } = parseInstructions(system);
+  newChat.systemInstruction = repl;
+  allInstructions.push(...instructions);
+  newChat.history = newChat.history.map((history) => {
+    const { repl, instructions } = parseInstructions(makeText(history));
+    allInstructions.push(...instructions);
+    return replText(history, repl);
+  });
+  const { repl: messageRepl, instructions: messageInstructions } =
+    parseInstructions(chat.message);
+  newChat.message = messageRepl;
+  allInstructions.push(...messageInstructions);
+  if (
+    allInstructions.length > 0 &&
+    !/<insert-system\s*\/>/i.test(newChat.systemInstruction)
+  ) {
+    throw new Error("Instructions were not inserted into system instruction");
+  }
+  const newSystem = newChat.systemInstruction.replace(
+    /<insert-system\s*\/>/i,
+    allInstructions.join("\n")
+  );
+  newChat.systemInstruction = newSystem;
+  return newChat;
+}
+
+function parseInstructions(system: string): {
+  repl: string;
+  instructions: string[];
+} {
+  const instructions: string[] = [];
+  const instructionRegex = /<system>([^]*?)<\/system>\s*/gi;
+  const repl = system.replace(instructionRegex, (match, contents) => {
+    instructions.push(contents.trim());
+    return "";
+  });
+  return { repl, instructions };
+}
+
+function makeText(history: GeminiHistoryType): string {
+  if (history.parts) {
+    return history.parts.map((x) => x.text).join("");
+  }
+  return history.text || "";
+}
+
+function replText(history: GeminiHistoryType, text: string): GeminiHistoryType {
+  if (history.parts) {
+    history = { ...history };
+    delete history.parts;
+  }
+  return { ...history, text };
 }

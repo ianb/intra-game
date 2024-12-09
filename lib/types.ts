@@ -98,15 +98,6 @@ export function isPromptRequest(
   return (actionRequest as PromptRequestType).type === "promptRequest";
 }
 
-export type PromptStateType = Record<string, PromptStateDescriptorType>;
-
-export type PromptStateDescriptorType = {
-  value: any;
-  write?: boolean;
-  description?: string;
-  writeInstructions?: string;
-};
-
 // I wish this was keyof AllEntitiesType but can't quite make it work:
 export type EntityId = string;
 
