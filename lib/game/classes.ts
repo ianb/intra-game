@@ -332,9 +332,16 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     }
     for (const action of update.actions) {
       if (isStoryDialog(action)) {
+        // This removes emoji. While we allow the LLM to create emoji, if it *sees* emoji then it'll use them more and more in a feedback cycle. So by remove them we don't encourage the LLM to use emoji unless it is directly inspired to do so
+        // I have a build problem keeping me from using the proper regex: /\p{Emoji}/gu
+
+        const text = action.text.replace(
+          /[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u26FF\u2700-\u27BF]/g,
+          ""
+        );
         parts.push(tmpl`
           <dialog character="${action.id}"[[ to="${action.toId}"]]>
-          ${action.text}
+          ${text}
           </dialog>
           `);
       } else if (isStoryDescription(action)) {
@@ -590,6 +597,27 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         newExits.find((x) => x.roomId === exitLocation)!.restriction =
           undefined;
         result.changes[roomId].after.exits = newExits;
+      } else if (tag.type === "resolveMystery") {
+        const mysteryId = this.world.makeId(tag.attrs.id);
+        const mystery = this.world.getMystery(mysteryId || "");
+        if (!mysteryId || !mystery) {
+          console.warn("Could not parse mystery id", tag);
+          continue;
+        }
+        if (!result.changes[mysteryId]) {
+          result.changes[mysteryId] = {
+            before: {},
+            after: {},
+          };
+        }
+        result.changes[mysteryId].before.state = mystery.state;
+        result.changes[mysteryId].before.resolution = mystery.resolution;
+        result.changes[mysteryId].after.state = "solved";
+        result.changes[mysteryId].after.resolution = tag.content;
+        result.actions.push({
+          type: "description",
+          text: tag.content,
+        });
       } else if (tag.type === "trigger") {
         const entityId = this.world.makeId(tag.attrs.character);
         if (entityId) {
@@ -634,6 +662,32 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       event.changes[this.id] = changes[this.id];
     }
     return event;
+  }
+
+  myMysteryHints(): string {
+    const results: string[] = [];
+    for (const mystery of this.world.unveiledMysteries()) {
+      let hints: Record<EntityId, string> = {};
+      if (mystery.state === "revealed") {
+        hints = mystery.revealedHints;
+      } else if (mystery.state === "available") {
+        hints = mystery.availableHints;
+      } else if (mystery.state === "solved") {
+        hints = mystery.solvedHints;
+      }
+      if (hints[this.id]) {
+        results.push(hints[this.id]);
+      }
+      if (this.myRoom().id !== this.id && hints[this.myRoom().id]) {
+        results.push(hints[this.myRoom().id]);
+      }
+      if (results.length || isPerson(this)) {
+        if (hints["*"]) {
+          results.unshift(hints["*"]);
+        }
+      }
+    }
+    return results.join("\n");
   }
 }
 
@@ -880,12 +934,13 @@ export class Person<
       Begin by assembling the essential context given the above history, writing 4-5 words for each item:
 
       <context>
-      1. Are there any facts that have to be constructed to continue the scene or response? If so then invent those facts and record them.
-      2. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
-      3. Relevant facts from the history
-      4. How can this response be fun or surprising?
-      5. ${this.name}'s reaction to any recent speech or events
-      6. ${this.name}'s intention in this response
+      1. Are there any special questions for this character that need to be answered? If so answer them here.
+      2. Are there any facts that have to be constructed to continue the scene or response? If so then invent those facts and record them.
+      3. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
+      4. Relevant facts from the history
+      5. How can this response be fun or surprising?
+      6. ${this.name}'s reaction to any recent speech or events
+      7. ${this.name}'s intention in this response
       </context>
 
       <system>
@@ -1061,27 +1116,6 @@ export class Person<
       [[${IF(schedule.attentive)}${this.name} doesn't mind being interrupted.]]
       </activity>
       `;
-  }
-
-  myMysteryHints(): string {
-    const results: string[] = [];
-    for (const mystery of this.world.unveiledMysteries()) {
-      let hints: Record<EntityId, string> = {};
-      if (mystery.state === "revealed") {
-        hints = mystery.revealedHints;
-      } else if (mystery.state === "available") {
-        hints = mystery.availableHints;
-      } else if (mystery.state === "solved") {
-        hints = mystery.solvedHints;
-      }
-      if (hints["*"]) {
-        results.push(hints["*"]);
-      }
-      if (hints[this.id]) {
-        results.push(hints[this.id]);
-      }
-    }
-    return results.join("\n");
   }
 
   get allPronouns() {
@@ -1621,9 +1655,9 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       <dialog character="${this.name}">Hello!</dialog>
 
-      If you can determine _who_ the player is speaking to, such as if they type "say hello to Jim" you can respond with:
+      If you can determine _who_ the player is speaking to, such as if they type "say hello to ${lastTo || "Jim"}" or "${lastTo || "Jim"}, hello" you can respond with:
 
-      <dialog character="${this.name}" to="${lastTo || "Jim"}">Hello!</dialog>
+      <dialog character="${this.name}" to="${lastTo || "Jim"}">Hello</dialog>
 
       [[The player last spoke directly to ${lastTo}, so it's very likely the player is still speaking to them.]]
 
@@ -1656,7 +1690,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       1. Is the user trying to go somewhere? If so respond with <goto>...</goto>
       2. Does this indicate an action BESIDES going somewhere?
       3. Is the user trying to examine something? If so respond with <examine>...</examine>
-      4. Does the user responding to recent dialog? If so respond with <dialog to="...">...</dialog>
+      4. Does the user responding to recent dialog? If so respond with <dialog to="...">...</dialog>, trying to make as few changes to the input as possible
       5. Is this other speech? If so respond with <dialog>...</dialog>
       </context>
 
@@ -1697,6 +1731,8 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       The room is described as:
       ${room?.description}
+
+      ${room?.myMysteryHints()}
 
       These people and entities are in the room:
       ${entityDescriptions}
@@ -1817,7 +1853,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       <context>
       1. Is this action at all possible?
-      2. Is the action trivially easy? If so then simply describe the successful outcome.
+      2. Is the action trivially easy? Opening doors, picking things up, or performing other simple actions should always succeed. If it is trivial then simply describe the successful outcome.
       3. What is the outcome if the action succeeds?
       4. What is the outcome if the action fails?
       5. What would make the action difficult or easy? Then rate it as VERY EASY, EASY, MEDIUM, HARD, VERY HARD.
@@ -2072,6 +2108,7 @@ export const MYSTERY_STATES: MysteryState[] = [
 export class Mystery extends Entity {
   type = "mystery";
   state: MysteryState = "veiled";
+  resolution: string = "";
   // Should I put mysteries in a different room?
   inside = "Void";
   invisible = true;

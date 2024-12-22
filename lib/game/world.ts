@@ -73,6 +73,18 @@ export class World {
     return Object.values(this.entities).filter(isMystery) as Mystery[];
   }
 
+  getMystery(mysteryId: string): Mystery | null {
+    const mystery = this.getEntity(mysteryId);
+    if (!mystery) {
+      return null;
+    }
+    if (!isMystery(mystery)) {
+      console.error("Tried to get entity as mystery:", mysteryId, mystery);
+      return null;
+    }
+    return mystery;
+  }
+
   unveiledMysteries() {
     return this.allMysteries().filter((m) => m.state !== "veiled");
   }

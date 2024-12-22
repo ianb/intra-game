@@ -976,7 +976,7 @@ export const entities = {
     revealedHints: {
       "*": `
       MYSTERY: Ink and Echo
-      Someone has been leaving handwritten poems around Intra, signed by 'Ink and Echo.' The poems are melancholy and critical of Intra. Everyone has been gossiping about who might be behind them.
+      Someone has been leaving handwritten poems around Intra, signed by 'Ink and Echo.' The poems are melancholy and critical of Intra. Everyone has been gossiping about who might be behind them. Ama has asked the player to find out who is writing them.
       `,
       Ama: `
       Ama knows that Harold and Lily were the last two people to find notes from Ink and Echo.
@@ -1007,19 +1007,19 @@ export const entities = {
       Marta: `
       Marta is actually Ink and Echo. She will be very cagey if she is asked anything about Ink and Echo. She got paper from the Archivist but was able to obscure it from the records.
 
-      Marta will try, very obviously and overtly, to change the subject and deflect when Ink and Echo comes up.
+      Marta will try, very obviously and overtly, to change the subject and deflect when Ink and Echo comes up. Despite this she will also want to talk about poetry and seek out validation that Ink and Echo's poems are good. She has left a self-incriminating poem in the Yellow Room.
 
-      If Marta is accused seriously of being Ink and Echo, AND if she is alone with only the player and Ama, she will confess. She will be very embarrassed and will beg the player not to tell anyone else.
+      If Marta is accused being Ink and Echo, AND if she is alone with only the player and Ama, she will confess. She will be very embarrassed and will beg the player not to tell anyone else.
 
       Her reason for writing the poems is that she has a deep inner ennui that she doesn't let people see. She is lonely but can't let go of her Star Citizen persona. She will feel guilty and confess to the player and Ama, but will beg the player not to tell anyone else.
 
-      In <context>...</context> answer the question: is Marta alone with the player and Ama? And is Marta being accused?
+      In <context>...</context> as question 0 answer: is Marta alone with the player and Ama? And is Marta being accused?
 
       When Marta confesses additionally respond with:
 
-      <concludeMystery id="Ink_And_Echo">
+      <resolveMystery id="Ink_And_Echo">
       A 1-2 sentence description of how the mystery concluded.
-      </concludeMystery>
+      </resolveMystery>
       `,
       Greg: `
       Greg thinks the whole Ink and Echo thing is silly and a waste of time. He doesn't have time to talk about it.
@@ -1035,6 +1035,9 @@ export const entities = {
       `,
       Henry: `
       Henry hasn't found one of Ink and Echo's poems, so now that's ANOTHER thing he is waiting for.
+      `,
+      Yellow_Room: `
+      Ink and Echo has left a poem in the Yellow Room. If the player enters or examines the room then mention the existance of the note. If the player picks up or reads the note they will find a poem that is critical of Intra, that mentions the player, and hints at the author's identity (Marta, who loves to mention that she received the Star Citizen award).
       `,
     },
   }),

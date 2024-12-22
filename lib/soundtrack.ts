@@ -37,6 +37,7 @@ export class SoundtrackPlayer {
       // Create a new Audio element
       const audioElement = new Audio(url);
       audioElement.loop = true;
+      // audioElement.crossOrigin = "use-credentials";
 
       // Create a MediaElementSourceNode
       const source = this.audioContext.createMediaElementSource(audioElement);

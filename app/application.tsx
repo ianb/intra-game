@@ -981,11 +981,22 @@ function Mysteries() {
   return (
     <div className="flex-1 p-4 text-sm">
       {mysteries.length === 0 && <div>No mysteries</div>}
-      {mysteries.map((mystery, i) => (
-        <div key={i}>
-          {i + 1}. {mystery.name}
-        </div>
-      ))}
+      <ol className="list-decimal ml-3">
+        {mysteries.map((mystery, i) => {
+          return (
+            <li key={mystery.id}>
+              <div className={mystery.state === "solved" ? "line-through" : ""}>
+                {mystery.name}
+              </div>
+              {mystery.resolution && (
+                <div className="text-xs text-gray-300">
+                  {mystery.resolution}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
