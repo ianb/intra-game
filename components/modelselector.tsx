@@ -268,6 +268,79 @@ const RATINGS: Record<string, RatingType> = {
   // I just don't feel like having dated models in here:
   "anthropic/claude-3-5-haiku-20241022": "bad",
   "anthropic/claude-3-5-haiku-20241022:beta": "bad",
+
+  // Some January 2025 options:
+  "google/gemini-2.0-flash-thinking-exp:free": "error",
+  "sophosympatheia/rogue-rose-103b-v0.2:free": "bad",
+  "google/gemini-2.0-flash-thinking-exp-1219:free": "error",
+  "google/gemini-2.0-flash-exp:free": "error",
+  "google/gemini-exp-1206:free": "error",
+  "google/gemini-exp-1121:free": "error",
+  "google/learnlm-1.5-pro-experimental:free": "error",
+  "google/gemini-exp-1114:free": "error",
+  // Can't figure out characters:
+  "liquid/lfm-7b": "bad",
+  // Too much hallucination:
+  "liquid/lfm-3b": "bad",
+  // Weirdly minimal:
+  "amazon/nova-micro-v1": "bad",
+  // Can't handle the tags and language:
+  "cohere/command-r7b-12-2024": "bad",
+  "amazon/nova-lite-v1": "ok",
+  // Not sure if this is good or great...
+  "microsoft/phi-4": "great",
+  // Technically this one does well, but it seems weird to use a coder model...
+  "qwen/qwen-2.5-coder-32b-instruct": "ok",
+  // It's okay, but really slow...
+  "meta-llama/llama-3.3-70b-instruct": "ok",
+  // Slow and iffy
+  "qwen/qwq-32b-preview": "ok",
+  "minimax/minimax-01": "error",
+  // It thinks way too hard and over-replies. Could work with prompt adjustments...
+  "deepseek/deepseek-r1-distill-llama-70b": "ok",
+  // Really for visuals...
+  "qwen/qvq-72b-preview": "bad",
+  // Crazy long over-replying
+  "infermatic/mn-inferor-12b": "bad",
+  // Eh, code-oriented...
+  "mistralai/codestral-2501": "bad",
+  "thedrummer/unslopnemo-12b": "good",
+  // Slow and expensive, but still pretty good I guess? But SO SLOW
+  "deepseek/deepseek-r1": "ok",
+  "sao10k/l3.3-euryale-70b": "ok",
+  // Weird, curt, and expensive...
+  "amazon/nova-pro-v1": "bad",
+  "anthropic/claude-3.5-haiku-20241022": "great",
+  // Don't really need two copies...
+  "anthropic/claude-3.5-haiku-20241022:beta": "error",
+  "anthropic/claude-3.5-haiku": "great",
+  "anthropic/claude-3.5-haiku:beta": "error",
+  // Not very accurate replies or interpretation...
+  "meta-llama/llama-2-70b-chat": "ok",
+  // Vision model...
+  "x-ai/grok-2-vision-1212": "error",
+  "x-ai/grok-2-1212": "ok",
+  "mistralai/mistral-large-2411": "good",
+  // Just an older version, not that interesting
+  "mistralai/mistral-large-2407": "error",
+  // Vision
+  "mistralai/pixtral-large-2411": "error",
+  // Painfully slow...
+  "deepseek/deepseek-chat-v2.5": "ok",
+  // Dated version isn't that interesting
+  "openai/gpt-4o-2024-11-20": "error",
+  // So slow
+  "eva-unit-01/eva-qwen-2.5-32b": "bad",
+  "sao10k/l3.1-70b-hanami-x1": "bad",
+  "01-ai/yi-large": "good",
+  // Slow and expensive, eh...
+  "eva-unit-01/eva-llama-3.33-70b": "ok",
+  "eva-unit-01/eva-qwen-2.5-72b": "ok",
+  // Too slow and expensive...
+  "raifle/sorcererlm-8x22b": "ok",
+  // vision...
+  "x-ai/grok-vision-beta": "error",
+  "openai/o1": "error",
 };
 
 export type ModelType = {
