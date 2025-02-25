@@ -527,7 +527,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         } else if (typeof value === "number") {
           content = coerceNumber(content);
         }
-        if (isValidPropertySet(entity, key, value)) {
+        if (isValidPropertySet(entity, key, content)) {
           if (!result.changes[id]) {
             result.changes[id] = {
               before: { [key]: value },
@@ -537,6 +537,11 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
             result.changes[id].before[key] = value;
             result.changes[id].after[key] = content;
           }
+        } else {
+          console.warn(
+            `Ignoring invalid property set of: ${entity.id}.${key} =`,
+            value
+          );
         }
       } else if (tag.type === "dialog") {
         const id = this.world.makeId(tag.attrs.character) || this.id;
