@@ -341,6 +341,66 @@ const RATINGS: Record<string, RatingType> = {
   // vision...
   "x-ai/grok-vision-beta": "error",
   "openai/o1": "error",
+
+  // Some February 2025 options:
+  "cognitivecomputations/dolphin3.0-r1-mistral-24b:free": "error",
+  "cognitivecomputations/dolphin3.0-mistral-24b:free": "error",
+  // Can't follow response formatting directions:
+  "deepseek/deepseek-r1-distill-llama-8b": "bad",
+  "google/gemini-2.0-flash-lite-preview-02-05:free": "error",
+  "google/gemini-2.0-pro-exp-02-05:free": "error",
+  // Can't follow formatting instructions:
+  "qwen/qwen-vl-plus:free": "bad",
+  // At least it works, and is good for a 'free' model:
+  "qwen/qwen2.5-vl-72b-instruct:free": "good",
+  "mistralai/mistral-small-24b-instruct-2501:free": "error",
+  "deepseek/deepseek-r1-distill-llama-70b:free": "error",
+  "deepseek/deepseek-r1:free": "error",
+  "deepseek/deepseek-chat:free": "error",
+  "meta-llama/llama-3.3-70b-instruct:free": "ok",
+  "nvidia/llama-3.1-nemotron-70b-instruct:free": "error",
+  "mistralai/mistral-nemo:free": "error",
+  "qwen/qwen-turbo": "good",
+  // Can handle some formatting, but not consistently:
+  "mistralai/mistral-small-24b-instruct-2501": "bad",
+  // Kind of quirky, but okay:
+  "google/gemini-2.0-flash-001": "good",
+  "deepseek/deepseek-r1-distill-qwen-32b": "great",
+  // Doesn't understand formatting:
+  "google/gemma-7b-it": "bad",
+  // Somehow this costs more than the 32b version...? And can't handle formatting
+  "deepseek/deepseek-r1-distill-qwen-1.5b": "bad",
+  "mistralai/mistral-saba": "good",
+  // Doesn't understand formatting or quoting:
+  "aion-labs/aion-rp-llama-3.1-8b": "bad",
+  "meta-llama/llama-guard-3-8b": "error",
+  // Expensive for what it is, but eh...
+  "qwen/qwen-plus": "good",
+  // Not really a good match for the task:
+  "aion-labs/aion-1.0-mini": "bad",
+  // Surprisingly solid:
+  "google/gemini-2.0-flash-lite-001": "great",
+  // Too slow and expensive, not really appropriate:
+  "perplexity/sonar-reasoning": "ok",
+  // Similar, though it's better than the reasoning one:
+  "perplexity/sonar": "ok",
+  // Could be great but very slow:
+  "openai/o3-mini-high": "good",
+  // Same issue, though maybe faster:
+  "openai/o3-mini": "good",
+  // Expensive, but actually quite good:
+  "qwen/qwen-max": "great",
+  // Bit of a try-hard, does too much:
+  "deepseek/deepseek-r1-distill-qwen-14b": "good",
+  // Not a good fit:
+  "perplexity/r1-1776": "ok",
+  "anthropic/claude-3.7-sonnet": "great",
+  // Same as above, so skipping:
+  "anthropic/claude-3.7-sonnet:beta": "error",
+  // Expensive, slow, not the right thing...
+  "aion-labs/aion-1.0": "bad",
+  // Ditto on expense, but not quite as slow...
+  "allenai/llama-3.1-tulu-3-405b": "ok",
 };
 
 export type ModelType = {
