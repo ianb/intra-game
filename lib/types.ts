@@ -165,7 +165,7 @@ export type PersonScheduledEventType = {
   minuteLength: number;
 };
 
-/* Gemini types */
+/* LLM types */
 
 export type ChatType = {
   meta: ChatMetaType;
