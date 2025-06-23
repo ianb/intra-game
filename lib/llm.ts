@@ -1,20 +1,16 @@
+import { ModelType } from "@/components/modelselector";
+import { openrouterCode } from "@/components/openrouter";
 import { signal } from "@preact/signals-react";
+import { persistentSignal } from "./persistentsignal";
 import {
   GeminiChatType,
   GeminiHistoryType,
   GeminiModelType,
   LlmLogType,
 } from "./types";
-import OpenAI from "openai";
-import { ModelType } from "@/components/modelselector";
-import { persistentSignal } from "./persistentsignal";
-import { openrouterCode } from "@/components/openrouter";
 
-// export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro-exp-0827";
-// export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash-exp-0827";
 export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro";
 export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
-// export const DEFAULT_MODEL = DEFAULT_FLASH_MODEL;
 export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
 
 export const customEndpoint = persistentSignal<string | null>(
@@ -98,39 +94,57 @@ export async function chat(request: GeminiChatType) {
     if (customEndpoint.value) {
       response = await fetch(`${customEndpoint.value}/chat/completions`, {
         method: "POST",
-        body: JSON.stringify(convertRequest(request)),
-      });
-    } else if (process.env.NEXT_PUBLIC_USE_OPENAI) {
-      response = await fetch("/api/llm?openai=1", {
-        method: "POST",
-        body: JSON.stringify(convertRequest(request)),
-      });
-    } else if (openrouterModel.value && !openrouterCode.value) {
-      response = await fetch("/api/llm?openrouter=1", {
-        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          ...convertRequest(request),
-          model: openrouterModel.value.id,
-          key: openrouterCode.value,
+          model: openrouterModel.value?.id || request.model,
+          messages: [
+            {
+              role: "system",
+              content: request.systemInstruction || "",
+            },
+            ...request.history.map((h) => convertMessage(h)),
+            {
+              role: "user",
+              content: request.message,
+            },
+          ],
         }),
       });
-    } else if (openrouterModel.value && openrouterCode.value) {
+    } else {
+      if (!openrouterModel.value) {
+        throw new Error(
+          "No OpenRouter model selected. Please select a model first."
+        );
+      }
+      if (!openrouterCode.value) {
+        throw new Error(
+          "No OpenRouter API key found. Please connect to OpenRouter first."
+        );
+      }
       response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           "X-Title": "Intra",
           "HTTP-Referer": location.origin,
           Authorization: `Bearer ${openrouterCode.value}`,
         },
         body: JSON.stringify({
-          ...convertRequest(request),
           model: openrouterModel.value.id,
+          messages: [
+            {
+              role: "system",
+              content: request.systemInstruction || "",
+            },
+            ...request.history.map((h) => convertMessage(h)),
+            {
+              role: "user",
+              content: request.message,
+            },
+          ],
         }),
-      });
-    } else {
-      response = await fetch("/api/llm", {
-        method: "POST",
-        body: JSON.stringify(request),
       });
     }
     if (!response.ok) {
@@ -143,7 +157,7 @@ export async function chat(request: GeminiChatType) {
       if (msg && typeof msg === "string") {
         try {
           msg = JSON.parse(msg);
-        } catch (e) {}
+        } catch (_e) {}
       }
       if (!msg) {
         if (typeof json.error === "string") {
@@ -158,19 +172,12 @@ export async function chat(request: GeminiChatType) {
       lastLlmError.value = `${msg?.message || msg}`;
       throw new LlmServiceError(msg?.message || msg, json.error);
     }
-    if (!json.response && json.candidates && !json.choices) {
+    if (!json.choices || !json.choices[0]?.message?.content) {
       console.error("Bad Response", json);
-      if (json.candidates[0].finishReason === "SAFETY") {
-        throw new LlmSafetyError("Safety Issue", json.candidates);
-      }
-      lastLlmError.value = `Bad response: ${json?.candidates?.[0]?.finishReason || "unknown"}`;
-      throw new LlmError("Bad Response", json.candidates);
+      lastLlmError.value = `Bad response from LLM: no content in choices`;
+      throw new Error("Bad response from LLM: no content in choices");
     }
-    if (json.choices) {
-      text = json.choices[0].message.content;
-    } else {
-      text = json.response;
-    }
+    text = json.choices[0].message.content;
   } catch (e) {
     const newLog = {
       ...log,
@@ -203,28 +210,10 @@ function fixText(request: GeminiChatType) {
   return request;
 }
 
-function convertRequest(
-  request: GeminiChatType
-): OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming {
-  return {
-    model: "gpt-4o-mini", // request.model || DEFAULT_MODEL,
-    messages: [
-      {
-        role: "system",
-        content: request.systemInstruction || "",
-      },
-      ...request.history.map((h) => convertMessage(h)),
-      {
-        role: "user",
-        content: request.message,
-      },
-    ],
-  };
-}
-
-function convertMessage(
-  h: GeminiHistoryType
-): OpenAI.Chat.Completions.ChatCompletionMessageParam {
+function convertMessage(h: GeminiHistoryType): {
+  role: "user" | "assistant";
+  content: string;
+} {
   let text = h.text;
   if (h.parts) {
     text = h.parts.map((p) => p.text).join("\n");
@@ -281,7 +270,6 @@ function parseInstructions(system: string): {
   });
   return { repl, instructions };
 }
-
 function makeText(history: GeminiHistoryType): string {
   if (history.parts) {
     return history.parts.map((x) => x.text).join("");

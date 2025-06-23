@@ -1719,7 +1719,7 @@ export class PlayerClass extends Person<PlayerInputType> {
   assembleExaminePrompt(parameters: PlayerInputType): GeminiChatType {
     const examine = parameters.examine!;
     const room = this.world.entityRoom(this.id);
-    const entities = this.world
+    const _entities = this.world
       .entitiesInRoom(room!)
       .filter((x) => x.id === "Ama" || (!x.invisible && x.id !== this.id));
     const entityDescriptions = this.currentPeerEntitiesPrompt(parameters);

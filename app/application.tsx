@@ -1,32 +1,31 @@
+import { Clock } from "@/components/digitalnumerals";
 import { A, Button, CheckButton } from "@/components/input";
 import LlmLog, { clearLogs } from "@/components/llmlog";
+import { ModelSelector } from "@/components/modelselector";
+import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 import ScrollOnUpdate from "@/components/scrollonupdate";
+import { CalculatingThrobber } from "@/components/throbber";
+import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
+import { model, SaveListType } from "@/lib/game/model";
+import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
+import { customEndpoint, lastLlmError, openrouterModel } from "@/lib/llm";
+import { parseTags, serializeAttrs } from "@/lib/parsetags";
+import { persistentSignal } from "@/lib/persistentsignal";
 import {
   isPerson,
   isStoryActionAttempt,
   isStoryDescription,
   isStoryDialog,
   PersonScheduledEventType,
+  StoryEventType,
   StoryEventWithPositionsType,
 } from "@/lib/types";
-import { StoryEventType } from "@/lib/types";
-import { model, SaveListType } from "@/lib/game/model";
-import { parseTags, serializeAttrs } from "@/lib/parsetags";
-import { persistentSignal } from "@/lib/persistentsignal";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import compare from "just-compare";
 import sortBy from "just-sort-by";
-import React from "react";
-import { KeyboardEvent, useEffect, useRef } from "react";
+import React, { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { ZoomOverlay } from "@/components/zoom";
-import { Clock } from "@/components/digitalnumerals";
-import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
-import { ModelSelector, ModelType } from "@/components/modelselector";
-import { customEndpoint, lastLlmError, openrouterModel } from "@/lib/llm";
-import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
-import { CalculatingThrobber } from "@/components/throbber";
 
 const activeTab = persistentSignal("activeTab", "map");
 const showInternals = persistentSignal("showInternals", false);
@@ -437,7 +436,7 @@ function ChatLogMovement({
 
 function Input() {
   // FIX for a lack of using a signal for model.lastSuggestions
-  const v = model.updates.value;
+  const _v = model.updates.value;
   textareaRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (textareaRef.current && !model.runningSignal.value) {
@@ -640,8 +639,8 @@ function HeadsUpDisplay() {
 
 function Inventory() {
   // This is *based* on updates, so I'm using this to keep it updated:
-  const updates = model.updates.value;
-  const player = model.world.entities.player;
+  const _updates = model.updates.value;
+  const _player = model.world.entities.player;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Inventory</div>
@@ -652,8 +651,8 @@ function Inventory() {
 }
 
 function AccessControl() {
-  const updates = model.updates.value;
-  const player = model.world.entities.player;
+  const _updates = model.updates.value;
+  const _player = model.world.entities.player;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Access Control</div>
@@ -663,8 +662,8 @@ function AccessControl() {
 }
 
 function Blips() {
-  const updates = model.updates.value;
-  const player = model.world.entities.player;
+  const _updates = model.updates.value;
+  const _player = model.world.entities.player;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Blips</div>
@@ -793,7 +792,7 @@ function IntroList() {
     return cond ? " ✓" : "";
   }
   // Dependency thing...
-  const u = model.updates.value;
+  const _u = model.updates.value;
   const ama = model.world.entities.Ama;
   return (
     <div className="flex-1">
@@ -1089,7 +1088,7 @@ function ViewObject({
 
 function Time() {
   // To declare its dependent on this...
-  const v = model.updates.value;
+  const _v = model.updates.value;
   return (
     <Clock className="text-red-500" time={model.world.timeOfDay} bg="#1f2937" />
   );
@@ -1237,18 +1236,18 @@ function Settings() {
               </div>
             </>
           )}
-          <div className="mt-4">
-            Set a custom endpoint: <br />
-            <input
-              type="text"
-              className="bg-gray-800 text-white p-2 w-2/3"
-              value={customEndpoint.value || ""}
-              onInput={(e) => {
-                customEndpoint.value = (e.target as HTMLInputElement).value;
-              }}
-              placeholder="http://localhost:5001/v1"
-            />
-          </div>
+        </div>
+        <div className="mt-4">
+          Set a custom endpoint: <br />
+          <input
+            type="text"
+            className="bg-gray-800 text-white p-2 w-2/3"
+            value={customEndpoint.value || ""}
+            onInput={(e) => {
+              customEndpoint.value = (e.target as HTMLInputElement).value;
+            }}
+            placeholder="http://localhost:5001/v1"
+          />
         </div>
       </div>
       <div className="flex justify-center">
