@@ -1,20 +1,12 @@
 export class SoundtrackPlayer {
-  private _audioContext?: AudioContext;
   private currentAudio: HTMLAudioElement | null = null;
-  private currentGainNode: GainNode | null = null;
+  private nextAudio: HTMLAudioElement | null = null;
+  private fadeTimeout: NodeJS.Timeout | null = null;
   private paused: boolean = true;
-  private fadeDuration: number = 2; // Fade duration in seconds
+  private fadeDuration: number = 2000; // Fade duration in milliseconds
   private pendingUrl: string | null = null;
 
   constructor() {}
-
-  get audioContext() {
-    if (!this._audioContext) {
-      this._audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-    }
-    return this._audioContext;
-  }
 
   /**
    * Plays a new soundtrack from the given URL with a fade transition.
@@ -28,25 +20,17 @@ export class SoundtrackPlayer {
       return;
     }
 
-    // Fade out the current track if playing
-    if (this.currentGainNode) {
-      this.fadeOutAndStop(this.currentGainNode, this.currentAudio!);
+    // Clear any existing fade timeout
+    if (this.fadeTimeout) {
+      clearTimeout(this.fadeTimeout);
+      this.fadeTimeout = null;
     }
 
     if (url) {
       // Create a new Audio element
       const audioElement = new Audio(url);
       audioElement.loop = true;
-      // audioElement.crossOrigin = "use-credentials";
-
-      // Create a MediaElementSourceNode
-      const source = this.audioContext.createMediaElementSource(audioElement);
-
-      const gainNode = this.audioContext.createGain();
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime); // Start muted
-
-      // Connect the nodes
-      source.connect(gainNode).connect(this.audioContext.destination);
+      audioElement.volume = 0; // Start muted
 
       // Start playing the audio element
       try {
@@ -55,19 +39,22 @@ export class SoundtrackPlayer {
         console.error("Playback failed:", error);
       }
 
-      // Fade in the new track
-      gainNode.gain.linearRampToValueAtTime(
-        1,
-        this.audioContext.currentTime + this.fadeDuration
-      );
-
-      // Set as the current audio and gain node
-      this.currentAudio = audioElement;
-      this.currentGainNode = gainNode;
+      // If there's a current track, cross-fade between them
+      if (this.currentAudio) {
+        this.nextAudio = audioElement;
+        this.crossFade();
+      } else {
+        // No current track, just fade in the new one
+        this.currentAudio = audioElement;
+        this.fadeIn(audioElement);
+      }
     } else {
-      // No new track to play
+      // No new track to play, fade out current
+      if (this.currentAudio) {
+        this.fadeOut(this.currentAudio);
+      }
       this.currentAudio = null;
-      this.currentGainNode = null;
+      this.nextAudio = null;
     }
   }
 
@@ -79,6 +66,15 @@ export class SoundtrackPlayer {
 
     if (this.currentAudio) {
       this.currentAudio.pause();
+    }
+    if (this.nextAudio) {
+      this.nextAudio.pause();
+    }
+
+    // Clear any pending fade timeout
+    if (this.fadeTimeout) {
+      clearTimeout(this.fadeTimeout);
+      this.fadeTimeout = null;
     }
   }
 
@@ -95,35 +91,86 @@ export class SoundtrackPlayer {
   }
 
   /**
-   * Fades out the given audio and stops it.
-   * @param gainNode The gain node controlling the volume.
-   * @param audioElement The audio element to stop after fading out.
+   * Cross-fades between current and next audio tracks.
    */
-  private async fadeOutAndStop(
-    gainNode: GainNode,
-    audioElement: HTMLAudioElement
-  ): Promise<void> {
-    const currentTime = this.audioContext.currentTime;
-    gainNode.gain.cancelScheduledValues(currentTime);
-    gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime);
-    gainNode.gain.linearRampToValueAtTime(0, currentTime + this.fadeDuration);
+  private crossFade(): void {
+    if (!this.currentAudio || !this.nextAudio) return;
 
-    // Wait for the fade-out to complete
-    await this.wait(this.fadeDuration * 1000);
+    const steps = 20; // Number of volume steps for smooth fade
+    const stepDuration = this.fadeDuration / steps;
+    let step = 0;
 
-    // Stop the audio
-    audioElement.pause();
-    audioElement.currentTime = 0;
+    const fadeStep = () => {
+      if (step >= steps) {
+        // Fade complete
+        this.currentAudio!.pause();
+        this.currentAudio!.currentTime = 0;
+        this.currentAudio = this.nextAudio;
+        this.nextAudio = null;
+        return;
+      }
 
-    // Disconnect the nodes
-    gainNode.disconnect();
+      const progress = step / steps;
+      const currentVolume = 1 - progress;
+      const nextVolume = progress;
+
+      this.currentAudio!.volume = Math.max(0, currentVolume);
+      this.nextAudio!.volume = Math.min(1, nextVolume);
+
+      step++;
+      this.fadeTimeout = setTimeout(fadeStep, stepDuration);
+    };
+
+    fadeStep();
   }
 
   /**
-   * Utility function to wait for a given number of milliseconds.
-   * @param ms Milliseconds to wait.
+   * Fades in an audio track.
    */
-  private wait(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  private fadeIn(audio: HTMLAudioElement): void {
+    const steps = 20;
+    const stepDuration = this.fadeDuration / steps;
+    let step = 0;
+
+    const fadeStep = () => {
+      if (step >= steps) {
+        audio.volume = 1;
+        return;
+      }
+
+      const progress = step / steps;
+      audio.volume = progress;
+
+      step++;
+      this.fadeTimeout = setTimeout(fadeStep, stepDuration);
+    };
+
+    fadeStep();
+  }
+
+  /**
+   * Fades out an audio track and stops it.
+   */
+  private fadeOut(audio: HTMLAudioElement): void {
+    const steps = 20;
+    const stepDuration = this.fadeDuration / steps;
+    let step = 0;
+
+    const fadeStep = () => {
+      if (step >= steps) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 0;
+        return;
+      }
+
+      const progress = step / steps;
+      audio.volume = 1 - progress;
+
+      step++;
+      this.fadeTimeout = setTimeout(fadeStep, stepDuration);
+    };
+
+    fadeStep();
   }
 }

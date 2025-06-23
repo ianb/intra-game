@@ -511,7 +511,6 @@ function convertSoundtrackUrl(url: string) {
     return url;
   }
   return `https://assets.playintra.win/soundtrack/${url}`;
-  // return `/api/assets?url=${encodeURIComponent(`soundtrack/${url}`)}`;
 }
 
 export const model = new Model(entities);
