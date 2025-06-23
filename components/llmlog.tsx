@@ -47,7 +47,7 @@ function LogItem({ log, first }: { log: LlmLogType; first: boolean }) {
       >
         #{log.request.meta.index} {log.request.meta.title}{" "}
         <RequestTime start={log.request.meta.start!} end={log.end} />
-        {log.request.model === "gemini-1.5-flash" && " ⚡"}
+        {log.request.model === "flash" && " ⚡"}
       </div>
       <LlmError log={log} />
       {!actuallyHide && (

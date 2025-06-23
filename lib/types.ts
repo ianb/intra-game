@@ -169,7 +169,7 @@ export type PersonScheduledEventType = {
 
 export type GeminiChatType = {
   meta: GeminiMetaType;
-  model?: GeminiModelType;
+  model?: "flash" | "pro";
   history: GeminiHistoryType[];
   message: string;
   systemInstruction?: string;

@@ -1,17 +1,12 @@
 import { ModelType } from "@/components/modelselector";
 import { openrouterCode } from "@/components/openrouter";
 import { signal } from "@preact/signals-react";
-import { persistentSignal } from "./persistentsignal";
 import OpenAI from "openai";
-import {
-  GeminiChatType,
-  GeminiHistoryType,
-  GeminiModelType,
-  LlmLogType,
-} from "./types";
+import { persistentSignal } from "./persistentsignal";
+import { GeminiChatType, GeminiHistoryType, LlmLogType } from "./types";
 
-export const DEFAULT_PRO_MODEL: GeminiModelType = "gemini-1.5-pro";
-export const DEFAULT_FLASH_MODEL: GeminiModelType = "gemini-1.5-flash";
+export const DEFAULT_PRO_MODEL = "gemini-1.5-pro";
+export const DEFAULT_FLASH_MODEL = "gemini-1.5-flash";
 export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
 
 export const customEndpoint = persistentSignal<string | null>(
@@ -38,12 +33,13 @@ export async function chat(request: GeminiChatType) {
     : 0;
   request.meta.index = (lastIndex || 0) + 1;
   request.meta.start = Date.now();
+  let model: string = DEFAULT_MODEL;
   if (!request.model) {
-    request.model = DEFAULT_MODEL;
+    model = DEFAULT_MODEL;
   } else if (request.model === "pro") {
-    request.model = DEFAULT_PRO_MODEL;
+    model = DEFAULT_PRO_MODEL;
   } else if (request.model === "flash") {
-    request.model = DEFAULT_FLASH_MODEL;
+    model = DEFAULT_FLASH_MODEL;
   }
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
   let text = "";
@@ -94,7 +90,7 @@ export async function chat(request: GeminiChatType) {
     ];
 
     const completion = await openai.chat.completions.create({
-      model: openrouterModel.value?.id || request.model,
+      model: openrouterModel.value?.id || model,
       messages,
     });
 
