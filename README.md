@@ -6,9 +6,9 @@ The main branch is deployed on [intra-game.vercel.app](https://intra-game.vercel
 
 # Installation instructions
 
-This is a [Next.js](https://nextjs.org). It can be deployed on Vercel, run locally... or probably run elsewhere without too much trouble.
+This is a [Next.js](https://nextjs.org) application. It can be deployed on Vercel, run locally... or probably run elsewhere without too much trouble.
 
-To run this you'll need a [Google Gemini API key](https://aistudio.google.com/app/apikey) (you should be able to get one for free, and run this game using a free-tier API key). ([Why Gemini?](#why-gemini)) Put the key in `.env.local` as `GEMINI_KEY="..."`
+To run this you'll need to connect to [OpenRouter.ai](https://openrouter.ai/) to access various LLM models. You can use free models or connect your own API keys for paid models. The game will work with free models, though paid models generally provide better performance.
 
 The tech stack:
 
@@ -18,20 +18,17 @@ The tech stack:
 - Tailwind for styling
 - [Preact Signals](https://preactjs.com/guide/v10/signals/) for state management
 - Actual game state is stored in [browser localStorage](./lib/persistentsignal.ts)
-- [One wee little server endpoint](./app/api/llm/route.ts)
-- The Gemini LLM
+- [OpenRouter.ai](https://openrouter.ai/) for LLM access
+- Various LLM models (GPT-4, Claude, Gemini, etc.)
 
 ## Getting Started
 
-Sign up for a [Gemini API Key](https://aistudio.google.com/app/apikey) and put it in `.env.local`:
+1. Run `npm install` to install dependencies
+2. Run `npm run dev` to start the development server
+3. Open [http://localhost:3000](http://localhost:3000) with your browser
+4. In the game, go to Settings (⚙) and connect to OpenRouter.ai to access LLM models
 
-```
-GEMINI_KEY="your key"
-```
-
-Run `npm install` to install and `npm run dev` to run locally.
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The game will work with free models, but you can also connect your own API keys through OpenRouter for access to premium models.
 
 # Code
 
@@ -57,23 +54,17 @@ There's lots of LLM-based games that let the LLM hallucinate the entire story. B
 
 In this game I'm trying to have a bit of both. There's an underlying game model and a grounding to the story, but with opportunities for the user and LLM to navigate that together in imaginative ways.
 
-## Why Gemini?
+## Why OpenRouter?
 
-Entirely because Gemini offers a generous free tier, making it possible to share this application without much risk of large API charges.
+OpenRouter provides access to a wide variety of LLM models through a single API, including free options. This makes it easy to experiment with different models and find what works best for the game experience.
 
-Is Gemini good? Eh. It's no GPT or Claude. But it'll do.
-
-## Are Gemini safety controls a problem?
-
-Why yes they are, I'm glad ~~I~~ you asked!
-
-I am entirely ok with this being a PG-rated game. Unfortunately the safety controls often enforce something closer to a G rating. Even the most minor insults will trigger safety controls, such as "you are dumb." It's hard to get any characters to fight, or to get the narrator to describe anything but de-escalation... I'm mostly okay with this, but even attempting will often lead to a safety violation. Once I get to implementing the dance-off battle will Gemini thwart my attemps with its safety controls? Time will tell!
+The free tier models are quite capable for this type of game, and OpenRouter's unified interface makes it simple to switch between different providers.
 
 ## How does the LLM interaction work?
 
 In general the LLM should always output responses enclosed in tags. It's not "real" HTML or XML or any kind of markup, it's just ways to wrap different kinds of output that can appear in a single response.
 
-I deliberately did not use Tools or function calls for this. In part because Gemini isn't very good at them. But also the basic model of how a tool works isn't good for a game. The providers all generally expect:
+I deliberately did not use Tools or function calls for this. The basic model of how a tool works isn't good for a game. The providers all generally expect:
 
 1. Setup the situation as a prompt
 2. Get the LLM to emit one or more tool calls (and handling the LLM's reluctance to actually emit multiple calls)
@@ -104,4 +95,4 @@ I use Copilot and GPT extensively, but no large chunks are created independently
 
 ## Security?
 
-Because it all runs in the browser locally it's mostly fine... but it also means that there's a way to run arbitrary Gemini LLM calls with the deployed API key because the server isn't aware of what makes up a valid prompt or the state of any particular game. Pretty please don't abuse this. It's not even worth it, right? There's so many easier ways to run things on an LLM.
+Because it all runs in the browser locally it's mostly fine... but it also means that there's a way to run arbitrary LLM calls with the deployed API key because the server isn't aware of what makes up a valid prompt or the state of any particular game. Pretty please don't abuse this. It's not even worth it, right? There's so many easier ways to run things on an LLM.
