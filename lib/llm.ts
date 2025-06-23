@@ -2,6 +2,7 @@ import { ModelType } from "@/components/modelselector";
 import { openrouterCode } from "@/components/openrouter";
 import { signal } from "@preact/signals-react";
 import { persistentSignal } from "./persistentsignal";
+import OpenAI from "openai";
 import {
   GeminiChatType,
   GeminiHistoryType,
@@ -26,49 +27,6 @@ export const logSignal = signal<LlmLogType[]>([]);
 
 export const lastLlmError = signal<string | null>(null);
 
-export class LlmError extends Error {
-  candidates: any;
-
-  constructor(message: string, candidates: any) {
-    super(message);
-    this.candidates = candidates;
-  }
-
-  describe() {
-    const c = this.candidates[0];
-    const lines = [`Request was rejected due to: ${c.finishReason}`];
-    for (const item of c.safetyRatings) {
-      if (item.probability === "NEGLIGIBLE") {
-        continue;
-      }
-      lines.push(`  ${item.category}: prob ${item.probability}`);
-    }
-    return lines.join("\n");
-  }
-}
-
-export class LlmSafetyError extends LlmError {}
-
-export class LlmServiceError extends Error {
-  body: any;
-
-  constructor(message: string, body: any) {
-    if (typeof message !== "string") {
-      if ((message as any)?.error?.message) {
-        message = (message as any).error.message;
-      }
-    } else {
-      message = JSON.stringify(message);
-    }
-    super(message);
-    this.body = body;
-  }
-
-  toString() {
-    return JSON.stringify(this.body, null, 2);
-  }
-}
-
 export async function chat(request: GeminiChatType) {
   request = upliftInstructions(request);
   request = fixText(request);
@@ -90,29 +48,17 @@ export async function chat(request: GeminiChatType) {
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
   let text = "";
   try {
-    let response: Response;
+    let openai: OpenAI;
+
     if (customEndpoint.value) {
-      response = await fetch(`${customEndpoint.value}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: openrouterModel.value?.id || request.model,
-          messages: [
-            {
-              role: "system",
-              content: request.systemInstruction || "",
-            },
-            ...request.history.map((h) => convertMessage(h)),
-            {
-              role: "user",
-              content: request.message,
-            },
-          ],
-        }),
+      // Use custom endpoint
+      openai = new OpenAI({
+        baseURL: customEndpoint.value,
+        apiKey: "dummy", // Required but not used for custom endpoints
+        dangerouslyAllowBrowser: true,
       });
     } else {
+      // Use OpenRouter
       if (!openrouterModel.value) {
         throw new Error(
           "No OpenRouter model selected. Please select a model first."
@@ -123,61 +69,42 @@ export async function chat(request: GeminiChatType) {
           "No OpenRouter API key found. Please connect to OpenRouter first."
         );
       }
-      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+
+      openai = new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: openrouterCode.value,
+        defaultHeaders: {
           "X-Title": "Intra",
           "HTTP-Referer": location.origin,
-          Authorization: `Bearer ${openrouterCode.value}`,
         },
-        body: JSON.stringify({
-          model: openrouterModel.value.id,
-          messages: [
-            {
-              role: "system",
-              content: request.systemInstruction || "",
-            },
-            ...request.history.map((h) => convertMessage(h)),
-            {
-              role: "user",
-              content: request.message,
-            },
-          ],
-        }),
+        dangerouslyAllowBrowser: true,
       });
     }
-    if (!response.ok) {
-      lastLlmError.value = `LLM service error ${response.status}: ${response.url}`;
-      throw new Error(`HTTP ${response.status}: ${response.url}`);
-    }
-    const json = await response.json();
-    if (json.error) {
-      let msg: any = json.error?.message;
-      if (msg && typeof msg === "string") {
-        try {
-          msg = JSON.parse(msg);
-        } catch (_e) {}
-      }
-      if (!msg) {
-        if (typeof json.error === "string") {
-          msg = json.error;
-        } else {
-          msg = JSON.stringify(json.error);
-        }
-      }
-      if (typeof json.error === "object") {
-        json.error.message = msg;
-      }
-      lastLlmError.value = `${msg?.message || msg}`;
-      throw new LlmServiceError(msg?.message || msg, json.error);
-    }
-    if (!json.choices || !json.choices[0]?.message?.content) {
-      console.error("Bad Response", json);
+
+    const messages = [
+      {
+        role: "system" as const,
+        content: request.systemInstruction || "",
+      },
+      ...request.history.map((h) => convertMessage(h)),
+      {
+        role: "user" as const,
+        content: request.message,
+      },
+    ];
+
+    const completion = await openai.chat.completions.create({
+      model: openrouterModel.value?.id || request.model,
+      messages,
+    });
+
+    if (!completion.choices[0]?.message?.content) {
+      console.error("Bad Response", completion);
       lastLlmError.value = `Bad response from LLM: no content in choices`;
       throw new Error("Bad response from LLM: no content in choices");
     }
-    text = json.choices[0].message.content;
+
+    text = completion.choices[0].message.content;
   } catch (e) {
     const newLog = {
       ...log,

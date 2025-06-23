@@ -1,5 +1,5 @@
 import React from "react";
-import { chat, LlmSafetyError } from "../llm";
+import { chat } from "../llm";
 import { parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
 import {
@@ -457,29 +457,8 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     try {
       resp = await model.run(() => chat(prompt));
     } catch (e) {
-      if (e instanceof LlmSafetyError) {
-        const context = (parameters as any).input
-          ? `Input: ${JSON.stringify((parameters as any).input)}`
-          : `Parameters: ${JSON.stringify(parameters)}`;
-        const errorEvent: StoryEventType = {
-          id: this.id,
-          changes: {},
-          actions: [],
-          totalTime: 0,
-          roomId: "Void",
-          llmTitle: prompt.meta.title,
-          llmResponse: "",
-          llmParameters: parameters,
-          llmError: {
-            context,
-            description: e.describe(),
-          },
-        };
-        model.addStoryEvent(errorEvent);
-        return;
-      } else {
-        throw e;
-      }
+      // No special handling for LlmSafetyError, just rethrow
+      throw e;
     }
     resp = fixupText(resp);
 
@@ -1244,8 +1223,8 @@ export class AmaClass extends Person<AmaParametersType> {
               The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
 
               Static. Faces blur.
-              The interviewer's voice cracks: “But after what happened with AI... are we really safe now?”
-              The Neuralis rep smiles, tight-lipped. There's a pause. “We're... beyond that now. Things are... different.” A flicker in the eyes. “It's not something to worry about anymore.”
+              The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
+              The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
 
               Their hands shift, restless.
               Static pulses—
