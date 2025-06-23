@@ -83,9 +83,6 @@ function LlmRequest({
 }) {
   return (
     <div className={finished ? "" : "bg-blue-950"}>
-      {request.systemInstruction && (
-        <LlmRequestItem role="system" content={request.systemInstruction} />
-      )}
       {request.messages.map((message, index) => (
         <LlmRequestItem
           key={index}

@@ -76,13 +76,7 @@ export async function chat(request: ChatType) {
       });
     }
 
-    const messages = [
-      {
-        role: "system" as const,
-        content: request.systemInstruction || "",
-      },
-      ...request.messages,
-    ];
+    const messages = request.messages;
 
     const completion = await openai.chat.completions.create({
       model: openrouterModel.value?.id || model,
@@ -116,32 +110,62 @@ export async function chat(request: ChatType) {
 }
 
 function upliftInstructions(chat: ChatType): ChatType {
-  const system = chat.systemInstruction || "";
   const newChat = { ...chat };
-  // if (/<insert-system\s*\/?>/i.test(system)) {
-  //   // FIXME: should warn if are instructions but no <insert-system/>
-  //   return chat;
-  // }
-  const allInstructions = [];
-  const { repl, instructions } = parseInstructions(system);
-  newChat.systemInstruction = repl;
-  allInstructions.push(...instructions);
-  newChat.messages = newChat.messages.map((history) => {
-    const { repl, instructions } = parseInstructions(history.content);
-    allInstructions.push(...instructions);
-    return { ...history, content: repl };
+  const allInstructions: string[] = [];
+
+  // Process system messages for instructions
+  newChat.messages = newChat.messages.map((message) => {
+    if (message.role === "system") {
+      const { repl, instructions } = parseInstructions(message.content);
+      allInstructions.push(...instructions);
+      return { ...message, content: repl };
+    }
+    return message;
   });
-  if (
-    allInstructions.length > 0 &&
-    !/<insert-system\s*\/>/i.test(newChat.systemInstruction)
-  ) {
-    throw new Error("Instructions were not inserted into system instruction");
+
+  // Process user and assistant messages for instructions
+  newChat.messages = newChat.messages.map((message) => {
+    if (message.role === "user" || message.role === "assistant") {
+      const { repl, instructions } = parseInstructions(message.content);
+      allInstructions.push(...instructions);
+      return { ...message, content: repl };
+    }
+    return message;
+  });
+
+  // If we found instructions, insert them into the first system message or create one
+  if (allInstructions.length > 0) {
+    const systemMessages = newChat.messages.filter(
+      (msg) => msg.role === "system"
+    );
+    if (systemMessages.length > 0) {
+      // Insert into the first system message
+      const firstSystemIndex = newChat.messages.findIndex(
+        (msg) => msg.role === "system"
+      );
+      const firstSystem = newChat.messages[firstSystemIndex];
+      if (firstSystem.content.includes("<insert-system />")) {
+        newChat.messages[firstSystemIndex] = {
+          ...firstSystem,
+          content: firstSystem.content.replace(
+            /<insert-system\s*\/>/i,
+            allInstructions.join("\n")
+          ),
+        };
+      } else {
+        throw new Error(
+          "Instructions were not inserted into system instruction"
+        );
+      }
+    } else {
+      // Create a new system message at the beginning
+      newChat.messages.unshift({
+        role: "system",
+        content: allInstructions.join("\n"),
+      });
+    }
   }
-  const newSystem = newChat.systemInstruction.replace(
-    /<insert-system\s*\/>/i,
-    allInstructions.join("\n")
-  );
-  newChat.systemInstruction = newSystem;
+
   return newChat;
 }
 

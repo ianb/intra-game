@@ -864,45 +864,48 @@ export class Person<
       meta: {
         title: `prompt ${this.id}`,
       },
-      systemInstruction: tmpl`
-      You are a computer running a text adventure game. You will respond with tags to represent game action.
-
-      In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
-
-      The user is playing under the name "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}); the id of the player is "player".
-
-      The time is ${timeAsString(this.world.timestampMinutes)}
-      ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
-
-      <characterDescription>
-      ${this.description}
-      </characterDescription>
-
-      <roleplayInstructions>
-      In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with the player ${this.world.entities.player.name} and pay attention to what ${this.world.entities.player.heshe} says.
-
-      [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to the player ${this.world.entities.player.name}. There aren't many new people in Intra, so this might be a big deal.]]
-
-      ${this.roleplayInstructions}
-
-      ${promptForPerson}
-      </roleplayInstructions>
-
-      ${this.activityDescription(parameters)}
-
-      The other people in the room ${this.myRoom().name} are:
-      ${this.currentPeoplePrompt(parameters)}
-
-      [[This character has some knowledge of some mysteries; follow these additional instructions:
-      """
-      ${mysteryHints}
-      """]]
-
-      ${this.additionalSystemInstructions(parameters)}
-
-      <insert-system />
-      `,
       messages: [
+        {
+          role: "system",
+          content: tmpl`
+          You are a computer running a text adventure game. You will respond with tags to represent game action.
+
+          In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
+
+          The user is playing under the name "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}); the id of the player is "player".
+
+          The time is ${timeAsString(this.world.timestampMinutes)}
+          ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
+
+          <characterDescription>
+          ${this.description}
+          </characterDescription>
+
+          <roleplayInstructions>
+          In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with the player ${this.world.entities.player.name} and pay attention to what ${this.world.entities.player.heshe} says.
+
+          [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to the player ${this.world.entities.player.name}. There aren't many new people in Intra, so this might be a big deal.]]
+
+          ${this.roleplayInstructions}
+
+          ${promptForPerson}
+          </roleplayInstructions>
+
+          ${this.activityDescription(parameters)}
+
+          The other people in the room ${this.myRoom().name} are:
+          ${this.currentPeoplePrompt(parameters)}
+
+          [[This character has some knowledge of some mysteries; follow these additional instructions:
+          """
+          ${mysteryHints}
+          """]]
+
+          ${this.additionalSystemInstructions(parameters)}
+
+          <insert-system />
+          `,
+        },
         ...this.historyForEntity(parameters, { limit: 10 }),
         {
           role: "user",
@@ -1588,8 +1591,8 @@ export class PlayerClass extends Person<PlayerInputType> {
     } else if (parameters.actionAttempt) {
       return this.assembleActionPrompt(parameters);
     }
-    const lastTo = this.lastSpokeTo()?.id || null;
-    const room = this.myRoom();
+    const room = this.world.entityRoom(this.id);
+    const lastTo = this.lastSpokeTo()?.id || "";
     const shouldSleep =
       this.world.entities.Ama.playerShouldBeInBed() &&
       this.world.entities.Ama.playerIsInBed();
@@ -1599,69 +1602,72 @@ export class PlayerClass extends Person<PlayerInputType> {
       meta: {
         title: "player input",
       },
-      systemInstruction: tmpl`
-      You are a computer assisting in running a text adventure game.
-
-      The player ("${this.name}", id: "player") is a character in the game, controlled by the user. The user has entered a command, and you will be interpreting that command in the context of the game.
-
-      The player is located in: ${this.currentLocationPrompt(parameters)}
-
-      The player may go to any of these location:
-      ${this.exitsPrompt(parameters)}
-
-      These people are in the immediate area:
-      ${this.currentPeoplePrompt(parameters)}
-
-      You will respond with tags to represent the player action:
-
-      Move to a new location:
-      <goto>locationId</goto>
-
-      Example:
-      \`leave here\`
-      <goto>${room.exits.length ? room.exits[0].roomId : "A_Room"}</goto>
-      \`Go to ${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}\`
-      <goto>${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}</goto>
-
-      Examine something (an object, person, the environment); respond with this tag only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
-      <examine>look at thing</examine>
-
-      \`examine the room\`
-      <examine>examine the room</example>
-      \`inspect the door\`
-      <examine>inspect the door</examine>
-      [[\`look at ${this.lastSpokeTo()?.name}\`
-      <examine>look at ${lastTo}</examine>]]
-
-      The most likely case is that the player is speaking. For instance if they type \`hello\` you will respond with:
-
-      <dialog character="${this.name}">Hello!</dialog>
-
-      If you can determine _who_ the player is speaking to, such as if they type "say hello to ${lastTo || "Jim"}" or "${lastTo || "Jim"}, hello" you can respond with:
-
-      <dialog character="${this.name}" to="${lastTo || "Jim"}">Hello</dialog>
-
-      [[The player last spoke directly to ${lastTo}, so it's very likely the player is still speaking to them.]]
-
-      If the user indicates some general speech (like typing "compliment") then you can expand this to specific speech like:
-
-      <dialog character="${this.name}">You look great today!</dialog>
-
-      IF AND ONLY IF THE USER INDICATES AN ACTION (that is not covered by <goto></goto>) you may describe the ATTEMPT at the action like:
-
-      <action minutes="10">${this.name} attempts to open the door.</action>
-
-      Do not describe the conclusion or result of the action!
-
-      For example:
-      \`buy a drink\`
-      <action minutes="5">${this.name} looks for a vending machine to buy a drink.</action>
-      \`sleep in bed\`
-      <action minutes="90">${this.name} lays down in bed and tries to sleep.</action>
-
-      Generally if the input starts with \`>\` it is an action, and if it starts with \`"\` it is dialog.
-      `,
       messages: [
+        {
+          role: "system",
+          content: tmpl`
+          You are a computer assisting in running a text adventure game.
+
+          The player ("${this.name}", id: "player") is a character in the game, controlled by the user. The user has entered a command, and you will be interpreting that command in the context of the game.
+
+          The player is located in: ${this.currentLocationPrompt(parameters)}
+
+          The player may go to any of these location:
+          ${this.exitsPrompt(parameters)}
+
+          These people are in the immediate area:
+          ${this.currentPeoplePrompt(parameters)}
+
+          You will respond with tags to represent the player action:
+
+          Move to a new location:
+          <goto>locationId</goto>
+
+          Example:
+          \`leave here\`
+          <goto>${room.exits.length ? room.exits[0].roomId : "A_Room"}</goto>
+          \`Go to ${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}\`
+          <goto>${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}</goto>
+
+          Examine something (an object, person, the environment); respond with this tag only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
+          <examine>look at thing</examine>
+
+          \`examine the room\`
+          <examine>examine the room</example>
+          \`inspect the door\`
+          <examine>inspect the door</examine>
+          [[\`look at ${this.lastSpokeTo()?.name}\`
+          <examine>look at ${lastTo}</examine>]]
+
+          The most likely case is that the player is speaking. For instance if they type \`hello\` you will respond with:
+
+          <dialog character="${this.name}">Hello!</dialog>
+
+          If you can determine _who_ the player is speaking to, such as if they type "say hello to ${lastTo || "Jim"}" or "${lastTo || "Jim"}, hello" you can respond with:
+
+          <dialog character="${this.name}" to="${lastTo || "Jim"}">Hello</dialog>
+
+          [[The player last spoke directly to ${lastTo}, so it's very likely the player is still speaking to them.]]
+
+          If the user indicates some general speech (like typing "compliment") then you can expand this to specific speech like:
+
+          <dialog character="${this.name}">You look great today!</dialog>
+
+          IF AND ONLY IF THE USER INDICATES AN ACTION (that is not covered by <goto></goto>) you may describe the ATTEMPT at the action like:
+
+          <action minutes="10">${this.name} attempts to open the door.</action>
+
+          Do not describe the conclusion or result of the action!
+
+          For example:
+          \`buy a drink\`
+          <action minutes="5">${this.name} looks for a vending machine to buy a drink.</action>
+          \`sleep in bed\`
+          <action minutes="90">${this.name} lays down in bed and tries to sleep.</action>
+
+          Generally if the input starts with \`>\` it is an action, and if it starts with \`"\` it is dialog.
+          `,
+        },
         ...this.historyForEntity(parameters, { limit: 3 }),
         {
           role: "user",
@@ -1709,26 +1715,29 @@ export class PlayerClass extends Person<PlayerInputType> {
       meta: {
         title: "player examine",
       },
-      systemInstruction: tmpl`
-      You are a computer assisting in running a text adventure game.
-
-      The player ("${this.name}") is a character in the game, controlled by the user.
-
-      The player is located in: ${this.currentLocationPrompt(parameters)}
-
-      The room is described as:
-      ${room?.description}
-
-      ${room?.myMysteryHints()}
-
-      These people and entities are in the room:
-      ${entityDescriptions}
-
-      There are no people except those listed above (and the player ${this.name}).
-
-      In this step YOUR ONLY JOB is to describe the object or space that the player is examining. If the player is not specific then describe the room generally.
-      `,
       messages: [
+        {
+          role: "system",
+          content: tmpl`
+          You are a computer assisting in running a text adventure game.
+
+          The player ("${this.name}") is a character in the game, controlled by the user.
+
+          The player is located in: ${this.currentLocationPrompt(parameters)}
+
+          The room is described as:
+          ${room?.description}
+
+          ${room?.myMysteryHints()}
+
+          These people and entities are in the room:
+          ${entityDescriptions}
+
+          There are no people except those listed above (and the player ${this.name}).
+
+          In this step YOUR ONLY JOB is to describe the object or space that the player is examining. If the player is not specific then describe the room generally.
+          `,
+        },
         ...this.historyForEntity(parameters, { limit: 4 }),
         {
           role: "user",
@@ -1761,19 +1770,22 @@ export class PlayerClass extends Person<PlayerInputType> {
       meta: {
         title: "player move",
       },
-      systemInstruction: tmpl`
-      You are a computer assisting in running a text adventure game.
-
-      The player ("${this.name}") is a character in the game, controlled by the user.
-
-      The player is located in: ${this.currentLocationPrompt(parameters)}
-
-      The player may go to any of these location:
-      ${this.exitsPrompt(parameters)}
-
-      In this step YOUR ONLY JOB is to describe the outcome of the player's movement attempt. If the player is not allowed to move to the location, you should describe why.
-      `,
       messages: [
+        {
+          role: "system",
+          content: tmpl`
+          You are a computer assisting in running a text adventure game.
+
+          The player ("${this.name}") is a character in the game, controlled by the user.
+
+          The player is located in: ${this.currentLocationPrompt(parameters)}
+
+          The player may go to any of these location:
+          ${this.exitsPrompt(parameters)}
+
+          In this step YOUR ONLY JOB is to describe the outcome of the player's movement attempt. If the player is not allowed to move to the location, you should describe why.
+          `,
+        },
         ...this.historyForEntity(parameters, { limit: 4 }),
         {
           role: "user",
@@ -1795,7 +1807,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           Otherwise respond with:
 
-          <trigger character="Ama"></trigger>
+          <goto success="false">${parameters.attemptMoveTo}</goto>
           `,
         },
       ],
@@ -2058,20 +2070,23 @@ export class PlayerClass extends Person<PlayerInputType> {
         title: "describe people",
       },
       model: "flash",
-      systemInstruction: tmpl`
-      You are helping run a text adventure game.
-
-      The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
-
-      You will be given a list of people and the activities they are doing. You will respond with a series of lines that describe everything that is happening (in about one sentence/line per person). You may group together people doing similar activities. There are no people in the room except those listed.
-
-      Make sure to include all the names: ${people.map((x) => x.name).join(", ")} (you may reorder them to improve the flow of the paragraph)
-
-      You will describe the people from the perspect of the player ("${this.name}") who is in the room with them.
-
-      Keep the complete result under 500 characters.
-      `,
       messages: [
+        {
+          role: "system",
+          content: tmpl`
+          You are helping run a text adventure game.
+
+          The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
+
+          You will be given a list of people and the activities they are doing. You will respond with a series of lines that describe everything that is happening (in about one sentence/line per person). You may group together people doing similar activities. There are no people in the room except those listed.
+
+          Make sure to include all the names: ${people.map((x) => x.name).join(", ")} (you may reorder them to improve the flow of the paragraph)
+
+          You will describe the people from the perspect of the player ("${this.name}") who is in the room with them.
+
+          Keep the complete result under 500 characters.
+          `,
+        },
         {
           role: "user",
           content: sourceLines.join("\n"),

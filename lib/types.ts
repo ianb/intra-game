@@ -171,7 +171,6 @@ export type ChatType = {
   meta: ChatMetaType;
   model?: string;
   messages: MessageType[];
-  systemInstruction?: string;
 };
 
 export type ChatMetaType = {
