@@ -1,5 +1,6 @@
 // Import necessary libraries
 import { signal, useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import shuffle from "just-shuffle";
 import { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
@@ -32,7 +33,7 @@ const phrases = [
   "Sanitizing existential doubts…",
   "Broadcasting motivational thought loop…",
   "Double-checking recycled happiness…",
-  "Applying ‘eternal optimism’ patches…",
+  "Applying 'eternal optimism' patches…",
   "Confirming non-essential routines…",
   "Exaggerating trivial infractions…",
   "Establishing new morale quotas…",
@@ -131,6 +132,7 @@ const colors = [
 ];
 
 export function CalculatingThrobber() {
+  useSignals();
   // Signals for frame, phrase, color indices, and opacity
   const frameIndex = useSignal(0);
   const colorIndex = useSignal(Math.floor(Math.random() * colors.length));

@@ -1,9 +1,11 @@
 import { logSignal } from "@/lib/llm";
 import { ChatType, LlmLogType } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import { forwardRef, useEffect, useRef } from "react";
 
 export default function LlmLog() {
+  useSignals();
   return (
     <div className="text-xs">
       {logSignal.value.map((log, i) => (
@@ -14,6 +16,7 @@ export default function LlmLog() {
 }
 
 function LogItem({ log, first }: { log: LlmLogType; first: boolean }) {
+  useSignals();
   const responseRef = useRef<HTMLPreElement>(null);
   const hide = useSignal<boolean | null>(null);
   const actuallyHide = hide.value === null ? !first : hide.value;
@@ -64,6 +67,7 @@ function LogItem({ log, first }: { log: LlmLogType; first: boolean }) {
 }
 
 function LlmError({ log }: { log: LlmLogType }) {
+  useSignals();
   if (!log.errorMessage) {
     return null;
   }
@@ -81,6 +85,7 @@ function LlmRequest({
   request: ChatType;
   finished: boolean;
 }) {
+  useSignals();
   return (
     <div className={finished ? "" : "bg-blue-950"}>
       {request.messages.map((message, index) => (
@@ -95,6 +100,7 @@ function LlmRequest({
 }
 
 function LlmRequestItem({ role, content }: { role: string; content: string }) {
+  useSignals();
   return (
     <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-2">
       <strong className="text-cyan-300">{role}:</strong> {content}
@@ -104,6 +110,7 @@ function LlmRequestItem({ role, content }: { role: string; content: string }) {
 
 const LlmResponse = forwardRef<HTMLPreElement, { response?: string }>(
   ({ response }, ref) => {
+    useSignals();
     if (!response) {
       return null;
     }
@@ -121,6 +128,7 @@ const LlmResponse = forwardRef<HTMLPreElement, { response?: string }>(
 LlmResponse.displayName = "LlmResponse";
 
 function RequestTime({ start, end }: { start: number; end?: number }) {
+  useSignals();
   if (end) {
     return <span>{timeElapsed(end - start)}</span>;
   }
@@ -128,6 +136,7 @@ function RequestTime({ start, end }: { start: number; end?: number }) {
 }
 
 function RequestCountdown({ start }: { start: number }) {
+  useSignals();
   const elapsed = useSignal(Date.now() - start);
   useEffect(() => {
     const interval = setInterval(() => {

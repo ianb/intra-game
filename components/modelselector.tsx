@@ -1,5 +1,6 @@
-import { persistentSignal, SignalType } from "@/lib/persistentsignal";
+import { SignalType } from "@/lib/persistentsignal";
 import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import sortBy from "just-sort-by";
 import { useEffect } from "react";
 
@@ -446,6 +447,7 @@ export function ModelSelector({
   signal: SignalType<ModelType | undefined | null>;
   freeOnly: boolean;
 }) {
+  useSignals();
   const availableModels = useSignal<ModelType[] | null>(null);
   const copying = useSignal(false);
   useEffect(() => {

@@ -1,3 +1,6 @@
+import { useSignals } from "@preact/signals-react/runtime";
+import React from "react";
+
 const DIGIT_SEGMENTS = {
   "0": "abcdef",
   "1": "bc",
@@ -20,6 +23,7 @@ export function Clock({
   className?: string;
   bg: string;
 }) {
+  useSignals();
   return (
     <span className={className}>
       {Array.from(time).map((c, i) => {
@@ -104,6 +108,7 @@ function DigitalColon({ ...props }: React.SVGProps<SVGSVGElement>) {
 }
 
 function DigitalAM({ ...props }: React.SVGProps<SVGSVGElement>) {
+  useSignals();
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

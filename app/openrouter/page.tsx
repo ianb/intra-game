@@ -1,10 +1,12 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { openrouterCode } from "@/components/openrouter";
+import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
 import { Suspense } from "react";
 
 export default function Page() {
+  useSignals();
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <HandleCode />
@@ -13,6 +15,7 @@ export default function Page() {
 }
 
 function HandleCode() {
+  useSignals();
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
   useEffect(() => {

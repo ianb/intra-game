@@ -1,4 +1,5 @@
 import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import React, { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -11,6 +12,7 @@ export function ZoomOverlay({
   className?: string;
   children: React.ReactNode;
 }) {
+  useSignals();
   const handleBackgroundClick = () => {
     onDone();
   };
@@ -54,6 +56,7 @@ export function ZoomOverlay({
 }
 
 export function ZoomControl({ children }: { children: React.ReactNode }) {
+  useSignals();
   const opened = useSignal(false);
   return (
     <span>

@@ -1,4 +1,5 @@
 import { persistentSignal } from "@/lib/persistentsignal";
+import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
 
 const thisOrigin = typeof window !== "undefined" ? window.location.origin : "";
@@ -13,7 +14,8 @@ export const openrouterCode = persistentSignal<string | null>(
 );
 
 export function OpenRouterConnect() {
-  const code = openrouterCode.value;
+  useSignals();
+  const _code = openrouterCode.value;
   useEffect(() => {
     const code = setInterval(() => {
       (openrouterCode as any).refresh();

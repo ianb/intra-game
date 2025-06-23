@@ -22,6 +22,7 @@ import {
   StoryEventWithPositionsType,
 } from "@/lib/types";
 import { effect, signal, useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import compare from "just-compare";
 import sortBy from "just-sort-by";
 import React, { KeyboardEvent, useEffect, useRef } from "react";
@@ -45,6 +46,7 @@ effect(() => {
 let textareaRef: React.RefObject<HTMLTextAreaElement>;
 
 export default function Home() {
+  useSignals();
   useEffect(() => {
     model.checkLaunch();
   }, []);
@@ -140,6 +142,7 @@ export default function Home() {
 }
 
 function ChatLog() {
+  useSignals();
   return (
     <div>
       {model.updatesWithPositions.value.map((eventPos, i) => (
@@ -167,6 +170,7 @@ function ChatLog() {
 }
 
 function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
+  useSignals();
   const update = eventPos.event;
   return (
     <>
@@ -194,6 +198,7 @@ function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
 }
 
 function ChatLogStateUpdate({ update }: { update: StoryEventType }) {
+  useSignals();
   function formatSchedule(schedule: PersonScheduledEventType[]) {
     if (!schedule || schedule.length === 0) {
       return "no schedule";
@@ -228,6 +233,7 @@ function ChatLogStateUpdate({ update }: { update: StoryEventType }) {
 }
 
 function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
+  useSignals();
   const children: React.ReactNode[] = [];
   if (showInternals.value && update.llmResponse) {
     const tags = parseTags(update.llmResponse);
@@ -383,6 +389,7 @@ function ChatLogMovement({
 }: {
   eventPos: StoryEventWithPositionsType;
 }) {
+  useSignals();
   const children: React.ReactNode[] = [];
   const playerPos = eventPos.positions.get("player");
   for (const [entityId, changes] of Object.entries(eventPos.event.changes)) {
@@ -435,6 +442,7 @@ function ChatLogMovement({
 }
 
 function Input() {
+  useSignals();
   // FIX for a lack of using a signal for model.lastSuggestions
   const _v = model.updates.value;
   textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -442,6 +450,7 @@ function Input() {
     if (textareaRef.current && !model.runningSignal.value) {
       textareaRef.current.focus();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model.runningSignal.value]);
   async function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
@@ -527,6 +536,7 @@ function Input() {
 }
 
 function HeadsUpDisplay() {
+  useSignals();
   const activeClass = "text-black bg-gray-100 cursor-pointer";
   const inactiveClass = "cursor-pointer";
   const showLogs = true; // Could be based on showInternals or something, but I don't want it to be
@@ -638,6 +648,7 @@ function HeadsUpDisplay() {
 }
 
 function Inventory() {
+  useSignals();
   // This is *based* on updates, so I'm using this to keep it updated:
   const _updates = model.updates.value;
   const _player = model.world.entities.player;
@@ -651,6 +662,7 @@ function Inventory() {
 }
 
 function AccessControl() {
+  useSignals();
   const _updates = model.updates.value;
   const _player = model.world.entities.player;
   return (
@@ -662,6 +674,7 @@ function AccessControl() {
 }
 
 function Blips() {
+  useSignals();
   const _updates = model.updates.value;
   const _player = model.world.entities.player;
   return (
@@ -673,6 +686,7 @@ function Blips() {
 }
 
 function Controls() {
+  useSignals();
   const showSave = useSignal(false);
   const showLoad = useSignal(false);
   return (
@@ -722,6 +736,7 @@ function Controls() {
 }
 
 function NormalControls() {
+  useSignals();
   const room = model.world.entityRoom("player")!;
   // FIXME: actually collect the people:
   const folks: Person[] = model.world
@@ -785,6 +800,7 @@ function NormalControls() {
 }
 
 function IntroList() {
+  useSignals();
   function checkText(cond: boolean) {
     return cond ? "[x]" : "[ ]";
   }
@@ -816,6 +832,7 @@ function IntroList() {
 }
 
 function ExitList({ room }: { room: Room }) {
+  useSignals();
   async function onGoToRoom(room: Room, exit: Exit) {
     if (model.runningSignal.value) {
       return;
@@ -855,6 +872,7 @@ function ExitList({ room }: { room: Room }) {
 }
 
 function SaveControls({ onDone }: { onDone: () => void }) {
+  useSignals();
   const proposedTitle = useSignal("");
   useEffect(() => {
     model.proposeTitle().then((title) => {
@@ -886,6 +904,7 @@ function SaveControls({ onDone }: { onDone: () => void }) {
 }
 
 function LoadControls({ onDone }: { onDone: () => void }) {
+  useSignals();
   const saves = useSignal<SaveListType[]>([]);
   useEffect(() => {
     refresh();
@@ -943,6 +962,7 @@ function LoadControls({ onDone }: { onDone: () => void }) {
 }
 
 function Map() {
+  useSignals();
   const zoomed = useSignal(false);
   const g = model.world.asGraphviz(revealMap.value);
   const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
@@ -976,6 +996,7 @@ function Map() {
 }
 
 function Mysteries() {
+  useSignals();
   const mysteries = model.world.unveiledMysteries();
   return (
     <div className="flex-1 p-4 text-sm">
@@ -1001,6 +1022,7 @@ function Mysteries() {
 }
 
 function ViewObjects() {
+  useSignals();
   const idList = model.updates.value
     .map((update) => Object.keys(update.changes))
     .flat();
@@ -1041,6 +1063,7 @@ function ViewObject({
   entity: Entity;
   updates: StoryEventType[];
 }) {
+  useSignals();
   const hide = useSignal(true);
   const lines = [];
   for (const [key, value] of Object.entries(entity)) {
@@ -1087,8 +1110,9 @@ function ViewObject({
 }
 
 function Time() {
+  useSignals();
   // To declare its dependent on this...
-  const _v = model.updates.value;
+  const _updates = model.updates.value;
   return (
     <Clock className="text-red-500" time={model.world.timeOfDay} bg="#1f2937" />
   );
@@ -1103,6 +1127,7 @@ function TimePeriod({
   limit?: number;
   className?: string;
 }) {
+  useSignals();
   if (minutes === undefined) {
     return null;
   }
@@ -1125,6 +1150,7 @@ function TimePeriod({
 }
 
 function Help() {
+  useSignals();
   return (
     <div className="w-full h-full bg-blue-900 text-white py-4 px-8 border-white border-8 overflow-scroll">
       <div className="flex justify-between items-center mb-4">
@@ -1190,6 +1216,7 @@ function Help() {
 }
 
 function Settings() {
+  useSignals();
   return (
     <div className="w-full h-full bg-blue-900 text-white py-4 px-8 border-white border-8 overflow-scroll flex flex-col">
       <div className="flex justify-center mb-4">Settings</div>
@@ -1275,6 +1302,7 @@ const CLOCK_CHARS = {
 };
 
 function ColorizedText({ text }: { text: string }) {
+  useSignals();
   if (!text) {
     return null;
   }

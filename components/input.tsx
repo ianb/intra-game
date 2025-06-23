@@ -1,4 +1,5 @@
 import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { SignalType } from "@/lib/persistentsignal";
@@ -11,6 +12,7 @@ export function Button({
 }: {
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  useSignals();
   const cls = twMerge("bg-green-600 text-white p-2", className);
   const error = useSignal<Error | null>(null);
   const running = useSignal(false);
@@ -60,6 +62,7 @@ export function CheckButton({
   onClass?: string;
   offClass?: string;
 }) {
+  useSignals();
   onClass = onClass || "bg-green-600 border border-green-700 p-1";
   offClass = offClass || "bg-green-950 border border-green-700 p-1";
   const cls = twMerge(className, signal.value ? onClass : offClass);
@@ -80,6 +83,7 @@ export function WithBlinkingCursor({
 }: {
   children: React.ReactNode;
 }) {
+  useSignals();
   return (
     <span>
       &nbsp;{children}
@@ -93,6 +97,7 @@ export function A({
   className,
   ...props
 }: { blank?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  useSignals();
   const p = { ...props };
   if (blank) {
     p.target = "_blank";

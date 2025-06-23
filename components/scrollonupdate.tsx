@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 
 type ScrollOnUpdateProps = {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export default function ScrollOnUpdate({
   watch3,
   ...props
 }: ScrollOnUpdateProps) {
+  useSignals();
   const firstScroll = useSignal(true);
   const ref = useRef<HTMLDivElement>(null);
   function scrollDown() {
