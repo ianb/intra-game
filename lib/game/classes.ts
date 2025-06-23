@@ -1,34 +1,34 @@
+import { WithBlinkingCursor } from "@/components/input";
+import clone from "just-clone";
 import React from "react";
 import { chat } from "../llm";
 import { parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
 import {
-  ActionRequestType,
-  ChangesType,
-  ChangeType,
+  ChatType,
   EntityId,
-  GeminiChatType,
-  GeminiHistoryType,
   isPerson,
   isPromptRequest,
   isRoom,
   isStoryActionAttempt,
   isStoryDescription,
   isStoryDialog,
+  MessageType,
   PersonScheduledEventType,
   PersonScheduleTemplateType,
   ScheduleId,
   StoryActionType,
   StoryEventType,
   StoryEventWithPositionsType,
+  type ActionRequestType,
+  type ChangesType,
+  type ChangeType,
 } from "../types";
 import type { Model } from "./model";
-import { WithBlinkingCursor } from "@/components/input";
-import type { World } from "./world";
-import { scheduleForTime, timeAsString } from "./scheduler";
-import { pronounsForGender } from "./pronouns";
 import { pathTo } from "./pathto";
-import clone from "just-clone";
+import { pronounsForGender } from "./pronouns";
+import { scheduleForTime, timeAsString } from "./scheduler";
+import type { World } from "./world";
 
 export type EntityInitType = {
   id: EntityId;
@@ -203,7 +203,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     return storyEvent;
   }
 
-  assemblePrompt(parameters: ParametersT): GeminiChatType {
+  assemblePrompt(parameters: ParametersT): ChatType {
     throw new Error("Method not implemented.");
   }
 
@@ -218,8 +218,8 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
   historyForEntity(
     parameters: ParametersT,
     { limit }: { limit?: number } = {}
-  ): GeminiHistoryType[] {
-    let history: GeminiHistoryType[] = [];
+  ): MessageType[] {
+    let history: MessageType[] = [];
     const updates = this.updatesSeenByMe();
     while (!limit || history.length < limit) {
       const update = updates.pop();
@@ -292,7 +292,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
   updateToHistory(
     update: StoryEventType,
     { lastUpdate }: { lastUpdate?: StoryEventType }
-  ): GeminiHistoryType[] {
+  ): MessageType[] {
     const parts: string[] = [];
     if (!lastUpdate || lastUpdate.roomId !== update.roomId) {
       const thisRoom = this.world.getRoom(update.roomId);
@@ -369,8 +369,8 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     }
     return [
       {
-        role: update.id === "player" ? "user" : "model",
-        text: parts.join("\n\n"),
+        role: update.id === "player" ? "user" : "assistant",
+        content: parts.join("\n\n"),
       },
     ];
   }
@@ -445,11 +445,11 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
 
   async executePrompt(model: Model, parameters: ParametersT) {
     const prompt = this.assemblePrompt(parameters);
-    if (prompt.history?.length && prompt.history[0].role !== "user") {
+    if (prompt.messages?.length && prompt.messages[0].role !== "user") {
       // Gemini is dumb about this
-      prompt.history.unshift({
+      prompt.messages.unshift({
         role: "user",
-        text: "<continueStory></continueStory>",
+        content: "<continueStory></continueStory>",
       });
     }
     let resp = "";
@@ -847,7 +847,7 @@ export class Person<
     }
   }
 
-  assemblePrompt(parameters: ParametersT): GeminiChatType {
+  assemblePrompt(parameters: ParametersT): ChatType {
     const lastTo = this.lastSpokeTo()?.id || "";
     let hasInteracted = false;
     for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
@@ -909,58 +909,7 @@ export class Person<
 
       <insert-system />
       `,
-      history: this.historyForEntity(parameters, { limit: 10 }),
-      message: tmpl`
-      Given the above play state, respond as the character "${this.name}"
-
-      [[This character has been triggered to act specifically by: "${parameters.trigger}"]]
-
-      Begin by assembling the essential context given the above history, writing 4-5 words for each item:
-
-      <context>
-      1. Are there any special questions for this character that need to be answered? If so answer them here.
-      2. Are there any facts that have to be constructed to continue the scene or response? If so then invent those facts and record them.
-      3. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
-      4. Relevant facts from the history
-      5. How can this response be fun or surprising?
-      6. ${this.name}'s reaction to any recent speech or events
-      7. ${this.name}'s intention in this response
-      </context>
-
-      <system>
-      Begin your response with <context>...</context>
-      </system>
-
-      <system>
-      To generate speech add this response:
-
-      <dialog character="${this.name}">1-3 sentences of dialog written as ${this.name}</dialog>
-
-      To speak directly TO someone:
-
-      <dialog character="${this.name}" to="${lastTo || "Jim"}">Dialog written as ${this.name} to ${lastTo || "Jim"}</dialog>
-      [[${this.name} last spoke directly to ${lastTo}, so it's very likely ${this.heshe} is still speaking to them.]]
-      </system>
-
-      <system>
-      If the character ${this.name} is performing an action, add this response (optionally with a rough estimate of the time it will take in minutes):
-
-      <description minutes="5">Describe the action</description>
-      </system>
-
-      [[${IF(willLeave)}
-      <system>${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow></system>]]
-
-      <system>
-      At the end of your response you may offer a concrete and specific suggestion for what the player might do next, as two 2-3 word commands (one per line):
-      <suggestion>
-      say hello
-      open door
-      </suggestion>
-      </system>
-
-      ${this.additionalPromptInstructions(parameters)}
-      `,
+      messages: this.historyForEntity(parameters, { limit: 10 }),
     };
   }
 
@@ -1582,7 +1531,7 @@ export class PlayerClass extends Person<PlayerInputType> {
   profession = "";
   launched = false;
 
-  assemblePrompt(parameters: PlayerInputType): GeminiChatType {
+  assemblePrompt(parameters: PlayerInputType): ChatType {
     if (parameters.examine) {
       return this.assembleExaminePrompt(parameters);
     } else if (parameters.attemptMoveTo) {
@@ -1663,8 +1612,11 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       Generally if the input starts with \`>\` it is an action, and if it starts with \`"\` it is dialog.
       `,
-      history: this.historyForEntity(parameters, { limit: 3 }),
-      message: tmpl`
+      messages: [
+        ...this.historyForEntity(parameters, { limit: 3 }),
+        {
+          role: "user",
+          content: tmpl`
       The user has typed this input:
       \`${parameters.input}\`
 
@@ -1691,11 +1643,13 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       [[${room.userInputInstructions}]]
       `,
+        },
+      ],
       model: "flash",
     };
   }
 
-  assembleExaminePrompt(parameters: PlayerInputType): GeminiChatType {
+  assembleExaminePrompt(parameters: PlayerInputType): ChatType {
     const examine = parameters.examine!;
     const room = this.world.entityRoom(this.id);
     const _entities = this.world
@@ -1725,23 +1679,28 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       In this step YOUR ONLY JOB is to describe the object or space that the player is examining. If the player is not specific then describe the room generally.
       `,
-      history: this.historyForEntity(parameters, { limit: 4 }),
-      message: tmpl`
-      The player has asked for this to be described:
-      \`${examine}\`
+      messages: [
+        ...this.historyForEntity(parameters, { limit: 4 }),
+        {
+          role: "user",
+          content: tmpl`
+          The player has asked for this to be described:
+          \`${examine}\`
 
-      Respond with:
+          Respond with:
 
-      <description>1-2 paragraphs describing the thing</description>
+          <description>1-2 paragraphs describing the thing</description>
 
-      If examining the thing takes significant time then respond with:
+          If examining the thing takes significant time then respond with:
 
-      <description minutes="10">1-2 paragraphs describing a careful examination that takes time</description>
-      `,
+          <description minutes="10">1-2 paragraphs describing a careful examination that takes time</description>
+          `,
+        },
+      ],
     };
   }
 
-  assembleMovePrompt(parameters: PlayerInputType): GeminiChatType {
+  assembleMovePrompt(parameters: PlayerInputType): ChatType {
     const currentRoom = this.world.entityRoom(this.id);
     const exits = currentRoom?.exits || [];
     const exit = exits.find((exit) => exit.roomId === parameters.attemptMoveTo);
@@ -1765,27 +1724,32 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       In this step YOUR ONLY JOB is to describe the outcome of the player's movement attempt. If the player is not allowed to move to the location, you should describe why.
       `,
-      history: this.historyForEntity(parameters, { limit: 4 }),
-      message: tmpl`
-      The player has indicated they want to move to this location:
-      \`${parameters.attemptMoveTo}\`
+      messages: [
+        ...this.historyForEntity(parameters, { limit: 4 }),
+        {
+          role: "user",
+          content: tmpl`
+          The player has indicated they want to move to this location:
+          \`${parameters.attemptMoveTo}\`
 
-      There is a restriction on this exit: "${restriction}"
+          There is a restriction on this exit: "${restriction}"
 
-      Respond with:
+          Respond with:
 
-      <description minutes="5">1-2 sentences describing the outcome of the move</description>
+          <description minutes="5">1-2 sentences describing the outcome of the move</description>
 
-      minutes is how long the attempt took.
+          minutes is how long the attempt took.
 
-      IF the player is successful then also respond with:
+          IF the player is successful then also respond with:
 
-      <goto success="true">${parameters.attemptMoveTo}</goto>
+          <goto success="true">${parameters.attemptMoveTo}</goto>
 
-      Otherwise respond with:
+          Otherwise respond with:
 
-      <trigger character="Ama"></trigger>
-      `,
+          <trigger character="Ama"></trigger>
+          `,
+        },
+      ],
     };
   }
 
@@ -1821,7 +1785,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
       `,
-      history: this.historyForEntity(parameters, { limit: 4 }),
+      messages: this.historyForEntity(parameters, { limit: 4 }),
       message: tmpl`
       The player has indicated they want to take this action:
       \`${parameters.actionAttempt}\`
@@ -2058,8 +2022,12 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       Keep the complete result under 500 characters.
       `,
-      history: [],
-      message: sourceLines.join("\n"),
+      messages: [
+        {
+          role: "user",
+          content: sourceLines.join("\n"),
+        },
+      ],
     });
     return resp;
   }
@@ -2166,7 +2134,7 @@ function fixupText(llmText: string) {
     .trim();
 }
 
-function foldHistory(history: GeminiHistoryType[]): GeminiHistoryType[] {
+function foldHistory(history: MessageType[]): MessageType[] {
   let found = false;
   for (let i = 1; i < history.length; i++) {
     const prev = history[i - 1];
@@ -2179,7 +2147,7 @@ function foldHistory(history: GeminiHistoryType[]): GeminiHistoryType[] {
   if (!found) {
     return history;
   }
-  const newHistory: GeminiHistoryType[] = [];
+  const newHistory: MessageType[] = [];
   for (let i = 0; i < history.length; i++) {
     const existing = newHistory.at(-1);
     if (!existing || existing.role !== history[i].role) {
@@ -2191,36 +2159,22 @@ function foldHistory(history: GeminiHistoryType[]): GeminiHistoryType[] {
   return newHistory;
 }
 
-function combineHistory(a: GeminiHistoryType, b: GeminiHistoryType) {
-  if (a.parts && b.parts) {
-    return {
-      role: a.role,
-      parts: [...a.parts, { text: "\n\n" }, ...b.parts],
-    };
-  }
-  if (a.text && b.text) {
-    if (b.text.includes(a.text)) {
+function combineHistory(a: MessageType, b: MessageType) {
+  if (a.content && b.content) {
+    if (b.content.includes(a.content)) {
       return b;
-    } else if (a.text.includes(b.text)) {
+    } else if (a.content.includes(b.content)) {
       return a;
     }
     return {
       role: a.role,
-      text: a.text + "\n\n" + b.text,
+      content: a.content + "\n\n" + b.content,
     };
   }
-  if (a.text) {
-    return {
-      role: a.role,
-      parts: [{ text: a.text }, { text: "\n\n" }, ...b.parts!],
-    };
-  } else if (b.text) {
-    return {
-      role: a.role,
-      parts: [...a.parts!, { text: "\n\n" }, { text: b.text }],
-    };
+  if (a.content) {
+    return a;
   }
-  throw new Error("Unexpected history format");
+  return b;
 }
 
 /* Sometimes the AI sets properties to specific values like 'unspecified' but that's not helpful */

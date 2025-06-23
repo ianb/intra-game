@@ -3,7 +3,7 @@ import { openrouterCode } from "@/components/openrouter";
 import { signal } from "@preact/signals-react";
 import OpenAI from "openai";
 import { persistentSignal } from "./persistentsignal";
-import { GeminiChatType, GeminiHistoryType, LlmLogType } from "./types";
+import { ChatType, LlmLogType } from "./types";
 
 export const DEFAULT_PRO_MODEL = "gemini-1.5-pro";
 export const DEFAULT_FLASH_MODEL = "gemini-1.5-flash";
@@ -22,9 +22,8 @@ export const logSignal = signal<LlmLogType[]>([]);
 
 export const lastLlmError = signal<string | null>(null);
 
-export async function chat(request: GeminiChatType) {
+export async function chat(request: ChatType) {
   request = upliftInstructions(request);
-  request = fixText(request);
   const log = {
     request,
   };
@@ -82,11 +81,7 @@ export async function chat(request: GeminiChatType) {
         role: "system" as const,
         content: request.systemInstruction || "",
       },
-      ...request.history.map((h) => convertMessage(h)),
-      {
-        role: "user" as const,
-        content: request.message,
-      },
+      ...request.messages,
     ];
 
     const completion = await openai.chat.completions.create({
@@ -120,34 +115,7 @@ export async function chat(request: GeminiChatType) {
   return text as string;
 }
 
-function fixText(request: GeminiChatType) {
-  request.history = request.history.map((h) => {
-    if (h.text) {
-      return {
-        role: h.role,
-        parts: [{ text: h.text }],
-      };
-    }
-    return h;
-  });
-  return request;
-}
-
-function convertMessage(h: GeminiHistoryType): {
-  role: "user" | "assistant";
-  content: string;
-} {
-  let text = h.text;
-  if (h.parts) {
-    text = h.parts.map((p) => p.text).join("\n");
-  }
-  return {
-    role: h.role === "user" ? "user" : "assistant",
-    content: text || "",
-  };
-}
-
-function upliftInstructions(chat: GeminiChatType): GeminiChatType {
+function upliftInstructions(chat: ChatType): ChatType {
   const system = chat.systemInstruction || "";
   const newChat = { ...chat };
   // if (/<insert-system\s*\/?>/i.test(system)) {
@@ -158,15 +126,11 @@ function upliftInstructions(chat: GeminiChatType): GeminiChatType {
   const { repl, instructions } = parseInstructions(system);
   newChat.systemInstruction = repl;
   allInstructions.push(...instructions);
-  newChat.history = newChat.history.map((history) => {
-    const { repl, instructions } = parseInstructions(makeText(history));
+  newChat.messages = newChat.messages.map((history) => {
+    const { repl, instructions } = parseInstructions(history.content);
     allInstructions.push(...instructions);
-    return replText(history, repl);
+    return { ...history, content: repl };
   });
-  const { repl: messageRepl, instructions: messageInstructions } =
-    parseInstructions(chat.message);
-  newChat.message = messageRepl;
-  allInstructions.push(...messageInstructions);
   if (
     allInstructions.length > 0 &&
     !/<insert-system\s*\/>/i.test(newChat.systemInstruction)
@@ -192,18 +156,4 @@ function parseInstructions(system: string): {
     return "";
   });
   return { repl, instructions };
-}
-function makeText(history: GeminiHistoryType): string {
-  if (history.parts) {
-    return history.parts.map((x) => x.text).join("");
-  }
-  return history.text || "";
-}
-
-function replText(history: GeminiHistoryType, text: string): GeminiHistoryType {
-  if (history.parts) {
-    history = { ...history };
-    delete history.parts;
-  }
-  return { ...history, text };
 }

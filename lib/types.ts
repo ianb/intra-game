@@ -1,5 +1,5 @@
-import type { Entity, Room, Person, Mystery } from "./game/classes";
-export { Entity, Room, Person };
+import type { Entity, Mystery, Person, Room } from "./game/classes";
+export { Entity, Person, Room };
 
 export type StoryEventWithPositionsType = {
   event: StoryEventType;
@@ -167,42 +167,28 @@ export type PersonScheduledEventType = {
 
 /* Gemini types */
 
-export type GeminiChatType = {
-  meta: GeminiMetaType;
-  model?: "flash" | "pro";
-  history: GeminiHistoryType[];
-  message: string;
+export type ChatType = {
+  meta: ChatMetaType;
+  model?: string;
+  messages: MessageType[];
   systemInstruction?: string;
 };
 
-export type GeminiMetaType = {
+export type ChatMetaType = {
   title: string;
   index?: number;
   start?: number;
 };
 
-export type GeminiModelType =
-  | "gemini-1.5-flash"
-  | "gemini-1.5-flash-exp-0827"
-  | "gemini-1.5-pro"
-  | "gemini-1.5-pro-exp-0827"
-  | "flash"
-  | "pro";
+export type RoleType = "user" | "assistant" | "system";
 
-export type GeminiRoleType = "user" | "model";
-
-export type GeminiHistoryType = {
-  role: GeminiRoleType;
-  parts?: GeminiHistoryPartType[];
-  text?: string;
-};
-
-export type GeminiHistoryPartType = {
-  text: string;
+export type MessageType = {
+  role: RoleType;
+  content: string;
 };
 
 export type LlmLogType = {
-  request: GeminiChatType;
+  request: ChatType;
   end?: number;
   response?: string;
   errorMessage?: string;

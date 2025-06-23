@@ -1,5 +1,5 @@
 import { logSignal } from "@/lib/llm";
-import { GeminiChatType, LlmLogType } from "@/lib/types";
+import { ChatType, LlmLogType } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
 import { forwardRef, useEffect, useRef } from "react";
 
@@ -78,30 +78,29 @@ function LlmRequest({
   request,
   finished,
 }: {
-  request: GeminiChatType;
+  request: ChatType;
   finished: boolean;
 }) {
   return (
     <div className={finished ? "" : "bg-blue-950"}>
       {request.systemInstruction && (
-        <LlmRequestItem role="system" text={request.systemInstruction} />
+        <LlmRequestItem role="system" content={request.systemInstruction} />
       )}
-      {request.history.map((history, index) => (
+      {request.messages.map((message, index) => (
         <LlmRequestItem
           key={index}
-          role={history.role}
-          text={history.parts!.map((part) => part.text).join(" ")}
+          role={message.role}
+          content={message.content}
         />
       ))}
-      <LlmRequestItem role="user" text={request.message} />
     </div>
   );
 }
 
-function LlmRequestItem({ role, text }: { role: string; text: string }) {
+function LlmRequestItem({ role, content }: { role: string; content: string }) {
   return (
     <pre className="whitespace-pre-wrap -indent-2 pl-2 mb-2">
-      <strong className="text-cyan-300">{role}:</strong> {text}
+      <strong className="text-cyan-300">{role}:</strong> {content}
     </pre>
   );
 }
