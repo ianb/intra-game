@@ -5,8 +5,8 @@ import OpenAI from "openai";
 import { persistentSignal } from "./persistentsignal";
 import { ChatType, LlmLogType } from "./types";
 
-export const DEFAULT_PRO_MODEL = "gemini-1.5-pro";
-export const DEFAULT_FLASH_MODEL = "gemini-1.5-flash";
+export const DEFAULT_PRO_MODEL = "openai/gpt-4o";
+export const DEFAULT_FLASH_MODEL = "google/gemini-2.5-flash-preview-05-20";
 export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
 
 export const customEndpoint = persistentSignal<string | null>(
