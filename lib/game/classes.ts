@@ -445,13 +445,6 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
 
   async executePrompt(model: Model, parameters: ParametersT) {
     const prompt = this.assemblePrompt(parameters);
-    if (prompt.messages?.length && prompt.messages[0].role !== "user") {
-      // Gemini is dumb about this
-      prompt.messages.unshift({
-        role: "user",
-        content: "<continueStory></continueStory>",
-      });
-    }
     let resp = "";
     const roomId = this.world.entityRoom(this.id)?.id || "Void";
     try {
@@ -909,7 +902,63 @@ export class Person<
 
       <insert-system />
       `,
-      messages: this.historyForEntity(parameters, { limit: 10 }),
+      messages: [
+        ...this.historyForEntity(parameters, { limit: 10 }),
+        {
+          role: "user",
+          content: tmpl`
+          Given the above play state, respond as the character "${this.name}"
+
+          [[This character has been triggered to act specifically by: "${parameters.trigger}"]]
+
+          Begin by assembling the essential context given the above history, writing 4-5 words for each item:
+
+          <context>
+          1. Are there any special questions for this character that need to be answered? If so answer them here.
+          2. Are there any facts that have to be constructed to continue the scene or response? If so then invent those facts and record them.
+          3. ${this.name}'s goals, including listing out any specific goals previously noted in the prompt
+          4. Relevant facts from the history
+          5. How can this response be fun or surprising?
+          6. ${this.name}'s reaction to any recent speech or events
+          7. ${this.name}'s intention in this response
+          </context>
+
+          <system>
+          Begin your response with <context>...</context>
+          </system>
+
+          <system>
+          To generate speech add this response:
+
+          <dialog character="${this.name}">1-3 sentences of dialog written as ${this.name}</dialog>
+
+          To speak directly TO someone:
+
+          <dialog character="${this.name}" to="${lastTo || "Jim"}">Dialog written as ${this.name} to ${lastTo || "Jim"}</dialog>
+          [[${this.name} last spoke directly to ${lastTo}, so it's very likely ${this.heshe} is still speaking to them.]]
+          </system>
+
+          <system>
+          If the character ${this.name} is performing an action, add this response (optionally with a rough estimate of the time it will take in minutes):
+
+          <description minutes="5">Describe the action</description>
+          </system>
+
+          [[${IF(willLeave)}
+          <system>${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow></system>]]
+
+          <system>
+          At the end of your response you may offer a concrete and specific suggestion for what the player might do next, as two 2-3 word commands (one per line):
+          <suggestion>
+          say hello
+          open door
+          </suggestion>
+          </system>
+
+          ${this.additionalPromptInstructions(parameters)}
+          `,
+        },
+      ],
     };
   }
 
