@@ -402,6 +402,210 @@ const RATINGS: Record<string, RatingType> = {
   "aion-labs/aion-1.0": "bad",
   // Ditto on expense, but not quite as slow...
   "allenai/llama-3.1-tulu-3-405b": "ok",
+
+  // Some June 2025 options:
+  "mistralai/mistral-small-3.2-24b-instruct:free": "ok",
+  // Very slow, or fails...
+  "minimax/minimax-m1:extended": "bad",
+  // Slow and doesn't work well...
+  "moonshotai/kimi-dev-72b:free": "bad",
+  // Works okay but slow
+  "deepseek/deepseek-r1-0528-qwen3-8b:free": "ok",
+  // Ditto, very slow...
+  "deepseek/deepseek-r1-0528:free": "ok",
+  // Errored out:
+  "sarvamai/sarvam-m:free": "error",
+  // Doesn't apply
+  "mistralai/devstral-small:free": "error",
+  "google/gemma-3n-e4b-it:free": "error",
+  "meta-llama/llama-3.3-8b-instruct:free": "error",
+  "microsoft/phi-4-reasoning-plus:free": "error",
+  // Can't follow instructions:
+  "microsoft/phi-4-reasoning:free": "error",
+  "opengvlab/internvl3-14b:free": "good",
+  "opengvlab/internvl3-2b:free": "bad",
+  "qwen/qwen3-30b-a3b:free": "ok",
+  // Kind of technically works, but so slow
+  "qwen/qwen3-8b:free": "ok",
+  "qwen/qwen3-14b:free": "ok",
+  "qwen/qwen3-32b:free": "ok",
+  "qwen/qwen3-235b-a22b:free": "ok",
+  "tngtech/deepseek-r1t-chimera:free": "good",
+  "microsoft/mai-ds-r1:free": "error",
+  // Not sure about the instruction following...
+  "thudm/glm-z1-32b:free": "ok",
+  "thudm/glm-4-32b:free": "ok",
+  // Didn't follow instructions:
+  "shisa-ai/shisa-v2-llama3.3-70b:free": "bad",
+  "arliai/qwq-32b-arliai-rpr-v1:free": "error",
+  "agentica-org/deepcoder-14b-preview:free": "ok",
+  // Didn't follow instructions:
+  "moonshotai/kimi-vl-a3b-thinking:free": "bad",
+  "nvidia/llama-3.3-nemotron-super-49b-v1:free": "bad",
+  "nvidia/llama-3.1-nemotron-ultra-253b-v1:free": "error",
+  "meta-llama/llama-4-maverick:free": "error",
+  "meta-llama/llama-4-scout:free": "bad",
+  "deepseek/deepseek-v3-base:free": "error",
+  "google/gemini-2.5-pro-exp-03-25": "error",
+  "qwen/qwen2.5-vl-32b-instruct:free": "good",
+  // So slow...
+  "deepseek/deepseek-chat-v3-0324:free": "bad",
+  // Doesn't follow instructions:
+  "featherless/qwerky-72b:free": "bad",
+  // It does get creative, but doesn't follow instructions:
+  "mistralai/mistral-small-3.1-24b-instruct:free": "bad",
+  "google/gemma-3-4b-it:free": "bad",
+  "google/gemma-3-12b-it:free": "bad",
+  "rekaai/reka-flash-3:free": "bad",
+  // Super slow, but works:
+  "google/gemma-3-27b-it:free": "ok",
+  // Not sure how good it is really, but it does get creative...
+  "qwen/qwq-32b:free": "good",
+  // Fast but doesn't follow instructions:
+  "nousresearch/deephermes-3-llama-3-8b-preview:free": "bad",
+  "deepseek/deepseek-r1-distill-qwen-32b:free": "good",
+  "deepseek/deepseek-r1-distill-qwen-14b:free": "error",
+  "qwen/qwen-2.5-coder-32b-instruct:free": "ok",
+  "qwen/qwen-2.5-72b-instruct:free": "ok",
+  // Loses track of perspective, but maybe okay:
+  "google/gemma-3-4b-it": "ok",
+  // So slow, and not even free!
+  "qwen/qwen3-8b": "bad",
+  "deepseek/deepseek-r1-0528-qwen3-8b": "good",
+  "meta-llama/llama-guard-4-12b": "error",
+  // Doesn't follow instructions:
+  "mistralai/mistral-small-3.1-24b-instruct": "bad",
+  "google/gemma-3-12b-it": "ok",
+  // Get's a little creative...
+  "microsoft/phi-4-multimodal-instruct": "ok",
+  "mistralai/devstral-small": "bad",
+  "qwen/qwen3-14b": "ok",
+  "google/gemini-2.5-flash-preview-05-20": "great",
+  // Just impossibly slow, and bad at instructions:
+  "microsoft/phi-4-reasoning-plus": "bad",
+  // Slow but decent:
+  "qwen/qwen3-30b-a3b": "ok",
+  "meta-llama/llama-4-scout": "ok",
+  "mistralai/mistral-small-3.2-24b-instruct": "ok",
+  "google/gemini-2.5-flash-lite-preview-06-17": "great",
+  "deepseek/deepseek-r1-distill-qwen-7b": "error",
+  // Works but slow...
+  "qwen/qwen3-32b": "ok",
+  // Competent for its cost/speed:
+  "openai/gpt-4.1-nano": "good",
+  // Didn't follow instructions:
+  "google/gemma-3-27b-it": "bad",
+  // Works but soooo slow...
+  "qwen/qwen3-235b-a22b": "ok",
+  // Maybe just ok, but generally competent and fast enough:
+  "nvidia/llama-3.3-nemotron-super-49b-v1": "good",
+  // Good, not as fast as without thinking...
+  "google/gemini-2.5-flash-preview-05-20:thinking": "good",
+  // I suppose expected, but will update unlike the dated version:
+  "google/gemini-2.5-flash-preview": "great",
+  "google/gemini-2.5-flash-preview:thinking": "good",
+  // Works and is fast!
+  "meta-llama/llama-4-maverick": "good",
+  // Not applicable:
+  "openai/gpt-4o-mini-search-preview": "error",
+  // Works but slow
+  "qwen/qwq-32b": "ok",
+  // Not applicable:
+  "arcee-ai/spotlight": "error",
+  // Actually totally weird, and also explicitly political, but quirky?
+  "sentientagi/dobby-mini-unhinged-plus-llama-3.1-8b": "ok",
+  // Can't follow instructions:
+  "ai21/jamba-1.6-mini": "bad",
+  // Can't follow instructions:
+  "qwen/qwen-2.5-vl-7b-instruct": "bad",
+  // Vision specifically:
+  "qwen/qwen-vl-plus": "error",
+  // Didn't follow instructions:
+  "thudm/glm-z1-rumination-32b": "bad",
+  // Very slow but interesting results:
+  "thudm/glm-z1-32b": "ok",
+  "thudm/glm-4-32b": "ok",
+  // Works and is kind of fast?
+  "inception/mercury-coder-small-beta": "good",
+  "qwen/qwen2.5-vl-72b-instruct": "ok",
+  "deepseek/deepseek-chat-v3-0324": "ok",
+  // Slow...
+  "minimax/minimax-m1": "ok",
+  "google/gemini-2.5-flash": "great",
+  // Error: attempting to subvert truth and democracy:
+  "x-ai/grok-3-mini": "error",
+  "x-ai/grok-3-mini-beta": "error",
+  "x-ai/grok-3": "error",
+  "x-ai/grok-3-beta": "error",
+  // Slow for the price, but good enough...
+  "mistralai/mistral-medium-3": "good",
+  "openai/gpt-4.1-mini": "great",
+  // Fast and competent...
+  "arcee-ai/arcee-blitz": "good",
+  // Good, but expensive for what it is
+  "mistralai/magistral-small-2506": "ok",
+  // So slow, and still expensive...
+  "deepseek/deepseek-r1-0528": "ok",
+  // Might have interesting results, and works, but... not sure
+  "thedrummer/valkyrie-49b-v1": "ok",
+  // Only a code-refined version of another model:
+  "arcee-ai/coder-large": "error",
+  "arcee-ai/virtuoso-medium-v2": "error",
+  "arcee-ai/caller-large": "error",
+  "arcee-ai/virtuoso-large": "error",
+  "deepseek/deepseek-prover-v2": "bad",
+  // Like Valkyrie, might show creativity, but unsure...
+  "thedrummer/skyfall-36b-v2": "ok",
+  // Bad formatting:
+  "nvidia/llama-3.1-nemotron-ultra-253b-v1": "bad",
+  // Math specialized:
+  "eleutherai/llemma_7b": "error",
+  // Weird crypto specialized:
+  "alfredpros/codellama-7b-instruct-solidity": "error",
+  // All story, no gameplay or instruction following:
+  "thedrummer/anubis-pro-105b-v1": "bad",
+  // Expensive for what it is:
+  "qwen/qwen-vl-max": "ok",
+  "scb10x/llama3.1-typhoon2-70b-instruct": "error",
+  // Specialized for other things:
+  "arcee-ai/maestro-reasoning": "error",
+  // Vision:
+  "qwen/qwen2.5-vl-32b-instruct": "error",
+  // Slow and expensive:
+  "openai/o4-mini-high": "ok",
+  "openai/o4-mini": "ok",
+  "google/gemini-2.5-pro": "great",
+  // Just a tagged clone:
+  "google/gemini-2.5-pro-preview": "great",
+  "google/gemini-2.5-pro-preview-05-06": "error",
+  // Not applicable:
+  "openai/codex-mini": "error",
+  // Fine, expensive...
+  "mistralai/magistral-medium-2506": "good",
+  "mistralai/magistral-medium-2506:thinking": "good",
+  // Needs key
+  "openai/o3": "error",
+  "openai/gpt-4.1": "great",
+  // Didn't follow instructions:
+  "ai21/jamba-1.6-large": "bad",
+  // Feels inapplicable:
+  "perplexity/sonar-reasoning-pro": "error",
+  "perplexity/sonar-deep-research": "error",
+  // Needs moderation?
+  "cohere/command-a": "error",
+  "openai/gpt-4o-search-preview": "error",
+  "all-hands/openhands-lm-32b-v0.1": "error",
+  "anthropic/claude-sonnet-4": "great",
+  // Is it for search? I don't know, but I guess it works if expensive?
+  "perplexity/sonar-pro": "ok",
+  // Thinking isn't really needed, otherwise great but superfluous:
+  "anthropic/claude-3.7-sonnet:thinking": "good",
+  // Oddly, just didn't complete the first time?
+  "anthropic/claude-opus-4": "good",
+  // All expensive, not really right anyway...
+  "openai/o3-pro": "error",
+  "openai/gpt-4.5-preview": "error",
+  "openai/o1-pro": "error",
 };
 
 export type ModelType = {
