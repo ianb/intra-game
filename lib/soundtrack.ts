@@ -13,6 +13,9 @@ export class SoundtrackPlayer {
    * @param url The URL of the new soundtrack to play. If null, stops playback.
    */
   public async playUrl(url: string | null): Promise<void> {
+    if (url === this.pendingUrl) {
+      return;
+    }
     this.pendingUrl = url;
 
     if (this.paused) {
@@ -85,8 +88,20 @@ export class SoundtrackPlayer {
     if (!this.paused) return;
     this.paused = false;
 
-    if (this.pendingUrl) {
-      await this.playUrl(this.pendingUrl);
+    if (this.pendingUrl && !this.currentAudio) {
+      const url = this.pendingUrl;
+      this.pendingUrl = null;
+      await this.playUrl(url);
+      return;
+    }
+
+    if (this.currentAudio) {
+      this.currentAudio.volume = 1;
+      await this.currentAudio.play();
+    }
+    if (this.nextAudio) {
+      // Treat it as though the fade has completed
+      this.nextAudio = null;
     }
   }
 
