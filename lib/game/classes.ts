@@ -1814,7 +1814,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     };
   }
 
-  assembleActionPrompt(parameters: PlayerInputType) {
+  assembleActionPrompt(parameters: PlayerInputType): ChatType {
     const roll = this.world.model.roll();
     const room = this.world.entityRoom(this.id);
     let rollDescription = "";
@@ -1827,58 +1827,66 @@ export class PlayerClass extends Person<PlayerInputType> {
       meta: {
         title: "player action",
       },
-      systemInstruction: tmpl`
-      You are a computer assisting in running a text adventure game. You will act as an objective and fair game master.
+      messages: [
+        {
+          role: "system",
+          content: tmpl`
+          You are a computer assisting in running a text adventure game. You will act as an objective and fair game master.
 
-      The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
+          The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
 
-      The player ("${this.name}") is a character in the game, controlled by the user.
+          The player ("${this.name}") is a character in the game, controlled by the user.
 
-      The player is located in: ${this.currentLocationPrompt(parameters)}
+          The player is located in: ${this.currentLocationPrompt(parameters)}
 
-      The room is described as:
-      ${room?.description}
+          The room is described as:
+          ${room?.description}
 
-      These people and entities are in the room:
-      ${this.currentPeerEntitiesPrompt(parameters)}
+          These people and entities are in the room:
+          ${this.currentPeerEntitiesPrompt(parameters)}
 
-      There are no people except those listed above (and the player ${this.name}).
+          There are no people except those listed above (and the player ${this.name}).
 
-      In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
-      `,
-      messages: this.historyForEntity(parameters, { limit: 4 }),
-      message: tmpl`
-      The player has indicated they want to take this action:
-      \`${parameters.actionAttempt}\`
+          In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
+          `,
+        },
+        ...this.historyForEntity(parameters, { limit: 4 }),
+        {
+          role: "user",
+          content: tmpl`
+          The player has indicated they want to take this action:
+          \`${parameters.actionAttempt}\`
 
-      [[The room has these notes about actions performed in the room, that may or may not be applicable:
-      """
-      ${room.actionPrompt}
-      """]]
+          [[The room has these notes about actions performed in the room, that may or may not be applicable:
+          """
+          ${room.actionPrompt}
+          """]]
 
-      They have rolled a d20 die (1=critical failure, 20=critical success) and the result is: ${roll}[[ (${rollDescription})]]
+          They have rolled a d20 die (1=critical failure, 20=critical success) and the result is: ${roll}[[ (${rollDescription})]]
 
-      Begin by thinking through your response given the history:
+          Begin by thinking through your response given the history:
 
-      <context>
-      1. Is this action at all possible?
-      2. Is the action trivially easy? Opening doors, picking things up, or performing other simple actions should always succeed. If it is trivial then simply describe the successful outcome.
-      3. What is the outcome if the action succeeds?
-      4. What is the outcome if the action fails?
-      5. What would make the action difficult or easy? Then rate it as VERY EASY, EASY, MEDIUM, HARD, VERY HARD.
-      6. You may use the roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
-      7. Do the instructions indicate any specific tags in case of success or failure?
-      </context>
+          <context>
+          1. Is this action at all possible? Is it also an action that the player takes themselves?
+          2. Is the action trivially easy? Opening doors, picking things up, or performing other simple actions should always succeed. If it is trivial then simply describe the successful outcome.
+          3. What is the outcome if the action succeeds?
+          4. What is the outcome if the action fails?
+          5. What would make the action difficult or easy? Then rate it as VERY EASY, EASY, MEDIUM, HARD, VERY HARD.
+          6. You may use the roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
+          7. Do the instructions indicate any specific tags in case of success or failure?
+          </context>
 
-      After finishing <context></context> then write the result of the action:
+          After finishing <context></context> then write the result of the action:
 
-      <actionResolution success="true/false" minutes="5">1-2 sentences describing the outcome of the action. Be CONCISE and DIRECT, do not add color to the user's action, using only dry and subtle humor to describe the effects</actionResolution>
+          <actionResolution success="true/false" minutes="5">1-2 sentences describing the outcome of the action. Be CONCISE and DIRECT, do not add color to the user's action, using only dry and subtle humor to describe the effects</actionResolution>
 
-      success="true" if it succeeds, "false" if it fails. minutes is how long the attempt took.
+          success="true" if it succeeds, "false" if it fails. minutes is how long the attempt took.
 
-      Respond with the appropriate tags for this action attempt:
-      \`${parameters.actionAttempt}\`
-      `,
+          Respond with the appropriate tags for this action attempt:
+          \`${parameters.actionAttempt}\`
+          `,
+        },
+      ],
     };
   }
 

@@ -44,7 +44,7 @@ export class Model {
     });
     this.soundtrackPlayer = new SoundtrackPlayer();
     effect(() => {
-      const updates = this.updates.value;
+      const _updates = this.updates.value;
       setTimeout(() => {
         const currentRoom = this.world.getRoom(
           this.world.entities.player.inside
