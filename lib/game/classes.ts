@@ -1959,6 +1959,10 @@ export class PlayerClass extends Person<PlayerInputType> {
         ];
         return storyEvent;
       }
+      if (exit.restriction && tag.attrs.success.toLowerCase() !== "true") {
+        // The action resolution should have added a description of the failure
+        return storyEvent;
+      }
       storyEvent.changes.player = {
         before: {
           inside: currentRoom?.id,
