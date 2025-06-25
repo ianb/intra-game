@@ -1872,9 +1872,12 @@ export class PlayerClass extends Person<PlayerInputType> {
           3. What is the outcome if the action succeeds?
           4. What is the outcome if the action fails?
           5. What would make the action difficult or easy? Then rate it as VERY EASY, EASY, MEDIUM, HARD, VERY HARD.
-          6. You may use the roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
+          6. You may use the d20 roll (${roll}) to determine if the action succeeds or fails, or you may decide the result based on plot or other factors. What do you choose? Is it successful?
           7. Do the instructions indicate any specific tags in case of success or failure?
           </context>
+
+          [[${IF(roll <= 1)}The player has rolled a ${roll}, a critical failure; generally the action result should involve some unrecoverable failure or impactful negative effect.]]
+          [[${IF(roll >= 20)}The player has rolled a ${roll}, a critical success; generally the action result both succeed and the success should go further than expected or intended.]]
 
           After finishing <context></context> then write the result of the action:
 
