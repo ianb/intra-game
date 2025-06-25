@@ -114,8 +114,12 @@ export class SoundtrackPlayer {
       const currentVolume = 1 - progress;
       const nextVolume = progress;
 
-      this.currentAudio!.volume = Math.max(0, currentVolume);
-      this.nextAudio!.volume = Math.min(1, nextVolume);
+      if (this.currentAudio) {
+        this.currentAudio.volume = Math.max(0, currentVolume);
+      }
+      if (this.nextAudio) {
+        this.nextAudio.volume = Math.min(1, nextVolume);
+      }
 
       step++;
       this.fadeTimeout = setTimeout(fadeStep, stepDuration);
