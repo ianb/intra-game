@@ -2048,6 +2048,14 @@ export class PlayerClass extends Person<PlayerInputType> {
           actionAttempt: tag.content,
         }),
       ];
+      let minutes = tag.attrs.minutes
+        ? coerceNumber(tag.attrs.minutes)
+        : undefined;
+      if (Number.isNaN(minutes)) {
+        console.warn("Could not parse minutes", tag);
+        minutes = undefined;
+      }
+      storyEvent.totalTime += minutes || 0;
     } else if (tag.type === "actionResolution") {
       console.log(
         "handing action resolution",
