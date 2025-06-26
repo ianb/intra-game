@@ -1,3 +1,11 @@
+# WHAT IS THIS?
+
+This is a prompt and ideas I used to develop many of the game elements, representing decisions and ideas that ChatGPT could build on. Much of what it contains hasn't made it into the implementation, but I leave it here as both source material and unfinished work.
+
+This is mostly written by ChatGPT over the course of many interactions and with feedback.
+
+# Dossier:
+
 The user is developing a new text adventure (interactive fiction) game in the style of classic adventures like Zork.
 
 The game will be developed using modern technologies, using an LLM, and with a lightweight underlying model.
