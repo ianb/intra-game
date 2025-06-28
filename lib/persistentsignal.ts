@@ -25,7 +25,7 @@ export function persistentSignal<T>(
   }
   const rawValue = storage.getItem(`signal.${name}`);
   let value: T;
-  if (rawValue) {
+  if (rawValue && rawValue !== "undefined") {
     value = JSON.parse(rawValue);
     // value = deserialize(value);
   } else {

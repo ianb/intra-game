@@ -9,7 +9,12 @@ import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { model, SaveListType } from "@/lib/game/model";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
-import { customEndpoint, lastLlmError, openrouterModel } from "@/lib/llm";
+import {
+  customEndpoint,
+  lastLlmError,
+  lastLlmErrorType,
+  openrouterModel,
+} from "@/lib/llm";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { persistentSignal } from "@/lib/persistentsignal";
 import {
@@ -44,6 +49,7 @@ effect(() => {
 });
 
 let textareaRef: React.RefObject<HTMLTextAreaElement>;
+const openSettings = signal(false);
 
 export default function Home() {
   useSignals();
@@ -51,7 +57,6 @@ export default function Home() {
     model.checkLaunch();
   }, []);
   const openHelp = useSignal(!seenHelp.value);
-  const openSettings = useSignal(false);
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
@@ -162,6 +167,17 @@ function ChatLog() {
           <pre className="text-sm whitespace-pre-wrap p-2">
             {lastLlmError.value}
           </pre>
+          {lastLlmErrorType.value === "openrouter" && (
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  openSettings.value = true;
+                }}
+              >
+                ⚙ Open settings
+              </Button>
+            </div>
+          )}
         </div>
       )}
       {model.runningSignal.value && <CalculatingThrobber />}

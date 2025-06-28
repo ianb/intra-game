@@ -21,6 +21,14 @@ export const openrouterModel = persistentSignal<ModelType | null>(
 export const logSignal = signal<LlmLogType[]>([]);
 
 export const lastLlmError = signal<string | null>(null);
+export const lastLlmErrorType = signal<"openrouter" | undefined>();
+
+export class OpenRouterError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "OpenRouterError";
+  }
+}
 
 export async function chat(request: ChatType) {
   request = upliftInstructions(request);
@@ -53,15 +61,14 @@ export async function chat(request: ChatType) {
         dangerouslyAllowBrowser: true,
       });
     } else {
-      // Use OpenRouter
-      if (!openrouterModel.value) {
-        throw new Error(
-          "No OpenRouter model selected. Please select a model first."
+      if (!openrouterCode.value) {
+        throw new OpenRouterError(
+          "No OpenRouter API key found. Please connect to OpenRouter first."
         );
       }
-      if (!openrouterCode.value) {
-        throw new Error(
-          "No OpenRouter API key found. Please connect to OpenRouter first."
+      if (!openrouterModel.value) {
+        throw new OpenRouterError(
+          "No OpenRouter model selected. Please select a model first."
         );
       }
 
@@ -98,6 +105,11 @@ export async function chat(request: ChatType) {
     };
     logSignal.value = logSignal.value.map((l) => (l === log ? newLog : l));
     lastLlmError.value = `Unexpected LLM error: ${e}`;
+    if (e instanceof OpenRouterError) {
+      lastLlmErrorType.value = "openrouter";
+    } else {
+      lastLlmErrorType.value = undefined;
+    }
     throw e;
   }
   const newLog = {
