@@ -156,7 +156,7 @@ function ChatLog() {
       {lastLlmError.value && (
         <div className="bg-red-900 text-white mx-8">
           <button
-            className="float-right text-xs"
+            className="float-right text-xs mr-2 text-xl hover:text-blue-600"
             onClick={() => {
               lastLlmError.value = "";
             }}
