@@ -50,13 +50,13 @@ effect(() => {
 
 let textareaRef: React.RefObject<HTMLTextAreaElement>;
 const openSettings = signal(false);
+const openHelp = signal(!seenHelp.value);
 
 export default function Home() {
   useSignals();
   useEffect(() => {
     model.checkLaunch();
   }, []);
-  const openHelp = useSignal(!seenHelp.value);
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
@@ -1210,6 +1210,18 @@ function Help() {
         comes to mind. The system is smart enough to figure it out (most of the
         time).
       </div>
+      <div className="mb-4">
+        <span
+          title={
+            "And one secret command:\n  /roll 10\ncauses a roll of 10 on your next attempt"
+          }
+        >
+          You can use these special commands:{" "}
+        </span>
+        <code className="text-cyan-300">/undo</code> and{" "}
+        <code className="text-cyan-300">/redo</code> and{" "}
+        <code className="text-cyan-300">/restart</code>
+      </div>
       <div className="flex justify-center mb-4">
         <pre>
           {"+-------------------------+\n"}
@@ -1223,10 +1235,23 @@ function Help() {
         </pre>
       </div>
       <div className="flex justify-center">
-        <span className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4">
+        <button className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4">
           DONE
-        </span>
+        </button>
       </div>
+      {(!openrouterCode.value || !openrouterModel.value) && (
+        <div className="flex justify-center mt-4">
+          <button
+            className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4"
+            onClick={() => {
+              openSettings.value = true;
+              openHelp.value = false;
+            }}
+          >
+            ⚙ Open settings to configure LLM access
+          </button>
+        </div>
+      )}
     </div>
   );
 }
