@@ -489,7 +489,7 @@ function Input() {
       return;
     }
     let newText = "";
-    if (text === "/reset") {
+    if (text === "/reset" || text === "/restart") {
       model.reset();
     } else {
       const undoText = await model.sendText(text);
