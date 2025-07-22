@@ -620,6 +620,13 @@ export type ModelType = {
   per_request_limits: any;
 };
 
+export type OllamaModelType = {
+  name: string;
+  modified_at: string;
+  size: number;
+  digest: string;
+};
+
 export type ArchitectureType = {
   modality: string;
   tokenizer: string;
@@ -644,6 +651,41 @@ export type TopProviderType = {
 //   null
 // );
 
+export async function fetchOllamaModels(): Promise<ModelType[]> {
+  try {
+    const response = await fetch('http://localhost:11434/api/tags');
+    const data = await response.json();
+
+    return data.models.map((model: OllamaModelType) => ({
+      id: model.name,
+      name: `Ollama: ${model.name}`,
+      created: Date.parse(model.modified_at),
+      description: `Local Ollama model: ${model.name}`,
+      context_length: 4096,
+      architecture: {
+        modality: "text",
+        tokenizer: "unknown",
+        instruct_type: "unknown"
+      },
+      pricing: {
+        prompt: "0",
+        completion: "0",
+        image: "0",
+        request: "0"
+      },
+      top_provider: {
+        context_length: 4096,
+        max_completion_tokens: 4096,
+        is_moderated: false
+      },
+      per_request_limits: {}
+    }));
+  } catch (error) {
+    console.warn('Failed to fetch Ollama models:', error);
+    return [];
+  }
+}
+
 export function ModelSelector({
   signal,
   freeOnly,
@@ -656,13 +698,19 @@ export function ModelSelector({
   const copying = useSignal(false);
   useEffect(() => {
     if (!availableModels.value) {
-      fetch("https://openrouter.ai/api/v1/models")
-        .then((res) => res.json())
-        .then((data) => {
-          const models: ModelType[] = data.data;
-          availableModels.value = sortBy(models, (x) =>
+      Promise.all([
+        fetch("https://openrouter.ai/api/v1/models").then(res => res.json()),
+        fetchOllamaModels()
+      ])
+        .then(([openRouterData, ollamaModels]) => {
+          const openRouterModels: ModelType[] = openRouterData.data;
+          const allModels = [...openRouterModels, ...ollamaModels];
+          availableModels.value = sortBy(allModels, (x) =>
             parseFloat(x.pricing.prompt)
           );
+        })
+        .catch(error => {
+          console.error('Error fetching models:', error);
         });
     }
   });
@@ -736,6 +784,9 @@ export function ModelSelector({
 }
 
 function priceString(model: ModelType) {
+  if (model.name.startsWith('Ollama: ')) {
+    return '(Local)';
+  }
   if (model.pricing.prompt === "0" && model.pricing.completion === "0") {
     return "Free";
   }
