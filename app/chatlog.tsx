@@ -122,6 +122,7 @@ function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
       {update.actions.length > 0 && (
         <ChatLogEntityInteraction update={update} />
       )}
+      <ChatLogTodos update={update} />
       <ChatLogMovement eventPos={eventPos} />
       {update.llmError && (
         <pre className="whitespace-pre-wrap text-red-400">
@@ -136,6 +137,34 @@ function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
         </pre>
       )}
     </>
+  );
+}
+
+/**
+ * "☐ find the missing ficus" where it happened, in the story.
+ *
+ * The task panel is a tab the player has to think to open. Something arriving
+ * on the list is a small event in the fiction — someone asked you to do a thing
+ * — and it reads better in place than as a number that quietly went up.
+ */
+function ChatLogTodos({ update }: { update: StoryEventType }) {
+  useSignals();
+  if (!update.todos?.length) {
+    return null;
+  }
+  return (
+    <div className="text-xs text-amber-300 my-1">
+      {update.todos.map((todo) => (
+        <div
+          key={todo.id}
+          className="cursor-default"
+          title={todo.done ? "crossed off your list" : "added to your list"}
+        >
+          {todo.done ? "☑ " : "☐ "}
+          <span className={todo.done ? "line-through" : ""}>{todo.title}</span>
+        </div>
+      ))}
+    </div>
   );
 }
 
