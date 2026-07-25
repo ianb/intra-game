@@ -133,6 +133,27 @@ stopped tasks being created at all. The wording that shipped is the one that
 scored on both. Note the sample size, though: **one run is one sample**, and a
 single flipped check is as consistent with sampling as with a regression.
 
+## Which prompts a number was measured against
+
+Every result records a `promptFingerprint` — a short hash of the prompts the
+game actually assembles, taken by running the engine against a scripted LLM (no
+cassette, no network) at the start of a run.
+
+It exists because comparing numbers across weeks always raises the same
+question: did the game change, or is the model just sampling? The date and the
+model id can't answer it. Two runs with the same fingerprint were asked the same
+questions; two with different fingerprints weren't, and a difference between
+them isn't a difference in the model.
+
+Note what this deliberately does **not** do: nothing is invalidated by it. A
+number measured against an old prompt is still a fact about that prompt, and
+results are kept, not expired. That's the opposite of how the cassettes treat
+staleness, and the difference is the point — a cassette is a _cache_, where a
+stale entry is a wrong answer, so it over-invalidates and says so loudly.
+Results are a _record_, where deleting on change would throw away the history
+that makes them worth keeping. Fingerprints differing within one day's table is
+normal, and the table says so rather than hiding it.
+
 ## What this doesn't measure
 
 Quality. Nothing here can tell you whether the game was _fun_, whether Ama was

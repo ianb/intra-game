@@ -107,6 +107,15 @@ export interface ScenarioResult {
   scenario: string;
   passed: number;
   total: number;
+  /**
+   * Which prompts this was measured against; see playtest/fingerprint.ts.
+   *
+   * Recorded per scenario rather than per file because results are merged at
+   * scenario granularity — running one scenario today must not relabel this
+   * morning's rows as having been measured against today's prompts. Optional
+   * because results recorded before this existed don't have one.
+   */
+  promptFingerprint?: string;
   ms: number;
   events: number;
   /** Warnings where the engine discarded something the model said. */

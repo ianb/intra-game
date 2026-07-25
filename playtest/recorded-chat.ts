@@ -29,17 +29,67 @@ export function loadCassette(path: string): Cassette {
     : {};
 }
 
+/**
+ * What a miss almost always means, said out loud.
+ *
+ * A stale cassette is silent by construction: the key is a hash of the prompt,
+ * so changing a prompt misses every entry, and a miss returns "" — which parses
+ * to no game action. The test then fails on game *state* ("the player has no
+ * name", "Ama never finished intake"), which reads as the engine being broken
+ * rather than the fixture being old. That cost a confusing few minutes here
+ * twice in one afternoon, and would cost more to someone who hadn't just edited
+ * the prompt themselves.
+ */
+export function cassetteMissMessage(
+  path: string,
+  request: ChatType,
+  recorded: number,
+  hits: number,
+): string {
+  const name = path.replace(/^.*\/|\.json$/g, "");
+  if (recorded === 0) {
+    return `No cassette at ${path} — record it with: pnpm playtest:record ${name}`;
+  }
+  return (
+    `Cassette miss in ${path}: no recorded reply for "${request.meta.title}" ` +
+    `(${recorded} entries recorded, ${hits} matched so far).\n` +
+    (hits === 0
+      ? `  Nothing has matched, so the cassette is stale — the prompts changed since it was recorded.\n`
+      : `  Prompts have changed since this was recorded.\n`) +
+    `  Re-record: rm ${path} && pnpm playtest:record ${name}`
+  );
+}
+
 // Replay a cassette. Unknown prompts fall through to onMiss (default: "", which
 // parses to no game action) so incidental variance never crashes a replay.
+//
+// Misses are reported once per replay, on console.error rather than
+// console.warn: the eval harness captures console.warn as the model's protocol
+// failures (see evals/harness.ts), and a stale fixture is not the model getting
+// anything wrong.
 export function replayChat(
   path: string,
   options: { onMiss?: (request: ChatType) => string } = {},
 ): ChatFn {
   const cassette = loadCassette(path);
+  const recorded = Object.keys(cassette).length;
+  // An explicit onMiss means the caller is handling misses deliberately, so
+  // they aren't news.
+  const announce = !options.onMiss;
   const onMiss = options.onMiss ?? (() => "");
+  let hits = 0;
+  let announced = false;
   return async (request: ChatType) => {
     const entry = cassette[promptKey(request)];
-    return entry ? entry.response : onMiss(request);
+    if (entry) {
+      hits++;
+      return entry.response;
+    }
+    if (announce && !announced) {
+      announced = true;
+      console.error(cassetteMissMessage(path, request, recorded, hits));
+    }
+    return onMiss(request);
   };
 }
 

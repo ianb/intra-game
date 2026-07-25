@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { parse, stringify } from "yaml";
 import type { ChatFn } from "../lib/game/model";
 import { cliChat } from "../playtest/clichat";
+import { promptFingerprint } from "../playtest/fingerprint";
 import { runScenario, type ScenarioResult } from "./harness";
 import { openRouterChat } from "./openrouter";
 import type { ModelRun, ResultsFile } from "./page";
@@ -93,6 +94,11 @@ async function main() {
     throw new Error(`No scenarios matched ${only.join(", ")}`);
   }
 
+  // Taken before anything expensive: it needs no network, and knowing which
+  // prompts produced a number is worth nothing if it's recorded after the fact.
+  const fingerprint = await promptFingerprint();
+  console.log(`prompts ${fingerprint}`);
+
   const runs: ModelRun[] = [];
   for (const model of models) {
     console.log(`\n=== ${model} (${backend}) ===`);
@@ -100,7 +106,7 @@ async function main() {
     for (const scenario of scenarios) {
       process.stdout.write(`  ${scenario.name}... `);
       const result = await runScenario(scenario, backendFor(backend, model));
-      results.push(result);
+      results.push({ ...result, promptFingerprint: fingerprint });
       const failed = result.checks.filter((c) => !c.passed).map((c) => c.name);
       console.log(
         `${result.passed}/${result.total} in ${Math.round(result.ms / 1000)}s` +

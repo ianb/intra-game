@@ -15,6 +15,19 @@ export interface ModelRun {
   scenarios: ScenarioResult[];
 }
 
+/** Distinct prompt fingerprints in a day's results; see evals/report.ts. */
+function fingerprintsOf(data: ResultsFile): string[] {
+  return [
+    ...new Set(
+      data.runs.flatMap((run) =>
+        run.scenarios.flatMap((s) =>
+          s.promptFingerprint ? [s.promptFingerprint] : [],
+        ),
+      ),
+    ),
+  ];
+}
+
 export interface ResultsFile {
   date: string;
   runs: ModelRun[];
@@ -104,9 +117,16 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
     .flatMap((run) => run.scenarios.map((s) => transcriptBlock(run, s)))
     .join("\n");
 
+  const fingerprints = fingerprintsOf(data);
+  const provenance = !fingerprints.length
+    ? "recorded before prompt fingerprints"
+    : fingerprints.length === 1
+      ? `prompts ${esc(fingerprints[0]!)}`
+      : `prompts ${fingerprints.map(esc).join(", ")} — not directly comparable`;
+
   return `
 <section>
-  <h2>${esc(data.date)}</h2>
+  <h2>${esc(data.date)} <span class="meta">${provenance}</span></h2>
   <div class="scroller">
     <table>
       <thead><tr><th></th>${header}<th>total</th></tr></thead>

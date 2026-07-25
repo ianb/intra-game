@@ -117,6 +117,29 @@ and asserts the engine reaches the right state. Re-record when the prompts or a
 scenario change (a changed prompt is a new hash, so stale entries simply stop
 being hit — delete the cassette and re-record for a clean cut).
 
+### The cascade is the point, but it should say so
+
+Keying on the whole prompt means one edit invalidates every entry at once, which
+looks like fragility and mostly isn't. The alternative — key on less, so small
+prompt changes keep hitting — sounds better and is worse: the system prompt is
+where character instructions live, so ignoring part of it means a change that
+_should_ change the model's behaviour silently replays replies from before it.
+That trades a loud failure for a quiet wrong answer, on a fixture whose entire
+job is standing in for a real model.
+
+So the cassette over-invalidates on purpose. What it owes you in exchange is
+being obvious about it: a miss now prints what's stale and the command to fix
+it, because the silent version failed on game _state_ — "the player has no
+name", "Ama never finished intake" — which reads as a broken engine rather than
+an old recording. Re-recording is one command and a few minutes; misdiagnosing
+it is not.
+
+The corollary is to keep few cassettes and record short scenarios, since the
+cost of invalidation scales with how much has been recorded, not with how much
+changed. When a test only needs _some_ model reply rather than a real one, use a
+scripted fake instead — `test/headless-engine.doctest.md` is the pattern, and it
+never goes stale.
+
 ## Caveats
 
 - **Not a test.** Real model calls are non-deterministic and slow (~10–15s per

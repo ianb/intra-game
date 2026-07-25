@@ -9,6 +9,8 @@ checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
 ## 2026-07-25
 
+Prompts `956511dcfce2`.
+
 | model | intake | movement | in-character | mystery | task-list | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |

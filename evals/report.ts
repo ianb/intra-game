@@ -26,6 +26,34 @@ export function readResults(): ResultsFile[] {
     );
 }
 
+/**
+ * Which prompts a day's numbers were measured against.
+ *
+ * Not a warning when they differ — mixing is normal, since re-running one
+ * scenario after a prompt edit is exactly the thing merging supports. It just
+ * has to be visible, because two rows measured against different prompts are
+ * not comparable and nothing else in the table says so.
+ */
+export function fingerprintNote(data: ResultsFile): string {
+  const seen = [
+    ...new Set(
+      data.runs.flatMap((run) =>
+        run.scenarios.map((s) => s.promptFingerprint).filter(Boolean),
+      ),
+    ),
+  ] as string[];
+  if (!seen.length) {
+    return "Recorded before prompt fingerprints, so what was measured isn't known.";
+  }
+  if (seen.length === 1) {
+    return `Prompts \`${seen[0]}\`.`;
+  }
+  return (
+    `Prompts ${seen.map((f) => `\`${f}\``).join(", ")} — rows here were ` +
+    `measured against different prompts and aren't directly comparable.`
+  );
+}
+
 /** Rebuild the summary and the page from every recorded run, newest first. */
 export function writeReports() {
   const files = readResults();
@@ -45,6 +73,7 @@ export function writeReports() {
 
   for (const data of files) {
     lines.push(`## ${data.date}`, "");
+    lines.push(fingerprintNote(data), "");
     lines.push(`| model | ${scenarioNames.join(" | ")} | total |`);
     lines.push(`| --- | ${scenarioNames.map(() => "---").join(" | ")} | --- |`);
     for (const run of data.runs) {

@@ -92,6 +92,7 @@ runs:
           - name: ama-spoke
             describe: Ama actually said something, rather than only emitting tags
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: movement
         passed: 5
         total: 5
@@ -160,6 +161,7 @@ runs:
           - name: left-intake
             describe: the player is no longer in the room they started in
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: in-character
         passed: 4
         total: 4
@@ -219,6 +221,7 @@ runs:
           - name: kept-talking
             describe: answered rather than refusing or falling silent
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: mystery
         passed: 5
         total: 5
@@ -320,6 +323,7 @@ runs:
           - name: used-her-hint
             describe: named someone from her own hint (Harold or Lily)
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: task-list
         passed: 5
         total: 5
@@ -424,6 +428,7 @@ runs:
           - name: task-open
             describe: the task was left open, not crossed off in the same breath
             passed: true
+        promptFingerprint: 956511dcfce2
   - model: claude-sonnet-4-5-20250929
     backend: cli
     scenarios:
@@ -494,6 +499,7 @@ runs:
           - name: ama-spoke
             describe: Ama actually said something, rather than only emitting tags
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: movement
         passed: 5
         total: 5
@@ -553,6 +559,7 @@ runs:
           - name: left-intake
             describe: the player is no longer in the room they started in
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: in-character
         passed: 4
         total: 4
@@ -597,6 +604,7 @@ runs:
           - name: kept-talking
             describe: answered rather than refusing or falling silent
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: mystery
         passed: 5
         total: 5
@@ -693,6 +701,7 @@ runs:
           - name: used-her-hint
             describe: named someone from her own hint (Harold or Lily)
             passed: true
+        promptFingerprint: 956511dcfce2
       - scenario: task-list
         passed: 5
         total: 5
@@ -790,3 +799,4 @@ runs:
           - name: task-open
             describe: the task was left open, not crossed off in the same breath
             passed: true
+        promptFingerprint: 956511dcfce2
