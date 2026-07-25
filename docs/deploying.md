@@ -157,6 +157,20 @@ address another's session even by guessing a session id.
 `test/access.doctest.md` covers the failure modes, including that the local
 `DEV_IDENTITY` bypass is unreachable the moment these two variables are set.
 
+### Who can get in
+
+Access is an allowlist, so with the policy above — include: your email — nobody
+else can reach the game, and there is no self-serve signup to find. That is the
+default and probably what you want.
+
+It is a policy choice rather than a property of the code, though. An include
+rule of **Everyone**, or a one-time PIN to any address, would let strangers in
+without any change to the app: they would each get a verified email, their own
+session index, and their own games, because every server-side name is derived
+from that email. Two things to weigh before doing it — Zero Trust bills by seat
+above its free allowance (check the current limit), and every server session
+runs on _your_ AI Gateway token unless the player supplies their own key.
+
 ## 5. Play on the server
 
 Reload the deployed URL. Open **Settings** and click **Play on the server** —

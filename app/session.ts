@@ -98,6 +98,84 @@ export async function sendInput(
   return events;
 }
 
+// --- The player's games on the server ----------------------------------------
+
+export interface ServerSession {
+  id: string;
+  title: string;
+  created: string;
+  /** How far along it is; read from the game itself, not a cached count. */
+  events: number;
+}
+
+/**
+ * Every game this identity has on the server.
+ *
+ * Sessions were always addressable — a game's Durable Object is named after the
+ * verified email and the session id — but nothing kept a list, and a DO
+ * namespace can't be enumerated. So one game per browser, and clearing the id
+ * lost it. The server keeps the list now; see worker/sessionindex.ts.
+ */
+export async function listServerSessions(): Promise<ServerSession[]> {
+  const response = await fetch("/api/sessions", { credentials: "include" });
+  if (!response.ok) {
+    throw new Error(`Could not list games: ${response.status}`);
+  }
+  return ((await response.json()) as { sessions: ServerSession[] }).sessions;
+}
+
+/** Start a new game on the server and switch this tab to it. */
+export async function newServerSession(title?: string): Promise<ServerSession> {
+  const response = await fetch("/api/sessions", {
+    method: "POST",
+    credentials: "include",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ title }),
+  });
+  if (!response.ok) {
+    const { error } = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
+    throw new Error(error || `Could not start a game: ${response.status}`);
+  }
+  return ((await response.json()) as { session: ServerSession }).session;
+}
+
+export async function renameServerSession(
+  id: string,
+  title: string,
+): Promise<void> {
+  const response = await fetch("/api/sessions", {
+    method: "POST",
+    credentials: "include",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ id, title, rename: true }),
+  });
+  if (!response.ok) {
+    throw new Error(`Could not rename: ${response.status}`);
+  }
+}
+
+/**
+ * Delete a game on the server, for good.
+ *
+ * The log and any stored credential go with it. If it's the game this tab is
+ * playing, the tab drops back to local play rather than sitting on an id that
+ * now addresses an empty session.
+ */
+export async function deleteServerSession(id: string): Promise<void> {
+  const response = await fetch(
+    `/api/sessions?session=${encodeURIComponent(id)}`,
+    { method: "DELETE", credentials: "include" },
+  );
+  if (!response.ok) {
+    throw new Error(`Could not delete: ${response.status}`);
+  }
+  if (remoteSession.value === id) {
+    remoteSession.value = null;
+  }
+}
+
 // --- Choosing where a turn runs ----------------------------------------------
 
 /**

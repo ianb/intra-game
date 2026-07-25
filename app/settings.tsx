@@ -2,6 +2,8 @@
  * The settings overlay: model choice, the OpenRouter key, and the log.
  */
 
+import { useEffect } from "react";
+import { twMerge } from "tailwind-merge";
 import {
   customEndpoint,
   lastLlmError,
@@ -13,7 +15,13 @@ import { ModelSelector } from "@/components/modelselector";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import { model } from "./model";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
-import { remoteSession } from "./session";
+import {
+  deleteServerSession,
+  listServerSessions,
+  newServerSession,
+  remoteSession,
+  type ServerSession,
+} from "./session";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export function Settings() {
@@ -109,7 +117,7 @@ function ServerPlay() {
   if (session) {
     return (
       <>
-        Playing on the server, session <code>{session.slice(0, 8)}</code>
+        Playing on the server.
         <br />
         <Button
           className="mt-2"
@@ -120,6 +128,7 @@ function ServerPlay() {
         >
           Play in this tab instead
         </Button>
+        <ServerGames />
       </>
     );
   }
@@ -129,13 +138,124 @@ function ServerPlay() {
       <br />
       <Button
         className="mt-2"
-        onClick={() => {
-          remoteSession.value = crypto.randomUUID();
+        onClick={async () => {
+          // Ask the server for a game rather than inventing an id here, so it
+          // is on the player's list from the start.
+          try {
+            const created = await newServerSession();
+            remoteSession.value = created.id;
+          } catch {
+            // No index (an older deployment, or the API is unreachable) — an
+            // id still addresses a session perfectly well, so play anyway.
+            remoteSession.value = crypto.randomUUID();
+          }
           window.location.reload();
         }}
       >
         Play on the server (reloads)
       </Button>
     </>
+  );
+}
+
+/**
+ * The player's games on the server: switch between them, start one, delete one.
+ *
+ * Server games are the saves in this mode — the log lives on the server, so
+ * "save" and "have several" are the same feature, and this is where both
+ * happen.
+ */
+function ServerGames() {
+  useSignals();
+  const games = useSignal<ServerSession[] | null>(null);
+  const error = useSignal("");
+  const busy = useSignal(false);
+  useEffect(() => {
+    void refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  async function refresh() {
+    try {
+      games.value = await listServerSessions();
+      error.value = "";
+    } catch (e) {
+      games.value = [];
+      error.value = String(e);
+    }
+  }
+  async function withBusy(fn: () => Promise<void>) {
+    busy.value = true;
+    try {
+      await fn();
+      error.value = "";
+    } catch (e) {
+      error.value = String(e);
+    } finally {
+      busy.value = false;
+    }
+  }
+  if (games.value === null) {
+    return <div className="mt-4 text-sm text-gray-300">Loading games…</div>;
+  }
+  return (
+    <div className="mt-4">
+      <div className="mb-1">Your games</div>
+      {error.value && (
+        <div className="text-sm text-red-300 mb-1">{error.value}</div>
+      )}
+      {games.value.map((game) => {
+        const current = game.id === remoteSession.value;
+        return (
+          <div key={game.id} className="mb-1 flex items-center">
+            <Button
+              className={twMerge(
+                "text-sm mr-1",
+                current && "bg-green-700 text-white",
+              )}
+              disabled={busy.value || current}
+              onClick={() => {
+                remoteSession.value = game.id;
+                window.location.reload();
+              }}
+            >
+              {game.title}
+            </Button>
+            <span className="text-xs text-gray-300 mr-1">
+              {game.events} events · {game.created}
+              {current ? " · playing" : ""}
+            </span>
+            <Button
+              className="text-xs bg-red-800 text-white hover:bg-red-600"
+              disabled={busy.value}
+              onClick={() =>
+                withBusy(async () => {
+                  await deleteServerSession(game.id);
+                  if (current) {
+                    window.location.reload();
+                    return;
+                  }
+                  await refresh();
+                })
+              }
+            >
+              🗑️
+            </Button>
+          </div>
+        );
+      })}
+      <Button
+        className="text-sm mt-1"
+        disabled={busy.value}
+        onClick={() =>
+          withBusy(async () => {
+            const created = await newServerSession();
+            remoteSession.value = created.id;
+            window.location.reload();
+          })
+        }
+      >
+        New game on the server
+      </Button>
+    </div>
   );
 }

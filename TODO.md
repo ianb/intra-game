@@ -136,7 +136,10 @@ original write-up, plus whatever the last few sessions turned up.
   narrator into most things. Some of that is the fun; some of it isn't.
 - **Multiple players** `engine` `L` — including the hard part: two players in
   one room, and what happens when they act at once. Also "at a distance",
-  players who never share a room.
+  players who never share a room. The identity half is done — Access verifies an
+  email and every server-side name derives from it, so opening the Access policy
+  would already give strangers their own games — but nothing lets two people
+  into the _same_ one.
 - **Player as author** `content` `L` — in-game authoring tools, per-type
   editors, a second player who writes the world while the first plays it. Wants
   the data to stay typed and tested, which is the thread the content split

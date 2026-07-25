@@ -69,6 +69,10 @@ export class GameSession {
         return this.create(request);
       case "GET /events":
         return this.events(url);
+      case "GET /info":
+        return json({ events: await this.sessionLog.count() });
+      case "POST /destroy":
+        return this.destroy();
       case "POST /input":
         return this.input(request);
       default:
@@ -94,6 +98,23 @@ export class GameSession {
       await this.state.storage.put(CREDENTIAL_KEY, body.credential);
     }
     return json({ owner, events: await this.sessionLog.count() });
+  }
+
+  /**
+   * Delete this session outright.
+   *
+   * Not a hole in "the log is append-only": that invariant is about editing
+   * history — an undo appends a rewind marker rather than removing a turn, so
+   * the record of what happened stays honest. Throwing a whole game away at its
+   * owner's request is a different act, and the alternative is worse: a deleted
+   * game that still bills storage and still holds whatever the player said in
+   * it, forever, because nothing can reach it.
+   *
+   * Credentials go with it, which is most of the point.
+   */
+  private async destroy(): Promise<Response> {
+    await this.state.storage.deleteAll();
+    return json({ destroyed: true });
   }
 
   /** The event log from a cursor, so a reconnecting client can catch up. */

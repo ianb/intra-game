@@ -16,10 +16,18 @@
   "compatibility_flags": ["nodejs_compat"],
   // One Durable Object per game session: it owns the append-only event log and
   // runs the engine, and DOs serialize requests so turns cannot interleave.
+  // Plus one per player, holding the list of their games — a DO namespace
+  // cannot be enumerated, so that list has to be kept somewhere.
   "durable_objects": {
-    "bindings": [{ "name": "GAME_SESSION", "class_name": "GameSession" }],
+    "bindings": [
+      { "name": "GAME_SESSION", "class_name": "GameSession" },
+      { "name": "PLAYER_SESSIONS", "class_name": "PlayerSessions" },
+    ],
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameSession"] }],
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["GameSession"] },
+    { "tag": "v2", "new_sqlite_classes": ["PlayerSessions"] },
+  ],
   // Cloudflare Access gates /api/*; empty here means the API fails closed (404
   // "not configured") until a deployment fills these in.
   "vars": { "ACCESS_TEAM_DOMAIN": "", "ACCESS_AUD": "" },
