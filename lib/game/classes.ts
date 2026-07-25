@@ -1,6 +1,13 @@
 import clone from "just-clone";
 import { parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
+import { historyForEntity as computeHistoryForEntity } from "./history";
+import {
+  coerceBoolean,
+  coerceNumber,
+  fixupText,
+  isValidPropertySet,
+} from "./coerce";
 import {
   ChatType,
   EntityId,
@@ -212,164 +219,9 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     return "";
   }
 
-  historyForEntity(
-    parameters: ParametersT,
-    { limit }: { limit?: number } = {}
-  ): MessageType[] {
-    let history: MessageType[] = [];
-    const updates = this.updatesSeenByMe();
-    while (!limit || history.length < limit) {
-      const update = updates.pop();
-      if (!update) {
-        break;
-      }
-      // If we expect this to be the last update included in history, don't act like there's any previous update:
-      const lastUpdate =
-        limit && history.length + 1 >= limit
-          ? undefined
-          : updates[updates.length - 1];
-      history.unshift(...this.updateToHistory(update, { lastUpdate }));
-      history = foldHistory(history);
-    }
-    return history;
-  }
-
-  updatesSeenByMe(): StoryEventType[] {
-    const results: StoryEventType[] = [];
-    for (const eventPos of this.world.model.updatesWithPositions.value) {
-      if (
-        eventPos.event.id === "narrator" &&
-        eventPos.event.roomId === "Void"
-      ) {
-        results.push(
-          ...this.movementUpdatesForPosition(
-            eventPos,
-            eventPos.positions.get(this.id)
-          )
-        );
-      }
-      if (eventPos.positions.get(this.id) === eventPos.event.roomId) {
-        results.push(eventPos.event);
-      }
-    }
-    return results;
-  }
-
-  movementUpdatesForPosition(
-    eventPos: StoryEventWithPositionsType,
-    position: EntityId | undefined
-  ): StoryEventType[] {
-    const changes: ChangesType = {};
-    if (!position) {
-      return [];
-    }
-    for (const [entityId, change] of Object.entries(eventPos.event.changes)) {
-      if (
-        change.before.inside === position ||
-        change.after.inside === position
-      ) {
-        changes[entityId] = {
-          before: change.before,
-          after: change.after,
-        };
-      }
-    }
-    if (Object.keys(changes)) {
-      return [
-        {
-          ...eventPos.event,
-          roomId: position,
-          changes,
-        },
-      ];
-    }
-    return [];
-  }
-
-  updateToHistory(
-    update: StoryEventType,
-    { lastUpdate }: { lastUpdate?: StoryEventType }
-  ): MessageType[] {
-    const parts: string[] = [];
-    if (!lastUpdate || lastUpdate.roomId !== update.roomId) {
-      const thisRoom = this.world.getRoom(update.roomId);
-      if (thisRoom && thisRoom.id !== "Void") {
-        parts.push(
-          tmpl`
-          [The following events occur in room ${thisRoom.id}]
-          `
-        );
-      }
-    }
-    for (const [entityId, changes] of Object.entries(update.changes)) {
-      if (entityId === this.id) {
-        if (changes.after.inside) {
-          parts.push(tmpl`
-            [${this.name} goes from ${changes.before.inside} to ${changes.after.inside}]
-            `);
-        }
-        continue;
-      }
-      if (changes.after.inside && changes.after.inside === update.roomId) {
-        parts.push(
-          tmpl`
-          [${this.world.getEntity(entityId)?.name} arrives from ${changes.before.inside}]
-          `
-        );
-      } else if (
-        changes.before.inside &&
-        changes.before.inside === update.roomId
-      ) {
-        parts.push(
-          tmpl`
-          [${this.world.getEntity(entityId)?.name} leaves to ${changes.after.inside}]
-          `
-        );
-      }
-    }
-    for (const action of update.actions) {
-      if (isStoryDialog(action)) {
-        // This removes emoji. While we allow the LLM to create emoji, if it *sees* emoji then it'll use them more and more in a feedback cycle. So by remove them we don't encourage the LLM to use emoji unless it is directly inspired to do so
-        // I have a build problem keeping me from using the proper regex: /\p{Emoji}/gu
-
-        const text = action.text.replace(
-          /[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u26FF\u2700-\u27BF]/g,
-          ""
-        );
-        parts.push(tmpl`
-          <dialog character="${action.id}"[[ to="${action.toId}"]]>
-          ${text}
-          </dialog>
-          `);
-      } else if (isStoryDescription(action)) {
-        const minutes =
-          action.minutes === undefined ? "" : ` minutes="${action.minutes}"`;
-        const text = action.text.trim().includes("\n")
-          ? `\n${action.text.trim()}\n`
-          : action.text.trim();
-        parts.push(`<description${minutes}>${text}</description>`);
-      } else if (isStoryActionAttempt(action)) {
-        const minutes = action.minutes ? ` minutes="${action.minutes}"` : "";
-        parts.push(tmpl`
-        <action success="${action.success ? "true" : "false"}"${minutes}>
-        ${action.attempt}
-
-        Result: ${action.resolution}
-        </action>
-        `);
-      } else {
-        console.warn("Unknown action type", action);
-      }
-    }
-    if (!parts.length) {
-      return [];
-    }
-    return [
-      {
-        role: update.id === "player" ? "user" : "assistant",
-        content: parts.join("\n\n"),
-      },
-    ];
+  /** This entity's recent history, as chat messages for a prompt. */
+  historyForEntity({ limit }: { limit?: number } = {}): MessageType[] {
+    return computeHistoryForEntity(this, { limit });
   }
 
   currentLocationPrompt(parameters: ParametersT): string {
@@ -503,7 +355,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         } else if (typeof value === "number") {
           content = coerceNumber(content);
         }
-        if (isValidPropertySet(entity, key, content)) {
+        if (isValidPropertySet(key, content)) {
           const existing = result.changes[id];
           if (!existing) {
             result.changes[id] = {
@@ -873,7 +725,7 @@ export class Person<
           <insert-system />
           `,
         },
-        ...this.historyForEntity(parameters, { limit: 10 }),
+        ...this.historyForEntity({ limit: 10 }),
         {
           role: "user",
           content: tmpl`
@@ -1639,7 +1491,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           Generally if the input starts with \`>\` it is an action, and if it starts with \`"\` it is dialog.
           `,
         },
-        ...this.historyForEntity(parameters, { limit: 3 }),
+        ...this.historyForEntity({ limit: 3 }),
         {
           role: "user",
           content: tmpl`
@@ -1709,7 +1561,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           In this step YOUR ONLY JOB is to describe the object or space that the player is examining. If the player is not specific then describe the room generally.
           `,
         },
-        ...this.historyForEntity(parameters, { limit: 4 }),
+        ...this.historyForEntity({ limit: 4 }),
         {
           role: "user",
           content: tmpl`
@@ -1757,7 +1609,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           In this step YOUR ONLY JOB is to describe the outcome of the player's movement attempt. If the player is not allowed to move to the location, you should describe why.
           `,
         },
-        ...this.historyForEntity(parameters, { limit: 4 }),
+        ...this.historyForEntity({ limit: 4 }),
         {
           role: "user",
           content: tmpl`
@@ -1821,7 +1673,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
           `,
         },
-        ...this.historyForEntity(parameters, { limit: 4 }),
+        ...this.historyForEntity({ limit: 4 }),
         {
           role: "user",
           content: tmpl`
@@ -2160,102 +2012,8 @@ export class Mystery extends Entity {
   }
 }
 
-function coerceBoolean(v: string | undefined, defaultValue = false) {
-  if (v === undefined) {
-    return defaultValue;
-  }
-  v = v.toLowerCase();
-  if (v === "true" || v === "yes" || v === "y" || v === "on" || v === "1") {
-    return true;
-  }
-  if (v === "false" || v === "no" || v === "n" || v === "off" || v === "0") {
-    return false;
-  }
-  console.warn("Unexpected boolean value:", JSON.stringify(v));
-  return defaultValue;
-}
-
-function coerceNumber(v: string | undefined) {
-  if (v === undefined) {
-    return 0;
-  }
-  const num = Number(v);
-  if (isNaN(num)) {
-    console.warn("Unexpected number value:", JSON.stringify(v));
-    return 0;
-  }
-  return num;
-}
-
 function IF(cond: any) {
   return cond ? TemplateTrue : TemplateFalse;
 }
 
-function fixupText(llmText: string) {
-  return llmText
-    .replace(/…/g, "...")
-    .replace(/&#x20;/g, " ")
-    .trim();
-}
 
-function foldHistory(history: MessageType[]): MessageType[] {
-  let found = false;
-  for (let i = 1; i < history.length; i++) {
-    const prev = history[i - 1]!;
-    const curr = history[i]!;
-    if (prev.role === curr.role) {
-      found = true;
-      break;
-    }
-  }
-  if (!found) {
-    return history;
-  }
-  const newHistory: MessageType[] = [];
-  for (let i = 0; i < history.length; i++) {
-    const item = history[i]!;
-    const existing = newHistory.at(-1);
-    if (!existing || existing.role !== item.role) {
-      newHistory.push(item);
-      continue;
-    }
-    newHistory[newHistory.length - 1] = combineHistory(existing, item);
-  }
-  return newHistory;
-}
-
-function combineHistory(a: MessageType, b: MessageType) {
-  if (a.content && b.content) {
-    if (b.content.includes(a.content)) {
-      return b;
-    } else if (a.content.includes(b.content)) {
-      return a;
-    }
-    return {
-      role: a.role,
-      content: a.content + "\n\n" + b.content,
-    };
-  }
-  if (a.content) {
-    return a;
-  }
-  return b;
-}
-
-/* Sometimes the AI sets properties to specific values like 'unspecified' but that's not helpful */
-function isValidPropertySet(entity: Entity, key: string, value: any) {
-  if (typeof value !== "string") {
-    return true;
-  }
-  const v = value.trim().toLowerCase();
-  if (key === "pronouns") {
-    return v === "he/him" || v === "she/her" || v === "they/them";
-  } else if (key === "profession") {
-    return v !== "unspecified" && v !== "unknown";
-  } else if (key === "name") {
-    return (
-      v !== "unspecified" && v !== "unknown" && v !== "player" && v !== "you"
-    );
-  }
-  return true;
-}
