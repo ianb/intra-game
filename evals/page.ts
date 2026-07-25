@@ -12,6 +12,8 @@ import type { ScenarioResult } from "./harness";
 export interface ModelRun {
   model: string;
   backend: string;
+  /** Set when the run used a second, cheaper model for the "flash" tier. */
+  flashModel?: string;
   scenarios: ScenarioResult[];
 }
 
@@ -95,7 +97,7 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
         run.scenarios.reduce((a, s) => a + s.ms, 0) / 1000,
       );
       return `<tr>
-        <th class="model">${esc(run.model)}<span class="meta">${esc(run.backend)} · ${seconds}s</span></th>
+        <th class="model">${esc(run.model)}<span class="meta">${run.flashModel ? `+ ${esc(run.flashModel)} (flash) · ` : ""}${esc(run.backend)} · ${seconds}s</span></th>
         ${cells}
         <td class="score total ${scoreClass(passed, total)}">${passed}/${total}</td>
       </tr>`;

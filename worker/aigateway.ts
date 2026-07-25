@@ -1,5 +1,6 @@
 import type { ChatStreamFn } from "../lib/game/model";
 import { readSse } from "../lib/ssestream";
+import { modelForTier } from "../lib/models";
 import type { ChatType } from "../lib/types";
 
 /**
@@ -19,8 +20,16 @@ export interface GatewayConfig {
   accountId: string;
   /** Our Cloudflare AI Gateway token. Never sent to the client. */
   token: string;
-  /** Default model id, in `provider/model` form. */
+  /** Model for the "pro" tier, in `provider/model` form. */
   model: string;
+  /**
+   * Model for prompts that ask for the "flash" tier; falls back to `model`.
+   *
+   * Worth setting: routing the mechanical prompts to a small model costs the
+   * character prompts nothing in cache terms — they share 19 characters of
+   * prefix, so they were never in the same cache entry (`pnpm playtest:cache`).
+   */
+  flashModel?: string;
   /** A player's own provider key, when they brought one. */
   providerKey?: string;
 }
@@ -46,7 +55,11 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
       method: "POST",
       headers,
       body: JSON.stringify({
-        model: config.model,
+        // The prompt asks for a tier; the deployment decides what fulfils it.
+        model: modelForTier(request.model, {
+          pro: config.model,
+          flash: config.flashModel,
+        }),
         messages: request.messages,
         stream: true,
       }),

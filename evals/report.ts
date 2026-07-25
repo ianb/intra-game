@@ -85,7 +85,7 @@ export function writeReports() {
       const passed = run.scenarios.reduce((a, s) => a + s.passed, 0);
       const total = run.scenarios.reduce((a, s) => a + s.total, 0);
       lines.push(
-        `| \`${run.model}\` | ${cells.join(" | ")} | **${passed}/${total}** |`,
+        `| \`${run.model}\`${run.flashModel ? ` + \`${run.flashModel}\`` : ""} | ${cells.join(" | ")} | **${passed}/${total}** |`,
       );
     }
     lines.push("");

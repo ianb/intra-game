@@ -1,3 +1,4 @@
+import type { ModelTier } from "./models";
 import type { Entity, Mystery, Person, Room } from "./game/classes";
 export { Entity, Person, Room };
 
@@ -195,7 +196,8 @@ export interface PersonScheduledEventType {
 
 export interface ChatType {
   meta: ChatMetaType;
-  model?: string;
+  /** Which tier this prompt needs; see lib/models.ts. Unset means "pro". */
+  model?: ModelTier;
   messages: MessageType[];
 }
 

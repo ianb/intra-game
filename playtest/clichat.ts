@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import type { ChatType } from "../lib/types";
 import type { ChatFn } from "../lib/game/model";
+import { modelForTier } from "../lib/models";
 
 // An LLM backend for the game, wired to a child `claude -p` process (Claude
 // Code in print mode, tools disabled so it behaves as a single completion).
@@ -28,15 +29,28 @@ const NO_TOOLS = [
 
 export interface CliChatOptions {
   model?: string;
+  /**
+   * Model for prompts that ask for the "flash" tier, if it should differ.
+   *
+   * This is how "can a small model handle the mechanical prompts?" gets
+   * answered rather than guessed: run the evals with a pair and see what moves.
+   */
+  flashModel?: string;
   timeoutMs?: number;
   // Called with (prompt, response) after each completion, for tracing.
   onCall?: (info: { title: string; response: string }) => void;
 }
 
 export function cliChat(options: CliChatOptions = {}): ChatFn {
-  const model = options.model ?? DEFAULT_CLI_MODEL;
+  const pro = options.model ?? DEFAULT_CLI_MODEL;
   const timeoutMs = options.timeoutMs ?? 120_000;
   return async (request: ChatType): Promise<string> => {
+    // Both tiers are named explicitly, so the provider-form defaults in
+    // modelForTier never apply — the claude CLI takes its own model names.
+    const model = modelForTier(request.model, {
+      pro,
+      flash: options.flashModel,
+    });
     const system = request.messages
       .filter((m) => m.role === "system")
       .map((m) => m.content)

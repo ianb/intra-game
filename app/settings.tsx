@@ -9,6 +9,7 @@ import {
   lastLlmError,
   lastLlmErrorType,
   openrouterModel,
+  openrouterSmallModel,
 } from "@/lib/llm";
 import { A, Button, CheckButton } from "@/components/input";
 import { ModelSelector } from "@/components/modelselector";
@@ -37,6 +38,19 @@ export function Settings() {
             signal={openrouterModel}
             freeOnly={!openrouterCode.value}
           />
+        </div>
+        <div className="mt-4">
+          A cheaper model for the mechanical prompts (optional):
+          <br />
+          <ModelSelector
+            signal={openrouterSmallModel}
+            freeOnly={!openrouterCode.value}
+          />
+          <div className="text-xs text-gray-300 mt-1">
+            Used for interpreting what you typed and resolving what you looked
+            at — not for anything a character says. Leave it unset to use one
+            model for everything.
+          </div>
         </div>
         <div className="mt-4">
           {openrouterCode.value ? (

@@ -1,4 +1,5 @@
 import type { ChatFn } from "../lib/game/model";
+import { modelForTier } from "../lib/models";
 import type { ChatType } from "../lib/types";
 
 /**
@@ -16,6 +17,8 @@ const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
 export interface OpenRouterOptions {
   model: string;
+  /** Model for prompts asking for the "flash" tier; defaults to `model`. */
+  flashModel?: string;
   apiKey?: string;
   timeoutMs?: number;
 }
@@ -37,7 +40,10 @@ export function openRouterChat(options: OpenRouterOptions): ChatFn {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: options.model,
+        model: modelForTier(request.model, {
+          pro: options.model,
+          flash: options.flashModel,
+        }),
         messages: request.messages,
       }),
       signal: AbortSignal.timeout(timeoutMs),

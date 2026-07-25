@@ -2,6 +2,7 @@ import { signal } from "@preact/signals-core";
 import OpenAI from "openai";
 import { persistentSignal } from "./persistentsignal";
 import {
+  modelForTier,
   DEFAULT_FLASH_MODEL,
   DEFAULT_MODEL,
   DEFAULT_PRO_MODEL,
@@ -63,6 +64,21 @@ export const openrouterModel = persistentSignal<ModelType | null>(
   null,
 );
 
+/**
+ * An optional cheaper model for the prompts that ask for the "flash" tier.
+ *
+ * Null means "use the same model for everything", which is what this did before
+ * the setting existed and what someone who has picked one model expects. The
+ * mechanical prompts — routing a player's line, resolving an examine — are the
+ * ones a small model can plausibly handle, and per `pnpm playtest:cache` they
+ * share 19 characters of prefix with the character prompts, so moving them
+ * costs the expensive cache nothing.
+ */
+export const openrouterSmallModel = persistentSignal<ModelType | null>(
+  "openrouterSmall",
+  null,
+);
+
 export const logSignal = signal<LlmLogType[]>([]);
 
 export const lastLlmError = signal<string | null>(null);
@@ -85,14 +101,14 @@ export async function chat(request: ChatType) {
     : 0;
   request.meta.index = (lastIndex || 0) + 1;
   request.meta.start = Date.now();
-  let model: string = DEFAULT_MODEL;
-  if (!request.model) {
-    model = DEFAULT_MODEL;
-  } else if (request.model === "pro") {
-    model = DEFAULT_PRO_MODEL;
-  } else if (request.model === "flash") {
-    model = DEFAULT_FLASH_MODEL;
-  }
+  // The prompt says which tier it needs; the player's settings say what fulfils
+  // it. Before this, a selected OpenRouter model overrode every tier, so the
+  // `model: "flash"` declarations in classes.ts had no effect at all in the
+  // mode almost everyone plays in.
+  const model = modelForTier(request.model, {
+    pro: openrouterModel.value?.id,
+    flash: openrouterSmallModel.value?.id,
+  });
   logSignal.value = [log, ...logSignal.value.slice(0, 20)];
   let text = "";
   try {
@@ -132,7 +148,7 @@ export async function chat(request: ChatType) {
     const messages = request.messages;
 
     const completion = await openai.chat.completions.create({
-      model: openrouterModel.value?.id || model,
+      model,
       messages,
     });
 

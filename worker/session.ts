@@ -47,6 +47,8 @@ export interface SessionEnv {
   CF_AIG_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
   GATEWAY_MODEL?: string;
+  /** Optional cheaper model for prompts that ask for the "flash" tier. */
+  GATEWAY_FLASH_MODEL?: string;
   /** Local development: use the stand-in LLM instead of AI Gateway. */
   DEV_FAKE_LLM?: string;
 }
@@ -205,6 +207,7 @@ export class GameSession {
       accountId: this.env.CF_ACCOUNT_ID,
       token: this.env.CF_AIG_TOKEN,
       model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
+      flashModel: this.env.GATEWAY_FLASH_MODEL,
       providerKey: credential?.key,
     });
   }

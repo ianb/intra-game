@@ -23,6 +23,17 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Now
 
+- **The Worker doesn't authenticate the site, only the API** `infra` `M` —
+  `worker/index.ts` gates `/api/*` and hands everything else to
+  `env.ASSETS.fetch()` unauthenticated. Today that's covered because
+  [docs/deploying.md](docs/deploying.md) has you protect the whole hostname with
+  Access, so the request never reaches the Worker — but the privacy of the game
+  and of `/evals/` rests entirely on that one dashboard field. Scope the Access
+  application to `/api/*` by accident and the UI goes public with no code
+  change and no error. The fix is for the Worker to authenticate asset requests
+  too; what makes it more than a one-liner is local play, which is meant to work
+  with no Access and no account, so "unauthenticated" can't simply become 404.
+
 - **Finish the Cloudflare setup** `infra` `M` `blocked:account-setup` — the
   deployment path is written and dry-run clean but has never run against real
   Cloudflare. Follow [docs/deploying.md](docs/deploying.md): Workers Builds, AI
@@ -150,9 +161,18 @@ original write-up, plus whatever the last few sessions turned up.
 - **Evals out of real gameplay** `tooling` `M` — a played session is already an
   event log. Turning an interesting one into a scenario should be a command, not
   a transcription job.
-- **Multiple models per game** `tooling` `M` — different models for narration,
-  NPCs, and action resolution, chosen by what the evals say each is good at.
-  Presets, so a player can pick cost or quality without knowing model names.
+- **Decide which prompts can run small** `tooling` `M` — the mechanism is in
+  place: prompts declare a tier, the deployment picks the models, and `pnpm
+evals --flash <model>` scores a pair. What's missing is the measurement. Only
+  `player input` and `describe people` declare `flash` today; `player examine`,
+  `player move` and `player action` are on the pro tier because that is what
+  they have always been, not because anyone checked. Caching is not the
+  obstacle — `pnpm playtest:cache` says character prompts and player-side
+  prompts share 19 characters of prefix, so they were never in the same cache
+  entry — so this is purely "does a small model get these right".
+- **Model presets** `ui` `S` — a player picks cost or quality, not model names.
+  Wants the answer to the item above first, since a preset is a claim about what
+  works.
 - **Prompt engineering tools** `tooling` `M` — editing a prompt means editing
   TypeScript and re-recording a cassette. `pnpm playtest:cache` measures the
   cache prefix; nothing measures whether a prompt change made the game better.

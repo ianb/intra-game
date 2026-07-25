@@ -41,12 +41,12 @@ function parseArgs(argv: string[]) {
   return args;
 }
 
-function backendFor(name: string, model: string): ChatFn {
+function backendFor(name: string, model: string, flashModel?: string): ChatFn {
   if (name === "openrouter") {
-    return openRouterChat({ model });
+    return openRouterChat({ model, flashModel });
   }
   if (name === "cli") {
-    return cliChat({ model });
+    return cliChat({ model, flashModel });
   }
   throw new Error(`Unknown backend "${name}" (expected cli or openrouter)`);
 }
@@ -59,13 +59,25 @@ function backendFor(name: string, model: string): ChatFn {
  * the only thing ever measured. New results win where they overlap; everything
  * else is left alone.
  */
+/**
+ * What makes two rows the same run.
+ *
+ * The model *pair*, not the model: scoring one big model against big+small is
+ * the whole point of `--flash`, and keying on the pro model alone made the
+ * second run silently replace the first — so the one comparison this feature
+ * exists to support was the one it couldn't record.
+ */
+function runKey(run: ModelRun): string {
+  return `${run.model}::${run.flashModel ?? ""}`;
+}
+
 function merge(path: string, runs: ModelRun[]): ModelRun[] {
   if (!existsSync(path)) {
     return runs;
   }
   const existing = (parse(readFileSync(path, "utf8")) as ResultsFile).runs;
   const merged = existing.map((old) => {
-    const fresh = runs.find((r) => r.model === old.model);
+    const fresh = runs.find((r) => runKey(r) === runKey(old));
     if (!fresh) {
       return old;
     }
@@ -74,7 +86,9 @@ function merge(path: string, runs: ModelRun[]): ModelRun[] {
     );
     return { ...fresh, scenarios: [...kept, ...fresh.scenarios] };
   });
-  const added = runs.filter((r) => !existing.some((o) => o.model === r.model));
+  const added = runs.filter(
+    (r) => !existing.some((o) => runKey(o) === runKey(r)),
+  );
   return [...merged, ...added];
 }
 
@@ -86,6 +100,11 @@ async function main() {
     : backend === "cli"
       ? ["claude-haiku-4-5-20251001", "claude-sonnet-4-5-20250929"]
       : ["anthropic/claude-haiku-4.5"];
+  // A second, cheaper model for prompts that ask for the "flash" tier — the
+  // mechanical ones. This is the knob that makes "what can we run small?"
+  // measurable: score the same scenarios with and without it and read the
+  // difference.
+  const flashModel = args.flash?.[0];
   const only = args.scenario ?? [];
   const scenarios = only.length
     ? EVAL_SCENARIOS.filter((s) => only.includes(s.name))
@@ -101,11 +120,16 @@ async function main() {
 
   const runs: ModelRun[] = [];
   for (const model of models) {
-    console.log(`\n=== ${model} (${backend}) ===`);
+    console.log(
+      `\n=== ${model}${flashModel ? ` + ${flashModel} (flash)` : ""} (${backend}) ===`,
+    );
     const results: ScenarioResult[] = [];
     for (const scenario of scenarios) {
       process.stdout.write(`  ${scenario.name}... `);
-      const result = await runScenario(scenario, backendFor(backend, model));
+      const result = await runScenario(
+        scenario,
+        backendFor(backend, model, flashModel),
+      );
       results.push({ ...result, promptFingerprint: fingerprint });
       const failed = result.checks.filter((c) => !c.passed).map((c) => c.name);
       console.log(
@@ -120,7 +144,12 @@ async function main() {
         console.log(`      repaired: ${warning.slice(0, 110)}`);
       }
     }
-    runs.push({ model, backend, scenarios: results });
+    runs.push({
+      model,
+      backend,
+      ...(flashModel ? { flashModel } : {}),
+      scenarios: results,
+    });
   }
 
   const date = new Date().toISOString().slice(0, 10);

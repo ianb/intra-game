@@ -166,6 +166,35 @@ The seeded runs make the _game_ deterministic — the same schedule, the same
 prompts — but the model is still sampling, so scores move a little between runs.
 Treat a one-check difference as noise and a whole-scenario difference as signal.
 
+## Trying a small model for some prompts
+
+The game runs several prompts per turn and they are not the same kind of work.
+A character deciding what to say is the game; working out that "look at the
+statues" was an examine rather than speech is bookkeeping. Each prompt declares
+which **tier** it needs (`lib/models.ts`), and a run can fulfil the cheap tier
+with a different model:
+
+```bash
+pnpm evals --model claude-sonnet-4-5-20250929 --flash claude-haiku-4-5-20251001
+```
+
+The pair is recorded with the results, so a row that scored well on a mixed
+setup is distinguishable from one that didn't.
+
+**Caching is not the obstacle**, which is worth knowing before designing around
+it. A prefix cache is keyed by (model, exact prefix), and `pnpm playtest:cache`
+reports that a character prompt shares **19 characters** with any player-side
+prompt — out of thousands. They were never in the same cache entry, so routing
+one kind to a small model cannot cost the other a single hit. The prompts worth
+moving are also the ones with the least to lose: `prompt Ama` reuses 86% of its
+text once the player is named, `player input` reuses 8%.
+
+What is left is the actual question — whether a small model gets these prompts
+_right_ — and that's what running the scenarios both ways answers. Today only
+`player input` and `describe people` ask for the cheap tier; `player examine`,
+`player move` and `player action` are on the expensive one because that is what
+they have always been, not because anyone has checked.
+
 ## Backends
 
 `--backend cli` (the default) shells out to `claude -p`, which needs no API key

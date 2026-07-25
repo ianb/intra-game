@@ -74,13 +74,30 @@ Set it as a plain variable on the Worker — it isn't a secret:
 
 Worker → **Settings** → **Variables and Secrets** → add
 
-| Name            | Value                                              |
-| --------------- | -------------------------------------------------- |
-| `CF_ACCOUNT_ID` | your account id                                    |
-| `GATEWAY_MODEL` | optional; defaults to `anthropic/claude-haiku-4-5` |
+| Name                  | Value                                              |
+| --------------------- | -------------------------------------------------- |
+| `CF_ACCOUNT_ID`       | your account id                                    |
+| `GATEWAY_MODEL`       | optional; defaults to `anthropic/claude-haiku-4-5` |
+| `GATEWAY_FLASH_MODEL` | optional; a cheaper model for mechanical prompts   |
 
-`GATEWAY_MODEL` is in `provider/model` form. See `lib/models.ts` for the two
-tiers the game asks for and why.
+Both are in `provider/model` form. The game runs several prompts per turn and
+they aren't the same kind of work: a character deciding what to say is the game,
+while working out that "look at the statues" was an examine rather than speech
+is bookkeeping. A prompt declares which **tier** it needs and these two vars
+decide what fulfils it; leaving `GATEWAY_FLASH_MODEL` unset means one model does
+everything, which is the old behaviour.
+
+Setting it costs nothing in cache terms, which is the surprising part. A prefix
+cache is keyed by (model, exact prefix), and `pnpm playtest:cache` measures that
+a character prompt and any player-side prompt share **19 characters** — they
+were never in the same cache entry, so moving one can't cost the other a hit.
+Better still, the prompts worth moving are the ones with the least to lose:
+character prompts reuse 86% of their text once the player is named, while
+`player input` reuses 8%, since it carries the room, the people and the exits.
+
+Which prompts _should_ be on the small tier is a measurement, not a guess —
+`pnpm evals --model <big> --flash <small>` scores a pair. See
+[evals/README.md](../evals/README.md).
 
 ## 3. Create the API token
 
@@ -144,6 +161,13 @@ secret, so either the dashboard or `wrangler.jsonc` works:
 | -------------------- | ----------------------------- |
 | `ACCESS_TEAM_DOMAIN` | `<team>.cloudflareaccess.com` |
 | `ACCESS_AUD`         | the AUD tag                   |
+
+> **Leave the Path field empty.** The Worker authenticates `/api/*` and serves
+> everything else — the game UI, `/evals/` — straight from static assets, so the
+> privacy of those rests on Access covering the whole hostname. Scoping the
+> application to `/api/*` would leave the API locked and the site public, with
+> no error to notice. This is tracked in [TODO.md](../TODO.md) as something the
+> Worker should enforce itself.
 
 If you put them in `wrangler.jsonc` instead, replace the empty strings in
 `vars` and push; that keeps the deployment reproducible from the repo, at the
