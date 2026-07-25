@@ -22,18 +22,14 @@ import {
   type ChangeType,
 } from "../types";
 import { historyForEntity as computeHistoryForEntity } from "./history";
-import {
-  coerceBoolean,
-  coerceNumber,
-  fixupText,
-  isValidPropertySet,
-} from "./coerce";
+import { coerceBoolean, coerceNumber, fixupText } from "./coerce";
 import type { Model } from "./model";
 import { pathTo } from "./pathto";
 import { pronounsForGender } from "./pronouns";
 import { scheduleForTime, timeAsString } from "./scheduler";
 import type { World } from "./world";
 import { entitiesById, fieldsOf } from "./dynamic";
+import { applyTag, type TagContext } from "./tags";
 
 export interface EntityInitType {
   id: EntityId;
@@ -321,149 +317,25 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       // it is stored as a plain record.
       llmParameters: parameters as Record<string, unknown>,
     };
+    const tagContext: TagContext = {
+      world: this.world,
+      entityId: this.id,
+      roomId,
+      // FIXME: kind of a hack that should be done in a subclass:
+      subject: (parameters as { examine?: string }).examine || undefined,
+    };
     for (const tag of tags) {
-      if (tag.type === "set") {
-        if (!tag.attrs.attr) {
-          console.warn("Got set tag with no attr", tag);
-          continue;
-        }
-        const [maybeId, key] = tag.attrs.attr.split(".");
-        if (!maybeId || !key) {
-          console.warn(
-            `Malformed set attr ${JSON.stringify(tag.attrs.attr)}`,
-            tag
-          );
-          continue;
-        }
-        const id = this.world.makeId(maybeId);
-        if (id === null) {
-          console.warn(`Could not parse id ${maybeId}`, tag);
-          continue;
-        }
-        const entity = model.world.getEntity(id);
-        if (!entity) {
-          console.warn(`Set tag for entity ${id} which does not exist`);
-          continue;
-        }
-        const value = fieldsOf(entity)[key];
-        let content: any = tag.content;
-        if (typeof value === "boolean") {
-          content = coerceBoolean(content);
-        } else if (typeof value === "number") {
-          content = coerceNumber(content);
-        }
-        if (isValidPropertySet(key, content)) {
-          const existing = result.changes[id];
-          if (!existing) {
-            result.changes[id] = {
-              before: { [key]: value },
-              after: { [key]: content },
-            };
-          } else {
-            existing.before[key] = value;
-            existing.after[key] = content;
-          }
-        } else {
-          console.warn(
-            `Ignoring invalid property set of: ${entity.id}.${key} =`,
-            value
-          );
-        }
-      } else if (tag.type === "dialog") {
-        const id = this.world.makeId(tag.attrs.character) || this.id;
-        const toId = this.world.makeId(tag.attrs.to) || undefined;
-        const toOther = tag.attrs.speaking || undefined;
-        const text = tag.content;
-        if (text.trim()) {
-          result.actions.push({
-            type: "dialog",
-            id,
-            toId,
-            toOther,
-            text,
-          });
-          // FIXME: this is pretty arbitrary time
-          result.totalTime += 1 + Math.ceil(text.split(/\s+/).length / 40);
-        }
-      } else if (tag.type === "description") {
-        let minutes = tag.attrs.minutes
-          ? coerceNumber(tag.attrs.minutes)
-          : undefined;
-        if (Number.isNaN(minutes)) {
-          console.warn("Could not parse minutes", tag);
-          minutes = undefined;
-        }
-        // FIXME: kind of a hack that should be done in a subclass:
-        const subject = (parameters as any).examine || undefined;
-        result.actions.push({
-          type: "description",
-          text: tag.content,
-          minutes,
-          subject,
-        });
-        result.totalTime += minutes || 0;
-      } else if (tag.type === "suggestion") {
-        result.suggestions = tag.content;
-      } else if (tag.type === "deferSchedule") {
-        result.deferSchedule = true;
-      } else if (tag.type === "leaveNow") {
-        result.deferSchedule = false;
-      } else if (tag.type === "context") {
-        // We can ignore these
-      } else if (tag.type === "removeRestriction") {
-        const exitLocation = this.world.makeId(tag.content);
-        const exits = this.world.getRoom(roomId)!.exits;
-        if (!exitLocation || !exits.find((x) => x.roomId === exitLocation)) {
-          console.warn("Could not find exit location", tag);
-          continue;
-        }
-        if (!result.changes[roomId]) {
-          result.changes[roomId] = {
-            before: {},
-            after: {},
-          };
-        }
-        result.changes[roomId].before.exits = clone(exits);
-        const newExits = clone(exits);
-        newExits.find((x) => x.roomId === exitLocation)!.restriction =
-          undefined;
-        result.changes[roomId].after.exits = newExits;
-      } else if (tag.type === "resolveMystery") {
-        const mysteryId = this.world.makeId(tag.attrs.id);
-        const mystery = this.world.getMystery(mysteryId || "");
-        if (!mysteryId || !mystery) {
-          console.warn("Could not parse mystery id", tag);
-          continue;
-        }
-        if (!result.changes[mysteryId]) {
-          result.changes[mysteryId] = {
-            before: {},
-            after: {},
-          };
-        }
-        result.changes[mysteryId].before.state = mystery.state;
-        result.changes[mysteryId].before.resolution = mystery.resolution;
-        result.changes[mysteryId].after.state = "solved";
-        result.changes[mysteryId].after.resolution = tag.content;
-        result.actions.push({
-          type: "description",
-          text: tag.content,
-        });
-      } else if (tag.type === "trigger") {
-        const entityId = this.world.makeId(tag.attrs.character);
-        if (entityId) {
-          result.triggers = result.triggers || {};
-          result.triggers[entityId] = tag.content;
-        }
-      } else {
-        result = await this.processTag({
-          tag,
-          model,
-          parameters,
-          storyEvent: result,
-          llmResponse: resp,
-        });
+      if (applyTag(tag, result, tagContext)) {
+        continue;
       }
+      // Not part of the base protocol - let the entity's own hook handle it.
+      result = await this.processTag({
+        tag,
+        model,
+        parameters,
+        storyEvent: result,
+        llmResponse: resp,
+      });
     }
     result = this.afterPrompt(result);
     await model.addStoryEvent(result);
