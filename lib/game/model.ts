@@ -488,6 +488,38 @@ export class Model {
   }
 
   /**
+   * Adopt a log produced elsewhere (the server's session), replacing this one.
+   *
+   * Unlike replaceLog this does NOT checkLaunch: the server owns starting the
+   * session, and launching locally would both duplicate those events and fire
+   * local LLM calls for work that isn't this client's to do.
+   */
+  adoptRemoteLog(events: StoryEventType[]) {
+    this.updates.value = events;
+    this.world = new World({
+      original: this.world.original,
+      model: this,
+    });
+  }
+
+  /**
+   * Append events produced elsewhere — the server — without running the engine.
+   *
+   * Deliberately not addStoryEvent: that is the *generating* path, which fires
+   * onStoryEvent and would kick off a second round of local LLM calls for work
+   * the server already did. This only folds the events into the world.
+   */
+  appendRemoteEvents(events: StoryEventType[]) {
+    if (!events.length) {
+      return;
+    }
+    this.updates.value = [...this.updates.value, ...events];
+    for (const event of events) {
+      this.world.applyStoryEvent(event);
+    }
+  }
+
+  /**
    * Replace the whole log (loading a saved game). Client-side saves live in
    * app/saves.ts; the engine only needs to be told the log changed.
    */

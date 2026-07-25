@@ -1,4 +1,5 @@
 import type { ChatStreamFn } from "../lib/game/model";
+import { readSse } from "../lib/ssestream";
 import type { ChatType } from "../lib/types";
 
 /**
@@ -66,54 +67,24 @@ async function readSseDeltas(
   body: ReadableStream<Uint8Array>,
   onDelta: (delta: string) => void
 ): Promise<string> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
   let full = "";
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) {
-      break;
+  for await (const { data } of readSse(body)) {
+    if (data === "[DONE]") {
+      continue;
     }
-    buffer += decoder.decode(value, { stream: true });
-    // SSE events are separated by a blank line; a chunk may split one.
-    let sep = buffer.indexOf("\n\n");
-    while (sep !== -1) {
-      const event = buffer.slice(0, sep);
-      buffer = buffer.slice(sep + 2);
-      const delta = contentDelta(event);
-      if (delta) {
-        full += delta;
-        onDelta(delta);
-      }
-      sep = buffer.indexOf("\n\n");
+    let content: unknown;
+    try {
+      content = (
+        JSON.parse(data) as { choices?: { delta?: { content?: string } }[] }
+      ).choices?.[0]?.delta?.content;
+    } catch {
+      // A non-JSON keepalive line is not fatal; skip it.
+      continue;
+    }
+    if (typeof content === "string" && content) {
+      full += content;
+      onDelta(content);
     }
   }
   return full;
-}
-
-/** Pull the content delta out of one SSE event, ignoring anything else. */
-function contentDelta(event: string): string {
-  let text = "";
-  for (const line of event.split("\n")) {
-    if (!line.startsWith("data:")) {
-      continue;
-    }
-    const data = line.slice(5).trim();
-    if (!data || data === "[DONE]") {
-      continue;
-    }
-    try {
-      const parsed = JSON.parse(data) as {
-        choices?: { delta?: { content?: string } }[];
-      };
-      const content = parsed.choices?.[0]?.delta?.content;
-      if (typeof content === "string") {
-        text += content;
-      }
-    } catch {
-      // A partial or non-JSON keepalive line is not fatal; skip it.
-    }
-  }
-  return text;
 }

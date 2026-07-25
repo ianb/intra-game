@@ -6,7 +6,14 @@ import { vibeCheck } from "@ianbicking/personal-vibe-check/eslint";
 export default [
   ...vibeCheck({
     react: true,
-    ignores: [".next/**", "out/**", "playtest/cassettes/**"],
+    ignores: [
+      ".next/**",
+      "out/**",
+      "dist/**",
+      // wrangler's temporary build output
+      ".wrangler/**",
+      "playtest/cassettes/**",
+    ],
   }),
   {
     rules: {

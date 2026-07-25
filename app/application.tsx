@@ -14,6 +14,7 @@ import {
   saveGame,
   type SaveListType,
 } from "./saves";
+import { initSession, playTurn } from "./session";
 import { soundtrackPlayer } from "./soundtrack";
 import { Clock } from "@/components/digitalnumerals";
 import { A, Button, CheckButton } from "@/components/input";
@@ -66,7 +67,7 @@ const openHelp = signal(!seenHelp.value);
 export default function Home() {
   useSignals();
   useEffect(() => {
-    model.checkLaunch();
+    void initSession();
   }, []);
   return (
     <div className="h-screen flex flex-col">
@@ -542,7 +543,7 @@ function Input() {
     if (text === "/reset" || text === "/restart") {
       model.reset();
     } else {
-      const undoText = await model.sendText(text);
+      const undoText = await playTurn(text);
       if (typeof undoText === "string") {
         newText = undoText;
       }
@@ -903,7 +904,7 @@ function ExitList({ room }: { room: Room }) {
     if (model.runningSignal.value) {
       return;
     }
-    await model.sendText(`Go to ${room.name}`);
+    await playTurn(`Go to ${room.name}`);
   }
   return (
     <div className="flex-1">
