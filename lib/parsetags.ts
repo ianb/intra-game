@@ -1,6 +1,8 @@
 /* Parses a string that has <tag attrs...>...</tag>, but
    permissive */
 
+import { exposeGlobal } from "./debugglobal";
+
 export interface TagType {
   type: string;
   attrs: Record<string, string>;
@@ -289,7 +291,5 @@ export function unfoldTags(
   return result;
 }
 
-if (typeof window !== "undefined") {
-  (window as any).parseTags = parseTags;
-  (window as any).serializeTags = serializeTags;
-}
+exposeGlobal("parseTags", parseTags);
+exposeGlobal("serializeTags", serializeTags);

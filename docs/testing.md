@@ -17,15 +17,23 @@ pnpm format         # prettier
 ```
 
 `eslint.config.mjs` layers this project's decisions over the shared preset, and
-every rule turned off there carries the reason inline. Two are deliberately
-warnings rather than errors — `max-lines`/`max-lines-per-function` (the
-in-progress codehealth signal) and `@typescript-eslint/no-explicit-any` (the
-remaining untyped surface, see below) — so `pnpm lint` stays a meaningful gate
-while that work continues.
+every rule turned off there carries the reason inline. `max-lines` and
+`max-lines-per-function` are deliberately warnings — they're the in-progress
+codehealth signal — so `pnpm lint` stays a meaningful gate while that work
+continues. `lib/game/content/**` gets a larger `max-lines` of its own, because
+prose isn't complexity.
 
-Dynamic entity access (`<set attr="player.name">`, indexing the world by id)
-goes through `lib/game/dynamic.ts`, which is the one blessed place those casts
-live. Prefer it over a local `as any`.
+`@typescript-eslint/no-explicit-any` **is** an error. It started as a warning
+covering 71 occurrences; there are now two, both the `ChangeType` before/after
+payloads, disabled inline where they're declared. Two escape hatches keep it
+that way, and new code should reach for them rather than a local `as any`:
+
+- **`lib/game/dynamic.ts`** for the entity model's dynamism — `<set
+attr="player.name">` addressing a field by string, or indexing the world by
+  entity id. `fieldsOf(entity)` and `entitiesById(entities)`.
+- **`lib/debugglobal.ts`** for hanging something off `window` to poke at from
+  the console. `exposeGlobal(name, value)` is a no-op outside the browser, so
+  engine code carrying one still runs in a Worker.
 
 Write a doctest as a `.doctest.md` under `test/`. A `ts setup` block holds the
 imports; regular blocks are examples where an expression followed by `=>` is

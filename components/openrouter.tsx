@@ -15,7 +15,7 @@ export function OpenRouterConnect() {
   const _code = openrouterCode.value;
   useEffect(() => {
     const code = setInterval(() => {
-      (openrouterCode as any).refresh();
+      openrouterCode.refresh?.();
     }, 100);
     return () => {
       clearInterval(code);

@@ -149,14 +149,17 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         continue;
       }
       if (key === "relationships") {
-        if (!isPerson(this as Entity<any>)) {
+        if (!isPerson(this)) {
           throw new Error("Tried to update relationships on a non-person");
         }
         for (const [id, relationship] of Object.entries(value)) {
           if (relationship === null) {
-            delete (this as any).relationships[id];
+            delete (fieldsOf(this).relationships as Record<string, unknown>)[
+              id
+            ];
           } else {
-            (this as any).relationships[id] = relationship;
+            (fieldsOf(this).relationships as Record<string, unknown>)[id] =
+              relationship;
           }
         }
         continue;
@@ -562,7 +565,7 @@ export class Person<
     if (roleplayInstructions) {
       this.roleplayInstructions = roleplayInstructions;
     }
-    if (!(this as any).inside) {
+    if (!fieldsOf(this).inside) {
       this.inside = "Void";
     }
     if (relationships) {
@@ -605,12 +608,14 @@ export class Person<
 
           In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
 
+          The human is playing a character referred to below as PLAYER, whose entity id is "player" (as in <set attr="player.name">). PLAYER's name and pronouns are given further down, and may change as ${this.name} learns them.
+
           <characterDescription>
           ${this.description}
           </characterDescription>
 
           <roleplayInstructions>
-          In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with the player and pay attention to what they say.
+          In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with PLAYER and pay attention to what PLAYER says.
 
           ${this.roleplayInstructions}
           </roleplayInstructions>
@@ -619,12 +624,12 @@ export class Person<
 
           [Everything above is fixed for this character. Everything below changes as the game is played.]
 
-          The user is playing under the name "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}); the id of the player is "player".
+          PLAYER is currently known as "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}).
 
           The time is ${timeAsString(this.world.timestampMinutes)}
           ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
 
-          [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to the player ${this.world.entities.player.name}. There aren't many new people in Intra, so this might be a big deal.]]
+          [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to PLAYER. There aren't many new people in Intra, so this might be a big deal.]]
 
           [[${promptForPerson}]]
 
@@ -702,7 +707,9 @@ export class Person<
     };
   }
 
-  override onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
+  override onStoryEvent(
+    storyEvent: StoryEventType
+  ): void | ActionRequestType<ParametersT>[] {
     const triggerText =
       storyEvent.triggers && storyEvent.triggers[this.id] !== undefined
         ? storyEvent.triggers[this.id]
@@ -1373,7 +1380,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           content: tmpl`
           You are a computer assisting in running a text adventure game.
 
-          The player ("${this.name}", id: "player") is a character in the game, controlled by the user. The user has entered a command, and you will be interpreting that command in the context of the game.
+          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}". The user has entered a command, and you will be interpreting that command in the context of the game.
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1406,17 +1413,17 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           The most likely case is that the player is speaking. For instance if they type \`hello\` you will respond with:
 
-          <dialog character="${this.name}">Hello!</dialog>
+          <dialog character="player">Hello!</dialog>
 
           If you can determine _who_ the player is speaking to, such as if they type "say hello to ${lastTo || "Jim"}" or "${lastTo || "Jim"}, hello" you can respond with:
 
-          <dialog character="${this.name}" to="${lastTo || "Jim"}">Hello</dialog>
+          <dialog character="player" to="${lastTo || "Jim"}">Hello</dialog>
 
           [[The player last spoke directly to ${lastTo}, so it's very likely the player is still speaking to them.]]
 
           If the user indicates some general speech (like typing "compliment") then you can expand this to specific speech like:
 
-          <dialog character="${this.name}">You look great today!</dialog>
+          <dialog character="player">You look great today!</dialog>
 
           IF AND ONLY IF THE USER INDICATES AN ACTION (that is not covered by <goto></goto>) you may describe the ATTEMPT at the action like:
 
@@ -1458,7 +1465,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
       This should be a description and not an action.]]
 
-      Respond with the appropriate tags, following the user's input as closely as possible. ONLY speak as ${this.name}. Do not RESPOND to the input, responses will happen in follow-up requests, only respond with tags to describe the player's actions when doing:
+      Respond with the appropriate tags, following the user's input as closely as possible. ONLY speak as PLAYER. Do not RESPOND to the input, responses will happen in follow-up requests, only respond with tags to describe the player's actions when doing:
       \`${parameters.input}\`
 
       [[${room.userInputInstructions}]]
@@ -1486,7 +1493,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           content: tmpl`
           You are a computer assisting in running a text adventure game.
 
-          The player ("${this.name}") is a character in the game, controlled by the user.
+          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}".
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1498,7 +1505,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           These people and entities are in the room:
           ${entityDescriptions}
 
-          There are no people except those listed above (and the player ${this.name}).
+          There are no people except those listed above (and PLAYER).
 
           In this step YOUR ONLY JOB is to describe the object or space that the player is examining. If the player is not specific then describe the room generally.
           `,
@@ -1541,7 +1548,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           content: tmpl`
           You are a computer assisting in running a text adventure game.
 
-          The player ("${this.name}") is a character in the game, controlled by the user.
+          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}".
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1600,7 +1607,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
 
-          The player ("${this.name}") is a character in the game, controlled by the user.
+          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}".
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1610,7 +1617,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           These people and entities are in the room:
           ${this.currentPeerEntitiesPrompt(parameters)}
 
-          There are no people except those listed above (and the player ${this.name}).
+          There are no people except those listed above (and PLAYER).
 
           In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
           `,
@@ -1885,7 +1892,7 @@ export class PlayerClass extends Person<PlayerInputType> {
   }
 
   // This suppresses the normal Person response
-  override onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
+  override onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType[] {
     return undefined;
   }
 }
@@ -1954,7 +1961,7 @@ export class Mystery extends Entity {
   }
 }
 
-function IF(cond: any) {
+function IF(cond: unknown) {
   return cond ? TemplateTrue : TemplateFalse;
 }
 

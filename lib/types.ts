@@ -74,8 +74,19 @@ export function isStoryActionAttempt(
 
 export type ChangesType = Record<EntityId, ChangeType>;
 
+/**
+ * A before/after pair for one entity, as recorded in the event log.
+ *
+ * The payloads stay `any` rather than `unknown` on purpose. Their shape is
+ * whatever fields that entity changed, and the engine reads them positionally
+ * all over (`changes.after.inside`, `.launched`, `.personality`); `unknown`
+ * would buy no safety and cost a cast at every read. The two lines below are
+ * the only `any` left in the codebase — see eslint.config.mjs.
+ */
 export interface ChangeType {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   before: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   after: Record<string, any>;
 }
 
@@ -106,7 +117,7 @@ export type EntityId = string;
 
 /* Some class testers... */
 
-export function isRoom(entity: Entity<any>): entity is Room {
+export function isRoom(entity: Entity): entity is Room {
   return entity.type === "room" || entity.type.startsWith("room/");
 }
 

@@ -1,4 +1,5 @@
 import colors from "tailwindcss/colors";
+import { exposeGlobal } from "@/lib/debugglobal";
 import { tmpl } from "@/lib/template";
 import type { World } from "@/lib/game/world";
 
@@ -13,9 +14,7 @@ export function asGraphviz(world: World, fullMap = false): string {
   const roomList: string[] = [];
   const connectionList: string[] = [];
   const playerRoom = world.entityRoom("player");
-  if (typeof window !== "undefined") {
-    (window as any).colors = colors;
-  }
+  exposeGlobal("colors", colors);
   const allRooms = world.rooms.filter((room) => {
     return !world.getRoom(room)?.excludeFromMap && room !== playerRoom.id;
   });
@@ -126,13 +125,15 @@ export function asGraphviz(world: World, fullMap = false): string {
 function convertColorName(color: string): string {
   const c = color.replace(/^text-/, "");
   const parts = c.split("-");
-  let pos: any = colors;
+  // Tailwind's palette is a nested object ("emerald" -> "400" -> "#..."), and
+  // the class names we walk it with come from entity definitions.
+  let pos: unknown = colors;
   for (const part of parts) {
-    if (pos) {
-      pos = (pos as any)[part];
+    if (pos && typeof pos === "object") {
+      pos = (pos as Record<string, unknown>)[part];
     }
   }
-  if (!pos) {
+  if (typeof pos !== "string") {
     console.warn("Could not find color", color);
     return "1.0 1.0 1.0";
   }

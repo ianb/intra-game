@@ -8,7 +8,13 @@ import {
   isStoryEvent,
 } from "../types";
 import { StoryEventType } from "../types";
-import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
+import type {
+  ChangeType,
+  ChangesType,
+  EntityId,
+  Person,
+  StoryEventWithPositionsType,
+} from "../types";
 import { chat as defaultChat } from "../llm";
 import type { ChatType } from "../types";
 import { World } from "./world";
@@ -93,7 +99,7 @@ export class Model {
     return this.promiseQueue.runningSignal;
   }
 
-  run(func: () => Promise<any>) {
+  run<T>(func: () => Promise<T>): Promise<T> {
     return this.promiseQueue.run(func);
   }
 
@@ -107,7 +113,7 @@ export class Model {
   }
 
   async scheduleTick() {
-    const allChanges: any = {};
+    const allChanges: ChangesType = {};
     // All the people with schedules, and no change in which schedule:
     const existingPeople: Person[] = [];
     for (const person of this.world.allPeople()) {
@@ -122,7 +128,7 @@ export class Model {
         existingPeople.push(person);
         continue;
       }
-      const change: any = {
+      const change: ChangeType = {
         before: {
           runningScheduleId: person.runningScheduleId,
         },
@@ -159,7 +165,7 @@ export class Model {
             path
           );
         }
-        const change: any = {
+        const change: ChangeType = {
           before: {
             inside: person.inside,
           },
@@ -207,7 +213,7 @@ export class Model {
 
   async addStoryEvent(storyEvent: StoryEventType) {
     this.updates.value = [...this.updates.value, storyEvent];
-    const actions: ActionRequestType<any>[] = storyEvent.actionRequests || [];
+    const actions: ActionRequestType[] = storyEvent.actionRequests || [];
     delete storyEvent.actionRequests;
     const recent = this.recentReferencedEntities();
     for (const entityId of recent) {
@@ -264,7 +270,7 @@ export class Model {
     // I could rebuild the world based on this... but right now I'm only using it for errors that have no world effect
   }
 
-  async applyActions(actions: ActionRequestType<any>[]) {
+  async applyActions(actions: ActionRequestType[]) {
     for (const action of actions) {
       if (isStoryEvent(action)) {
         await this.run(() => this.addStoryEvent(action));
@@ -361,7 +367,7 @@ export class Model {
         Object.entries(schedules)
           .filter(([id, schedule]) => schedule.length > 0)
           .map(([id, schedule]) => {
-            const change: any = { before: {}, after: {} };
+            const change: ChangeType = { before: {}, after: {} };
             const person = this.world.getPerson(id)!;
             const nowSchedule = scheduleForTime(
               person,

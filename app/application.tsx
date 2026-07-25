@@ -25,6 +25,7 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { CalculatingThrobber } from "@/components/throbber";
 import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
+import { entitiesById, fieldsOf } from "@/lib/game/dynamic";
 import { model } from "./model";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import {
@@ -1150,7 +1151,8 @@ function ViewObject({
       }
       continue;
     }
-    if (!compare(value, (model.world.original as any)[id][key])) {
+    const original = entitiesById(model.world.original)[id];
+    if (!compare(value, original && fieldsOf(original)[key])) {
       lines.push(`${key}: ${JSON.stringify(value)}`);
     }
   }

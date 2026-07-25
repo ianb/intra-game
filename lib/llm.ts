@@ -1,6 +1,11 @@
 import { signal } from "@preact/signals-core";
 import OpenAI from "openai";
 import { persistentSignal } from "./persistentsignal";
+import {
+  DEFAULT_FLASH_MODEL,
+  DEFAULT_MODEL,
+  DEFAULT_PRO_MODEL,
+} from "./models";
 import { ChatType, LlmLogType } from "./types";
 
 // OpenRouter model metadata (as returned by the /models API). These live in the
@@ -43,9 +48,11 @@ export const openrouterCode = persistentSignal<string | null>(
   null
 );
 
-export const DEFAULT_PRO_MODEL = "openai/gpt-4o";
-export const DEFAULT_FLASH_MODEL = "google/gemini-2.5-flash-preview-05-20";
-export const DEFAULT_MODEL = DEFAULT_PRO_MODEL;
+export {
+  DEFAULT_FLASH_MODEL,
+  DEFAULT_MODEL,
+  DEFAULT_PRO_MODEL,
+} from "./models";
 
 export const customEndpoint = persistentSignal<string | null>(
   "customEndpoint",

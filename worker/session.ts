@@ -1,6 +1,7 @@
 import { effect } from "@preact/signals-core";
 import { entities } from "../lib/game/content";
 import { Model } from "../lib/game/model";
+import { DEFAULT_FLASH_MODEL } from "../lib/models";
 import type { StoryEventType } from "../lib/types";
 import { gatewayChatStream } from "./aigateway";
 import { devChatStream } from "./devllm";
@@ -171,7 +172,7 @@ export class GameSession {
     return gatewayChatStream({
       accountId: this.env.CF_ACCOUNT_ID,
       token: this.env.CF_AIG_TOKEN,
-      model: this.env.GATEWAY_MODEL ?? "anthropic/claude-4-5-haiku",
+      model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
       providerKey: credential?.key,
     });
   }

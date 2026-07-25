@@ -61,14 +61,13 @@ export default [
       "max-lines": "warn",
       "max-lines-per-function": "warn",
 
-      // Down from 71 to ~29. The ones that had a real type now have it, and the
-      // dynamic entity access that caused most of them went through
-      // lib/game/dynamic.ts. What's left is genuinely untyped surface: the
-      // before/after payloads of ChangeType (read as .inside/.launched/... all
-      // over the engine, so `unknown` would only add casts at every read),
-      // browser globals attached for debugging, and a few `Entity<any>` type
-      // parameters. Tracked as a warning rather than pretending it's clean.
-      "@typescript-eslint/no-explicit-any": "warn",
+      // Down from 71 to 2, so this is now an error rather than a warning: any
+      // new `any` has to be argued for at the point it appears. The two that
+      // remain are the before/after payloads of ChangeType, disabled inline
+      // with the reason. The dynamic entity access that caused most of the
+      // original 71 goes through lib/game/dynamic.ts, and the debug globals
+      // through lib/debugglobal.ts.
+      "@typescript-eslint/no-explicit-any": "error",
 
       // eslint-plugin-import's TypeScript resolver is incompatible with the
       // version resolved here ("invalid interface loaded as resolver"), so this

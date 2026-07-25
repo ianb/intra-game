@@ -3,6 +3,11 @@ import { signal, effect } from "@preact/signals-core";
 export interface SignalType<T> {
   value: T;
   peek: () => T;
+  /**
+   * Re-read the backing store. Only persistent signals in the browser have
+   * one — the server stand-in and plain views don't, hence the `?`.
+   */
+  refresh?: () => void;
 }
 
 export function persistentSignal<T>(
@@ -31,8 +36,8 @@ export function persistentSignal<T>(
   } else {
     value = defaultValue;
   }
-  const s = signal(value);
-  (s as any).refresh = () => {
+  const s: SignalType<T> = signal(value);
+  s.refresh = () => {
     const rawValue = storage.getItem(`signal.${name}`);
     let value: T;
     if (rawValue) {
@@ -54,9 +59,17 @@ export function persistentSignal<T>(
   return s;
 }
 
+/**
+ * One attribute of an object-valued signal, as a signal of its own.
+ *
+ * The backing signal is a plain record, so nothing checks that its `attr` field
+ * really holds a T — the two reads below assert it. That is the contract of a
+ * view: whoever constructs it declares the type, and `defaultValue` covers the
+ * case where the attribute is missing.
+ */
 export class SignalView<T> implements SignalType<T> {
   constructor(
-    public signal: SignalType<any>,
+    public signal: SignalType<Record<string, unknown>>,
     public attr: string,
     public defaultValue: T
   ) {
@@ -74,7 +87,7 @@ export class SignalView<T> implements SignalType<T> {
     if (v === undefined) {
       return this.defaultValue;
     }
-    return v;
+    return v as T;
   }
 
   set value(v: T) {
@@ -96,6 +109,6 @@ export class SignalView<T> implements SignalType<T> {
     if (v === undefined) {
       return this.defaultValue;
     }
-    return v;
+    return v as T;
   }
 }

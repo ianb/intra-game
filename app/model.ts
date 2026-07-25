@@ -1,3 +1,4 @@
+import { exposeGlobal } from "@/lib/debugglobal";
 import { entities } from "@/lib/game/content";
 import { Model } from "@/lib/game/model";
 
@@ -9,6 +10,4 @@ import { Model } from "@/lib/game/model";
 // side effects, so a Worker can construct per-session instances instead.
 export const model = new Model(entities);
 
-if (typeof window !== "undefined") {
-  (window as unknown as Record<string, unknown>).model = model;
-}
+exposeGlobal("model", model);
