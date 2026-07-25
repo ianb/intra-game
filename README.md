@@ -23,8 +23,8 @@ The tech stack:
 
 ## Getting Started
 
-1. Run `npm install` to install dependencies
-2. Run `npm run dev` to start the development server
+1. Run `pnpm install` to install dependencies
+2. Run `pnpm dev` to start the development server
 3. Open [http://localhost:3000](http://localhost:3000) with your browser
 4. In the game, go to Settings (⚙) and connect to OpenRouter.ai to access LLM models
 
