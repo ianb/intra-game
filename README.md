@@ -52,6 +52,7 @@ real deployment.
 Development and testing tooling is described in [docs/testing.md](./docs/testing.md),
 and [docs/deploying.md](./docs/deploying.md) covers the Cloudflare setup.
 [TODO.md](./TODO.md) is what's on the list, and what's known to be wrong.
+[CLAUDE.md](./CLAUDE.md) is for agents working in the repo.
 
 # Code
 

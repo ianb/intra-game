@@ -158,6 +158,16 @@ original write-up, plus whatever the last few sessions turned up.
 
 ### Tooling
 
+- **Keep Claude's voice out of the game** `content` `M` — see
+  [CLAUDE.md](CLAUDE.md). The rule for now is "don't write content prose, and
+  write prompts flat", which relies on a person noticing. Worth thinking about
+  whether anything better is possible: a check that flags Claude-typical
+  constructions in `lib/game/content/**` and in prompt literals would catch the
+  obvious cases, and a judge-model eval on prose style would catch drift in what
+  characters actually say — but both are the "scoring taste" problem the evals
+  have avoided so far, and a bad detector that everyone learns to ignore is
+  worse than none.
+
 - **Evals out of real gameplay** `tooling` `M` — a played session is already an
   event log. Turning an interesting one into a scenario should be a command, not
   a transcription job.
