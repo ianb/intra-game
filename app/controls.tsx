@@ -21,6 +21,11 @@ import {
   saveGame,
   type SaveListType,
 } from "./saves";
+import {
+  listCheckpoints,
+  loadCheckpoint,
+  type CheckpointSummary,
+} from "./checkpoints";
 import { A, Button, CheckButton } from "@/components/input";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { effect, signal, useSignal } from "@preact/signals-react";
@@ -302,6 +307,49 @@ function LoadControls({ onDone }: { onDone: () => void }) {
         })}
       </div>
       {saves.value.length === 0 && <div>No saves found</div>}
+      <Checkpoints onDone={onDone} />
+    </div>
+  );
+}
+
+/**
+ * Recorded states shipped with the build, as somewhere to start.
+ *
+ * Separate from saves because they are not the player's: they are fixed points
+ * in the game that anyone can jump to, which is how to look at a later part of
+ * Intra without playing the first twenty minutes again. Loading one keeps the
+ * game in progress — it is saved first — so this is a fork, not a discard.
+ */
+function Checkpoints({ onDone }: { onDone: () => void }) {
+  useSignals();
+  const checkpoints = useSignal<CheckpointSummary[]>([]);
+  useEffect(() => {
+    void listCheckpoints().then((found) => {
+      checkpoints.value = found;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  if (!checkpoints.value.length) {
+    return null;
+  }
+  return (
+    <div className="mt-3">
+      <div>Start from</div>
+      {checkpoints.value.map((checkpoint) => (
+        <div key={checkpoint.name} className="mb-1">
+          <Button
+            className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
+            title={`${checkpoint.describe} — recorded ${checkpoint.recorded}`}
+            onClick={async () => {
+              await loadCheckpoint(checkpoint.name);
+              onDone();
+            }}
+          >
+            {checkpoint.name}
+          </Button>
+          <span className="text-xs text-gray-400">{checkpoint.describe}</span>
+        </div>
+      ))}
     </div>
   );
 }

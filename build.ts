@@ -1,8 +1,16 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, rmSync } from "node:fs";
+import {
+  cpSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build, context, type BuildOptions } from "esbuild";
+import { parse } from "yaml";
 
 // Builds the static site into dist/, which is what Cloudflare serves alongside
 // the Worker in worker/.
@@ -68,6 +76,42 @@ function copyStatic() {
     resolve(root, "evals/index.html"),
     resolve(outdir, "evals/index.html"),
   );
+  copyCheckpoints();
+}
+
+/**
+ * Ship the recorded checkpoints so the running game can start from one.
+ *
+ * YAML on disk because they are read in diffs; JSON in dist because the browser
+ * would otherwise need a parser for a file it reads once. Converted here rather
+ * than committed twice — one 44K checkpoint duplicated in git per format is a
+ * bad trade for a build step that takes milliseconds.
+ *
+ * (`yaml` is a runtime dependency for exactly this reason: the Cloudflare
+ * builder installs with --prod, so a devDependency here would break the deploy
+ * and nowhere else.)
+ */
+function copyCheckpoints() {
+  const from = resolve(root, "playtest/checkpoints");
+  const to = resolve(outdir, "checkpoints");
+  mkdirSync(to, { recursive: true });
+  const index = readdirSync(from)
+    .filter((file) => file.endsWith(".yaml"))
+    .map((file) => {
+      const checkpoint = parse(readFileSync(resolve(from, file), "utf8"));
+      writeFileSync(
+        resolve(to, file.replace(/\.yaml$/, ".json")),
+        JSON.stringify(checkpoint),
+      );
+      return {
+        name: checkpoint.name,
+        describe: checkpoint.describe,
+        recorded: checkpoint.recorded,
+        model: checkpoint.model,
+        events: checkpoint.events.length,
+      };
+    });
+  writeFileSync(resolve(to, "index.json"), JSON.stringify(index));
 }
 
 async function main() {

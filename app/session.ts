@@ -2,6 +2,7 @@ import type { StreamingTagState } from "@/lib/game/model";
 import { lastLlmError } from "@/lib/llm";
 import { persistentSignal } from "@/lib/persistentsignal";
 import { lastTurnInput, lastTurnLength } from "@/lib/game/rewind";
+import { checkpointFromUrl, loadCheckpoint } from "./checkpoints";
 import { model } from "./model";
 import { readSse } from "@/lib/ssestream";
 import type { StoryEventType } from "@/lib/types";
@@ -185,6 +186,19 @@ export async function redoTurn(): Promise<void> {
 export async function initSession(): Promise<void> {
   const session = remoteSession.value;
   if (!session) {
+    // ?checkpoint=briefed drops straight into a recorded state, so a link can
+    // point at a specific part of the game. Only in local play: in a server
+    // session the log belongs to the server, and loading one here would put the
+    // two out of step.
+    const checkpoint = checkpointFromUrl();
+    if (checkpoint) {
+      try {
+        await loadCheckpoint(checkpoint);
+        return;
+      } catch (e) {
+        lastLlmError.value = String(e);
+      }
+    }
     model.checkLaunch();
     return;
   }

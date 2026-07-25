@@ -1,4 +1,5 @@
 import type { StoryEventType } from "@/lib/types";
+import { read, STORAGE_VERSION } from "@/lib/storage";
 
 const LOCAL_PREFIX = "intra-save.";
 
@@ -24,6 +25,9 @@ export function save(title: string, value: StoryEventType[]) {
   const save = {
     title,
     date: new Date().toISOString(),
+    // Stamped so a later change to the stored shape can tell this apart from
+    // what it writes itself; see lib/storage.ts.
+    version: STORAGE_VERSION,
     value,
   };
   localStorage.setItem(LOCAL_PREFIX + slug, JSON.stringify(save));
@@ -57,10 +61,20 @@ export function removeSave(slug: string) {
   localStorage.removeItem(LOCAL_PREFIX + slug);
 }
 
-export function load(slug: string) {
+export function load(slug: string): StoryEventType[] {
   const save = localStorage.getItem(LOCAL_PREFIX + slug);
   if (!save) {
     throw new Error(`No save found for ${slug}`);
   }
-  return JSON.parse(save).value;
+  const stored = JSON.parse(save);
+  // The envelope has always had its own fields around `value`, so the version
+  // lives beside them rather than wrapping them — `read` takes the payload.
+  const result = read<StoryEventType[]>({
+    version: stored.version ?? 0,
+    value: stored.value,
+  });
+  if (!result.ok) {
+    throw new Error(`Cannot load "${slug}": ${result.reason}`);
+  }
+  return result.value;
 }

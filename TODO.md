@@ -57,9 +57,10 @@ original write-up, plus whatever the last few sessions turned up.
   whether a scene was any good. A judge model would make the numbers arguable in
   a way the current ones aren't, which is a real cost; worth it only with a
   rubric that survives disagreement.
-- **Fork from the browser** `ui` `M` — checkpoints are a CLI facility. Saving
-  the current game as a named checkpoint from the running UI would make forking
-  something you do while playing, which is when you actually notice you want it.
+- **Save a checkpoint from the browser** `ui` `M` — the running game can now
+  _load_ a checkpoint (`?checkpoint=briefed`, or the load menu), but making one
+  still means the CLI. Saving the current game as a named checkpoint from the UI
+  would close the loop, since noticing you want a fork happens while playing.
 - **Split `lib/game/classes.ts`** `engine` `M` — 1722 lines holding Entity,
   Room, Person, Ama, Player and Narrator. The prompt assembly wants to be its
   own module. `worker/access.ts` (322) is the next one after that.
@@ -175,6 +176,8 @@ rediscovers them from scratch.
   it meant.
 - **Context bloat.** Every prompt carries more history than it needs, and the
   history is the same for every character.
-- **Event serialization is load-bearing and unversioned.** The log is the save
-  format, the checkpoint format, and the eval input. Nothing migrates it except
-  `lib/game/migrate.ts`, written for one rename.
+- **Event serialization is load-bearing.** The log is the save format, the
+  checkpoint format, and the eval input. Storage now carries a version stamp
+  (`lib/storage.ts`), so a shape change can be detected and refused — but
+  nothing migrates event _meaning_ except `lib/game/migrate.ts`, written for one
+  rename.

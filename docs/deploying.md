@@ -198,13 +198,49 @@ npx wrangler deploy --dry-run --outdir /tmp/out   # validates bundle + bindings
 The dry run resolves every binding and builds the exact bundle that would be
 uploaded, so a config mistake surfaces without credentials.
 
+## Preview builds: looking at something before it ships
+
+`wrangler versions upload` builds and uploads a version **without** sending
+traffic to it, and prints a preview URL:
+
+```bash
+pnpm build && npx wrangler versions upload
+# → https://<version-prefix>-intra-game.<subdomain>.workers.dev
+```
+
+That URL is the way to be handed something specific to look at — it runs the
+real worker against the real Durable Objects, and the live deployment is
+untouched until `wrangler versions deploy` promotes it. It needs the same API
+token as a normal deploy, so it works from a Claude Code container too (see
+above).
+
+Point it at a recorded state rather than the game's first line:
+
+```
+https://<preview-url>/?checkpoint=briefed
+```
+
+`?checkpoint=<name>` loads one of the states under `playtest/checkpoints/`,
+which the build ships into `dist/checkpoints/`. It's the same mechanism as
+`pnpm playtest --from briefed`, so anything reachable from the CLI is reachable
+from a link. A game already in progress is saved first, so following one of
+these links can't cost you a game.
+
+Preview URLs sit behind the same Access application as the live site, since the
+policy covers the whole worker.
+
 ## Rolling back
 
 Worker → **Deployments** → pick a previous version → **Rollback**. Because the
 event log lives in Durable Object storage rather than the bundle, a rollback
-doesn't lose anyone's game — but note that a log written by a newer version can
-contain events an older one doesn't understand. `lib/game/migrate.ts` is where
-that kind of fixup goes.
+doesn't lose anyone's game.
+
+Two things make that safer than it used to be. Stored data carries a version
+stamp (`lib/storage.ts`): a rolled-back worker handed a session a newer one
+wrote refuses to append to it rather than corrupting it, and a browser tab
+holding a newer save moves it aside instead of flattening it. That's shape only
+— what an event _means_ after a rename or a retired tag is a per-change fixup,
+and `lib/game/migrate.ts` is where those go.
 
 ## Local development
 

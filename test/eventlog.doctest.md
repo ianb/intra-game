@@ -157,3 +157,44 @@ await log.read();
 storage.puts - before;
 => 0
 ```
+
+## Which build wrote this session
+
+A Durable Object outlives any one worker, and Cloudflare rolls workers out
+gradually, so an *older* worker can be handed a session a newer one has already
+written. Appending to it with the old understanding of the shape is how a log
+gets quietly corrupted, so the append is refused instead — a failed request is
+recoverable, and the client retries into a newer worker.
+
+Sessions from before version stamps existed are simply stamped on first append:
+their shape is the one this build reads, which is what the migration above has
+just ensured.
+
+```ts
+const storage = new FakeStorage();
+const log = new SessionLog(storage);
+const before = await log.version();
+await log.append([event("a")]);
+[before, await log.version()].join(" -> ");
+=> 0 -> 1
+```
+
+A session stamped by a build that understands more than this one does is left
+alone:
+
+```ts
+const storage = new FakeStorage();
+storage.map.set("storageVersion", 99);
+const log = new SessionLog(storage);
+const refused = await log.append([event("a")]).then(() => "", (e) => String(e));
+[refused.includes("written by storage version 99"), storage.map.has(eventKey(0))].join(" ");
+=> true false
+```
+
+Reading is still allowed — the events that are there can be served, and refusing
+to show someone their game is a worse failure than refusing to add to it:
+
+```ts continue
+(await log.read()).length;
+=> 0
+```

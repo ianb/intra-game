@@ -86,7 +86,11 @@ export class Model {
     this.chatStream = opts.chatStream;
     this.streaming = signal<StreamingTagState | null>(null);
     this.promiseQueue = new TrackSettled();
-    this.updates = persistentSignal<StoryEventType[]>("updates", []);
+    // Versioned: this is the game itself, and the one stored thing where
+    // misreading an old shape would be worse than not reading it.
+    this.updates = persistentSignal<StoryEventType[]>("updates", [], {
+      versioned: true,
+    });
     this.liveUpdates = computed(() => applyRewinds(this.updates.value));
     this.updatesWithPositions = computed(() => this._eventsWithPositions());
     this.world = new World({

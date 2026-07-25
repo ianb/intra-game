@@ -1,3 +1,4 @@
+import { STORAGE_VERSION } from "../lib/storage";
 import type { StoryEventType } from "../lib/types";
 
 /**
@@ -31,12 +32,17 @@ export interface LogStorage {
 
 const EVENT_PREFIX = "event:";
 const EVENT_DIGITS = 8;
-/** Storage takes at most 128 pairs per put; one slot is kept for the count. */
-const PUT_BATCH = 127;
+/**
+ * Storage takes at most 128 pairs per put; two slots are kept, for the count
+ * and the version stamp.
+ */
+const PUT_BATCH = 126;
 /** Cached length, so a cursor read can report a total without reading the log. */
 const COUNT_KEY = "logCount";
 /** The single-value log this replaced. Read once per session, then migrated. */
 const LEGACY_LOG_KEY = "log";
+/** What wrote this session; see lib/storage.ts. Absent means "before stamps". */
+const VERSION_KEY = "storageVersion";
 
 /** Zero-padded so storage's lexicographic order is the order events happened. */
 export function eventKey(index: number): string {
@@ -68,7 +74,36 @@ export class SessionLog {
       return;
     }
     await this.migrateLegacy();
+    await this.checkVersion();
     await this.write(events, (await this.storage.get<number>(COUNT_KEY)) ?? 0);
+  }
+
+  /**
+   * Refuse to touch a session written by a newer build.
+   *
+   * Workers roll out gradually and a Durable Object outlives any one of them,
+   * so an older worker can be handed a session a newer one has already written.
+   * Appending to it with the old understanding of the shape is how a log gets
+   * quietly corrupted; failing the request is recoverable, and the client
+   * retries into a newer worker.
+   *
+   * Sessions from before stamps existed need nothing done to them: their shape
+   * is the one this version reads (migrateLegacy has just ensured that), and
+   * the write below stamps them on the way past.
+   */
+  private async checkVersion(): Promise<void> {
+    const stored = await this.storage.get<number>(VERSION_KEY);
+    if (stored !== undefined && stored > STORAGE_VERSION) {
+      throw new Error(
+        `Session was written by storage version ${stored}, but this worker ` +
+          `understands ${STORAGE_VERSION}`,
+      );
+    }
+  }
+
+  /** What wrote this session, or 0 for one that predates version stamps. */
+  async version(): Promise<number> {
+    return (await this.storage.get<number>(VERSION_KEY)) ?? 0;
   }
 
   /**
@@ -86,6 +121,10 @@ export class SessionLog {
         record[eventKey(from + i + offset)] = event;
       });
       record[COUNT_KEY] = from + i + batch.length;
+      // Stamped in the same put as the events, for the same reason the count
+      // is: a version written separately could land without them, or they
+      // without it, and either way the session lies about what it holds.
+      record[VERSION_KEY] = STORAGE_VERSION;
       await this.storage.put(record);
     }
   }

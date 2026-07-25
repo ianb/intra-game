@@ -89,9 +89,10 @@ export default [
   },
   {
     // The playtest and eval harnesses are local dev tools that read and write
-    // cassettes and result files by path; flagging that as a filesystem risk
-    // isn't meaningful here.
-    files: ["playtest/**", "evals/**"],
+    // cassettes and result files by path, and the build script walks the
+    // checkpoint directory; flagging that as a filesystem risk isn't meaningful
+    // for code that only ever runs on a developer's machine or the builder.
+    files: ["playtest/**", "evals/**", "build.ts"],
     rules: { "security/detect-non-literal-fs-filename": "off" },
   },
 ];

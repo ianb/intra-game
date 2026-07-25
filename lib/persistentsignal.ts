@@ -1,4 +1,5 @@
 import { signal, effect } from "@preact/signals-core";
+import { read, stamp } from "./storage";
 
 export interface SignalType<T> {
   value: T;
@@ -15,6 +16,14 @@ export function persistentSignal<T>(
   defaultValue: T,
   options?: {
     sessionStorage?: boolean;
+    /**
+     * Stamp the stored value with the storage version; see lib/storage.ts.
+     *
+     * Worth it for anything that would hurt to lose or to misread — the game
+     * log — and not for view state like which tab is open, where the recovery
+     * from an unreadable value is to pick a tab again.
+     */
+    versioned?: boolean;
   },
 ): SignalType<T> {
   if (typeof window === "undefined") {
@@ -28,29 +37,43 @@ export function persistentSignal<T>(
   if (!name || typeof name !== "string") {
     throw new Error("name must be a string");
   }
-  const rawValue = storage.getItem(`signal.${name}`);
-  let value: T;
-  if (rawValue && rawValue !== "undefined") {
-    value = JSON.parse(rawValue);
-    // value = deserialize(value);
-  } else {
-    value = defaultValue;
-  }
-  const s: SignalType<T> = signal(value);
-  s.refresh = () => {
-    const rawValue = storage.getItem(`signal.${name}`);
-    let value: T;
-    if (rawValue) {
-      value = JSON.parse(rawValue);
-      // value = deserialize(value);
-    } else {
-      value = defaultValue;
+  const key = `signal.${name}`;
+  const versioned = !!options?.versioned;
+
+  function load(): T {
+    const rawValue = storage.getItem(key);
+    if (!rawValue || rawValue === "undefined") {
+      return defaultValue;
     }
-    s.value = value;
+    const parsed = JSON.parse(rawValue);
+    if (!versioned) {
+      return parsed as T;
+    }
+    const result = read<T>(parsed);
+    if (result.ok) {
+      return result.value;
+    }
+    // Written by a newer build — an old tab reopened after a deploy, most
+    // likely. It gets moved aside rather than overwritten: the effect below
+    // writes on the very next change, and silently flattening someone's game
+    // because their tab was stale is not a recovery.
+    console.error(
+      `Cannot read ${key}: ${result.reason}. Kept at ${key}.unreadable`,
+    );
+    storage.setItem(`${key}.unreadable`, rawValue);
+    return defaultValue;
+  }
+
+  const s: SignalType<T> = signal(load());
+  s.refresh = () => {
+    s.value = load();
   };
   effect(() => {
     try {
-      storage.setItem(`signal.${name}`, JSON.stringify(s.value));
+      storage.setItem(
+        key,
+        JSON.stringify(versioned ? stamp(s.value) : s.value),
+      );
     } catch (e) {
       console.error("Error saving signal", name, s.value, e);
       throw e;
