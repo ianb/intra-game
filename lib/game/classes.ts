@@ -1,7 +1,4 @@
-import { WithBlinkingCursor } from "@/components/input";
 import clone from "just-clone";
-import React from "react";
-import { chat } from "../llm";
 import { parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
 import {
@@ -448,7 +445,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     let resp = "";
     const roomId = this.world.entityRoom(this.id)?.id || "Void";
     try {
-      resp = await model.run(() => chat(prompt));
+      resp = await model.run(() => model.chat(prompt));
     } catch (e) {
       // No special handling for LlmSafetyError, just rethrow
       throw e;
@@ -742,57 +739,14 @@ export class Room extends Entity {
     return newInstance as this;
   }
 
-  formatStoryAction(
-    storyEvent: StoryEventType,
-    action: StoryActionType
-  ): React.ReactNode {
-    if (isStoryDialog(action)) {
-      const text = action.text.replace(/^"*/, "").replace(/"*$/, "");
-      return `"${text}"`;
-    } else if (isStoryDescription(action)) {
-      return action.text;
-    } else if (isStoryActionAttempt(action)) {
-      return action.attempt + "\n\n" + action.resolution;
-    }
-    return undefined;
-  }
-
   promptForPerson(person: Person): string {
     return "";
   }
 }
 
-export class ArchivistRoom extends Room {
-  override formatStoryAction(
-    storyEvent: StoryEventType,
-    action: StoryActionType
-  ): React.ReactNode {
-    if (isStoryDialog(action)) {
-      if (
-        !action.toId ||
-        action.toId === "player" ||
-        action.toId === "Archivist"
-      ) {
-        // Instantiate <WithBlinkingCursor>{action.text}</WithBlinkingCursor>
-        // But without JSX:
-        if (storyEvent.id === "player") {
-          // eslint-disable-next-line react/no-children-prop
-          return React.createElement(
-            WithBlinkingCursor,
-            {
-              children: action.text,
-            },
-            action.text
-          );
-        }
-        let text = action.text;
-        text = text.trim().replace(/^\`+/, "").replace(/\`+$/, "").trim();
-        return `\u00A0${text}`;
-      }
-    }
-    return super.formatStoryAction(storyEvent, action);
-  }
-}
+// The Archivist console room. Its distinctive terminal-style rendering lives in
+// the view (app/renderstoryaction.tsx); this class only marks the room type.
+export class ArchivistRoom extends Room {}
 
 export type Exit = {
   name?: string;
@@ -2105,7 +2059,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       }
       sourceLines.push(text);
     }
-    const resp = await chat({
+    const resp = await this.world.model.chat({
       meta: {
         title: "describe people",
       },

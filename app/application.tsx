@@ -7,6 +7,8 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { CalculatingThrobber } from "@/components/throbber";
 import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
+import { renderStoryAction } from "./renderstoryaction";
+import { soundtrackPlayer } from "./soundtrack";
 import { model, SaveListType } from "@/lib/game/model";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import {
@@ -42,9 +44,9 @@ const soundOn = signal(false);
 effect(() => {
   const s = soundOn.value;
   if (s) {
-    model.soundtrackPlayer.unpause();
+    soundtrackPlayer.unpause();
   } else {
-    model.soundtrackPlayer.pause();
+    soundtrackPlayer.pause();
   }
 });
 
@@ -298,7 +300,7 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
           }
           let text: React.ReactNode = action.text;
           if (room) {
-            text = room.formatStoryAction(update, action);
+            text = renderStoryAction(room, update, action);
           }
           let fromEntity: Person | undefined;
           if (action.id && action.id !== update.id) {
@@ -331,7 +333,7 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
         } else if (isStoryDescription(action)) {
           let text: React.ReactNode = action.text;
           if (room) {
-            text = room.formatStoryAction(update, action);
+            text = renderStoryAction(room, update, action);
           }
           if (typeof text === "string") {
             text = <ColorizedText text={action.text} />;

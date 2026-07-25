@@ -1,17 +1,14 @@
-import { persistentSignal } from "@/lib/persistentsignal";
+import { openrouterCode } from "@/lib/llm";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
+
+export { openrouterCode };
 
 const thisOrigin = typeof window !== "undefined" ? window.location.origin : "";
 
 const OPENROUTER_ENDPOINT = `https://openrouter.ai/auth?callback_url=${encodeURIComponent(
   thisOrigin
 )}/openrouter`;
-
-export const openrouterCode = persistentSignal<string | null>(
-  "openrouterCode",
-  null
-);
 
 export function OpenRouterConnect() {
   useSignals();

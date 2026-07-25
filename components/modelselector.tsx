@@ -1,8 +1,16 @@
 import { SignalType } from "@/lib/persistentsignal";
+import type {
+  ArchitectureType,
+  ModelType,
+  PricingType,
+  TopProviderType,
+} from "@/lib/llm";
 import { useSignal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
 import sortBy from "just-sort-by";
 import { useEffect } from "react";
+
+export type { ArchitectureType, ModelType, PricingType, TopProviderType };
 
 type RatingType = "error" | "bad" | "ok" | "good" | "great" | "unknown";
 
@@ -606,37 +614,6 @@ const RATINGS: Record<string, RatingType> = {
   "openai/o3-pro": "error",
   "openai/gpt-4.5-preview": "error",
   "openai/o1-pro": "error",
-};
-
-export type ModelType = {
-  id: string;
-  name: string;
-  created: number;
-  description: string;
-  context_length: number;
-  architecture: ArchitectureType;
-  pricing: PricingType;
-  top_provider: TopProviderType;
-  per_request_limits: any;
-};
-
-export type ArchitectureType = {
-  modality: string;
-  tokenizer: string;
-  instruct_type: string;
-};
-
-export type PricingType = {
-  prompt: string;
-  completion: string;
-  image: string;
-  request: string;
-};
-
-export type TopProviderType = {
-  context_length: number;
-  max_completion_tokens: number;
-  is_moderated: boolean;
 };
 
 // const availableModels = persistentSignal<ModelType[] | null>(

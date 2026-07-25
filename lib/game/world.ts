@@ -273,7 +273,7 @@ export class World {
     const roomList: string[] = [];
     const connectionList: string[] = [];
     const playerRoom = this.entityRoom("player");
-    if (window !== undefined) {
+    if (typeof window !== "undefined") {
       (window as any).colors = colors;
     }
     const allRooms = this.rooms.filter((room) => {

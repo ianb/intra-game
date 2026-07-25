@@ -1,9 +1,47 @@
-import { ModelType } from "@/components/modelselector";
-import { openrouterCode } from "@/components/openrouter";
 import { signal } from "@preact/signals-react";
 import OpenAI from "openai";
 import { persistentSignal } from "./persistentsignal";
 import { ChatType, LlmLogType } from "./types";
+
+// OpenRouter model metadata (as returned by the /models API). These live in the
+// engine layer so the LLM transport doesn't depend on any view component.
+export type ModelType = {
+  id: string;
+  name: string;
+  created: number;
+  description: string;
+  context_length: number;
+  architecture: ArchitectureType;
+  pricing: PricingType;
+  top_provider: TopProviderType;
+  per_request_limits: any;
+};
+
+export type ArchitectureType = {
+  modality: string;
+  tokenizer: string;
+  instruct_type: string;
+};
+
+export type PricingType = {
+  prompt: string;
+  completion: string;
+  image: string;
+  request: string;
+};
+
+export type TopProviderType = {
+  context_length: number;
+  max_completion_tokens: number;
+  is_moderated: boolean;
+};
+
+// The OpenRouter auth code, persisted in browser storage. Defined here (not in a
+// view component) so the transport owns its own config; the view reads/writes it.
+export const openrouterCode = persistentSignal<string | null>(
+  "openrouterCode",
+  null
+);
 
 export const DEFAULT_PRO_MODEL = "openai/gpt-4o";
 export const DEFAULT_FLASH_MODEL = "google/gemini-2.5-flash-preview-05-20";
@@ -77,7 +115,8 @@ export async function chat(request: ChatType) {
         apiKey: openrouterCode.value,
         defaultHeaders: {
           "X-Title": "Intra",
-          "HTTP-Referer": location.origin,
+          "HTTP-Referer":
+            typeof location !== "undefined" ? location.origin : "",
         },
         dangerouslyAllowBrowser: true,
       });

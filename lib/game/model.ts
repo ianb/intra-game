@@ -13,8 +13,16 @@ import { listSaves, load, removeSave, save } from "../localsaves";
 import { scheduleForTime } from "./scheduler";
 import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
 import { pathTo } from "./pathto";
-import { computed, effect } from "@preact/signals-react";
-import { SoundtrackPlayer } from "../soundtrack";
+import { computed } from "@preact/signals-react";
+import { chat as defaultChat } from "../llm";
+import type { ChatType } from "../types";
+
+export type ChatFn = (request: ChatType) => Promise<string>;
+
+export type ModelOptions = {
+  // The LLM backend. Defaults to the real OpenRouter chat(); tests inject a fake.
+  chat?: ChatFn;
+};
 
 type ParsedInputType = {
   undo?: boolean;
@@ -28,10 +36,11 @@ export class Model {
   world: World;
   promiseQueue: TrackSettled;
   updatesWithPositions: SignalType<StoryEventWithPositionsType[]>;
-  soundtrackPlayer: SoundtrackPlayer;
   nextRollOverride: number | null = null;
+  chat: ChatFn;
 
-  constructor(startingEntities: AllEntitiesType) {
+  constructor(startingEntities: AllEntitiesType, opts: ModelOptions = {}) {
+    this.chat = opts.chat ?? defaultChat;
     if (typeof window !== "undefined") {
       (window as any).model = this;
     }
@@ -41,22 +50,6 @@ export class Model {
     this.world = new World({
       original: startingEntities,
       model: this,
-    });
-    this.soundtrackPlayer = new SoundtrackPlayer();
-    effect(() => {
-      const _updates = this.updates.value;
-      setTimeout(() => {
-        const currentRoom = this.world.getRoom(
-          this.world.entities.player.inside
-        );
-        if (currentRoom?.soundtrack?.url) {
-          this.soundtrackPlayer.playUrl(
-            convertSoundtrackUrl(currentRoom.soundtrack.url)
-          );
-        } else {
-          this.soundtrackPlayer.playUrl(null);
-        }
-      });
     });
   }
 
@@ -505,13 +498,6 @@ function formatDate(date: Date) {
   const day = String(date.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
-}
-
-function convertSoundtrackUrl(url: string) {
-  if (url.startsWith("http") || url.startsWith("/")) {
-    return url;
-  }
-  return `https://assets.playintra.win/soundtrack/${url}`;
 }
 
 export const model = new Model(entities);
