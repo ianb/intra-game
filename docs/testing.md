@@ -112,3 +112,36 @@ curl -N -X POST 'localhost:8787/api/input?session=s1' -d '{"text":"hello"}'
 
 The last streams Server-Sent Events: `delta` while narrative text arrives, then
 `events` with the authoritative story events that were appended to the log.
+
+## Prompt cache boundaries
+
+Providers cache a _prefix_ of the prompt, so the assembled system message is
+ordered **stable content first, volatile content last**, with a marker line
+between:
+
+    [Everything above is fixed for this character. Everything below changes as
+    the game is played.]
+
+Above it: the boilerplate, the character's identity, description and roleplay
+instructions, and `additionalSystemInstructions()`. Below it: the player's name,
+the clock, the current room, the activity, who else is present, mystery hints,
+and `volatileSystemInstructions()`.
+
+This matters more than it looks. The clock used to sit near the top, so every
+prompt was unique from its fourth line down and prefix caching never hit at all.
+Ama was worst: her roster of every person and room is the largest block in any
+prompt, and it carried each person's _current room_, so any NPC walking anywhere
+invalidated it. Current positions moved below the boundary.
+
+Measured over a five-turn game, the shared prefix across Ama's prompts went from
+289 characters (5%) to 5412 (91%).
+
+**When editing prompts, keep the two sides separate.** Anything that can differ
+between two turns of the same game belongs below the marker; putting it above
+silently costs the cache. Ordering is deliberately the mechanism rather than
+explicit cache-control breakpoints, because it works with automatic prefix
+caching on every provider and survives an OpenAI-compatible proxy, which cannot
+express per-provider cache markers.
+
+Changing prompt text changes the cassette keys, so re-record after edits:
+`pnpm playtest:record`.

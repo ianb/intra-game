@@ -213,7 +213,19 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     return "";
   }
 
+  /**
+   * System-prompt content that is fixed for this character.
+   *
+   * Prompt caching matches a prefix, so the assembled prompt is ordered
+   * stable-first: anything that changes between turns belongs in
+   * volatileSystemInstructions instead, or the cache misses every turn.
+   */
   additionalSystemInstructions(parameters: ParametersT): string {
+    return "";
+  }
+
+  /** System-prompt content that changes as the game runs; goes after the fixed part. */
+  volatileSystemInstructions(parameters: ParametersT): string {
     return "";
   }
 
@@ -593,24 +605,28 @@ export class Person<
 
           In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
 
-          The user is playing under the name "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}); the id of the player is "player".
-
-          The time is ${timeAsString(this.world.timestampMinutes)}
-          ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
-
           <characterDescription>
           ${this.description}
           </characterDescription>
 
           <roleplayInstructions>
-          In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with the player ${this.world.entities.player.name} and pay attention to what ${this.world.entities.player.heshe} says.
+          In general, the goal for the game to be FUN and SURPRISING. Move the conversation forward, and don't be afraid to overreact! ENGAGE with the player and pay attention to what they say.
+
+          ${this.roleplayInstructions}
+          </roleplayInstructions>
+
+          ${this.additionalSystemInstructions(parameters)}
+
+          [Everything above is fixed for this character. Everything below changes as the game is played.]
+
+          The user is playing under the name "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}); the id of the player is "player".
+
+          The time is ${timeAsString(this.world.timestampMinutes)}
+          ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
 
           [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to the player ${this.world.entities.player.name}. There aren't many new people in Intra, so this might be a big deal.]]
 
-          ${this.roleplayInstructions}
-
-          ${promptForPerson}
-          </roleplayInstructions>
+          [[${promptForPerson}]]
 
           ${this.activityDescription(parameters)}
 
@@ -622,7 +638,7 @@ export class Person<
           ${mysteryHints}
           """]]
 
-          ${this.additionalSystemInstructions(parameters)}
+          ${this.volatileSystemInstructions(parameters)}
 
           <insert-system />
           `,
@@ -1222,6 +1238,15 @@ export class AmaClass extends Person<AmaParametersType> {
     `;
   }
 
+  /**
+   * What Ama permanently knows: who lives in Intra and how it is laid out.
+   *
+   * Deliberately excludes where anyone currently *is*. This is the largest block
+   * in any prompt in the game, and it used to carry each person's current room —
+   * so every time an NPC walked anywhere, the whole thing changed and no prefix
+   * cache could survive a single turn. Current positions moved to
+   * volatileSystemInstructions, below the stable/volatile boundary.
+   */
   override additionalSystemInstructions(parameters: AmaParametersType): string {
     if (parameters.prompt === "intro") {
       return "";
@@ -1234,7 +1259,7 @@ export class AmaClass extends Person<AmaParametersType> {
         continue;
       }
       info.push(
-        `- ${person.name} ${person.pronouns} (in room ${person.inside}): ${person.shortDescription}`
+        `- ${person.name} ${person.pronouns}: ${person.shortDescription}`
       );
     }
     info.push("\nAnd this is a list of ALL the rooms:");
@@ -1251,6 +1276,21 @@ export class AmaClass extends Person<AmaParametersType> {
 
     ${info.join("\n")}
     `;
+  }
+
+  /** Where everyone is right now — the part of Ama's knowledge that keeps moving. */
+  override volatileSystemInstructions(parameters: AmaParametersType): string {
+    if (parameters.prompt === "intro") {
+      return "";
+    }
+    const lines: string[] = ["Where everyone is right now:"];
+    for (const person of this.world.allPeople()) {
+      if (person.invisible || person.id === "player" || person.id === this.id) {
+        continue;
+      }
+      lines.push(`- ${person.name} is in ${person.inside}`);
+    }
+    return lines.join("\n");
   }
 
   override afterPrompt(storyEvent: StoryEventType): StoryEventType {
