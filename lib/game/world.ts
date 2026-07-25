@@ -8,7 +8,7 @@ import {
 } from "../types";
 import { tmpl } from "../template";
 import type { Entity, Room, Person, Mystery } from "./classes";
-import type { AllEntitiesType } from "./gameobjs";
+import type { AllEntitiesType } from "./content";
 import type { Model } from "./model";
 import { generateExactSchedule, timeAsString } from "./scheduler";
 import { entitiesById } from "./dynamic";
@@ -225,7 +225,7 @@ export class World {
         }
       }
     }
-    // the fixed set of entity names defined in gameobjs.ts, not from user input.
+    // the fixed set of entity names defined in content/, not from user input.
     // eslint-disable-next-line security/detect-non-literal-regexp -- built from
     this.nameRegex = new RegExp(
       `(^|[^a-zA-Z])(${regexParts.join("|")})([^a-zA-Z]|$)`,

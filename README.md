@@ -52,7 +52,7 @@ There are only a few important parts of the code! Note that many contain spoiler
 - [model.ts](./lib/game/model.ts) manages game state in the browser and the user/game interaction
 - [world.ts](./lib/game/world.ts) represents a moment in the world, and is a getter for most objects
 - [classes.ts](./lib/game/classes.ts) has the class for Entity and its children (e.g., Room, Person, Player). These manage most of the actual game play!
-- [gameobjs.ts](./lib/game/gameobjs.ts) is the instantiation of all the actual game state, individual people and rooms, etc. (though all logic is in classes.ts)
+- [content/](./lib/game/content/) is the instantiation of all the actual game state — the people, the rooms, their quarters, the mysteries, and everyone's daily [schedules](./lib/game/content/schedules/) (though all logic is in classes.ts). [content/index.ts](./lib/game/content/index.ts) assembles it into the `entities` object the engine starts from
 - [application.tsx](./app/application.tsx) is the entire UI
 - [dossier.md](./docs/dossier.md) is the game background. I wasn't able to use much of this given the constrained implementation time, but I hope to eventually!
 

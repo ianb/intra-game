@@ -7,7 +7,7 @@ responses and asserts on the resulting story stream, with no DOM in sight.
 
 ```ts setup
 import { Model } from "../lib/game/model.js";
-import { entities } from "../lib/game/gameobjs.js";
+import { entities } from "../lib/game/content/index.js";
 import type { ChatType } from "../lib/types.js";
 
 // A scripted LLM backend: it routes on the prompt's title, so the order of

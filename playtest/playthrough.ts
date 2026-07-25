@@ -1,5 +1,5 @@
 import { Model } from "../lib/game/model";
-import { entities } from "../lib/game/gameobjs";
+import { entities } from "../lib/game/content";
 import { isStoryActionAttempt, isStoryDescription, isStoryDialog } from "../lib/types";
 import type { StoryEventType } from "../lib/types";
 import { haikuChat } from "./haiku-chat";

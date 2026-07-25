@@ -10,7 +10,7 @@ exercised directly.
 
 ```ts setup
 import { Model } from "../lib/game/model.js";
-import { entities } from "../lib/game/gameobjs.js";
+import { entities } from "../lib/game/content/index.js";
 import { applyTag } from "../lib/game/tags.js";
 import { parseTags } from "../lib/parsetags.js";
 import type { StoryEventType } from "../lib/types.js";

@@ -11,7 +11,7 @@ output.)
 
 ```ts setup
 import { Model } from "../lib/game/model.js";
-import { entities } from "../lib/game/gameobjs.js";
+import { entities } from "../lib/game/content/index.js";
 import { updatesSeenBy, historyForEntity } from "../lib/game/history.js";
 import type { StoryEventType } from "../lib/types.js";
 

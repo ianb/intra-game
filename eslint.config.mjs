@@ -79,6 +79,16 @@ export default [
     },
   },
   {
+    // lib/game/content is prose, not logic: room descriptions, roleplay
+    // instructions, daily routines. Splitting a character's description across
+    // files to satisfy a line cap would make it harder to read, not easier, so
+    // the cap here is about staying loadable in one sitting rather than about
+    // complexity. Anything in this directory that starts wanting *behaviour*
+    // belongs in ../classes.ts instead, where the normal cap applies.
+    files: ["lib/game/content/**"],
+    rules: { "max-lines": ["warn", 600] },
+  },
+  {
     // The playtest harness is a local dev tool that reads and writes cassette
     // files by path; flagging that as a filesystem risk isn't meaningful here.
     files: ["playtest/**"],

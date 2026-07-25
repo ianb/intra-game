@@ -7,7 +7,7 @@ prompts lean on constantly.
 
 ```ts setup
 import { Model } from "../lib/game/model.js";
-import { entities } from "../lib/game/gameobjs.js";
+import { entities } from "../lib/game/content/index.js";
 import { pathTo } from "../lib/game/pathto.js";
 
 // A fresh headless world (fake LLM; we never call it here).

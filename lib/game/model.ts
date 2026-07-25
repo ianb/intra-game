@@ -12,7 +12,7 @@ import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
 import { chat as defaultChat } from "../llm";
 import type { ChatType } from "../types";
 import { World } from "./world";
-import type { AllEntitiesType } from "./gameobjs";
+import type { AllEntitiesType } from "./content";
 import { scheduleForTime } from "./scheduler";
 import { pathTo } from "./pathto";
 import { applyRewinds, lastTurnLength } from "./rewind";

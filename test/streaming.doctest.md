@@ -7,7 +7,7 @@ in the log either way.
 
 ```ts setup
 import { Model } from "../lib/game/model.js";
-import { entities } from "../lib/game/gameobjs.js";
+import { entities } from "../lib/game/content/index.js";
 import { effect } from "@preact/signals-core";
 import type { ChatType } from "../lib/types.js";
 

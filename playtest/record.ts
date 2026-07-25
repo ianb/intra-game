@@ -1,7 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { Model } from "../lib/game/model";
-import { entities } from "../lib/game/gameobjs";
+import { entities } from "../lib/game/content";
 import { haikuChat } from "./haiku-chat";
 import { recordingChat } from "./recorded-chat";
 import { installSeededRandom } from "./seed";

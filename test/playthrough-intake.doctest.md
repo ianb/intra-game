@@ -15,7 +15,7 @@ assert the state it left the world in.
 
 ```ts setup
 import { Model } from "../lib/game/model.js";
-import { entities } from "../lib/game/gameobjs.js";
+import { entities } from "../lib/game/content/index.js";
 import { replayChat } from "../playtest/recorded-chat.js";
 import { installSeededRandom } from "../playtest/seed.js";
 import { INTAKE } from "../playtest/scenarios.js";

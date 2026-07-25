@@ -1,4 +1,4 @@
-import { entities } from "@/lib/game/gameobjs";
+import { entities } from "@/lib/game/content";
 import { Model } from "@/lib/game/model";
 
 // The browser's single game instance.

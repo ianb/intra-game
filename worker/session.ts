@@ -1,5 +1,5 @@
 import { effect } from "@preact/signals-core";
-import { entities } from "../lib/game/gameobjs";
+import { entities } from "../lib/game/content";
 import { Model } from "../lib/game/model";
 import type { StoryEventType } from "../lib/types";
 import { gatewayChatStream } from "./aigateway";
