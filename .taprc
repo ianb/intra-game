@@ -1,0 +1,18 @@
+plugin:
+  - "!@tapjs/typescript"
+node-arg:
+  # intra-game is a CommonJS package (no "type": "module"); Node 22's native TS
+  # stripping loads .ts as CJS, which breaks ESM named imports from the
+  # esbuild-generated doctest module. Defer all .ts handling to tsx instead.
+  - --no-experimental-strip-types
+  - --import=tsx
+  - --import=agent-doctest/tap
+  - --import=agent-doctest/loader
+include:
+  - test/**/*.test.ts
+  - test/**/*.doctest.md
+# Agent-first output: plain machine-readable TAP, no ANSI/cursor codes.
+reporter: tap
+color: false
+# This project isn't coverage-gated; doctests are for behavior + documentation.
+disable-coverage: true
