@@ -191,8 +191,47 @@ function ChatLog() {
           )}
         </div>
       )}
-      {model.runningSignal.value && <CalculatingThrobber />}
+      <StreamingLine />
+      {model.runningSignal.value && !model.streaming.value && (
+        <CalculatingThrobber />
+      )}
     </div>
+  );
+}
+
+/**
+ * Narrative text still arriving from the model.
+ *
+ * This is provisional: when the turn completes the authoritative event lands in
+ * the log and renders normally, and this clears. It replaces the throbber while
+ * text is flowing, so a turn reads as arriving rather than as a wait followed by
+ * a wall of text.
+ */
+function StreamingLine() {
+  useSignals();
+  const streaming = model.streaming.value;
+  if (!streaming) {
+    return null;
+  }
+  const speaker = model.world.getEntity(streaming.entityId);
+  const isDialog = streaming.tag.type === "dialog";
+  return (
+    <>
+      {speaker?.name && isDialog && (
+        <div className="text-xs">
+          <span className={speaker.color}>{speaker.name}</span> says
+        </div>
+      )}
+      <pre
+        className={twMerge(
+          "whitespace-pre-wrap mb-2 opacity-70",
+          isDialog ? "pl-3 -indent-2" : "px-2 mx-8 text-sm"
+        )}
+      >
+        {streaming.tag.content}
+        <span className="animate-pulse">▋</span>
+      </pre>
+    </>
   );
 }
 
