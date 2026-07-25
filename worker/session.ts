@@ -24,6 +24,9 @@ import { devChatStream } from "./devllm";
  *    exportable and mineable for evals.
  */
 
+/** How the router tells a session who the Access-verified caller is. */
+export const OWNER_HEADER = "x-intra-owner";
+
 const LOG_KEY = "log";
 const OWNER_KEY = "owner";
 /** Deliberately separate from the log; see invariant 2 above. */
@@ -73,16 +76,23 @@ export class GameSession {
 
   /** Claim this session for an owner, optionally storing their own API key. */
   private async create(request: Request): Promise<Response> {
-    const body = (await request.json()) as {
-      owner: SessionOwner;
+    // The owner comes from the header the router sets from the Access-verified
+    // identity, never from the body: a client that could name its own owner
+    // would be writing the audit trail it is supposed to be recorded in.
+    const email = request.headers.get(OWNER_HEADER);
+    if (!email) {
+      return json({ error: "unidentified" }, 401);
+    }
+    const owner: SessionOwner = { email };
+    const body = (await request.json().catch(() => ({}))) as {
       credential?: StoredCredential;
     };
-    await this.state.storage.put(OWNER_KEY, body.owner);
+    await this.state.storage.put(OWNER_KEY, owner);
     if (body.credential) {
       await this.state.storage.put(CREDENTIAL_KEY, body.credential);
     }
     const log = await this.log();
-    return json({ owner: body.owner, events: log.length });
+    return json({ owner, events: log.length });
   }
 
   /** The event log from a cursor, so a reconnecting client can catch up. */

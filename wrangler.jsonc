@@ -1,13 +1,14 @@
 {
   // Cloudflare Workers deployment for the game.
   //
-  // The game is a static single-page app, so this is an assets-only Worker:
-  // there is no `main` script, Cloudflare just serves ./dist. The engine runs
-  // in the browser and talks to OpenRouter directly.
+  // One Worker serves both halves: Cloudflare serves the client bundle from
+  // ./dist directly, and worker/index.ts handles /api/*. A player can use
+  // either — the engine still runs in the browser against their own OpenRouter
+  // key unless they switch to a server session in Settings.
   //
-  // If the engine later moves server-side (so play doesn't depend on a
-  // browser-held API key), add `"main": "worker/index.ts"` here and the same
-  // deployment grows a server without changing how assets are served.
+  // Secrets are NOT here. CF_AIG_TOKEN is set with `wrangler secret put` (or in
+  // the dashboard); CF_ACCOUNT_ID and GATEWAY_MODEL are plain vars that a
+  // deployment fills in. See docs/deploying.md.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "intra-game",
   "main": "worker/index.ts",

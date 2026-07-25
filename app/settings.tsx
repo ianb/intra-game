@@ -13,6 +13,7 @@ import { ModelSelector } from "@/components/modelselector";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import { model } from "./model";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
+import { remoteSession } from "./session";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export function Settings() {
@@ -65,6 +66,9 @@ export function Settings() {
           )}
         </div>
         <div className="mt-4">
+          <ServerPlay />
+        </div>
+        <div className="mt-4">
           Set a custom endpoint: <br />
           <input
             type="text"
@@ -86,17 +90,52 @@ export function Settings() {
   );
 }
 
-const CLOCK_CHARS: Record<string, string> = {
-  "12": "🕛",
-  "1": "🕐",
-  "2": "🕑",
-  "3": "🕒",
-  "4": "🕓",
-  "5": "🕔",
-  "6": "🕕",
-  "7": "🕖",
-  "8": "🕗",
-  "9": "🕘",
-  "10": "🕙",
-  "11": "🕚",
-};
+/**
+ * Switch between playing in this tab and playing on the server.
+ *
+ * Local play runs the engine here against the player's own OpenRouter key.
+ * Server play runs it in a Durable Object: the key is the server's, the event
+ * log outlives the browser, and this tab is only a renderer. The session id is
+ * the player's — it is scoped to their verified identity server-side, so it
+ * names their own session and nobody else's.
+ *
+ * Switching reloads, because which mode a tab is in is decided once when the
+ * game starts: the local path launches the game here and the remote path adopts
+ * the server's log, and doing both would double the events.
+ */
+function ServerPlay() {
+  useSignals();
+  const session = remoteSession.value;
+  if (session) {
+    return (
+      <>
+        Playing on the server, session <code>{session.slice(0, 8)}</code>
+        <br />
+        <Button
+          className="mt-2"
+          onClick={() => {
+            remoteSession.value = null;
+            window.location.reload();
+          }}
+        >
+          Play in this tab instead
+        </Button>
+      </>
+    );
+  }
+  return (
+    <>
+      Playing in this tab, using your own model access.
+      <br />
+      <Button
+        className="mt-2"
+        onClick={() => {
+          remoteSession.value = crypto.randomUUID();
+          window.location.reload();
+        }}
+      >
+        Play on the server (reloads)
+      </Button>
+    </>
+  );
+}

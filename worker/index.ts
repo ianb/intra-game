@@ -1,4 +1,5 @@
 import { authenticate } from "./access";
+import { OWNER_HEADER } from "./session";
 
 export { GameSession } from "./session";
 
@@ -42,9 +43,14 @@ export default {
     const name = `${auth.email}:${sessionId}`;
     const stub = env.GAME_SESSION.get(env.GAME_SESSION.idFromName(name));
 
-    // Forward to the DO, rewriting /api/<action> to /<action>.
+    // Forward to the DO, rewriting /api/<action> to /<action>. The identity
+    // rides along as a header so the DO records who owns a session without
+    // knowing anything about Access — and without taking the client's word for
+    // it, which is what it used to do.
     const inner = new URL(request.url);
     inner.pathname = url.pathname.replace(/^\/api/, "");
-    return stub.fetch(new Request(inner, request));
+    const forwarded = new Request(inner, request);
+    forwarded.headers.set(OWNER_HEADER, auth.email);
+    return stub.fetch(forwarded);
   },
 };

@@ -17,6 +17,9 @@ importers:
       '@preact/signals-react':
         specifier: ^2.2.0
         version: 2.3.0(react@18.3.1)
+      esbuild:
+        specifier: ^0.20.2
+        version: 0.20.2
       just-clone:
         specifier: ^6.2.0
         version: 6.2.0
@@ -32,6 +35,9 @@ importers:
       openai:
         specifier: ^4.104.0
         version: 4.104.0(ws@8.21.1)(zod@4.4.3)
+      postcss:
+        specifier: ^8
+        version: 8.5.23
       react:
         specifier: ^18
         version: 18.3.1
@@ -41,6 +47,12 @@ importers:
       tailwind-merge:
         specifier: ^2.5.2
         version: 2.6.1
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
+      tsx:
+        specifier: ^4.23.1
+        version: 4.23.1
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^5.20260724.1
@@ -66,9 +78,6 @@ importers:
       agent-doctest:
         specifier: file:../../../workspace/callback-box/agent-doctest
         version: file:../../../workspace/callback-box/agent-doctest(@tapjs/core@4.5.8(@types/node@20.19.43)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(esbuild@0.20.2)(tap@21.7.4(@types/node@20.19.43)(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))
-      esbuild:
-        specifier: ^0.20.2
-        version: 0.20.2
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@1.21.7)
@@ -84,21 +93,12 @@ importers:
       playwright:
         specifier: ^1.62.0
         version: 1.62.0
-      postcss:
-        specifier: ^8
-        version: 8.5.23
       prettier:
         specifier: ^3.3.3
         version: 3.9.6
-      tailwindcss:
-        specifier: ^3.4.1
-        version: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
       tap:
         specifier: ^21.7.4
         version: 21.7.4(@types/node@20.19.43)(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
-      tsx:
-        specifier: ^4.23.1
-        version: 4.23.1
       typescript:
         specifier: ^5
         version: 5.9.3

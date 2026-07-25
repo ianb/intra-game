@@ -28,15 +28,19 @@ function api(path: string, session: string): string {
   return `/api/${path}?session=${encodeURIComponent(session)}`;
 }
 
-export async function createSession(
-  session: string,
-  owner: { email: string }
-): Promise<void> {
+/**
+ * Claim a session on the server.
+ *
+ * There is no owner to send: the server takes that from the Access-verified
+ * identity on the request. `credentials: "include"` is what carries the Access
+ * cookie.
+ */
+export async function createSession(session: string): Promise<void> {
   const response = await fetch(api("create", session), {
     method: "POST",
     credentials: "include",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ owner }),
+    body: "{}",
   });
   if (!response.ok) {
     throw new Error(`Could not create session: ${response.status}`);
@@ -152,7 +156,7 @@ export async function initSession(): Promise<void> {
     return;
   }
   try {
-    await createSession(session, { email: "PLAYER" });
+    await createSession(session);
     const { events } = await fetchEvents(session);
     model.adoptRemoteLog(events);
   } catch (e) {

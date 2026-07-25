@@ -4,8 +4,10 @@ This is a game written from September 27-29, 2024, for the [Text Adventure Hack]
 
 # Installation instructions
 
-This is a static single-page app: the whole game runs in the browser, so it can
-be hosted anywhere that serves files. It deploys to Cloudflare Workers.
+The game runs either way: entirely in your browser against your own model key,
+or on the server, where the engine runs in a Cloudflare Durable Object and the
+browser is just a renderer. Settings switches between them. It deploys to
+Cloudflare Workers.
 
 To run this you'll need to connect to [OpenRouter.ai](https://openrouter.ai/) to access various LLM models. You can use free models or connect your own API keys for paid models. The game will work with free models, though paid models generally provide better performance.
 
@@ -14,10 +16,10 @@ The tech stack:
 - React + TypeScript, bundled with [esbuild](https://esbuild.github.io/) (see [build.ts](./build.ts))
 - Tailwind for styling
 - [Preact Signals](https://preactjs.com/guide/v10/signals/) for state management
-- Actual game state is stored in [browser localStorage](./lib/persistentsignal.ts)
-- [OpenRouter.ai](https://openrouter.ai/) for LLM access
-- Various LLM models (GPT-4, Claude, Gemini, etc.)
-- Deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) static assets (see [wrangler.jsonc](./wrangler.jsonc))
+- Game state is an append-only stream of events — in [browser localStorage](./lib/persistentsignal.ts) when playing locally, in Durable Object storage when playing on the server
+- [OpenRouter.ai](https://openrouter.ai/) for LLM access in the browser, [Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/) server-side
+- Various LLM models; see [lib/models.ts](./lib/models.ts) for the defaults
+- Deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/): the client bundle as static assets, `/api/*` as a Worker (see [wrangler.jsonc](./wrangler.jsonc))
 
 ## Getting Started
 
@@ -32,17 +34,23 @@ The game will work with free models, but you can also connect your own API keys 
 
 ```bash
 pnpm build      # bundle into dist/
-pnpm preview    # serve dist/ through wrangler locally
+pnpm preview    # run the whole thing locally through wrangler
 pnpm deploy     # wrangler deploy
 ```
 
-There is no server component: `wrangler.jsonc` declares an assets-only Worker
-that serves `dist/`, with a single-page-application fallback so both routes
-(`/` and the `/openrouter` OAuth callback) resolve to the same HTML shell. If
-the engine later moves server-side, adding a `main` entry to that config grows
-a Worker alongside the same assets.
+One Worker serves both halves: Cloudflare serves `dist/` directly (with a
+single-page-application fallback, so `/` and the `/openrouter` OAuth callback
+resolve to the same HTML shell), and [worker/](./worker/) handles `/api/*` —
+Cloudflare Access for identity, a Durable Object per session.
 
-Development and testing tooling is described in [docs/testing.md](./docs/testing.md).
+`pnpm preview` needs no Cloudflare account: `.dev.vars` stands in for both the
+verified identity and the model backend.
+
+[docs/deploying.md](./docs/deploying.md) is the step-by-step for setting up a
+real deployment.
+
+Development and testing tooling is described in [docs/testing.md](./docs/testing.md),
+and [docs/deploying.md](./docs/deploying.md) covers the Cloudflare setup.
 
 # Code
 
@@ -53,10 +61,10 @@ There are only a few important parts of the code! Note that many contain spoiler
 - [world.ts](./lib/game/world.ts) represents a moment in the world, and is a getter for most objects
 - [classes.ts](./lib/game/classes.ts) has the class for Entity and its children (e.g., Room, Person, Player). These manage most of the actual game play!
 - [content/](./lib/game/content/) is the instantiation of all the actual game state — the people, the rooms, their quarters, the mysteries, and everyone's daily [schedules](./lib/game/content/schedules/) (though all logic is in classes.ts). [content/index.ts](./lib/game/content/index.ts) assembles it into the `entities` object the engine starts from
-- [application.tsx](./app/application.tsx) is the entire UI
+- [app/](./app/) is the UI — [application.tsx](./app/application.tsx) is the shell, with each pane beside it ([chatlog](./app/chatlog.tsx), [hud](./app/hud.tsx), [controls](./app/controls.tsx), …)
 - [dossier.md](./docs/dossier.md) is the game background. I wasn't able to use much of this given the constrained implementation time, but I hope to eventually!
 
-There's a little more UI in [components/](./components/) and some libraries in [lib/](./lib/), but they are mostly generic and secondary. Besides application.tsx [app/](./app/) is mostly boilerplate or glue.
+There's a little more UI in [components/](./components/) and some libraries in [lib/](./lib/), but they are mostly generic and secondary. [worker/](./worker/) is the server: identity, session routing, and the Durable Object that owns a session's log.
 
 # FAQ
 
