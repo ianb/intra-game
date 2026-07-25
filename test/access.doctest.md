@@ -8,7 +8,7 @@ Every one of these cases must be a rejection. That's the whole property worth
 testing here: the gate should never admit anyone on doubt.
 
 ```ts setup
-import { verifyAccessAssertion, accessConfig } from "../worker/access.js";
+import { verifyAccessAssertion, accessConfig, authenticate } from "../worker/access.js";
 
 const config = { teamDomain: "https://team.cloudflareaccess.com", aud: "aud-tag" };
 
@@ -110,4 +110,41 @@ const wellFormed = [
 ].join(".");
 await reject(withToken(wellFormed), async () => null);
 => jwks-unavailable
+```
+
+## The development bypass cannot open a hole in production
+
+Local development needs a way in without a Cloudflare account, so an explicit
+`DEV_IDENTITY` stands in for a verified user. That is only safe if it cannot
+apply to a real deployment — so it is gated on Access being *unconfigured*, not
+on a separate "is production" flag that could be set wrong.
+
+```ts
+const anonymous = new Request("https://game.example/api/events");
+
+// No Access configured, no dev identity: nothing to verify against.
+(await authenticate(anonymous, {})).ok;
+=> false
+
+// No Access configured, dev identity set: local development.
+const dev = await authenticate(anonymous, { DEV_IDENTITY: "dev@localhost" });
+dev.ok && dev.email;
+=> dev@localhost
+```
+
+The property that matters: once Access *is* configured, `DEV_IDENTITY` is
+ignored entirely. A deployment that gates on Access cannot be bypassed even if a
+dev variable leaks into its environment.
+
+``` continue
+const configured = await authenticate(anonymous, {
+  ACCESS_TEAM_DOMAIN: "https://team.cloudflareaccess.com",
+  ACCESS_AUD: "aud-tag",
+  DEV_IDENTITY: "attacker@example.com",
+});
+configured.ok;
+=> false
+
+configured.ok ? "ADMITTED" : configured.response.status;
+=> 401
 ```

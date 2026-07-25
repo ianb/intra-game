@@ -79,5 +79,36 @@ submodule-relative dependencies.
 (`strict`, `noImplicitAny`, `noUncheckedIndexedAccess`, `noImplicitOverride`,
 …). Keep `pnpm typecheck` clean.
 
-The full lint preset (ESLint 9 flat config, knip, madge, prettier) is a later
-adoption step — see the repo's task notes.
+The lint preset (ESLint 9 flat config, oxlint, madge, prettier) is adopted; see
+`eslint.config.mjs` for the rules this project turns off and why.
+
+## Running the server locally
+
+The server runs offline with no Cloudflare account, no login and no API key:
+
+```bash
+pnpm build      # the client bundle the Worker serves
+pnpm preview    # wrangler dev
+```
+
+Two variables in `.dev.vars` (gitignored, never deployed) make that possible:
+
+- `DEV_IDENTITY` stands in for a Cloudflare Access-verified user. It is only
+  honoured while Access is **unconfigured** — set `ACCESS_TEAM_DOMAIN` and
+  `ACCESS_AUD` and it is ignored entirely, so it cannot open a bypass in a real
+  deployment. `test/access.doctest.md` asserts exactly that.
+- `DEV_FAKE_LLM` swaps AI Gateway for a stand-in that emits well-formed protocol
+  output in chunks. It exercises the plumbing — routing, the Durable Object, the
+  event log, SSE framing, the streaming parser's chunk boundaries — and is not
+  meant for actually playing.
+
+The API lives under `/api/*` and is authenticated:
+
+```bash
+curl -X POST 'localhost:8787/api/create?session=s1' -d '{"owner":{"email":"dev@localhost"}}'
+curl 'localhost:8787/api/events?session=s1'                  # log from a cursor
+curl -N -X POST 'localhost:8787/api/input?session=s1' -d '{"text":"hello"}'
+```
+
+The last streams Server-Sent Events: `delta` while narrative text arrives, then
+`events` with the authoritative story events that were appended to the log.

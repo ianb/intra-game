@@ -370,10 +370,25 @@ export type AuthResult =
  */
 export async function authenticate(
   request: Request,
-  env: { ACCESS_TEAM_DOMAIN?: string; ACCESS_AUD?: string }
+  env: {
+    ACCESS_TEAM_DOMAIN?: string;
+    ACCESS_AUD?: string;
+    DEV_IDENTITY?: string;
+  }
 ): Promise<AuthResult> {
   const config = accessConfig(env);
   if (!config) {
+    // No Access configured. For local development an explicit DEV_IDENTITY
+    // stands in for a verified user, so the server can be exercised offline
+    // with no Cloudflare account.
+    //
+    // This is safe by construction rather than by discipline: the branch is only
+    // reachable when Access is UNCONFIGURED. Any deployment that sets a team
+    // domain and aud takes the path below and verifies for real, so DEV_IDENTITY
+    // leaking into production vars cannot open a bypass.
+    if (env.DEV_IDENTITY) {
+      return { ok: true, email: env.DEV_IDENTITY };
+    }
     return { ok: false, response: new Response("Not found", { status: 404 }) };
   }
   const result = await verifyAccessAssertion({

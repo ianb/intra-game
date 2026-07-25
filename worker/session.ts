@@ -1,7 +1,9 @@
+import { effect } from "@preact/signals-core";
 import { entities } from "../lib/game/gameobjs";
 import { Model } from "../lib/game/model";
 import type { StoryEventType } from "../lib/types";
 import { gatewayChatStream } from "./aigateway";
+import { devChatStream } from "./devllm";
 
 /**
  * One game session: its event log, and the execution that appends to it.
@@ -41,6 +43,8 @@ export interface SessionEnv {
   CF_AIG_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
   GATEWAY_MODEL?: string;
+  /** Local development: use the stand-in LLM instead of AI Gateway. */
+  DEV_FAKE_LLM?: string;
 }
 
 export class GameSession {
@@ -100,20 +104,14 @@ export class GameSession {
     if (!text) {
       return json({ error: "missing text" }, 400);
     }
-    if (!this.env.CF_ACCOUNT_ID || !this.env.CF_AIG_TOKEN) {
-      return json({ error: "AI Gateway not configured" }, 503);
-    }
     const credential = await this.state.storage.get<StoredCredential>(
       CREDENTIAL_KEY
     );
-    const model = new Model(entities, {
-      chatStream: gatewayChatStream({
-        accountId: this.env.CF_ACCOUNT_ID,
-        token: this.env.CF_AIG_TOKEN,
-        model: this.env.GATEWAY_MODEL ?? "anthropic/claude-4-5-haiku",
-        providerKey: credential?.key,
-      }),
-    });
+    const backend = this.chatBackend(credential);
+    if (!backend) {
+      return json({ error: "AI Gateway not configured" }, 503);
+    }
+    const model = new Model(entities, { chatStream: backend });
 
     const log = await this.log();
     model.replaceLog(log);
@@ -162,6 +160,22 @@ export class GameSession {
     });
   }
 
+  /** The LLM backend: AI Gateway, or the local stand-in in development. */
+  private chatBackend(credential: StoredCredential | undefined) {
+    if (this.env.DEV_FAKE_LLM) {
+      return devChatStream();
+    }
+    if (!this.env.CF_ACCOUNT_ID || !this.env.CF_AIG_TOKEN) {
+      return null;
+    }
+    return gatewayChatStream({
+      accountId: this.env.CF_ACCOUNT_ID,
+      token: this.env.CF_AIG_TOKEN,
+      model: this.env.GATEWAY_MODEL ?? "anthropic/claude-4-5-haiku",
+      providerKey: credential?.key,
+    });
+  }
+
   private async log(): Promise<StoryEventType[]> {
     return (await this.state.storage.get<StoryEventType[]>(LOG_KEY)) ?? [];
   }
@@ -173,22 +187,26 @@ export class GameSession {
   }
 }
 
-/** Report the in-flight narrative tag whenever it changes. */
+/**
+ * Report the in-flight narrative tag whenever it changes.
+ *
+ * This subscribes rather than polls. Polling looked adequate but wasn't: at any
+ * sampling interval most intermediate states are missed, and because the engine
+ * runs several prompts per turn a sample can land on a *later* prompt's earlier
+ * state — so content appeared to go backwards, which a typewriter UI would
+ * render as text deleting itself. An effect fires synchronously on every change,
+ * so deltas arrive complete and in order.
+ */
 function watchStreaming(
   model: Model,
   onChange: (state: unknown) => void
 ): () => void {
-  let last: unknown = null;
-  const timer = setInterval(() => {
+  return effect(() => {
     const current = model.streaming.value;
-    if (current !== last) {
-      last = current;
-      if (current) {
-        onChange(current);
-      }
+    if (current) {
+      onChange(current);
     }
-  }, 30);
-  return () => clearInterval(timer);
+  });
 }
 
 function json(body: unknown, status = 200): Response {
