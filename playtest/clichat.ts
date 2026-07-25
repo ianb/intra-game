@@ -2,16 +2,17 @@ import { spawn } from "node:child_process";
 import type { ChatType } from "../lib/types";
 import type { ChatFn } from "../lib/game/model";
 
-// A Haiku-level LLM backend for the game, wired to a child `claude -p` process
-// (Claude Code in print mode, tools disabled so it behaves as a single
-// completion). This lets us playtest the real engine with a real small model —
-// no OpenRouter key required — by injecting it as the Model's `chat`.
+// An LLM backend for the game, wired to a child `claude -p` process (Claude
+// Code in print mode, tools disabled so it behaves as a single completion).
+// This lets us playtest and evaluate the real engine against a real model with
+// no OpenRouter key, by injecting it as the Model's `chat`. `model` picks the
+// tier — the default is Haiku-level, which is what the game targets.
 //
 // This is a playtest tool, not part of the app or the deterministic test suite:
 // it depends on the `claude` CLI being on PATH and makes non-deterministic model
 // calls. See playtest/README.md.
 
-export const HAIKU_MODEL = "claude-haiku-4-5-20251001";
+export const DEFAULT_CLI_MODEL = "claude-haiku-4-5-20251001";
 
 const NO_TOOLS = [
   "Bash",
@@ -25,15 +26,15 @@ const NO_TOOLS = [
   "Task",
 ].join(" ");
 
-export interface HaikuChatOptions {
+export interface CliChatOptions {
   model?: string;
   timeoutMs?: number;
   // Called with (prompt, response) after each completion, for tracing.
   onCall?: (info: { title: string; response: string }) => void;
 }
 
-export function haikuChat(options: HaikuChatOptions = {}): ChatFn {
-  const model = options.model ?? HAIKU_MODEL;
+export function cliChat(options: CliChatOptions = {}): ChatFn {
+  const model = options.model ?? DEFAULT_CLI_MODEL;
   const timeoutMs = options.timeoutMs ?? 120_000;
   return async (request: ChatType): Promise<string> => {
     const system = request.messages

@@ -5,6 +5,9 @@ key required — and watch it play. This is the exploratory counterpart to the
 deterministic doctests in `test/`: those pin behavior with a scripted fake LLM;
 this one exercises the whole game with an actual model to see how it holds up.
 
+For _scoring_ how well a model plays rather than reading a transcript, see
+[../evals/](../evals/README.md), which reuses this backend.
+
 ```bash
 pnpm playtest                       # default intake sequence
 pnpm playtest "Hello?" "I'm Ada" "go to the foyer"
@@ -15,14 +18,14 @@ unfolds; `[llm:<prompt title>]` trace lines go to stderr.
 
 ## How it works
 
-`haiku-chat.ts` is a `ChatFn` (the engine's injectable LLM backend) that shells
+`clichat.ts` is a `ChatFn` (the engine's injectable LLM backend) that shells
 out to a child `claude -p --model <haiku>` process with tools disabled, so each
 call behaves as a single completion. `playthrough.ts` constructs a headless
 `Model` with that backend, launches it, feeds the scripted inputs, and renders
 the resulting story stream.
 
 Because the engine takes `chat` as a constructor option, wiring a different
-model is a one-liner — swap the backend, or point `haikuChat({ model })` at any
+model is a one-liner — swap the backend, or point `cliChat({ model })` at any
 model the `claude` CLI accepts.
 
 ## Cassettes: record once, replay deterministically

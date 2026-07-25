@@ -88,9 +88,10 @@ export default [
     rules: { "max-lines": ["warn", 600] },
   },
   {
-    // The playtest harness is a local dev tool that reads and writes cassette
-    // files by path; flagging that as a filesystem risk isn't meaningful here.
-    files: ["playtest/**"],
+    // The playtest and eval harnesses are local dev tools that read and write
+    // cassettes and result files by path; flagging that as a filesystem risk
+    // isn't meaningful here.
+    files: ["playtest/**", "evals/**"],
     rules: { "security/detect-non-literal-fs-filename": "off" },
   },
 ];

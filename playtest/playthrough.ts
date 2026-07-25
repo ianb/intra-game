@@ -6,7 +6,7 @@ import {
   isStoryDialog,
 } from "../lib/types";
 import type { StoryEventType } from "../lib/types";
-import { haikuChat } from "./haiku-chat";
+import { cliChat } from "./clichat";
 
 // Drive a real playthrough of the engine using a Haiku-level model as the LLM.
 // Usage: pnpm playtest ["first input" "second input" ...]
@@ -60,7 +60,7 @@ async function main() {
   const script = inputs.length ? inputs : DEFAULT_INPUTS;
 
   const model = new Model(entities, {
-    chat: haikuChat({
+    chat: cliChat({
       onCall: ({ title }) => console.error(`    [llm:${title}]`),
     }),
   });

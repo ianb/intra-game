@@ -1,0 +1,224 @@
+import { entities } from "../lib/game/content";
+import { Model } from "../lib/game/model";
+import type { StoryEventType } from "../lib/types";
+import { installSeededRandom } from "../playtest/seed";
+
+/**
+ * Running a scenario against a model and scoring what came back.
+ *
+ * The question these evals answer is narrow on purpose: **can this model drive
+ * this game?** Not whether its prose is good — that needs a judge and a taste
+ * argument — but whether it speaks the tag protocol well enough that the engine
+ * can act on what it says, and whether the game reaches the state the scenario
+ * was aiming at.
+ *
+ * Both halves are objective, which is what makes a recorded number worth
+ * comparing across models and across months.
+ */
+
+/** One thing that either happened or didn't, after a scenario ran. */
+export interface Check {
+  name: string;
+  /** What a failure would mean — this is what a reader of the results sees. */
+  describe: string;
+  run(result: RunResult): boolean;
+}
+
+export interface Scenario {
+  name: string;
+  describe: string;
+  seed: number;
+  inputs: string[];
+  checks: Check[];
+}
+
+/**
+ * Warnings the engine recovered from, rather than dropping something.
+ *
+ * A mismatched closing tag is sloppy markup the parser repairs and carries on
+ * from; the game still happens. Everything else in the engine's warning
+ * vocabulary means it threw something away. Unrecognised warnings count as
+ * dropped, so a new failure mode shows up as a failure rather than being
+ * silently forgiven.
+ */
+const REPAIRED = [/^Mismatched closing tag/];
+
+export function classifyWarnings(warnings: string[]): {
+  repaired: string[];
+  dropped: string[];
+} {
+  const repaired: string[] = [];
+  const dropped: string[] = [];
+  for (const warning of warnings) {
+    (REPAIRED.some((p) => p.test(warning)) ? repaired : dropped).push(warning);
+  }
+  return { repaired, dropped };
+}
+
+/** One thing the player typed, and everything the game did in response. */
+export interface Turn {
+  input: string;
+  events: StoryEventType[];
+}
+
+export interface RunResult {
+  model: Model;
+  log: StoryEventType[];
+  /**
+   * The log split by player input.
+   *
+   * A single turn can produce several events — asking to look at something
+   * routes through one prompt that decides what kind of input it was and a
+   * second that answers it, so the first event carries no actions of its own.
+   * Judging "did anything happen" per event would score that as a dead turn;
+   * per turn is what the player actually experiences.
+   */
+  turns: Turn[];
+  /**
+   * What the engine complained about while folding the model's output.
+   *
+   * The engine already warns when a model breaks the protocol — an unparseable
+   * `<set>`, a `character=` that names nobody, an exit that doesn't exist. Those
+   * warnings are the protocol score, rather than a list of valid tags kept here
+   * and drifting out of step with the engine that actually enforces them.
+   */
+  warnings: string[];
+  /** Wall-clock for the whole scenario, including model latency. */
+  ms: number;
+  /** Set when the run threw; every check then counts as failed. */
+  error?: string;
+}
+
+export interface CheckResult {
+  name: string;
+  describe: string;
+  passed: boolean;
+}
+
+export interface ScenarioResult {
+  scenario: string;
+  passed: number;
+  total: number;
+  ms: number;
+  events: number;
+  /** Warnings where the engine discarded something the model said. */
+  dropped: string[];
+  /** Warnings where it repaired sloppy markup and carried on. */
+  repaired: string[];
+  /**
+   * What the characters said, so a failed text check can be audited later.
+   *
+   * Without this a result like "broke character" is unfalsifiable after the
+   * run: the model is sampling, so it may not reproduce, and there would be no
+   * way to tell a real failure from a check matching something innocent.
+   */
+  transcript: string[];
+  error?: string;
+  checks: CheckResult[];
+}
+
+async function settle(model: Model): Promise<void> {
+  while (model.runningSignal.value) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+}
+
+/**
+ * Capture what the engine warns about, so protocol failures can be counted.
+ *
+ * console.warn is the engine's existing channel for "the model said something I
+ * could not use" — see lib/game/tags.ts. Intercepting it means the eval learns
+ * about new failure modes as the engine grows them.
+ */
+function captureWarnings(): { warnings: string[]; restore: () => void } {
+  const warnings: string[] = [];
+  const original = console.warn;
+  console.warn = (...args: unknown[]) => {
+    warnings.push(args.map((a) => String(a)).join(" "));
+  };
+  return {
+    warnings,
+    restore: () => {
+      console.warn = original;
+    },
+  };
+}
+
+/** Play a scenario to the end and score it. */
+export async function runScenario(
+  scenario: Scenario,
+  chat: Model["chat"],
+): Promise<ScenarioResult> {
+  const started = Date.now();
+  const restoreRandom = installSeededRandom(scenario.seed);
+  const captured = captureWarnings();
+  const model = new Model(entities, { chat });
+  const turns: Turn[] = [];
+  let error: string | undefined;
+
+  try {
+    model.checkLaunch();
+    await settle(model);
+    for (const input of scenario.inputs) {
+      const before = model.updates.value.length;
+      await model.sendText(input);
+      await settle(model);
+      turns.push({ input, events: model.updates.value.slice(before) });
+    }
+  } catch (e) {
+    error = String(e);
+  } finally {
+    captured.restore();
+    restoreRandom();
+  }
+
+  const result: RunResult = {
+    model,
+    log: model.updates.value,
+    turns,
+    warnings: captured.warnings,
+    ms: Date.now() - started,
+    error,
+  };
+
+  const checks = scenario.checks.map((check) => ({
+    name: check.name,
+    describe: check.describe,
+    // A run that threw scores zero rather than being scored on partial state.
+    passed: error === undefined && safely(() => check.run(result)),
+  }));
+
+  const { repaired, dropped } = classifyWarnings(result.warnings);
+  return {
+    scenario: scenario.name,
+    passed: checks.filter((c) => c.passed).length,
+    total: checks.length,
+    ms: result.ms,
+    events: result.log.length,
+    dropped: [...new Set(dropped)],
+    repaired: [...new Set(repaired)],
+    transcript: transcriptOf(result),
+    error,
+    checks,
+  };
+}
+
+/** A check that throws is a failed check, not a failed eval run. */
+function safely(fn: () => boolean): boolean {
+  try {
+    return fn();
+  } catch {
+    return false;
+  }
+}
+
+/** Every line of dialogue in the run, attributed, for auditing failures. */
+function transcriptOf(result: RunResult): string[] {
+  return result.log
+    .flatMap((event) => event.actions)
+    .flatMap((action) =>
+      "text" in action && action.text
+        ? [`${"id" in action ? action.id : "narrator"}: ${action.text}`]
+        : [],
+    );
+}

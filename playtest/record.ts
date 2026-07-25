@@ -2,7 +2,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { Model } from "../lib/game/model";
 import { entities } from "../lib/game/content";
-import { haikuChat } from "./haiku-chat";
+import { cliChat } from "./clichat";
 import { recordingChat } from "./recorded-chat";
 import { installSeededRandom } from "./seed";
 import { SCENARIOS, type Scenario } from "./scenarios";
@@ -26,7 +26,7 @@ async function record(scenario: Scenario) {
   const model = new Model(entities, {
     chat: recordingChat(
       scenario.cassette,
-      haikuChat({ onCall: ({ title }) => console.error(`  [rec:${title}]`) }),
+      cliChat({ onCall: ({ title }) => console.error(`  [rec:${title}]`) }),
     ),
   });
   model.checkLaunch();

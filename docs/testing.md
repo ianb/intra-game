@@ -43,6 +43,15 @@ worked example and the agent-doctest README for the full syntax.
 `test/headless-engine.doctest.md` shows the engine being driven headless with a
 scripted (deterministic) fake LLM — the pattern for engine-level tests.
 
+## Model evals
+
+`pnpm evals` scores whether a given model can actually drive the game — it plays
+fixed scenarios against a real model and checks both that the engine understood
+every tag, and that the game reached the state the scenario aimed at. Results are
+committed under `evals/results/` and summarised in
+[evals/RESULTS.md](../evals/RESULTS.md). See [evals/README.md](../evals/README.md)
+for what is and isn't measured.
+
 ## Playtesting with a real model
 
 For exploratory playtesting against a real Haiku-level model (non-deterministic,
