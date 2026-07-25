@@ -69,6 +69,11 @@ export function Help() {
         <code className="text-cyan-300">/redo</code> and{" "}
         <code className="text-cyan-300">/restart</code>
       </div>
+      <div className="mb-4">
+        When someone asks you to do something it lands on your{" "}
+        <code className="text-cyan-300">todo</code> list, in the panel on the
+        right. Nobody makes you do any of it.
+      </div>
       <div className="flex justify-center mb-4">
         <pre>
           {"+-------------------------+\n"}

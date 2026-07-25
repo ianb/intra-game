@@ -20,6 +20,7 @@ export interface StoryEventType {
   llmParameters?: Record<string, unknown>;
   llmError?: { context: string; description: string };
   suggestions?: string;
+  todos?: TodoUpdateType[];
   triggers?: Record<EntityId, string>;
   // Set on an undo marker: supersedes this many preceding live events. The
   // log stays append-only; see lib/game/rewind.ts.
@@ -27,6 +28,20 @@ export interface StoryEventType {
 }
 export type StoryActionType =
   StoryDialogType | StoryDescriptionType | StoryActionAttemptType;
+
+/** One edit to the player's task list; see lib/game/todos.ts. */
+export interface TodoUpdateType {
+  /** Derived from the title, not minted by the model. */
+  id: string;
+  title: string;
+  done: boolean;
+}
+
+/** A task on the player's list, as folded out of the log. */
+export type TodoType = TodoUpdateType & {
+  /** Who put it there — usually Ama, but any character may. */
+  by: EntityId;
+};
 
 export interface StoryDialogType {
   type: "dialog";

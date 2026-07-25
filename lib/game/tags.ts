@@ -3,6 +3,7 @@ import type { TagType } from "../parsetags";
 import type { EntityId, StoryEventType } from "../types";
 import { coerceBoolean, coerceNumber, isValidPropertySet } from "./coerce";
 import { fieldsOf } from "./dynamic";
+import { applyTodoTag } from "./todos";
 import type { World } from "./world";
 
 /**
@@ -79,6 +80,10 @@ export function applyTag(
     case "suggestion":
       event.suggestions = tag.content;
       return true;
+
+    case "todo":
+    case "todoDone":
+      return applyTodoTag(tag, event, world.todos);
 
     case "deferSchedule":
       event.deferSchedule = true;

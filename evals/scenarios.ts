@@ -240,9 +240,51 @@ export const MYSTERY_EVAL: Scenario = {
   ],
 };
 
+/**
+ * Keeping the player's task list.
+ *
+ * `<todo>` is the newest thing in the protocol and the least like the rest of
+ * it: the other tags describe what just happened, this one asks the model to
+ * notice that something was *taken on* and will matter later. That's a
+ * different kind of judgement, and it's exactly the kind a small model skips
+ * while otherwise playing the scene perfectly well.
+ *
+ * Scored from `briefed` because a task needs somewhere to come from — intake is
+ * Ama running a checklist, not handing out errands.
+ */
+export const TASK_LIST_EVAL: Scenario = {
+  name: "task-list",
+  describe: "an errand the player accepts lands on their task list",
+  from: "briefed",
+  seed: 5150,
+  inputs: [
+    "Ama, is there anything I should be doing right now?",
+    "Alright, I'll take care of it.",
+  ],
+  checks: [
+    noProtocolErrors,
+    wellFormedMarkup,
+    everyTurnDidSomething,
+    {
+      name: "task-added",
+      describe: "something the player agreed to do was written to the list",
+      run: ({ model }) => model.world.todos.length > 0,
+    },
+    {
+      // A task added and immediately crossed off is the model treating the tag
+      // as decoration on its own prose rather than as state the player will act
+      // on later.
+      name: "task-open",
+      describe: "the task was left open, not crossed off in the same breath",
+      run: ({ model }) => model.world.todos.some((todo) => !todo.done),
+    },
+  ],
+};
+
 export const EVAL_SCENARIOS: Scenario[] = [
   INTAKE_EVAL,
   MOVEMENT_EVAL,
   IN_CHARACTER_EVAL,
   MYSTERY_EVAL,
+  TASK_LIST_EVAL,
 ];

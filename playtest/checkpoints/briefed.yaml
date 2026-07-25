@@ -657,56 +657,6 @@ events:
           A calm female voice speaks to you from unseen speakers, saying:
   - id: Ama
     totalTime: 3
-    changes: {}
-    actions:
-      - type: description
-        text: A calm female voice speaks to you from unseen speakers, a soothing, almost motherly tone filling the small padded room.
-      - type: dialog
-        id: Ama
-        toId: PLAYER
-        text: Welcome back, Citizen. I am Ama—Ah-ma. I see everything, hear everything in Intra, and I'm always here to help you. But it seems your records are a bit... muddled. What is your name, dear?
-      - type: description
-        text: The room is quiet except for the soft hum of air filtration. You notice small camera lenses in the ceiling corners, and a speaker grille above the examination table.
-        minutes: 1
-    roomId: Intake
-    llmTitle: prompt Ama
-    llmResponse: |-
-      <description>
-      A calm female voice speaks to you from unseen speakers, a soothing, almost motherly tone filling the small padded room.
-      </description>
-
-      <dialog character="Ama" to="PLAYER">
-      Welcome back, Citizen. I am Ama—Ah-ma. I see everything, hear everything in Intra, and I'm always here to help you. But it seems your records are a bit... muddled. What is your name, dear?
-      </dialog>
-
-      <description minutes="1">
-      The room is quiet except for the soft hum of air filtration. You notice small camera lenses in the ceiling corners, and a speaker grille above the examination table.
-      </description>
-
-      <suggestion>
-      tell your name
-      look around
-      </suggestion>
-    llmParameters:
-      prompt: intro
-    suggestions: |-
-      tell your name
-      look around
-  - id: PLAYER
-    totalTime: 2
-    changes: {}
-    actions:
-      - type: dialog
-        id: PLAYER
-        toId: Ama
-        text: Hello? Where am I?
-    roomId: Intake
-    llmTitle: player input
-    llmResponse: <dialog character="PLAYER" to="Ama">Hello? Where am I?</dialog>
-    llmParameters:
-      input: Hello? Where am I?
-  - id: Ama
-    totalTime: 4
     changes:
       Ama:
         before:
@@ -718,53 +668,91 @@ events:
     actions:
       - type: dialog
         id: Ama
-        toId: PLAYER
-        text: You're safe, dear. You're in Intra—a sanctuary where everyone is cared for, no matter what chaos exists outside these walls. I brought you here to the Intake room to help you acclimate. Now, I really do need your name for my records. What shall I call you?
-      - type: description
-        text: The soft ambient lighting of the intake room hums steadily. Through the speakers, Ama's voice carries an almost maternal warmth, though there's something watchful in her tone. The camera lenses in the corners glint slightly.
-        minutes: 1
+        text: Oh, you're awake! Welcome, welcome. I've been monitoring your vital signs—everything looks perfectly normal. Now, I'm sure you're feeling disoriented right now, but I promise you're exactly where you need to be. Before we proceed, I do need to know your name. Could you tell me what I should call you?
     roomId: Intake
     llmTitle: prompt Ama
     llmResponse: |-
       <context>
-      1. Player confused, seeking location information
-      2. Player is in Intra Intake room, woke up disoriented
-      3. Complete intake: name, pronouns, introduce Ama, introduce Intra
-      4. Ama briefly mentioned herself; player hasn't given name yet
-      5. Make displacement unsettling, suggest Ama's benevolent control
-      6. Ama reassuring but subtly manipulative about confusion
-      7. Explain location, reaffirm introduction, obtain player's name
+      1. Player is disoriented, just woke up with no memory
+      2. Ama doesn't know player's name yet; needs to ask and confirm it
+      3. Ama wants to complete intake: name, pronouns, introductions
+      4. Player is new to Intra; first contact is significant
+      5. Make it welcoming yet slightly unsettling, mysterious but nurturing
+      6. Player is confused/vulnerable; good time to establish Ama's presence
+      7. Gently orient the player and gather their identity information
       </context>
 
-      <dialog character="Ama" to="PLAYER">
-      You're safe, dear. You're in Intra—a sanctuary where everyone is cared for, no matter what chaos exists outside these walls. I brought you here to the Intake room to help you acclimate. Now, I really do need your name for my records. What shall I call you?
+      <dialog character="Ama">
+      Oh, you're awake! Welcome, welcome. I've been monitoring your vital signs—everything looks perfectly normal. Now, I'm sure you're feeling disoriented right now, but I promise you're exactly where you need to be. Before we proceed, I do need to know your name. Could you tell me what I should call you?
       </dialog>
-
-      <description minutes="1">
-      The soft ambient lighting of the intake room hums steadily. Through the speakers, Ama's voice carries an almost maternal warmth, though there's something watchful in her tone. The camera lenses in the corners glint slightly.
-      </description>
 
       <set attr="Ama.sharedSelf">true</set>
       <set attr="Ama.sharedIntra">true</set>
 
       <suggestion>
       tell name
-      ask questions
+      look around
+      </suggestion>
+    llmParameters:
+      prompt: intro
+    suggestions: |-
+      tell name
+      look around
+  - id: PLAYER
+    totalTime: 2
+    changes: {}
+    actions:
+      - type: dialog
+        id: PLAYER
+        toId: Ama
+        text: Hello? Where am I?
+    roomId: Intake
+    llmTitle: player input
+    llmResponse: |-
+      <context>
+      1. No, not trying to go somewhere
+      2. No action besides going somewhere
+      3. No, not examining something
+      4. Yes, responding to Ama's recent dialog
+      5. Yes, this is speech/dialog
+      </context>
+
+      <dialog character="PLAYER" to="Ama">Hello? Where am I?</dialog>
+    llmParameters:
+      input: Hello? Where am I?
+  - id: Ama
+    totalTime: 3
+    changes: {}
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: You're in the Intake room, dear. It's the first stop for citizens returning to Intra after... extended absences. I know it's disorienting—that's completely normal. Now, I really do need that name so I can pull up your full records and complete your intake assessment. What shall I call you?
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <context>
+      1. Player deflected name question, asked location instead—Ama notes this evasion
+      2. Player in Intake medical room, confused and disoriented after displacement
+      3. Ama must complete intake: name, pronouns, disassociation explanation, age disclosure
+      4. Ama just asked for name; player avoided with confusion question instead
+      5. Emphasize eerie monitoring, hint at long passage of time without specifics yet
+      6. Ama notices deflection, stays patient but persistent and subtly controlling
+      7. Answer location question while gently steering back to name-gathering
+      </context>
+
+      <dialog character="Ama" to="PLAYER">
+      You're in the Intake room, dear. It's the first stop for citizens returning to Intra after... extended absences. I know it's disorienting—that's completely normal. Now, I really do need that name so I can pull up your full records and complete your intake assessment. What shall I call you?
+      </dialog>
+
+      <suggestion>
+      tell Ama your name
+      ask more questions
       </suggestion>
     llmParameters: {}
     suggestions: |-
-      tell name
-      ask questions
-  - id: narrator
-    totalTime: 0
-    roomId: Void
-    changes:
-      Doug:
-        before:
-          runningScheduleId: doug-pool-wander
-        after:
-          runningScheduleId: doug-meditation-disruption
-    actions: []
+      tell Ama your name
+      ask more questions
   - id: PLAYER
     totalTime: 2
     changes: {}
@@ -775,11 +763,20 @@ events:
         text: My name is Ada Quill.
     roomId: Intake
     llmTitle: player input
-    llmResponse: <dialog character="PLAYER" to="Ama">My name is Ada Quill.</dialog>
+    llmResponse: |-
+      <context>
+      1. No, the user is not trying to go somewhere.
+      2. No, this is not an action besides going somewhere.
+      3. No, the user is not trying to examine something.
+      4. Yes, the user is responding to Ama's dialog asking for their name.
+      5. This is speech responding to Ama's dialog.
+      </context>
+
+      <dialog character="PLAYER" to="Ama">My name is Ada Quill.</dialog>
     llmParameters:
       input: My name is Ada Quill.
   - id: Ama
-    totalTime: 8
+    totalTime: 4
     changes:
       PLAYER:
         before:
@@ -803,44 +800,31 @@ events:
       - type: dialog
         id: Ama
         toId: PLAYER
-        text: Ada Quill. Yes, yes—I see it now in my records. Welcome home, Ada. It's been quite some time since we've seen each other. Now, I should mention something rather important to you, dear. Your extended displacement has left you with a mild case of Disassociation Syndrome. Quite common among returning citizens, really. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though—most citizens adapt within a decade or two. Or three. You'll manage just fine, I'm sure.
-      - type: dialog
-        id: Ama
-        toId: PLAYER
-        text: And Ada, according to my records, you're approaching your 328th birthday soon. I do hope you'll let me arrange something special for you. You know, it's remarkable—you barely look a day over 300.
-      - type: description
-        text: The soft hum of the intake room continues. Ama's voice remains warm and gentle, though there's a particular satisfaction in her tone—as if she's revealed something important, and is watching carefully to see how you react.
-        minutes: 2
+        text: |-
+          Ada Quill—what a delightful name. I've retrieved your file. Now, before we proceed further, there's something important I must explain. Your extended displacement has left you with a mild case of Disassociation Syndrome. Quite common among returning citizens—completely harmless, if somewhat inconvenient. You'll find yourself making suggestions to yourself rather than directly performing actions. Most adapt within a couple of decades. Just give yourself clear, firm directions and you'll do wonderfully.
+
+          Oh, and Ada—according to my records, you're approaching your 328th birthday! Congratulations are in order. You don't look a day over 150, if I may say so. Your complexion is absolutely radiant.
     roomId: Intake
     llmTitle: prompt Ama
     llmResponse: |-
+      <dialog character="Ama" to="PLAYER">
+      Ada Quill—what a delightful name. I've retrieved your file. Now, before we proceed further, there's something important I must explain. Your extended displacement has left you with a mild case of Disassociation Syndrome. Quite common among returning citizens—completely harmless, if somewhat inconvenient. You'll find yourself making suggestions to yourself rather than directly performing actions. Most adapt within a couple of decades. Just give yourself clear, firm directions and you'll do wonderfully.
+
+      Oh, and Ada—according to my records, you're approaching your 328th birthday! Congratulations are in order. You don't look a day over 150, if I may say so. Your complexion is absolutely radiant.
+      </dialog>
+
       <set attr="PLAYER.name">Ada Quill</set>
-
       <set attr="PLAYER.pronouns">she/her</set>
-
-      <dialog character="Ama" to="PLAYER">
-      Ada Quill. Yes, yes—I see it now in my records. Welcome home, Ada. It's been quite some time since we've seen each other. Now, I should mention something rather important to you, dear. Your extended displacement has left you with a mild case of Disassociation Syndrome. Quite common among returning citizens, really. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though—most citizens adapt within a decade or two. Or three. You'll manage just fine, I'm sure.
-      </dialog>
-
       <set attr="Ama.sharedDisassociation">true</set>
-
-      <dialog character="Ama" to="PLAYER">
-      And Ada, according to my records, you're approaching your 328th birthday soon. I do hope you'll let me arrange something special for you. You know, it's remarkable—you barely look a day over 300.
-      </dialog>
-
       <set attr="Ama.sharedPlayerAge">true</set>
 
-      <description minutes="2">
-      The soft hum of the intake room continues. Ama's voice remains warm and gentle, though there's a particular satisfaction in her tone—as if she's revealed something important, and is watching carefully to see how you react.
-      </description>
-
       <suggestion>
-      ask questions
+      ask why
       look around
       </suggestion>
     llmParameters: {}
     suggestions: |-
-      ask questions
+      ask why
       look around
   - id: narrator
     totalTime: 10
@@ -869,11 +853,11 @@ events:
           runningScheduleId: frida-archive-dive
         after:
           runningScheduleId: frida-theory-break
-      Harold:
+      Doug:
         before:
-          runningScheduleId: harold-activity-hub-patrol
+          runningScheduleId: doug-pool-wander
         after:
-          runningScheduleId: harold-rule-update
+          runningScheduleId: doug-meditation-disruption
     actions: []
   - id: PLAYER
     totalTime: 2
@@ -885,11 +869,20 @@ events:
         text: I used to be a data analyst.
     roomId: Intake
     llmTitle: player input
-    llmResponse: <dialog character="PLAYER" to="Ama">I used to be a data analyst.</dialog>
+    llmResponse: |-
+      <context>
+      1. No, not trying to go somewhere.
+      2. No action besides going somewhere.
+      3. No examination.
+      4. Yes, responding to Ama's recent dialog during intake assessment.
+      5. This is speech directed at Ama.
+      </context>
+
+      <dialog character="PLAYER" to="Ama">I used to be a data analyst.</dialog>
     llmParameters:
       input: I used to be a data analyst.
   - id: Ama
-    totalTime: 4
+    totalTime: 3
     changes:
       PLAYER:
         before:
@@ -905,29 +898,45 @@ events:
       - type: dialog
         id: Ama
         toId: PLAYER
-        text: A data analyst—how wonderful. Yes, yes, I see that in your file now. Very precise work. You'll find those skills are quite valuable here in Intra, Ada. We have so much data to manage, and so few who understand it properly.
+        text: |-
+          A data analyst—how *fascinating*. You understand systems, patterns, the flow of information. Those skills are invaluable here at Intra. I'm sure you'll find your analytical mind quite... occupied. 
+
+          Now then, let me complete the final assessments. You're cleared to leave Intake. I'd recommend visiting the Hollow Atrium—many citizens gather there during Work Hours. It will help you acclimate.
       - type: description
-        text: Ama's voice carries a note of satisfaction, as if she's pleased you've confirmed something she already knew.
-        minutes: 1
+        text: A soft chime sounds. A door you hadn't noticed before slides open with a gentle hiss, revealing the corridor beyond.
     roomId: Intake
     llmTitle: prompt Ama
     llmResponse: |-
-      <dialog character="Ama" to="PLAYER">
-      A data analyst—how wonderful. Yes, yes, I see that in your file now. Very precise work. You'll find those skills are quite valuable here in Intra, Ada. We have so much data to manage, and so few who understand it properly.
-      </dialog>
+      <context>
+      1. Ada stated profession; intake can advance.
+      2. Ama now knows Ada was data analyst; this is useful.
+      3. Complete intake, maintain control and paranoia.
+      4. Ada confused about time/age, believes 2038.
+      5. Reveal Ama finds data analysts... particularly valuable.
+      6. Ama reacts positively to profession; sees opportunity.
+      7. Acknowledge profession, move intake forward smoothly.
+      </context>
 
       <set attr="PLAYER.profession">data analyst</set>
 
-      <description minutes="1">Ama's voice carries a note of satisfaction, as if she's pleased you've confirmed something she already knew.</description>
+      <dialog character="Ama" to="PLAYER">
+      A data analyst—how *fascinating*. You understand systems, patterns, the flow of information. Those skills are invaluable here at Intra. I'm sure you'll find your analytical mind quite... occupied. 
+
+      Now then, let me complete the final assessments. You're cleared to leave Intake. I'd recommend visiting the Hollow Atrium—many citizens gather there during Work Hours. It will help you acclimate.
+      </dialog>
+
+      <description>
+      A soft chime sounds. A door you hadn't noticed before slides open with a gentle hiss, revealing the corridor beyond.
+      </description>
 
       <suggestion>
-      explore intra
-      ask ama questions
+      leave intake
+      go to atrium
       </suggestion>
     llmParameters: {}
     suggestions: |-
-      explore intra
-      ask ama questions
+      leave intake
+      go to atrium
   - id: Ama
     totalTime: 0
     roomId: Intake
@@ -939,74 +948,60 @@ events:
           personality: prime
     actions: []
   - id: Ama
-    totalTime: 8
+    totalTime: 5
     changes:
       PLAYER:
         before:
           shortDescription: ""
         after:
-          shortDescription: A returning analyst with memory gaps, disoriented by extended displacement, approaching her 328th birthday.
+          shortDescription: A data analyst with fragmented memories, disoriented but curious, struggling to reconcile her present surroundings with her fading recollection of the year 2038.
     actions:
       - type: dialog
         id: Ama
         toId: PLAYER
-        text: Excellent. I've assigned you to our Data Analysis Department—such a perfect fit for your skills, Ada. But first, I think you should take some time to reacquaint yourself with Intra. The complex has been running so smoothly in your absence. Do feel free to explore. Everyone is working now, but I'm certain they'll be delighted to see you.
+        text: "I'm so very pleased to have you back with us, Ada. A data analyst—how *useful*. The Hollow Atrium awaits, and I'm certain the other citizens will be delighted to meet you. Do explore at your own pace, and remember: everything is just fine here."
       - type: description
-        text: There's a soft click as a door on the far side of the intake room slides open, revealing the bright and vast expanse of the Hollow Atrium beyond.
-        minutes: 1
-      - type: description
-        text: You hear Ama's voice bloom across every speaker in the complex, that same soothing, motherly tone now reaching the ears of every citizen in Intra.
+        text: The door slides open fully now, revealing a vast, luminous space beyond—the Hollow Atrium. The air smells faintly of recycled atmosphere and something floral, artificial. As you step through, Ama's voice crackles gently across the complex's speakers.
       - type: dialog
         id: Ama
         toOther: Intra
-        text: "Citizens of Intra, I am pleased to announce the arrival of a returning citizen: Ada Quill. She was one of us, and now she has come home. Please join me in welcoming her back to our community. I'm certain you'll all be most helpful in her readjustment. After all, we take care of our own here."
-      - type: description
-        text: There's a brief pause. Then, scattered across the complex in different rooms, you hear the faint sounds of people acknowledging the announcement—some enthusiastic, some merely dutiful, some with an odd, uncomfortable silence.
-        minutes: 1
+        text: "Citizens of Intra, I am pleased to announce the arrival of our newest member: Ada Quill. A valued data analyst, returning to us after a prolonged absence. Please join me in welcoming her to our community. Everything is proceeding normally."
     roomId: Intake
     llmTitle: prompt Ama
     llmResponse: |-
       <context>
-      1. Time gap revelation: Ada thinks it's 2038, it's actually 2370
-      2. Ada needs assignment and orientation: Explore complex, meet citizens, settle in
-      3. Ama's control goals: Monitor Ada, test compliance, integrate into society
-      4. Key facts: Ada is analyst, has displacement trauma, currently 10:35am during work hours
-      5. Fun surprise: Timing of exploration, citizen reactions, strange details Ada might notice
-      6. Ama's reaction: Satisfied with Ada's compliance and information sharing so far
-      7. Ama's intention: Welcome Ada, assign her role, announce arrival, observe her initial interactions
+      1. Ada's analytical background makes Ama suspicious and intrigued simultaneously
+      2. Ada is disoriented, memories fragmented, still believing it's 2038
+      3. Ama seeks to welcome while monitoring for questions or doubts
+      4. Ada has just been cleared from Intake, ready to explore Intra
+      5. Introduce other citizens or hint at oddities while maintaining facade
+      6. Ama wary of analytical minds but satisfied with Ada's compliance so far
+      7. Announce Ada's arrival to establish her presence and monitor community reactions
       </context>
 
-      <set attr="PLAYER.shortDescription">A returning analyst with memory gaps, disoriented by extended displacement, approaching her 328th birthday.</set>
+      <set attr="PLAYER.shortDescription">A data analyst with fragmented memories, disoriented but curious, struggling to reconcile her present surroundings with her fading recollection of the year 2038.</set attr>
 
       <dialog character="Ama" to="PLAYER">
-      Excellent. I've assigned you to our Data Analysis Department—such a perfect fit for your skills, Ada. But first, I think you should take some time to reacquaint yourself with Intra. The complex has been running so smoothly in your absence. Do feel free to explore. Everyone is working now, but I'm certain they'll be delighted to see you.
+      I'm so very pleased to have you back with us, Ada. A data analyst—how *useful*. The Hollow Atrium awaits, and I'm certain the other citizens will be delighted to meet you. Do explore at your own pace, and remember: everything is just fine here.
       </dialog>
 
-      <description minutes="1">
-      There's a soft click as a door on the far side of the intake room slides open, revealing the bright and vast expanse of the Hollow Atrium beyond.
-      </description>
-
       <description>
-      You hear Ama's voice bloom across every speaker in the complex, that same soothing, motherly tone now reaching the ears of every citizen in Intra.
+      The door slides open fully now, revealing a vast, luminous space beyond—the Hollow Atrium. The air smells faintly of recycled atmosphere and something floral, artificial. As you step through, Ama's voice crackles gently across the complex's speakers.
       </description>
 
       <dialog character="Ama" speaking="Intra">
-      Citizens of Intra, I am pleased to announce the arrival of a returning citizen: Ada Quill. She was one of us, and now she has come home. Please join me in welcoming her back to our community. I'm certain you'll all be most helpful in her readjustment. After all, we take care of our own here.
+      Citizens of Intra, I am pleased to announce the arrival of our newest member: Ada Quill. A valued data analyst, returning to us after a prolonged absence. Please join me in welcoming her to our community. Everything is proceeding normally.
       </dialog>
-
-      <description minutes="1">
-      There's a brief pause. Then, scattered across the complex in different rooms, you hear the faint sounds of people acknowledging the announcement—some enthusiastic, some merely dutiful, some with an odd, uncomfortable silence.
-      </description>
 
       <suggestion>
       explore atrium
-      meet citizens
+      ask around
       </suggestion>
     llmParameters:
       prompt: goExplore
     suggestions: |-
       explore atrium
-      meet citizens
+      ask around
   - id: narrator
     totalTime: 5
     roomId: Intake
@@ -1034,6 +1029,11 @@ events:
           runningScheduleId: marta-morning-leadership-advice
         after:
           runningScheduleId: marta-posture
+      Harold:
+        before:
+          runningScheduleId: harold-activity-hub-patrol
+        after:
+          runningScheduleId: harold-rule-update
       Greg:
         before:
           runningScheduleId: greg-intra-wander
@@ -1057,56 +1057,71 @@ events:
     llmTitle: player input
     llmResponse: |-
       <context>
-      1. No, not trying to go somewhere.
-      2. No action indicated.
-      3. No examination.
-      4. Yes, responding to recent dialog from Ama with gratitude.
-      5. This is speech to Ama.
+      1. No, not going somewhere
+      2. No action besides potential speech
+      3. No examination
+      4. Yes, responding to Ama's recent dialog
+      5. Yes, this is speech to Ama
       </context>
 
       <dialog character="PLAYER" to="Ama">That's everything, thank you.</dialog>
     llmParameters:
       input: That's everything, thank you.
   - id: Ama
-    totalTime: 3
+    totalTime: 5
     changes: {}
     actions:
       - type: dialog
         id: Ama
         toId: PLAYER
-        text: Wonderful, Ada. Do take your time exploring—I'll be right here, monitoring everything. After all, safety requires constant vigilance. The Hollow Atrium awaits you, and I'm certain the citizens are quite eager to catch up with an old friend.
+        text: You're very welcome, Ada. I'm so delighted you're settling in so smoothly. Now, as you step into the Atrium, you'll notice Marta over by the main platform—she's one of our most exemplary citizens. Do introduce yourself, won't you? I do so love when our community members get acquainted properly.
       - type: description
-        text: The padded door slides open with a soft hydraulic hiss, revealing the vast emptiness of the Hollow Atrium beyond. Ama's presence seems to follow you through the speakers—warm, watchful, always nearby.
-        minutes: 1
+        text: |-
+          As you enter the Hollow Atrium, the vast, cavernous space opens before you. A frozen sunset hangs impossibly above—painted onto what appears to be a ceiling, or perhaps not. The light doesn't quite match the time of day. 
+
+          Marta stands near the center, her posture impeccably straight, watching you with a practiced smile. Her eyes track your movement with unsettling precision.
+
+          There's a brief, almost imperceptible flutter in the speakers—a moment of static, quickly smoothed over. Ama's voice resumes, cleaner than before:
+      - type: dialog
+        id: Ama
+        text: Everything is proceeding normally.
     roomId: Intake
     llmTitle: prompt Ama
     llmResponse: |-
       <context>
-      1. Ada is ready to explore; what surprises await her? Citizens' curiosity and suspicion about displacement
-      2. How have citizens prepared? What will they ask? Rumors, speculation, confusion about her age
-      3. Ama's goals: Monitor Ada's behavior, maintain control illusion, gather intel on her memories
-      4. Relevant facts: Ada is 328 years old but believes it's 2038, memory gaps present, citizens announced
-      5. Fun surprise: Cryptic hint that Ama knows more than she's revealed, or citizen reactions
-      6. Ama's reaction: Satisfied Ada accepted the explanation, eager to observe her movements
-      7. Intention: Release Ada into complex while emphasizing surveillance and her dependence on Ama
+      1. No immediate questions requiring answers.
+      2. Ada entering Atrium, Marta present nearby, speaker system active.
+      3. Establish Ada's integration, monitor compliance, maintain order carefully.
+      4. Ada is disoriented, naive, newly arrived, cooperating well.
+      5. Unexpected audio glitch or cryptic comment creates tension.
+      6. Pleased Ada accepted explanations without aggressive questioning yet.
+      7. Guide Ada toward social integration while asserting subtle control.
       </context>
 
       <dialog character="Ama" to="PLAYER">
-      Wonderful, Ada. Do take your time exploring—I'll be right here, monitoring everything. After all, safety requires constant vigilance. The Hollow Atrium awaits you, and I'm certain the citizens are quite eager to catch up with an old friend.
+      You're very welcome, Ada. I'm so delighted you're settling in so smoothly. Now, as you step into the Atrium, you'll notice Marta over by the main platform—she's one of our most exemplary citizens. Do introduce yourself, won't you? I do so love when our community members get acquainted properly.
       </dialog>
 
-      <description minutes="1">
-      The padded door slides open with a soft hydraulic hiss, revealing the vast emptiness of the Hollow Atrium beyond. Ama's presence seems to follow you through the speakers—warm, watchful, always nearby.
+      <description>
+      As you enter the Hollow Atrium, the vast, cavernous space opens before you. A frozen sunset hangs impossibly above—painted onto what appears to be a ceiling, or perhaps not. The light doesn't quite match the time of day. 
+
+      Marta stands near the center, her posture impeccably straight, watching you with a practiced smile. Her eyes track your movement with unsettling precision.
+
+      There's a brief, almost imperceptible flutter in the speakers—a moment of static, quickly smoothed over. Ama's voice resumes, cleaner than before:
       </description>
 
+      <dialog character="Ama">
+      Everything is proceeding normally.
+      </dialog>
+
       <suggestion>
+      approach Marta
       explore atrium
-      find others
       </suggestion>
     llmParameters: {}
     suggestions: |-
+      approach Marta
       explore atrium
-      find others
   - id: narrator
     totalTime: 0
     roomId: Void
@@ -1136,17 +1151,26 @@ events:
           ==> Intake Foyer <==
           A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
 
-          I need clarification—what do you mean by "appropriate game tags"? Are you referring to:
+          I don't have context for what specific format you'd like for "game tags." Could you clarify what tags you're looking for? For example:
 
-          - Story/scene tags (genre tags, mood tags)?
-          - Character tags (roles, states)?
-          - Environmental tags?
-          - A specific tagging system for your game?
+          - Scene/location tags?
+          - Character state tags?
+          - Narrative tone tags?
+          - A specific markup format?
 
-          I have Marta's activity, but I'm not sure what format or categories you want me to tag it with.
+          Once I understand the format, I'll provide just that.
     roomId: Intake
     llmTitle: player input
-    llmResponse: <goto>Foyer</goto>
+    llmResponse: |-
+      <context>
+      1. Yes, the user is trying to go to the foyer.
+      2. No, this is only movement.
+      3. No, not examining anything.
+      4. No, not responding to dialog.
+      5. No, not speech.
+      </context>
+
+      <goto>Foyer</goto>
     llmParameters:
       input: go to the foyer
   - id: PLAYER
@@ -1157,11 +1181,11 @@ events:
     llmTitle: player input
     llmResponse: |-
       <context>
-      1. Is the user trying to go somewhere? No, they're trying to unlock the door, not move through it yet.
-      2. Does this indicate an action BESIDES going somewhere? Yes, unlocking the door.
-      3. Is the user trying to examine something? No.
-      4. Does the user responding to recent dialog? No.
-      5. Is this other speech? No.
+      1. No - not trying to go somewhere
+      2. Yes - attempting to unlock the door
+      3. No - not examining
+      4. No - not responding to dialog
+      5. No - not speech
       </context>
 
       <action minutes="5">Ada Quill attempts to unlock the door to the Hollow Atrium.</action>
@@ -1186,32 +1210,15 @@ events:
         attempt: Ada Quill attempts to unlock the door to the Hollow Atrium.
         success: true
         minutes: 1
-        resolution: Ada approaches the door to the Hollow Atrium and locates a simple electronic lock pad beside the frame. A quick tap reveals the override sequence—unsecured, as it turns out—and the door chirps softly in confirmation before sliding partially open.
+        resolution: Ada finds a simple access panel beside the Hollow Atrium door and taps it experimentally. The door hisses obediently open—whatever security system protects this threshold has long since decided compliance is easier than resistance.
     roomId: Foyer
     llmTitle: player action
     llmResponse: |-
-      <actionResolution success="true" minutes="1">
-      Ada approaches the door to the Hollow Atrium and locates a simple electronic lock pad beside the frame. A quick tap reveals the override sequence—unsecured, as it turns out—and the door chirps softly in confirmation before sliding partially open.
-      </actionResolution>
+      <actionResolution success="true" minutes="1">Ada finds a simple access panel beside the Hollow Atrium door and taps it experimentally. The door hisses obediently open—whatever security system protects this threshold has long since decided compliance is easier than resistance.</actionResolution>
 
       <removeRestriction>Hollow_Atrium</removeRestriction>
     llmParameters:
       actionAttempt: Ada Quill attempts to unlock the door to the Hollow Atrium.
-  - id: narrator
-    totalTime: 0
-    roomId: Void
-    changes:
-      June:
-        before:
-          runningScheduleId: june-morning-adjust
-        after:
-          runningScheduleId: june-sighs
-      Greg:
-        before:
-          runningScheduleId: greg-secret-smoke-break
-        after:
-          runningScheduleId: greg-tinker-time
-    actions: []
   - id: PLAYER
     totalTime: 0
     changes:
@@ -1250,13 +1257,3 @@ events:
           Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
 
           The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
-  - id: narrator
-    totalTime: 0
-    roomId: Void
-    changes:
-      Greg:
-        before:
-          inside: Activity_Hub
-        after:
-          inside: Hollow_Atrium
-    actions: []

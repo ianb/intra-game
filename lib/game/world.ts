@@ -5,6 +5,7 @@ import {
   isMystery,
   PersonScheduledEventType,
   StoryEventType,
+  TodoType,
 } from "../types";
 import { tmpl } from "../template";
 import type { Entity, Room, Person, Mystery } from "./classes";
@@ -12,6 +13,7 @@ import type { AllEntitiesType } from "./content";
 import type { Model } from "./model";
 import { generateExactSchedule, timeAsString } from "./scheduler";
 import { entitiesById } from "./dynamic";
+import { applyTodoUpdates } from "./todos";
 
 export const ONE_DAY = 24 * 60;
 
@@ -20,6 +22,8 @@ export class World {
   original: AllEntitiesType;
   rooms: string[];
   lastSuggestions: string = "";
+  /** The player's task list, folded out of the log; see game/todos.ts. */
+  todos: TodoType[] = [];
   model: Model;
   // Minutes since Midnight the day the game starts
   timestampMinutes: number = 10 * 60; // 10am
@@ -267,6 +271,9 @@ export class World {
     }
     if (storyEvent.suggestions) {
       this.lastSuggestions = storyEvent.suggestions;
+    }
+    if (storyEvent.todos?.length) {
+      this.todos = applyTodoUpdates(this.todos, storyEvent);
     }
     this.timestampMinutes += storyEvent.totalTime;
   }

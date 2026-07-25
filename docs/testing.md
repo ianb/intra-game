@@ -59,7 +59,13 @@ not part of the test suite), see [`playtest/`](../playtest/README.md):
 
 ```bash
 pnpm playtest "Hello?" "I'm Ada" "go to the foyer"
+pnpm playtest --from briefed -i    # play on from a saved state, by hand
 ```
+
+Anything that drives the engine can start from a **checkpoint** rather than the
+game's first line — a saved event log, replayed. That's what makes the later
+parts of the game cheap to look at, and it's how the eval scenarios reach the
+mystery. `pnpm checkpoint --list` shows what's recorded.
 
 ## Setup notes (why the config looks the way it does)
 

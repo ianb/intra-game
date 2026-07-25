@@ -34,6 +34,7 @@ import {
 import type { World } from "./world";
 import { entitiesById, fieldsOf } from "./dynamic";
 import { applyTag, type TagContext } from "./tags";
+import { todoPrompt } from "./todos";
 import { TagStreamParser } from "./tagstream";
 
 export interface EntityInitType {
@@ -625,6 +626,20 @@ export class Person<
           ${this.roleplayInstructions}
           </roleplayInstructions>
 
+          <taskList>
+          PLAYER keeps a short list of what they are trying to do, shown to them in their interface. Any character may add to it or cross something off.
+
+          When PLAYER clearly takes something on — ${this.name} asks them to do it, or PLAYER says they will — add the response:
+
+          <todo>a short instruction, as PLAYER would write it to themselves</todo>
+
+          When that thing is actually finished, add the response with the same wording:
+
+          <todoDone>a short instruction, as PLAYER would write it to themselves</todoDone>
+
+          Do not list idle conversation, do not add a task already on the list below, and do not cross off something PLAYER has not done yet.
+          </taskList>
+
           ${this.additionalSystemInstructions(parameters)}
 
           [Everything above is fixed for this character. Everything below changes as the game is played.]
@@ -647,6 +662,8 @@ export class Person<
           """
           ${mysteryHints}
           """]]
+
+          [[${todoPrompt(this.world.todos)}]]
 
           ${this.volatileSystemInstructions(parameters)}
 

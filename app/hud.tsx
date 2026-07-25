@@ -6,7 +6,7 @@
 import LlmLog, { clearLogs } from "@/components/llmlog";
 import { A, Button, CheckButton } from "@/components/input";
 import { Clock } from "@/components/digitalnumerals";
-import { Map, Mysteries, ViewObjects } from "./panels";
+import { Map, Mysteries, Todos, ViewObjects } from "./panels";
 import { activeTab, revealMap, showInternals } from "./uistate";
 import { model } from "./model";
 import { twMerge } from "tailwind-merge";
@@ -19,6 +19,7 @@ export function HeadsUpDisplay() {
   const showLogs = true; // Could be based on showInternals or something, but I don't want it to be
   const _ = model.updates.value;
   const hasMystery = model.world.unveiledMysteries().length > 0;
+  const openTodos = model.world.todos.filter((todo) => !todo.done).length;
   return (
     <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
       <div>
@@ -76,6 +77,20 @@ export function HeadsUpDisplay() {
         >
           map
         </span>{" "}
+        {model.world.todos.length > 0 && (
+          <>
+            <span
+              onClick={() => {
+                activeTab.value = "todo";
+              }}
+              className={
+                activeTab.value === "todo" ? activeClass : inactiveClass
+              }
+            >
+              todo{openTodos > 0 ? ` (${openTodos})` : ""}
+            </span>{" "}
+          </>
+        )}
         {hasMystery && (
           <>
             <span
@@ -116,6 +131,7 @@ export function HeadsUpDisplay() {
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
         {activeTab.value === "map" && <Map />}
+        {activeTab.value === "todo" && <Todos />}
         {activeTab.value === "mysteries" && <Mysteries />}
         {activeTab.value === "log" && <LlmLog />}
         {activeTab.value === "objs" && <ViewObjects />}

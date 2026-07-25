@@ -1,8 +1,6 @@
-import { entities } from "../lib/game/content";
 import { Model } from "../lib/game/model";
 import type { StoryEventType } from "../lib/types";
-import { installSeededRandom } from "../playtest/seed";
-import { loadCheckpoint } from "./checkpoints";
+import { forkGame, settle } from "../playtest/fork";
 
 /**
  * Running a scenario against a model and scoring what came back.
@@ -127,12 +125,6 @@ export interface ScenarioResult {
   checks: CheckResult[];
 }
 
-async function settle(model: Model): Promise<void> {
-  while (model.runningSignal.value) {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  }
-}
-
 /**
  * Capture what the engine warns about, so protocol failures can be counted.
  *
@@ -160,21 +152,26 @@ export async function runScenario(
   chat: Model["chat"],
 ): Promise<ScenarioResult> {
   const started = Date.now();
-  const restoreRandom = installSeededRandom(scenario.seed);
+  // Warnings are captured around the fork as well as the run: replaying a
+  // checkpoint folds every event in it, and a checkpoint that no longer folds
+  // cleanly is exactly the kind of rot worth failing on.
   const captured = captureWarnings();
-  const model = new Model(entities, { chat });
   const turns: Turn[] = [];
   let error: string | undefined;
+  // Undefined only if the fork itself threw — a missing or unreadable
+  // checkpoint — in which case every check counts as failed below and this is
+  // never read.
+  let model: Model | undefined;
+  let restoreRandom: () => void = () => undefined;
 
   try {
-    if (scenario.from) {
-      // The log is the state, so replaying one puts the world exactly where
-      // that game was — same schedules, same rooms visited, same history.
-      model.replaceLog(loadCheckpoint(scenario.from).events);
-    } else {
-      model.checkLaunch();
-    }
-    await settle(model);
+    const fork = await forkGame({
+      chat,
+      from: scenario.from,
+      seed: scenario.seed,
+    });
+    model = fork.model;
+    restoreRandom = fork.restore;
     for (const input of scenario.inputs) {
       const before = model.updates.value.length;
       await model.sendText(input);
@@ -189,8 +186,8 @@ export async function runScenario(
   }
 
   const result: RunResult = {
-    model,
-    log: model.updates.value,
+    model: model!,
+    log: model?.updates.value ?? [],
     turns,
     warnings: captured.warnings,
     ms: Date.now() - started,

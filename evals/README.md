@@ -74,35 +74,12 @@ thirds of Intra out of reach: reaching the Ink and Echo mystery from cold costs 
 dozen live calls of intake and walking, and a failure anywhere on the way looks
 like a failure of whatever you were trying to measure.
 
-A scenario can instead declare `from: "<checkpoint>"`. Checkpoints are recorded
-game states under `checkpoints/`:
-
-```bash
-pnpm evals:checkpoint            # record any that don't exist yet
-pnpm evals:checkpoint briefed    # re-record one
-pnpm evals:checkpoint --force    # re-record all
-```
-
-**A checkpoint is just an event log.** The whole world is a fold over that log,
-so replaying one puts the world exactly where that game was — the same
-schedules, the same rooms visited, the same things Ama has learned. Nothing is
-serialised specially, and nothing can drift out of step with the engine, because
-the log _is_ the state. It's the same mechanism as loading a save.
-
-Checkpoints record the inputs that produced them, so they can be rebuilt rather
-than guessed at, and they're recorded against a real model on purpose: a state
-reached by a scripted fake is one no real game passes through, and a scenario
-resuming from it would be testing a fiction.
-
-They chain — a spec can set `from` too — so a deep state is built out of shallow
-ones rather than one long fragile script.
-
-Each spec carries an `expect` predicate and the recorder **refuses to save** a
-checkpoint that misses it. That isn't hypothetical caution: the first recording
-of `briefed` walked into the Foyer's locked door, stopped a room short with the
-mystery still veiled, and saved perfectly happily. A checkpoint holding the
-wrong state poisons every scenario resuming from it, and the failures surface
-somewhere else entirely.
+A scenario can instead declare `from: "<checkpoint>"` and start from a recorded
+game state — see [checkpoints in the playtest
+README](../playtest/README.md#checkpoints-dont-start-from-the-beginning) for
+what those are and how to make one. Scenarios use the same forking machinery as
+`pnpm playtest --from`, so a state you can play from by hand is a state you can
+score against.
 
 **Give a resumed scenario a precondition check.** `mystery` asserts the mystery
 is actually revealed before scoring anything else; if the checkpoint has gone

@@ -84,6 +84,41 @@ export function Mysteries() {
   );
 }
 
+/**
+ * The player's task list.
+ *
+ * Finished tasks stay on the list, struck through, rather than disappearing:
+ * half the value of a task list is seeing that you did something, and in a game
+ * where an NPC can wander off mid-errand, "did that actually count?" is a real
+ * question the player wants answered.
+ */
+export function Todos() {
+  useSignals();
+  const _updates = model.updates.value;
+  const todos = model.world.todos;
+  return (
+    <div className="flex-1 p-4 text-sm">
+      {todos.length === 0 && (
+        <div className="text-gray-400">
+          Nothing on your list. It fills in as people ask you to do things.
+        </div>
+      )}
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id} className="mb-1">
+            <span className={todo.done ? "text-gray-500" : "text-gray-400"}>
+              {todo.done ? "☑ " : "☐ "}
+            </span>
+            <span className={todo.done ? "line-through text-gray-500" : ""}>
+              {todo.title}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function ViewObjects() {
   useSignals();
   const idList = model.updates.value
