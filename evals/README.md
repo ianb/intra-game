@@ -119,11 +119,19 @@ don't exist, and one that says nothing, and asserts they score differently from
 the recorded playthrough. If a scenario stops telling those apart, that test
 fails and the eval has rotted.
 
-What that does _not_ establish is where the ceiling is. Everything scored so far
-passes everything, so these scenarios don't yet separate a good model from a
-great one — they establish a floor, and the floor is where models fail when they
-fail this game. Scenarios that discriminate at the top would need to be harder,
-and it isn't yet clear what "harder" should mean here.
+What that does _not_ establish is where the ceiling is. The tiers scored so far
+land within a check of each other, so these scenarios don't separate a good
+model from a great one — they establish a floor, and the floor is where models
+fail when they fail this game. Scenarios that discriminate at the top would need
+to be harder, and it isn't yet clear what "harder" should mean here.
+
+They do already catch prompt regressions, which was not the plan. The first
+wording of the `<taskList>` instructions got tasks created and made both tiers
+sloppier elsewhere — `movement` started dropping a hallucinated `<set>` on a
+scenario that had been clean. Cutting the block to two sentences fixed that and
+stopped tasks being created at all. The wording that shipped is the one that
+scored on both. Note the sample size, though: **one run is one sample**, and a
+single flipped check is as consistent with sampling as with a regression.
 
 ## What this doesn't measure
 

@@ -44,10 +44,15 @@ original write-up, plus whatever the last few sessions turned up.
   let it type, and score whether it solves the mystery. Starts from a checkpoint
   so it doesn't re-solve intake every time. This is the only way to find out
   whether the puzzles are solvable by someone who isn't already the author.
-- **Evals that discriminate at the top** `tooling` `M` — both Claude tiers score
-  21/21, so the scenarios currently establish a floor (where a model fails this
-  game) and say nothing about which model plays it _best_. Needs harder
-  scenarios, and an argument about what "harder" means beyond "more tags".
+- **Evals that discriminate at the top** `tooling` `M` — the two Claude tiers
+  score within a check of each other, so the scenarios establish a floor (where
+  a model fails this game) and say nothing about which model plays it _best_.
+  Needs harder scenarios, and an argument about what "harder" means beyond "more
+  tags".
+- **One eval run is one sample** `tooling` `S` — a check that flips between runs
+  is indistinguishable from a real regression, which came up immediately when
+  tuning the task-list prompt. Repeat runs and a pass rate, rather than a single
+  pass/fail, would make small prompt changes measurable instead of arguable.
 - **Judge the writing, not just the protocol** `tooling` `M` — nothing scores
   whether a scene was any good. A judge model would make the numbers arguable in
   a way the current ones aren't, which is a real cost; worth it only with a

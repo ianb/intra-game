@@ -9,8 +9,12 @@ checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
 ## 2026-07-25
 
-| model | intake | movement | in-character | mystery | total |
-| --- | --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | **21/21** |
-| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | **21/21** |
+| model | intake | movement | in-character | mystery | task-list | total |
+| --- | --- | --- | --- | --- | --- | --- |
+| `claude-haiku-4-5-20251001` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
+| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
+
+What failed:
+
+- `claude-haiku-4-5-20251001` intake/protocol: the engine never had to discard a tag the model emitted
 

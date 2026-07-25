@@ -150,9 +150,10 @@ export function renderPage(
 </header>
 ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
 <footer>
-  <p>Both tiers scored so far pass everything, so these scenarios establish a
-  floor rather than a ceiling — they mark where a model fails this game, not
-  which model plays it best.</p>
+  <p>The tiers scored so far land within a check of each other, so these
+  scenarios establish a floor rather than a ceiling — they mark where a model
+  fails this game, not which model plays it best. Each run is one sample, so a
+  one-check difference is noise; a whole scenario is signal.</p>
 </footer>
 </body>
 </html>

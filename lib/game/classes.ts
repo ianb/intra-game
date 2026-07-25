@@ -602,6 +602,13 @@ export class Person<
       .entityRoom(this.id)
       ?.promptForPerson(this);
     const mysteryHints = this.myMysteryHints();
+    // The <taskList> block below is length-sensitive, in both directions, and
+    // was tuned against the evals rather than guessed at. Cutting it to two
+    // sentences stopped tasks being created at all (task-list 3/5); the first,
+    // wordier version got tasks created but made both model tiers sloppier
+    // elsewhere — movement dropped a hallucinated `<set>` on a scenario that
+    // had been clean. Re-run `pnpm evals --scenario task-list --scenario
+    // movement` after editing it.
     return {
       meta: {
         title: `prompt ${this.id}`,
@@ -627,17 +634,13 @@ export class Person<
           </roleplayInstructions>
 
           <taskList>
-          PLAYER keeps a short list of what they are trying to do, shown to them in their interface. Any character may add to it or cross something off.
+          PLAYER keeps a list of what they have agreed to do, shown to them in their interface.
 
-          When PLAYER clearly takes something on — ${this.name} asks them to do it, or PLAYER says they will — add the response:
+          When ${this.name} asks PLAYER to do something, or PLAYER agrees to do something, add the response:
 
           <todo>a short instruction, as PLAYER would write it to themselves</todo>
 
-          When that thing is actually finished, add the response with the same wording:
-
-          <todoDone>a short instruction, as PLAYER would write it to themselves</todoDone>
-
-          Do not list idle conversation, do not add a task already on the list below, and do not cross off something PLAYER has not done yet.
+          When that thing is genuinely finished, repeat the same wording as <todoDone>...</todoDone>. Nothing else belongs on the list.
           </taskList>
 
           ${this.additionalSystemInstructions(parameters)}
