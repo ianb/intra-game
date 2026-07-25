@@ -56,10 +56,12 @@ because `/api/*` isn't configured yet and the client falls back to running the
 engine in the browser. That's a good checkpoint — stop here and confirm it works
 before adding the server side.
 
-> **Durable Objects and plans.** This Worker declares a SQLite-backed Durable
-> Object. Check whether your plan covers it before expecting `/api/*` to work —
-> if the deploy succeeds but session creation fails, this is the first thing to
-> look at.
+> **Durable Objects.** Server-side play needs the SQLite-backed Durable Object
+> this Worker declares — one per session, holding that session's event log and
+> running the engine. That is what makes a session a single serialized thing:
+> two turns cannot interleave and corrupt the log, and the log outlives the
+> browser. If the deploy succeeds but session creation fails, whether your plan
+> covers Durable Objects is the first thing to check.
 
 ## 2. Create the AI Gateway
 
