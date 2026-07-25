@@ -1,0 +1,22 @@
+{
+  // Cloudflare Workers deployment for the game.
+  //
+  // The game is a static single-page app, so this is an assets-only Worker:
+  // there is no `main` script, Cloudflare just serves ./dist. The engine runs
+  // in the browser and talks to OpenRouter directly.
+  //
+  // If the engine later moves server-side (so play doesn't depend on a
+  // browser-held API key), add `"main": "worker/index.ts"` here and the same
+  // deployment grows a server without changing how assets are served.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "intra-game",
+  "compatibility_date": "2026-07-06",
+  "assets": {
+    "directory": "./dist",
+    // Two client-side routes (/ and /openrouter) served from one HTML shell.
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

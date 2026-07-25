@@ -11,9 +11,8 @@
 /.tap
 /.nyc_output
 
-# next.js
-/.next/
-/out/
+# wrangler
+.wrangler/
 
 # production
 /build
@@ -30,9 +29,8 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# build output
+/dist

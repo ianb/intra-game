@@ -2,24 +2,22 @@
 
 This is a game written from September 27-29, 2024, for the [Text Adventure Hack](https://textadventurehack.com/).
 
-The main branch is deployed on [intra-game.vercel.app](https://intra-game.vercel.app/)
-
 # Installation instructions
 
-This is a [Next.js](https://nextjs.org) application. It can be deployed on Vercel, run locally... or probably run elsewhere without too much trouble.
+This is a static single-page app: the whole game runs in the browser, so it can
+be hosted anywhere that serves files. It deploys to Cloudflare Workers.
 
 To run this you'll need to connect to [OpenRouter.ai](https://openrouter.ai/) to access various LLM models. You can use free models or connect your own API keys for paid models. The game will work with free models, though paid models generally provide better performance.
 
 The tech stack:
 
-- Next.js
-  - React
-  - TypeScript
+- React + TypeScript, bundled with [esbuild](https://esbuild.github.io/) (see [build.ts](./build.ts))
 - Tailwind for styling
 - [Preact Signals](https://preactjs.com/guide/v10/signals/) for state management
 - Actual game state is stored in [browser localStorage](./lib/persistentsignal.ts)
 - [OpenRouter.ai](https://openrouter.ai/) for LLM access
 - Various LLM models (GPT-4, Claude, Gemini, etc.)
+- Deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) static assets (see [wrangler.jsonc](./wrangler.jsonc))
 
 ## Getting Started
 
@@ -29,6 +27,22 @@ The tech stack:
 4. In the game, go to Settings (⚙) and connect to OpenRouter.ai to access LLM models
 
 The game will work with free models, but you can also connect your own API keys through OpenRouter for access to premium models.
+
+## Deploying
+
+```bash
+pnpm build      # bundle into dist/
+pnpm preview    # serve dist/ through wrangler locally
+pnpm deploy     # wrangler deploy
+```
+
+There is no server component: `wrangler.jsonc` declares an assets-only Worker
+that serves `dist/`, with a single-page-application fallback so both routes
+(`/` and the `/openrouter` OAuth callback) resolve to the same HTML shell. If
+the engine later moves server-side, adding a `main` entry to that config grows
+a Worker alongside the same assets.
+
+Development and testing tooling is described in [docs/testing.md](./docs/testing.md).
 
 # Code
 
