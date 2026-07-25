@@ -24,7 +24,7 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { CalculatingThrobber } from "@/components/throbber";
 import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
-import { model } from "@/lib/game/model";
+import { model } from "./model";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import {
   customEndpoint,

@@ -1,4 +1,7 @@
+import { entities } from "../lib/game/gameobjs";
+import { Model } from "../lib/game/model";
 import type { StoryEventType } from "../lib/types";
+import { gatewayChatStream } from "./aigateway";
 
 /**
  * One game session: its event log, and the execution that appends to it.
@@ -34,11 +37,19 @@ export interface StoredCredential {
   key: string;
 }
 
+export interface SessionEnv {
+  CF_AIG_TOKEN?: string;
+  CF_ACCOUNT_ID?: string;
+  GATEWAY_MODEL?: string;
+}
+
 export class GameSession {
   private state: DurableObjectState;
+  private env: SessionEnv;
 
-  constructor(state: DurableObjectState) {
+  constructor(state: DurableObjectState, env: SessionEnv) {
     this.state = state;
+    this.env = env;
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -77,16 +88,78 @@ export class GameSession {
   }
 
   /**
-   * Play a turn.
+   * Play a turn, streaming it back.
    *
-   * NOT YET IMPLEMENTED: this is where the engine runs. It should construct a
-   * Model over the stored log with a streaming backend pointed at AI Gateway,
-   * stream narrative deltas to the client over SSE, then append the resulting
-   * events to the log. Returning 501 rather than a fake result so this can't be
-   * mistaken for a working endpoint.
+   * The engine is rebuilt over the stored log, run, and the events it appended
+   * are persisted. Narrative text is streamed to the client as it arrives (SSE
+   * `delta` events) and the authoritative events follow (`events`), which is the
+   * same split the client already understands: stream for feel, events for truth.
    */
-  private async input(_request: Request): Promise<Response> {
-    return json({ error: "turn execution not implemented yet" }, 501);
+  private async input(request: Request): Promise<Response> {
+    const { text } = (await request.json()) as { text?: string };
+    if (!text) {
+      return json({ error: "missing text" }, 400);
+    }
+    if (!this.env.CF_ACCOUNT_ID || !this.env.CF_AIG_TOKEN) {
+      return json({ error: "AI Gateway not configured" }, 503);
+    }
+    const credential = await this.state.storage.get<StoredCredential>(
+      CREDENTIAL_KEY
+    );
+    const model = new Model(entities, {
+      chatStream: gatewayChatStream({
+        accountId: this.env.CF_ACCOUNT_ID,
+        token: this.env.CF_AIG_TOKEN,
+        model: this.env.GATEWAY_MODEL ?? "anthropic/claude-4-5-haiku",
+        providerKey: credential?.key,
+      }),
+    });
+
+    const log = await this.log();
+    model.replaceLog(log);
+    const before = model.updates.value.length;
+
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+    const encoder = new TextEncoder();
+    const send = (event: string, data: unknown) =>
+      writer.write(
+        encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+      );
+
+    // Mirror provisional narrative text to the client as the engine receives it.
+    const stopWatching = watchStreaming(model, (state) => {
+      void send("delta", state);
+    });
+
+    // Run the turn in the background so the response can start streaming now.
+    // waitUntil keeps the DO alive until the log is written.
+    const turn = (async () => {
+      try {
+        await model.sendText(text);
+        while (model.runningSignal.value) {
+          await new Promise((r) => setTimeout(r, 10));
+        }
+        const appended = model.updates.value.slice(before);
+        if (appended.length) {
+          await this.append(appended);
+        }
+        await send("events", appended);
+      } catch (e) {
+        await send("error", { message: String(e) });
+      } finally {
+        stopWatching();
+        await writer.close();
+      }
+    })();
+    this.state.waitUntil(turn);
+
+    return new Response(readable, {
+      headers: {
+        "content-type": "text/event-stream",
+        "cache-control": "no-cache",
+      },
+    });
   }
 
   private async log(): Promise<StoryEventType[]> {
@@ -98,6 +171,24 @@ export class GameSession {
     const log = await this.log();
     await this.state.storage.put(LOG_KEY, [...log, ...events]);
   }
+}
+
+/** Report the in-flight narrative tag whenever it changes. */
+function watchStreaming(
+  model: Model,
+  onChange: (state: unknown) => void
+): () => void {
+  let last: unknown = null;
+  const timer = setInterval(() => {
+    const current = model.streaming.value;
+    if (current !== last) {
+      last = current;
+      if (current) {
+        onChange(current);
+      }
+    }
+  }, 30);
+  return () => clearInterval(timer);
 }
 
 function json(body: unknown, status = 200): Response {

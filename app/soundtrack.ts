@@ -1,5 +1,5 @@
 import { effect } from "@preact/signals-react";
-import { model } from "@/lib/game/model";
+import { model } from "./model";
 import { SoundtrackPlayer } from "./soundtrackplayer";
 
 // Soundtrack playback is a pure view/browser concern, so it lives here rather

@@ -12,7 +12,7 @@ import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
 import { chat as defaultChat } from "../llm";
 import type { ChatType } from "../types";
 import { World } from "./world";
-import { AllEntitiesType, entities } from "./gameobjs";
+import type { AllEntitiesType } from "./gameobjs";
 import { scheduleForTime } from "./scheduler";
 import { pathTo } from "./pathto";
 import { applyRewinds, lastTurnLength } from "./rewind";
@@ -79,9 +79,6 @@ export class Model {
     this.chat = opts.chat ?? defaultChat;
     this.chatStream = opts.chatStream;
     this.streaming = signal<StreamingTagState | null>(null);
-    if (typeof window !== "undefined") {
-      (window as any).model = this;
-    }
     this.promiseQueue = new TrackSettled();
     this.updates = persistentSignal<StoryEventType[]>("updates", []);
     this.liveUpdates = computed(() => applyRewinds(this.updates.value));
@@ -513,4 +510,3 @@ export class Model {
   }
 }
 
-export const model = new Model(entities);

@@ -1,4 +1,4 @@
-import { model as gameModel } from "@/lib/game/model";
+import { model as gameModel } from "./model";
 import type { Model } from "@/lib/game/model";
 import { listSaves, load, removeSave, save } from "./localsaves";
 
