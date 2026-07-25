@@ -25,6 +25,31 @@ Because the engine takes `chat` as a constructor option, wiring a different
 model is a one-liner — swap the backend, or point `haikuChat({ model })` at any
 model the `claude` CLI accepts.
 
+## Cassettes: record once, replay deterministically
+
+Live model calls are great for exploring but useless as a regression test —
+they're slow and non-deterministic. So we **record** a playthrough's replies
+once and replay them in the test suite.
+
+```bash
+pnpm playtest:record            # (re-)record cassettes with missing entries
+pnpm playtest:record intake     # just the named scenario
+```
+
+- `scenarios.ts` defines each scenario: a **seed**, an input script, and a
+  cassette path. The seed makes the whole run deterministic (`seed.ts` swaps in
+  a seeded `Math.random`), so the schedule and every prompt reproduce exactly.
+- `recorded-chat.ts` provides `recordingChat` (wraps the real Haiku backend,
+  caching each reply to `cassettes/<name>.json`, keyed by a hash of the prompt)
+  and `replayChat` (serves those cached replies; unknown prompts return `""`).
+- `cassettes/*.json` are committed fixtures — the real model's replies, frozen.
+
+A test then replays the cassette with no live model — see
+`test/playthrough-intake.doctest.md`, which plays the full intake conversation
+and asserts the engine reaches the right state. Re-record when the prompts or a
+scenario change (a changed prompt is a new hash, so stale entries simply stop
+being hit — delete the cassette and re-record for a clean cut).
+
 ## Caveats
 
 - **Not a test.** Real model calls are non-deterministic and slow (~10–15s per
