@@ -140,6 +140,40 @@ changed. When a test only needs _some_ model reply rather than a real one, use a
 scripted fake instead — `test/headless-engine.doctest.md` is the pattern, and it
 never goes stale.
 
+## What the cache measurement says
+
+`pnpm playtest:cache` drives the engine with a scripted LLM (no network, no
+cassette) and reports, per prompt kind, how much of the request is shared
+between calls and how big it is. Both numbers matter, and the second one is
+easy to forget: a prefix has to clear a provider's minimum before it can be
+cached at all. Anthropic's is ~1024 tokens, ~2048 for Haiku-class.
+
+Measured today:
+
+| prompt kind      | whole request | ~tokens | shared |
+| ---------------- | ------------- | ------- | ------ |
+| `prompt Ama`     | 10126 chars   | ~2530   | 86% \* |
+| `player input`   | 3480 chars    | ~870    | 5%     |
+| `player action`  | 3266 chars    | ~817    | 60%    |
+| `player examine` | 1927 chars    | ~482    | 70%    |
+
+\* once the player's name is known, which is the steady state.
+
+Two conclusions. **The character prompts are the only ones worth caching** —
+big enough to clear the minimum and 86% stable. **The player-side prompts
+cannot be cached at any ordering**, because they are deliberately low-context
+and that puts them under the floor; there is nothing to optimise there, and
+`player action` at 60% shared is a reminder that a good ratio on a small prompt
+is still worth nothing.
+
+(Token counts are chars/4, which is close enough for prompts that are far from
+the threshold. `player input` at ~870 is within estimation error of 1024, so
+that one would need a real tokenizer before anyone acts on it.)
+
+The cross-kind table below the per-kind one is what says whether prompts can be
+routed to different models without disturbing each other; see
+[evals/README.md](../evals/README.md) and `lib/models.ts`.
+
 ## Caveats
 
 - **Not a test.** Real model calls are non-deterministic and slow (~10–15s per

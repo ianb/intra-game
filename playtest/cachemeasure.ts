@@ -16,7 +16,12 @@ import type { ChatType } from "../lib/types";
  *     pnpm playtest:cache
  */
 
-const prompts: { title: string; text: string; afterName: boolean }[] = [];
+const prompts: {
+  title: string;
+  text: string;
+  whole: string;
+  afterName: boolean;
+}[] = [];
 let named = false;
 let turn = 0;
 
@@ -28,6 +33,9 @@ const model = new Model(entities, {
     prompts.push({
       title: title ?? "(untitled)",
       text: String(request.messages[0]!.content),
+      // The whole request too: a cache prefix covers the message array, not the
+      // system message, and the minimum length applies to the total.
+      whole: request.messages.map((m) => `${m.role}:${m.content}`).join("\n"),
       afterName: named,
     });
     if (title === "player input") {
@@ -67,7 +75,11 @@ for (const t of [
   "I was a data analyst",
   "tell me about Intra",
   "look at the statues",
+  "look at the ceiling",
+  "look at the floor",
   "open the door",
+  "open the panel",
+  "open the hatch",
   "go to the foyer",
 ]) {
   await model.sendText(t);
@@ -85,15 +97,24 @@ const commonPrefix = (ss: string[]) => {
   return n;
 };
 
+// Rough, but the only thing that matters is which side of a 1024/2048-token
+// threshold a prompt sits on, and ~4 chars/token is nowhere near that margin.
+const tokens = (chars: number) => Math.round(chars / 4);
+
 const report = (label: string, texts: string[]) => {
-  if (texts.length < 2)
-    return console.log(`${label}: only ${texts.length} prompt(s)`);
-  const shared = commonPrefix(texts);
+  if (!texts.length) return console.log(`${label}: no prompts`);
   const avg = Math.round(
     texts.reduce((a, p) => a + p.length, 0) / texts.length,
   );
+  if (texts.length < 2) {
+    return console.log(
+      `${label}: only ${texts.length} prompt, ~${avg} chars (~${tokens(avg)} tokens)`,
+    );
+  }
+  const shared = commonPrefix(texts);
   console.log(
-    `${label}: ${texts.length} prompts, shared ${shared} of ~${avg} (${Math.round((shared / avg) * 100)}%)`,
+    `${label}: ${texts.length} prompts, ~${avg} chars (~${tokens(avg)} tokens), ` +
+      `shared ${shared} (${Math.round((shared / avg) * 100)}%)`,
   );
 };
 
@@ -115,12 +136,26 @@ report(
 // Where that second number is ~0, sending one kind to a small model cannot cost
 // the other kind a single cache hit — they were never in the same entry.
 
-console.log("\nPer prompt kind:");
+console.log("\nPer prompt kind (system message):");
 const kinds = [...new Set(prompts.map((p) => p.title))].sort();
 for (const kind of kinds) {
   report(
     `  ${kind}`,
     prompts.filter((p) => p.title === kind).map((p) => p.text),
+  );
+}
+
+// What a provider actually sees. A cache prefix covers the message array, not
+// the system message alone, and Anthropic will not cache a prefix below ~1024
+// tokens (~2048 for Haiku-class). That threshold decides whether a prompt is
+// cacheable at all, before any question of how well ordered it is.
+console.log(
+  "\nPer prompt kind (whole request — what a cache minimum applies to):",
+);
+for (const kind of kinds) {
+  report(
+    `  ${kind}`,
+    prompts.filter((p) => p.title === kind).map((p) => p.whole),
   );
 }
 

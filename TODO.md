@@ -158,6 +158,20 @@ original write-up, plus whatever the last few sessions turned up.
 
 ### Tooling
 
+- **Nothing actually asks for prompt caching** `engine` `M` — there is no
+  `cache_control` anywhere in `lib/llm.ts`, `worker/aigateway.ts` or
+  `evals/openrouter.ts`. Anthropic caching is opt-in per content block, and the
+  default models are Anthropic, so the stable-first prompt ordering currently
+  buys nothing at runtime: it is a precondition that has never been cashed in.
+  The work is to split the system message at the barrier line in
+  `Person.assemblePrompt` ("[Everything above is fixed…]"), send it as content
+  blocks, and mark the stable one. Do it for the character prompts only —
+  `pnpm playtest:cache` says they are ~2530 tokens with 86% stable, while every
+  player-side prompt is 480–870 tokens and under Anthropic's 1024-token
+  minimum, so no ordering could make them cacheable. Needs testing against a
+  real provider before it ships: a malformed content block fails the request,
+  which breaks the game rather than merely costing money.
+
 - **Keep Claude's voice out of the game** `content` `M` — see
   [CLAUDE.md](CLAUDE.md). The rule for now is "don't write content prose, and
   write prompts flat", which relies on a person noticing. Worth thinking about
