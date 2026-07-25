@@ -26,7 +26,11 @@ import { coerceBoolean, coerceNumber, fixupText } from "./coerce";
 import type { Model } from "./model";
 import { pathTo } from "./pathto";
 import { pronounsForGender } from "./pronouns";
-import { scheduleForTime, timeAsString } from "./scheduler";
+import {
+  intraActivityForTime,
+  scheduleForTime,
+  timeAsString,
+} from "./scheduler";
 import type { World } from "./world";
 import { entitiesById, fieldsOf } from "./dynamic";
 import { applyTag, type TagContext } from "./tags";
@@ -608,7 +612,7 @@ export class Person<
 
           In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
 
-          The human plays the character PLAYER — that is an id, used as-is in tags (as in <set attr="PLAYER.name">). PLAYER's name and pronouns are given further down, and may change as ${this.name} learns them.
+          The human plays the character PLAYER — that is an id, used as-is in tags (as in <set attr="PLAYER.name">). PLAYER is currently known as "${this.world.entities.PLAYER.name}" (${this.world.entities.PLAYER.pronouns}); that may change as ${this.name} learns who they are.
 
           <characterDescription>
           ${this.description}
@@ -624,14 +628,14 @@ export class Person<
 
           [Everything above is fixed for this character. Everything below changes as the game is played.]
 
-          PLAYER is currently known as "${this.world.entities.PLAYER.name}" (${this.world.entities.PLAYER.pronouns}).
-
           The time is ${timeAsString(this.world.timestampMinutes)}
           ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
 
           [[${IF(!hasInteracted)}This is the first time ${this.name} has spoken to PLAYER. There aren't many new people in Intra, so this might be a big deal.]]
 
           [[${promptForPerson}]]
+
+          ${this.intraActivityDescription()}
 
           ${this.activityDescription(parameters)}
 
@@ -827,6 +831,27 @@ export class Person<
       }
     }
     return parts.join(join);
+  }
+
+  /**
+   * What all of Intra is doing right now.
+   *
+   * Everyone lives by the same announced rhythm, so this is shared context: it
+   * is how a character knows the café is busy at breakfast, or that it is the
+   * middle of the night and nobody should be up. Their own activity, which may
+   * or may not go along with it, follows in activityDescription.
+   */
+  intraActivityDescription(): string {
+    const activity = intraActivityForTime(this.world.timestampOfDay);
+    if (!activity) {
+      return "";
+    }
+    return tmpl`
+      <intraActivity>
+      All of Intra is currently in: ${activity.activity} (${timeAsString(activity.time)} to ${timeAsString(activity.time + activity.minuteLength)})
+      ${activity.description}
+      </intraActivity>
+    `;
   }
 
   activityDescription(parameters: ParametersT): string {

@@ -1,6 +1,7 @@
 import sortBy from "just-sort-by";
-import type { Person, PersonScheduleType } from "../types";
+import type { GeneralScheduleType, Person, PersonScheduleType } from "../types";
 import { PersonScheduleTemplateType, PersonScheduledEventType } from "../types";
+import { intraSchedule } from "./content/schedules/day";
 
 // Utility function to return a random integer between low and high inclusive
 function randrange(low: number, high: number): number {
@@ -137,6 +138,37 @@ export function scheduleForTime(
 }
 
 export const ONE_DAY = 24 * 60;
+
+/**
+ * What all of Intra is doing at a given time of day.
+ *
+ * The per-person schedules were written against this shared rhythm — every
+ * character's day has a "Wake-up Chime" and a "Lunch & Reflection" because
+ * Intra's does — but only the personal side was ever wired into prompts, so
+ * characters knew what *they* were doing and nothing about what everyone else
+ * was doing at the same moment.
+ *
+ * Returns undefined only if the schedule leaves a gap; Intra's covers the whole
+ * day, with lights-out running past midnight into the small hours.
+ */
+export function intraActivityForTime(
+  time: number,
+  schedule: GeneralScheduleType[] = intraSchedule
+): GeneralScheduleType | undefined {
+  const minutes = ((time % ONE_DAY) + ONE_DAY) % ONE_DAY;
+  for (const event of schedule) {
+    const end = event.time + event.minuteLength;
+    if (minutes >= event.time && minutes < end) {
+      return event;
+    }
+    // An activity that runs past midnight also covers the small hours that
+    // follow it, which are a lower number than its start time.
+    if (end > ONE_DAY && minutes < end - ONE_DAY) {
+      return event;
+    }
+  }
+  return undefined;
+}
 
 export function timeAsString(timestampMinutes: number): string {
   const time = timestampMinutes % ONE_DAY;

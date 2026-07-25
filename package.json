@@ -12,6 +12,7 @@
     "test": "tap",
     "test:watch": "tap --watch",
     "playtest": "tsx playtest/playthrough.ts",
+    "playtest:cache": "tsx playtest/cachemeasure.ts",
     "playtest:record": "tsx playtest/record.ts",
     "lint:fix": "eslint . --fix",
     "lint:oxlint": "oxlint -A no-unused-vars",

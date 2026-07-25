@@ -46,6 +46,16 @@ export function fixupText(llmText: string) {
     .trim();
 }
 
+/** Answers that mean "I don't know", not a name. */
+const NON_NAMES = new Set([
+  "unspecified",
+  "unknown",
+  "player",
+  "player_name",
+  "playername",
+  "you",
+]);
+
 /**
  * Should a `<set attr="...">` from the model be allowed to land?
  *
@@ -64,11 +74,11 @@ export function isValidPropertySet(key: string, value: unknown) {
   } else if (key === "profession") {
     return v !== "unspecified" && v !== "unknown";
   } else if (key === "name") {
-    return (
-      // `v` is already lowercased, so this catches "PLAYER" — the marker the
-      // prompts use for the player — as well as a literal "player".
-      v !== "unspecified" && v !== "unknown" && v !== "player" && v !== "you"
-    );
+    // `v` is already lowercased, so these catch the markers the prompts use for
+    // the player as well as their literal forms. A model that hasn't learned
+    // the name yet will sometimes answer with the placeholder instead of
+    // omitting the tag, and that must never land in game state.
+    return !NON_NAMES.has(v);
   }
   return true;
 }

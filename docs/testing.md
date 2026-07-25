@@ -131,9 +131,10 @@ between:
     the game is played.]
 
 Above it: the boilerplate, the character's identity, description and roleplay
-instructions, and `additionalSystemInstructions()`. Below it: the player's name,
-the clock, the current room, the activity, who else is present, mystery hints,
-and `volatileSystemInstructions()`.
+instructions, the player's name and pronouns, and
+`additionalSystemInstructions()`. Below it: the clock, the current room, the
+activity (Intra's and the character's), who else is present, mystery hints, and
+`volatileSystemInstructions()`.
 
 This matters more than it looks. The clock used to sit near the top, so every
 prompt was unique from its fourth line down and prefix caching never hit at all.
@@ -141,15 +142,29 @@ Ama was worst: her roster of every person and room is the largest block in any
 prompt, and it carried each person's _current room_, so any NPC walking anywhere
 invalidated it. Current positions moved below the boundary.
 
-Measured over a five-turn game, the shared prefix across Ama's prompts went from
-289 characters (5%) to 5412 (91%).
+`pnpm playtest:cache` measures the result — it drives the real engine with a
+scripted LLM and reports the shared prefix across Ama's prompts, so the claim
+here can be re-checked after any prompt edit rather than taken on trust. Over a
+game where Ama learns the player's name partway through:
+
+|                         | across the whole game | once the name is known |
+| ----------------------- | --------------------- | ---------------------- |
+| name below the boundary | 30%                   | 85%                    |
+| name in the base prompt | 5%                    | 85%                    |
+
+The player's name is **deliberately in the stable half** even though it changes.
+The two arrangements are identical in steady state, which is most of a game; the
+difference is one prefix rebuild when the name is first set, and having it read
+naturally near the character's own identity is worth that. The whole-game column
+is what that one rebuild costs, not an ongoing rate.
 
 **When editing prompts, keep the two sides separate.** Anything that can differ
-between two turns of the same game belongs below the marker; putting it above
-silently costs the cache. Ordering is deliberately the mechanism rather than
-explicit cache-control breakpoints, because it works with automatic prefix
-caching on every provider and survives an OpenAI-compatible proxy, which cannot
-express per-provider cache markers.
+between two turns of the same game belongs below the marker unless, like the
+name, it settles early and you have decided the readability is worth it. Putting
+genuinely per-turn content above silently costs the cache. Ordering is
+deliberately the mechanism rather than explicit cache-control breakpoints,
+because it works with automatic prefix caching on every provider and survives an
+OpenAI-compatible proxy, which cannot express per-provider cache markers.
 
 Changing prompt text changes the cassette keys, so re-record after edits:
 `pnpm playtest:record`.
