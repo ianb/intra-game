@@ -30,6 +30,7 @@ import { scheduleForTime, timeAsString } from "./scheduler";
 import type { World } from "./world";
 import { entitiesById, fieldsOf } from "./dynamic";
 import { applyTag, type TagContext } from "./tags";
+import { TagStreamParser } from "./tagstream";
 
 export interface EntityInitType {
   id: EntityId;
@@ -289,10 +290,42 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     return lines.join("\n");
   }
 
+  /**
+   * Run the prompt, streaming narrative text to `model.streaming` if a
+   * streaming backend is configured. Either way this resolves to the complete
+   * response, so the caller's parse is identical — streaming only adds the
+   * ability to show a turn while it is still arriving.
+   */
+  private async streamOrChat(model: Model, prompt: ChatType): Promise<string> {
+    if (!model.chatStream) {
+      return model.chat(prompt);
+    }
+    const parser = new TagStreamParser();
+    const show = (events: ReturnType<TagStreamParser["feed"]>) => {
+      for (const event of events) {
+        if (event.kind === "close") {
+          model.streaming.value = null;
+        } else {
+          model.streaming.value = { entityId: this.id, tag: event.tag };
+        }
+      }
+    };
+    try {
+      const text = await model.chatStream(prompt, (delta) =>
+        show(parser.feed(delta))
+      );
+      show(parser.end());
+      return text;
+    } finally {
+      // Never leave provisional text on screen, even if the request failed.
+      model.streaming.value = null;
+    }
+  }
+
   async executePrompt(model: Model, parameters: ParametersT) {
     const prompt = this.assemblePrompt(parameters);
     const roomId = this.world.entityRoom(this.id)?.id || "Void";
-    let resp = await model.run(() => model.chat(prompt));
+    let resp = await model.run(() => this.streamOrChat(model, prompt));
     resp = fixupText(resp);
 
     let tags = unfoldTags(parseTags(resp), {

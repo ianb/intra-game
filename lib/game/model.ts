@@ -1,4 +1,4 @@
-import { computed } from "@preact/signals-core";
+import { computed, signal } from "@preact/signals-core";
 import { persistentSignal, SignalType } from "../persistentsignal";
 import { TrackSettled } from "../tracksettled";
 import {
@@ -8,7 +8,6 @@ import {
   isStoryEvent,
 } from "../types";
 import { StoryEventType } from "../types";
-import { listSaves, load, removeSave, save } from "../localsaves";
 import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
 import { chat as defaultChat } from "../llm";
 import type { ChatType } from "../types";
@@ -17,12 +16,35 @@ import { AllEntitiesType, entities } from "./gameobjs";
 import { scheduleForTime } from "./scheduler";
 import { pathTo } from "./pathto";
 import { applyRewinds, lastTurnLength } from "./rewind";
+import type { PartialTag } from "./tagstream";
 
 export type ChatFn = (request: ChatType) => Promise<string>;
+
+/**
+ * A streaming LLM backend. Calls `onDelta` with text as it arrives and still
+ * resolves to the complete response, so the authoritative parse is unchanged —
+ * streaming only adds the ability to show a turn while it happens.
+ */
+export type ChatStreamFn = (
+  request: ChatType,
+  onDelta: (delta: string) => void
+) => Promise<string>;
+
+/** A narrative tag currently arriving, for provisional display. */
+export interface StreamingTagState {
+  /** Whose response this is. */
+  entityId: EntityId;
+  tag: PartialTag;
+}
 
 export interface ModelOptions {
   // The LLM backend. Defaults to the real OpenRouter chat(); tests inject a fake.
   chat?: ChatFn;
+  /**
+   * Optional streaming backend. When present it is used instead of `chat`, and
+   * narrative tags are surfaced on `streaming` as they arrive.
+   */
+  chatStream?: ChatStreamFn;
 }
 
 interface ParsedInputType {
@@ -45,9 +67,18 @@ export class Model {
   liveUpdates: SignalType<StoryEventType[]>;
   nextRollOverride: number | null = null;
   chat: ChatFn;
+  chatStream?: ChatStreamFn;
+  /**
+   * The narrative tag currently being received, or null between turns. This is
+   * provisional display state only — the authoritative event still lands in
+   * `updates` when the response completes.
+   */
+  streaming: SignalType<StreamingTagState | null>;
 
   constructor(startingEntities: AllEntitiesType, opts: ModelOptions = {}) {
     this.chat = opts.chat ?? defaultChat;
+    this.chatStream = opts.chatStream;
+    this.streaming = signal<StreamingTagState | null>(null);
     if (typeof window !== "undefined") {
       (window as any).model = this;
     }
@@ -459,40 +490,17 @@ export class Model {
     await this.sendText(redoText);
   }
 
-  /* Load/save: */
-
-  async proposeTitle(): Promise<string> {
-    return `${this.world.entities.player.name} ${formatDate(new Date())}`;
-  }
-
-  async save(title: string) {
-    save(title, this.updates.value);
-  }
-
-  async load(slug: string) {
-    this.updates.value = [];
-    const value = load(slug);
-    this.updates.value = value;
+  /**
+   * Replace the whole log (loading a saved game). Client-side saves live in
+   * app/saves.ts; the engine only needs to be told the log changed.
+   */
+  replaceLog(events: StoryEventType[]) {
+    this.updates.value = events;
     this.world = new World({
       original: this.world.original,
       model: this,
     });
     this.checkLaunch();
-  }
-
-  async listSaves(): Promise<SaveListType[]> {
-    return listSaves().map((save) => {
-      return {
-        title: save.title,
-        slug: save.slug,
-        // Make it local time:
-        date: formatDate(save.date),
-      };
-    });
-  }
-
-  async removeSave(slug: string) {
-    return removeSave(slug);
   }
 
   roll(sides = 20) {
@@ -503,20 +511,6 @@ export class Model {
     }
     return Math.floor(Math.random() * sides) + 1;
   }
-}
-
-export interface SaveListType {
-  title: string;
-  slug: string;
-  date: string;
-}
-
-function formatDate(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-  const day = String(date.getDate()).padStart(2, "0");
-  const formattedDate = `${year}-${month}-${day}`;
-  return formattedDate;
 }
 
 export const model = new Model(entities);

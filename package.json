@@ -19,7 +19,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "typecheck:worker": "tsc --noEmit -p worker/tsconfig.json"
   },
   "dependencies": {
     "@preact/signals": "^1.3.0",

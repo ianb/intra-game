@@ -1,4 +1,4 @@
-import type { StoryEventType } from "./types";
+import type { StoryEventType } from "@/lib/types";
 
 const LOCAL_PREFIX = "intra-save.";
 

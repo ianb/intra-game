@@ -6,6 +6,14 @@ import React, { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { renderStoryAction } from "./renderstoryaction";
 import { asGraphviz } from "./map";
+import {
+  listSavedGames,
+  loadGame,
+  proposeSaveTitle,
+  removeSavedGame,
+  saveGame,
+  type SaveListType,
+} from "./saves";
 import { soundtrackPlayer } from "./soundtrack";
 import { Clock } from "@/components/digitalnumerals";
 import { A, Button, CheckButton } from "@/components/input";
@@ -16,7 +24,7 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { CalculatingThrobber } from "@/components/throbber";
 import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
-import { model, SaveListType } from "@/lib/game/model";
+import { model } from "@/lib/game/model";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import {
   customEndpoint,
@@ -894,7 +902,7 @@ function SaveControls({ onDone }: { onDone: () => void }) {
   useSignals();
   const proposedTitle = useSignal("");
   useEffect(() => {
-    model.proposeTitle().then((title) => {
+    Promise.resolve(proposeSaveTitle()).then((title) => {
       proposedTitle.value = title;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -912,7 +920,7 @@ function SaveControls({ onDone }: { onDone: () => void }) {
       />
       <Button
         onClick={async () => {
-          await model.save(proposedTitle.value);
+          saveGame(proposedTitle.value);
           onDone();
         }}
       >
@@ -930,7 +938,7 @@ function LoadControls({ onDone }: { onDone: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   function refresh() {
-    model.listSaves().then((loadedSaves) => {
+    Promise.resolve(listSavedGames()).then((loadedSaves) => {
       saves.value = loadedSaves;
     });
   }
@@ -956,7 +964,7 @@ function LoadControls({ onDone }: { onDone: () => void }) {
               <Button
                 className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
                 onClick={async () => {
-                  await model.load(save.slug);
+                  loadGame(save.slug);
                   onDone();
                 }}
               >
@@ -965,7 +973,7 @@ function LoadControls({ onDone }: { onDone: () => void }) {
               <Button
                 className="text-xs bg-red-800 text-white hover:bg-red-600"
                 onClick={async () => {
-                  await model.removeSave(save.slug);
+                  removeSavedGame(save.slug);
                   refresh();
                 }}
               >

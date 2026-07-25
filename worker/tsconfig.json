@@ -1,0 +1,10 @@
+{
+  "extends": "@ianbicking/personal-vibe-check/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["@cloudflare/workers-types"],
+    "moduleResolution": "bundler",
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "../lib/**/*.ts"]
+}
