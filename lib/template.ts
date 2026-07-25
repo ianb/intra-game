@@ -39,7 +39,7 @@ export function fillTemplate(
   // eslint-disable-next-line no-cond-assign
   while ((match = regex.exec(template))) {
     parts.push(template.slice(pos, match.index));
-    subs.push(evaluator(match[1]));
+    subs.push(evaluator(match[1]!));
     pos = match.index + match[0].length;
   }
   parts.push(template.slice(pos));
@@ -84,7 +84,7 @@ function parseTemplate(template: string, props: Map<string, any>) {
       const numMatch = /^(\d)+/.exec(bullet);
       let num = -1;
       if (numMatch) {
-        num = parseInt(numMatch[1], 10);
+        num = parseInt(numMatch[1]!, 10);
       }
       const newId = nextIdentifier();
       props.set(
@@ -215,17 +215,17 @@ export function dedent(template: string) {
     throw new Error("Template is null or undefined");
   }
   const lines = template.split("\n");
-  let firstLine = lines[0];
+  let firstLine = lines[0] ?? "";
   if (firstLine.trim() === "") {
     firstLine = "";
   } else {
     firstLine = `${firstLine.trimEnd()}\n`;
   }
   lines.shift();
-  while (lines.length && lines[0].trim() === "") {
+  while (lines.length && lines[0]!.trim() === "") {
     lines.shift();
   }
-  while (lines.length && lines[lines.length - 1].trim() === "") {
+  while (lines.length && lines[lines.length - 1]!.trim() === "") {
     lines.pop();
   }
   let indent = -1;

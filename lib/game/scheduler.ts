@@ -11,7 +11,7 @@ function shuffle<T>(array: T[]): T[] {
   const result = array.slice();
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
+    [result[i], result[j]] = [result[j]!, result[i]!];
   }
   return result;
 }
@@ -54,7 +54,7 @@ export function generateExactSchedule(
 
   // Step 5: Adjust durations to prevent overlaps and fill gaps
   for (let i = 0; i < sortedEvents.length; i++) {
-    const event = sortedEvents[i];
+    const event = sortedEvents[i]!;
     const nextEvent = sortedEvents[i + 1];
 
     if (nextEvent) {
@@ -79,7 +79,7 @@ export function generateExactSchedule(
   }
 
   // Step 6: Ensure the schedule starts at 6:00 AM and ends at 10:00 PM
-  const firstEvent = sortedEvents[0];
+  const firstEvent = sortedEvents[0]!;
   if (firstEvent.time > 360) {
     firstEvent.minuteLength += firstEvent.time - 360;
     firstEvent.time = 360;
@@ -88,7 +88,7 @@ export function generateExactSchedule(
     firstEvent.time = 360;
   }
 
-  const lastEvent = sortedEvents[sortedEvents.length - 1];
+  const lastEvent = sortedEvents[sortedEvents.length - 1]!;
   if (lastEvent.time + lastEvent.minuteLength < 1320) {
     lastEvent.minuteLength = 1320 - lastEvent.time;
     if (lastEvent.minuteLength < 0) {

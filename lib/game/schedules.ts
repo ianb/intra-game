@@ -6,9 +6,9 @@ function time(timeString: string): number {
   if (!match) {
     throw new Error("Invalid time format");
   }
-  let hours = parseInt(match[1], 10);
+  let hours = parseInt(match[1]!, 10);
   const minutes = match[2] ? parseInt(match[2], 10) : 0;
-  const period = match[3].toLowerCase();
+  const period = match[3]!.toLowerCase();
   if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) {
     throw new Error("Invalid time range");
   }

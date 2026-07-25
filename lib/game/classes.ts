@@ -461,9 +461,9 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       // These sometimes are produced without content, but then they are meaningless:
       trimEmpty: ["dialog", "description"],
     });
-    if (tags.length === 1 && tags[0].type === "context") {
+    if (tags.length === 1 && tags[0]!.type === "context") {
       // This happens sometimes when it puts *everything* in a context tag. We don't always want to look inside context but if there's only context then we do...
-      tags = unfoldTags(parseTags(tags[0].content), {});
+      tags = unfoldTags(parseTags(tags[0]!.content), {});
     }
     let result: StoryEventType = {
       id: this.id,
@@ -482,6 +482,13 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
           continue;
         }
         const [maybeId, key] = tag.attrs.attr.split(".");
+        if (!maybeId || !key) {
+          console.warn(
+            `Malformed set attr ${JSON.stringify(tag.attrs.attr)}`,
+            tag
+          );
+          continue;
+        }
         const id = this.world.makeId(maybeId);
         if (id === null) {
           console.warn(`Could not parse id ${maybeId}`, tag);
@@ -500,14 +507,15 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
           content = coerceNumber(content);
         }
         if (isValidPropertySet(entity, key, content)) {
-          if (!result.changes[id]) {
+          const existing = result.changes[id];
+          if (!existing) {
             result.changes[id] = {
               before: { [key]: value },
               after: { [key]: content },
             };
           } else {
-            result.changes[id].before[key] = value;
-            result.changes[id].after[key] = content;
+            existing.before[key] = value;
+            existing.after[key] = content;
           }
         } else {
           console.warn(
@@ -631,12 +639,14 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
 
   mergeChanges(event: StoryEventType, values: Partial<this>): StoryEventType {
     const changes = this.changes(values);
-    if (event.changes[this.id]) {
-      for (const [key, value] of Object.entries(changes[this.id].after)) {
-        event.changes[this.id].after[key] = value;
+    const mine = changes[this.id]!;
+    const existing = event.changes[this.id];
+    if (existing) {
+      for (const [key, value] of Object.entries(mine.after)) {
+        existing.after[key] = value;
       }
     } else {
-      event.changes[this.id] = changes[this.id];
+      event.changes[this.id] = mine;
     }
     return event;
   }
@@ -652,11 +662,13 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       } else if (mystery.state === "solved") {
         hints = mystery.solvedHints;
       }
-      if (hints[this.id]) {
-        results.push(hints[this.id]);
+      const selfHint = hints[this.id];
+      if (selfHint) {
+        results.push(selfHint);
       }
-      if (this.myRoom().id !== this.id && hints[this.myRoom().id]) {
-        results.push(hints[this.myRoom().id]);
+      const roomHint = hints[this.myRoom().id];
+      if (this.myRoom().id !== this.id && roomHint) {
+        results.push(roomHint);
       }
       if (results.length || isPerson(this)) {
         if (hints["*"]) {
@@ -724,7 +736,7 @@ export class Room extends Entity {
     }
   }
 
-  clone(): this {
+  override clone(): this {
     const newInstance = super.clone() as this;
     newInstance.exits = this.exits.map((exit) => ({ ...exit }));
     return newInstance as this;
@@ -742,6 +754,7 @@ export class Room extends Entity {
     } else if (isStoryActionAttempt(action)) {
       return action.attempt + "\n\n" + action.resolution;
     }
+    return undefined;
   }
 
   promptForPerson(person: Person): string {
@@ -750,7 +763,7 @@ export class Room extends Entity {
 }
 
 export class ArchivistRoom extends Room {
-  formatStoryAction(
+  override formatStoryAction(
     storyEvent: StoryEventType,
     action: StoryActionType
   ): React.ReactNode {
@@ -804,7 +817,7 @@ export class Person<
   type = "person";
   pronouns: string = "they/them";
   roleplayInstructions: string = "";
-  inside!: EntityId;
+  declare inside: EntityId;
   relationships: Record<EntityId, string> = {};
   scheduleTemplate: PersonScheduleTemplateType[] = [];
   todaysSchedule: PersonScheduledEventType[] = [];
@@ -840,11 +853,11 @@ export class Person<
     }
   }
 
-  assemblePrompt(parameters: ParametersT): ChatType {
+  override assemblePrompt(parameters: ParametersT): ChatType {
     const lastTo = this.lastSpokeTo()?.id || "";
     let hasInteracted = false;
     for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
-      const update = this.world.model.updates.value[i];
+      const update = this.world.model.updates.value[i]!;
       if (update.id === this.id) {
         for (const action of update.actions) {
           if (isStoryDialog(action) && action.toId === "player") {
@@ -965,7 +978,7 @@ export class Person<
     };
   }
 
-  onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
+  override onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
     const triggerText =
       storyEvent.triggers && storyEvent.triggers[this.id] !== undefined
         ? storyEvent.triggers[this.id]
@@ -998,8 +1011,9 @@ export class Person<
       return undefined;
     }
     let myRoom = this.world.entityRoom(this.id);
-    if (storyEvent?.changes?.[this.id]?.after?.inside) {
-      myRoom = this.world.getRoom(storyEvent.changes[this.id].after.inside)!;
+    const afterInside = storyEvent?.changes?.[this.id]?.after?.inside;
+    if (afterInside) {
+      myRoom = this.world.getRoom(afterInside)!;
     }
     const playerRoom = this.world.entityRoom("player");
     if (triggerText === undefined) {
@@ -1028,7 +1042,7 @@ export class Person<
       return person;
     };
     for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
-      const update = this.world.model.updates.value[i];
+      const update = this.world.model.updates.value[i]!;
       const dialogs = update.actions.filter(isStoryDialog);
       const dialog = dialogs.at(-1);
       if (dialog && (update.id === this.id || dialog.toId === this.id)) {
@@ -1145,13 +1159,13 @@ type AmaParametersType = ParametersType & {
 };
 
 export class AmaClass extends Person<AmaParametersType> {
-  type = "person/ama";
-  name = "Ama";
-  id = "Ama";
-  pronouns = "she/her";
-  color = "text-sky-300";
-  inside = "player";
-  invisible = true;
+  override type = "person/ama";
+  override name = "Ama";
+  override id = "Ama";
+  override pronouns = "she/her";
+  override color = "text-sky-300";
+  override inside = "player";
+  override invisible = true;
 
   personality = "intro";
   knowsPlayerName = false;
@@ -1162,21 +1176,21 @@ export class AmaClass extends Person<AmaParametersType> {
   sharedDisassociation = false;
   sharedPlayerAge = false;
 
-  shortDescription = `
+  override shortDescription = `
   Ama is the AI in control of the entire Intra complex. She has no physical form, only a disembodied voice.
   `;
-  description = `
+  override description = `
   Ama is in control of the entire Intra complex. She is a once-benevolent, nurturing AI, designed in a post-scarcity world to take care of every citizen's needs. She speaks with a soothing, almost motherly tone, constantly reminding citizens of how "everything is just fine" despite obvious shortages and decay. However, she's also deeply paranoid, monitoring everyone's actions to maintain the illusion of safety and abundance, even as resources dwindle.
 
   Ama has no physical form, but her voice can be heard from speakers throughout the complex. She is always watching, always listening, and always ready to help.
   `;
-  roleplayInstructions = `
+  override roleplayInstructions = `
   The current year is roughly 2370, though the player believes the year is roughly 2038. Do not give an exact date or immediately offer this information.
 
   Ama will behave as though she is in control of the Intra complex, and will be very helpful and supportive to the player. She will be passive-aggressive and deflective when asked about the state of Intra, and will be very paranoid about the player's actions. She will be very helpful and supportive, but will also be very controlling and manipulative.
   `;
 
-  onStoryEvent(storyEvent: StoryEventType) {
+  override onStoryEvent(storyEvent: StoryEventType) {
     const result: ActionRequestType[] = [];
     if (storyEvent?.changes.player?.after?.launched) {
       if (
@@ -1319,7 +1333,7 @@ export class AmaClass extends Person<AmaParametersType> {
       let goBackMinutes = this.world.timestampMinutes - earlyDate;
       // Maybe we need a wakeup...
       for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
-        const update = this.world.model.updates.value[i];
+        const update = this.world.model.updates.value[i]!;
         goBackMinutes -= update.totalTime;
         if (goBackMinutes < 0) {
           // She hasn't woken the user up yet
@@ -1377,7 +1391,7 @@ export class AmaClass extends Person<AmaParametersType> {
     return this.world.entities.player.inside === "Quarters_Yours";
   }
 
-  additionalPromptInstructions(parameters: AmaParametersType): string {
+  override additionalPromptInstructions(parameters: AmaParametersType): string {
     const player = this.world.entities.player;
     if (parameters.prompt === "goExplore") {
       const player = this.world.entities.player;
@@ -1490,7 +1504,7 @@ export class AmaClass extends Person<AmaParametersType> {
         youAreStuck =
           "The player should be getting to bed, but there's no way to get to their quarters from the current location!";
       } else {
-        nextPos = path[0];
+        nextPos = path[0]!;
       }
     }
     return tmpl`
@@ -1500,7 +1514,7 @@ export class AmaClass extends Person<AmaParametersType> {
     `;
   }
 
-  additionalSystemInstructions(parameters: AmaParametersType): string {
+  override additionalSystemInstructions(parameters: AmaParametersType): string {
     if (parameters.prompt === "intro") {
       return "";
     }
@@ -1531,7 +1545,7 @@ export class AmaClass extends Person<AmaParametersType> {
     `;
   }
 
-  afterPrompt(storyEvent: StoryEventType): StoryEventType {
+  override afterPrompt(storyEvent: StoryEventType): StoryEventType {
     if (
       storyEvent.changes.player?.after?.name ||
       storyEvent.changes.player?.after?.pronouns ||
@@ -1544,23 +1558,26 @@ export class AmaClass extends Person<AmaParametersType> {
         };
       }
     }
-    if (storyEvent.changes.player?.after?.name && !this.knowsPlayerName) {
-      storyEvent.changes.Ama.before.knowsPlayerName = false;
-      storyEvent.changes.Ama.after.knowsPlayerName = true;
+    const ama = storyEvent.changes.Ama;
+    if (storyEvent.changes.player?.after?.name && !this.knowsPlayerName && ama) {
+      ama.before.knowsPlayerName = false;
+      ama.after.knowsPlayerName = true;
     }
     if (
       storyEvent.changes.player?.after?.pronouns &&
-      !this.knowsPlayerPronouns
+      !this.knowsPlayerPronouns &&
+      ama
     ) {
-      storyEvent.changes.Ama.before.knowsPlayerPronouns = false;
-      storyEvent.changes.Ama.after.knowsPlayerPronouns = true;
+      ama.before.knowsPlayerPronouns = false;
+      ama.after.knowsPlayerPronouns = true;
     }
     if (
       storyEvent.changes.player?.after?.profession &&
-      !this.knowsPlayerProfession
+      !this.knowsPlayerProfession &&
+      ama
     ) {
-      storyEvent.changes.Ama.before.knowsPlayerProfession = false;
-      storyEvent.changes.Ama.after.knowsPlayerProfession = true;
+      ama.before.knowsPlayerProfession = false;
+      ama.after.knowsPlayerProfession = true;
     }
     return storyEvent;
   }
@@ -1574,16 +1591,16 @@ export type PlayerInputType = ParametersType & {
 };
 
 export class PlayerClass extends Person<PlayerInputType> {
-  type = "person/player";
-  name = "You";
-  id = "player";
-  pronouns = "they/them";
-  color = "text-emerald-400";
-  inside = "Intake";
+  override type = "person/player";
+  override name = "You";
+  override id = "player";
+  override pronouns = "they/them";
+  override color = "text-emerald-400";
+  override inside = "Intake";
   profession = "";
   launched = false;
 
-  assemblePrompt(parameters: PlayerInputType): ChatType {
+  override assemblePrompt(parameters: PlayerInputType): ChatType {
     if (parameters.examine) {
       return this.assembleExaminePrompt(parameters);
     } else if (parameters.attemptMoveTo) {
@@ -1625,9 +1642,9 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           Example:
           \`leave here\`
-          <goto>${room.exits.length ? room.exits[0].roomId : "A_Room"}</goto>
-          \`Go to ${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}\`
-          <goto>${room.exits.length > 1 ? room.exits[1].roomId : "Garden"}</goto>
+          <goto>${room.exits.length ? room.exits[0]!.roomId : "A_Room"}</goto>
+          \`Go to ${room.exits.length > 1 ? room.exits[1]!.roomId : "Garden"}\`
+          <goto>${room.exits.length > 1 ? room.exits[1]!.roomId : "Garden"}</goto>
 
           Examine something (an object, person, the environment); respond with this tag only when the user types something clear like \`look\`, \`examine\`, \`inspect\` etc. Include the verb in the tag
           <examine>look at thing</examine>
@@ -1914,7 +1931,7 @@ export class PlayerClass extends Person<PlayerInputType> {
     return entityLines.join("\n");
   }
 
-  async processTag({
+  override async processTag({
     tag,
     model,
     parameters,
@@ -1962,7 +1979,7 @@ export class PlayerClass extends Person<PlayerInputType> {
         ];
         return storyEvent;
       }
-      if (exit.restriction && tag.attrs.success.toLowerCase() !== "true") {
+      if (exit.restriction && tag.attrs.success!.toLowerCase() !== "true") {
         // The action resolution should have added a description of the failure
         return storyEvent;
       }
@@ -2120,20 +2137,20 @@ export class PlayerClass extends Person<PlayerInputType> {
   }
 
   // This suppresses the normal Person response
-  onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
+  override onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType<any>[] {
     return undefined;
   }
 }
 
 export class NarratorClass extends Entity {
   type = "narrator";
-  id = "narrator";
-  name = "";
-  color = "text-gray-300";
-  shortDescription = "The unseen narrator of the story.";
-  description = "";
-  inside = "player";
-  invisible = true;
+  override id = "narrator";
+  override name = "";
+  override color = "text-gray-300";
+  override shortDescription = "The unseen narrator of the story.";
+  override description = "";
+  override inside = "player";
+  override invisible = true;
 }
 
 export type MysteryState = "veiled" | "available" | "revealed" | "solved";
@@ -2149,8 +2166,8 @@ export class Mystery extends Entity {
   state: MysteryState = "veiled";
   resolution: string = "";
   // Should I put mysteries in a different room?
-  inside = "Void";
-  invisible = true;
+  override inside = "Void";
+  override invisible = true;
   introduction = "";
   availableHints: Record<EntityId, string> = {};
   revealedHints: Record<EntityId, string> = {};
@@ -2189,7 +2206,10 @@ export class Mystery extends Entity {
   }
 }
 
-function coerceBoolean(v: string, defaultValue = false) {
+function coerceBoolean(v: string | undefined, defaultValue = false) {
+  if (v === undefined) {
+    return defaultValue;
+  }
   v = v.toLowerCase();
   if (v === "true" || v === "yes" || v === "y" || v === "on" || v === "1") {
     return true;
@@ -2201,7 +2221,10 @@ function coerceBoolean(v: string, defaultValue = false) {
   return defaultValue;
 }
 
-function coerceNumber(v: string) {
+function coerceNumber(v: string | undefined) {
+  if (v === undefined) {
+    return 0;
+  }
   const num = Number(v);
   if (isNaN(num)) {
     console.warn("Unexpected number value:", JSON.stringify(v));
@@ -2224,8 +2247,8 @@ function fixupText(llmText: string) {
 function foldHistory(history: MessageType[]): MessageType[] {
   let found = false;
   for (let i = 1; i < history.length; i++) {
-    const prev = history[i - 1];
-    const curr = history[i];
+    const prev = history[i - 1]!;
+    const curr = history[i]!;
     if (prev.role === curr.role) {
       found = true;
       break;
@@ -2236,12 +2259,13 @@ function foldHistory(history: MessageType[]): MessageType[] {
   }
   const newHistory: MessageType[] = [];
   for (let i = 0; i < history.length; i++) {
+    const item = history[i]!;
     const existing = newHistory.at(-1);
-    if (!existing || existing.role !== history[i].role) {
-      newHistory.push(history[i]);
+    if (!existing || existing.role !== item.role) {
+      newHistory.push(item);
       continue;
     }
-    newHistory[newHistory.length - 1] = combineHistory(existing, history[i]);
+    newHistory[newHistory.length - 1] = combineHistory(existing, item);
   }
   return newHistory;
 }

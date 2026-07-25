@@ -157,7 +157,7 @@ export class Model {
     let playerEvents = 0;
     let personEvents = 0;
     for (let i = this.updates.value.length - 1; i >= 0; i--) {
-      const update = this.updates.value[i];
+      const update = this.updates.value[i]!;
       if (update.id === "player") {
         playerEvents++;
       } else if (update.id === person.id) {
@@ -208,9 +208,9 @@ export class Model {
   recentReferencedEntities(): EntityId[] {
     let result: EntityId[] = [];
     for (let i = this.updates.value.length - 1; i >= 0; i--) {
-      const update = this.updates.value[i];
+      const update = this.updates.value[i]!;
       for (let j = update.actions.length - 1; j >= 0; j--) {
-        const action = update.actions[j];
+        const action = update.actions[j]!;
         if (isStoryDialog(action) && action.toId) {
           if (!result.includes(action.toId)) {
             result.push(action.toId);
@@ -396,6 +396,7 @@ export class Model {
       await this.run(() => player.executePrompt(this, { input: parsed.text }));
       await this.run(() => this.scheduleTick());
     }
+    return undefined;
   }
 
   parseText(text: string): ParsedInputType {
@@ -411,7 +412,7 @@ export class Model {
     const rollRegex = /\/roll (\d+)$/;
     if (rollRegex.test(text)) {
       const match = text.match(rollRegex);
-      resp.roll = parseInt(match![1], 10);
+      resp.roll = parseInt(match![1]!, 10);
       text = text.replace(rollRegex, "").trim();
     }
     resp.text = text;

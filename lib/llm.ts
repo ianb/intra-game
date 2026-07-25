@@ -36,7 +36,7 @@ export async function chat(request: ChatType) {
     request,
   };
   const lastIndex = logSignal.value.length
-    ? logSignal.value[0].request.meta.index
+    ? logSignal.value[0]!.request.meta.index
     : 0;
   request.meta.index = (lastIndex || 0) + 1;
   request.meta.start = Date.now();
@@ -155,7 +155,7 @@ function upliftInstructions(chat: ChatType): ChatType {
       const firstSystemIndex = newChat.messages.findIndex(
         (msg) => msg.role === "system"
       );
-      const firstSystem = newChat.messages[firstSystemIndex];
+      const firstSystem = newChat.messages[firstSystemIndex]!;
       if (firstSystem.content.includes("<insert-system />")) {
         newChat.messages[firstSystemIndex] = {
           ...firstSystem,

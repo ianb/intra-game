@@ -1352,8 +1352,8 @@ function ColorizedText({ text }: { text: string }) {
   const nameRegex = model.world.nameRegex;
   const matches = text.matchAll(nameRegex);
   for (const match of Array.from(matches)) {
-    const matchedWord = match[2]; // This is the captured word from the group
-    const matchIndex = match.index! + match[1].length; // Adjust index to start of the word
+    const matchedWord = match[2]!; // This is the captured word from the group
+    const matchIndex = match.index! + match[1]!.length; // Adjust index to start of the word
 
     if (matchIndex > lastIndex) {
       parts.push(text.substring(lastIndex, matchIndex));

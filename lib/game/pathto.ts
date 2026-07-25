@@ -10,7 +10,7 @@ export function pathTo(
   const queue = [[current]];
   while (queue.length > 0) {
     const path = queue.shift()!;
-    const node = path[path.length - 1];
+    const node = path[path.length - 1]!;
     if (node === dest) {
       // The first element is the current room, so we skip it
       return path.slice(1);

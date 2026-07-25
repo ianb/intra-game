@@ -20,7 +20,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
     if (!nextMatch) {
       // No more tags, the rest is text
       const text = s.slice(pos);
-      const currentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+      const currentTag = stack.length > 0 ? stack[stack.length - 1]!.tag : root;
       currentTag.content += text;
       const trimmedText = text.trim();
       if (trimmedText) {
@@ -40,14 +40,14 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
     const matchStart = pos + nextMatch.index!;
     const matchEnd = matchStart + nextMatch[0].length;
     const isEnd = !!nextMatch[1];
-    const tagName = nextMatch[2];
-    const tagAttrs = nextMatch[3];
+    const tagName = nextMatch[2]!;
+    const tagAttrs = nextMatch[3] ?? "";
     const isSelfClosing = !!nextMatch[4];
 
     // Text before the tag
     if (matchStart > pos) {
       const text = s.slice(pos, matchStart);
-      const currentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+      const currentTag = stack.length > 0 ? stack[stack.length - 1]!.tag : root;
       currentTag.content += text;
       const trimmedText = text.trim();
       if (trimmedText) {
@@ -75,7 +75,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
           currentTag.content = s.slice(currentItem.contentStart, matchStart);
           // Append from startPos to matchEnd to parent content
           const parentTag =
-            stack.length > 0 ? stack[stack.length - 1].tag : root;
+            stack.length > 0 ? stack[stack.length - 1]!.tag : root;
           parentTag.content += s.slice(currentItem.startPos, matchEnd);
           pos = matchEnd;
           break;
@@ -101,7 +101,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
     const newTag: TagType = { type: tagName, attrs, content: "" };
 
     // Append opening tag to parent content
-    const parentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+    const parentTag = stack.length > 0 ? stack[stack.length - 1]!.tag : root;
     parentTag.content += s.slice(matchStart, matchEnd);
 
     // Add newTag to parent subTags
@@ -125,7 +125,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
   while (stack.length > 0) {
     const currentItem = stack.pop()!;
     console.warn("Auto-closing unclosed tag", currentItem.tag.type);
-    const parentTag = stack.length > 0 ? stack[stack.length - 1].tag : root;
+    const parentTag = stack.length > 0 ? stack[stack.length - 1]!.tag : root;
     parentTag.content += s.slice(currentItem.startPos);
   }
 
@@ -144,8 +144,8 @@ function parseAttrs(s: string): Record<string, string> {
   const attrsText = s.trim();
   const attrs: Record<string, string> = {};
   Array.from(attrsText.matchAll(/([^=\s]+)="([^"]*)"/g)).forEach((match) => {
-    const v = match[2];
-    attrs[match[1].trim()] = v;
+    const v = match[2]!;
+    attrs[match[1]!.trim()] = v;
   });
   return attrs;
 }

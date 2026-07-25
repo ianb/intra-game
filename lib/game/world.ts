@@ -138,6 +138,7 @@ export class World {
         );
       }
     }
+    return false;
   }
 
   entityRoom(entityId: string): Room {
@@ -424,7 +425,7 @@ export class World {
      If the given name isn't already an id, it will search
      for entities with that name (case insensitive)
      */
-  makeId(name: string | null): EntityId | null {
+  makeId(name: string | null | undefined): EntityId | null {
     if (!name) {
       return null;
     }
