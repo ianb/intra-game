@@ -4,12 +4,11 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build, context, type BuildOptions } from "esbuild";
 
-// Builds the static site into dist/, which is what Cloudflare serves.
+// Builds the static site into dist/, which is what Cloudflare serves alongside
+// the Worker in worker/.
 //
-// The game is entirely client-side (state lives in browser storage, the LLM is
-// called from the browser), so there is no server build: esbuild bundles the
-// app, the Tailwind CLI builds the stylesheet, and the HTML shell and static
-// assets are copied across.
+// esbuild bundles the app, the Tailwind CLI builds the stylesheet, and the HTML
+// shell, static assets and the generated eval page are copied across.
 //
 //   pnpm build          one-shot production build
 //   pnpm dev            rebuild on change and serve locally
@@ -61,6 +60,14 @@ function copyStatic() {
   cpSync(resolve(root, "app/assets"), resolve(outdir, "assets"), {
     recursive: true,
   });
+  // The eval results, served at /evals/. It is generated and committed by
+  // `pnpm evals`, so this is a copy rather than a build step — the deploy
+  // doesn't need a model, a key, or anything the CF builder doesn't have.
+  mkdirSync(resolve(outdir, "evals"), { recursive: true });
+  cpSync(
+    resolve(root, "evals/index.html"),
+    resolve(outdir, "evals/index.html"),
+  );
 }
 
 async function main() {

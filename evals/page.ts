@@ -1,0 +1,220 @@
+import type { ScenarioResult } from "./harness";
+
+/**
+ * Render the recorded results as a single self-contained HTML page.
+ *
+ * Self-contained on purpose: no build step, no scripts, no fetches. The file
+ * that gets committed is the file that gets served, so it works opened from
+ * disk, published by GitHub Pages, or copied into the deployed site — and it
+ * still works in five years when whatever would have fetched the data is gone.
+ */
+
+export interface ModelRun {
+  model: string;
+  backend: string;
+  scenarios: ScenarioResult[];
+}
+
+export interface ResultsFile {
+  date: string;
+  runs: ModelRun[];
+}
+
+const escapeMap: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+};
+
+function esc(text: string): string {
+  return text.replace(/[&<>"]/g, (c) => escapeMap[c]!);
+}
+
+function scoreClass(passed: number, total: number): string {
+  if (total === 0) return "none";
+  if (passed === total) return "pass";
+  return passed === 0 ? "fail" : "partial";
+}
+
+function scenarioCell(result: ScenarioResult | undefined): string {
+  if (!result) {
+    return `<td class="score none">–</td>`;
+  }
+  const failed = result.checks.filter((c) => !c.passed).map((c) => c.name);
+  const title = failed.length
+    ? `failed: ${failed.join(", ")}`
+    : "all checks passed";
+  return `<td class="score ${scoreClass(result.passed, result.total)}" title="${esc(title)}">${result.passed}/${result.total}</td>`;
+}
+
+function transcriptBlock(run: ModelRun, result: ScenarioResult): string {
+  if (!result.transcript.length) {
+    return "";
+  }
+  const lines = result.transcript
+    .map((line) => {
+      const at = line.indexOf(": ");
+      const who = at === -1 ? "" : line.slice(0, at);
+      const text = at === -1 ? line : line.slice(at + 2);
+      return `<p><span class="who">${esc(who)}</span>${esc(text)}</p>`;
+    })
+    .join("\n");
+  return `
+<details>
+  <summary>${esc(run.model)} — ${esc(result.scenario)} <span class="meta">${result.passed}/${result.total}, ${Math.round(result.ms / 1000)}s</span></summary>
+  <div class="transcript">${lines}</div>
+</details>`;
+}
+
+function runSection(data: ResultsFile, scenarioNames: string[]): string {
+  const header = scenarioNames.map((name) => `<th>${esc(name)}</th>`).join("");
+  const rows = data.runs
+    .map((run) => {
+      const cells = scenarioNames
+        .map((name) =>
+          scenarioCell(run.scenarios.find((s) => s.scenario === name)),
+        )
+        .join("");
+      const passed = run.scenarios.reduce((a, s) => a + s.passed, 0);
+      const total = run.scenarios.reduce((a, s) => a + s.total, 0);
+      const seconds = Math.round(
+        run.scenarios.reduce((a, s) => a + s.ms, 0) / 1000,
+      );
+      return `<tr>
+        <th class="model">${esc(run.model)}<span class="meta">${esc(run.backend)} · ${seconds}s</span></th>
+        ${cells}
+        <td class="score total ${scoreClass(passed, total)}">${passed}/${total}</td>
+      </tr>`;
+    })
+    .join("\n");
+
+  const failures = data.runs.flatMap((run) =>
+    run.scenarios.flatMap((s) =>
+      s.checks
+        .filter((c) => !c.passed)
+        .map(
+          (c) =>
+            `<li><code>${esc(run.model)}</code> <b>${esc(s.scenario)}/${esc(c.name)}</b> — ${esc(c.describe)}</li>`,
+        ),
+    ),
+  );
+
+  const transcripts = data.runs
+    .flatMap((run) => run.scenarios.map((s) => transcriptBlock(run, s)))
+    .join("\n");
+
+  return `
+<section>
+  <h2>${esc(data.date)}</h2>
+  <div class="scroller">
+    <table>
+      <thead><tr><th></th>${header}<th>total</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+  ${
+    failures.length
+      ? `<h3>What failed</h3><ul class="failures">${failures.join("")}</ul>`
+      : `<p class="allclear">Every check passed for every model in this run.</p>`
+  }
+  <h3>Transcripts</h3>
+  <p class="note">What the characters actually said, so a failing check can be
+  checked. A text check that can't be audited after the fact is a claim, not a
+  measurement.</p>
+  ${transcripts}
+</section>`;
+}
+
+export function renderPage(
+  files: ResultsFile[],
+  scenarioNames: string[],
+): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intra — model evals</title>
+<style>${STYLE}</style>
+</head>
+<body>
+<header>
+  <h1>Can a model run this game?</h1>
+  <p>Intra asks a model to stay in character while emitting tags the engine acts
+  on. These runs score whether the engine could act on everything the model said,
+  and whether the game reached the state each scenario aimed at. Nothing here
+  scores whether the writing was any good.</p>
+  <p class="note">Generated from the YAML under <code>evals/results/</code> by
+  <code>pnpm evals</code>. Scenarios and checks are in <code>evals/scenarios.ts</code>.</p>
+</header>
+${files.map((data) => runSection(data, scenarioNames)).join("\n")}
+<footer>
+  <p>Both tiers scored so far pass everything, so these scenarios establish a
+  floor rather than a ceiling — they mark where a model fails this game, not
+  which model plays it best.</p>
+</footer>
+</body>
+</html>
+`;
+}
+
+const STYLE = `
+:root {
+  color-scheme: light dark;
+  --bg: #fbfbf9; --fg: #1a1a1a; --dim: #6b6b6b; --line: #e0dfda;
+  --pass: #1f7a4d; --partial: #a8730a; --fail: #b3261e; --panel: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12141a; --fg: #e6e6e6; --dim: #9098a8; --line: #2a2e38;
+    --pass: #5ed49b; --partial: #e0a94a; --fail: #ff8a80; --panel: #191c24;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
+h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
+     text-transform: uppercase; letter-spacing: .06em; }
+header p { max-width: 46rem; }
+.note, .meta { color: var(--dim); font-size: .85rem; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+.scroller { overflow-x: auto; margin: .5rem 0 1rem; }
+table { width: 100%; border-collapse: collapse; min-width: 30rem; }
+th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
+           color: var(--dim); font-weight: 600; }
+th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
+th.model .meta { display: block; font-weight: 400; font-family: inherit; }
+td.score { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+td.score.pass { color: var(--pass); }
+td.score.partial { color: var(--partial); }
+td.score.fail { color: var(--fail); }
+td.score.none { color: var(--dim); font-weight: 400; }
+td.total { border-left: 1px solid var(--line); }
+ul.failures { margin: 0; padding-left: 1.1rem; }
+ul.failures li { margin: .3rem 0; }
+.allclear { color: var(--dim); }
+details { border: 1px solid var(--line); border-radius: 6px; margin: .4rem 0;
+          background: var(--panel); }
+summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
+          font-family: ui-monospace, monospace; }
+summary .meta { font-family: inherit; }
+.transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
+.transcript p { margin: .55rem 0; }
+.who { display: inline-block; min-width: 5.5rem; color: var(--dim);
+       font-family: ui-monospace, monospace; font-size: .8rem; }
+footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+         color: var(--dim); font-size: .9rem; }
+@media (max-width: 34rem) {
+  .who { display: block; min-width: 0; }
+  body { padding-top: 1.5rem; }
+  th.model { word-break: normal; }
+  summary { font-size: .8rem; }
+}
+`;

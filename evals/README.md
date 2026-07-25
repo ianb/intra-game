@@ -15,10 +15,36 @@ pnpm evals --scenario intake                  # one scenario
 OPENROUTER_API_KEY=sk-or-... pnpm evals --backend openrouter --model openai/gpt-5.2
 ```
 
-Results are written to `results/<date>.json` and rolled up into
-[RESULTS.md](./RESULTS.md). Both are committed — an eval you can't cheaply rerun
-is worth mostly for the record it leaves, and a number with no date on it is
-worth nothing at all.
+Results are written to `results/<date>.yaml` and rolled up into
+[RESULTS.md](./RESULTS.md) and [index.html](./index.html). All three are
+committed — an eval you can't cheaply rerun is worth mostly for the record it
+leaves, and a number with no date on it is worth nothing at all.
+
+`pnpm evals:report` rebuilds the summary and the page from the recorded YAML
+without spending any model calls, which is what to run after editing the page or
+adding a scenario.
+
+## Where the results live
+
+**YAML, not JSON**, because these files are read in diffs as much as by
+machines. A transcript comes out as a block scalar rather than one long line
+with escaped newlines, so a model saying something different shows up as a
+changed line rather than a changed blob.
+
+The page is **self-contained HTML with the data inlined** — no scripts, no
+fetches, no build step. The file that's committed is the file that's served, so
+it works three ways with no extra machinery:
+
+- opened straight from disk
+- at `/evals/` on the deployed site — `pnpm build` copies it into `dist/`, so it
+  ships with the game on the same push, with nothing for the Cloudflare builder
+  to run
+- on GitHub Pages, if you want it public: Settings → Pages → deploy from `main`,
+  folder `/evals`. No workflow, because there is nothing to build.
+
+Worth knowing which you want: the deployed site sits behind Cloudflare Access
+(see [docs/deploying.md](../docs/deploying.md)), so `/evals/` there is private to
+you. Pages is the route if these numbers should be public.
 
 ## What gets scored
 
