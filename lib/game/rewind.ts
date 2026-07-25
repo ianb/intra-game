@@ -47,5 +47,5 @@ export function lastTurnLength(live: StoryEventType[]): number {
 
 /** A story event that came from the player typing something. */
 export function isUserInput(update: StoryEventType): boolean {
-  return !!(update.id === "player" && update.llmParameters?.input);
+  return !!(update.id === "PLAYER" && update.llmParameters?.input);
 }

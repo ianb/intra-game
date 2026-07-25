@@ -43,7 +43,7 @@ A fresh model starts the player in the Intake room, with an empty stream:
 
 ```ts
 const model = new Model(entities, { chat: scriptedChat({}) });
-model.world.entities.player.inside;
+model.world.entities.PLAYER.inside;
 => Intake
 
 model.updates.value.length;
@@ -87,6 +87,6 @@ model.updates.value.length > 0;
 => true
 
 const positions = model.updatesWithPositions.value.at(-1)!.positions;
-positions.get("player");
+positions.get("PLAYER");
 => Intake
 ```

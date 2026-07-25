@@ -36,7 +36,7 @@ for (const input of INTAKE.inputs) {
   await settle();
 }
 
-const player = model.world.entities.player;
+const player = model.world.entities.PLAYER;
 const ama = model.world.entities.Ama;
 ```
 

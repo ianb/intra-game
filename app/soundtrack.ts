@@ -12,7 +12,7 @@ effect(() => {
   // Touch the update stream so this effect re-runs on every story change.
   void model.updates.value;
   setTimeout(() => {
-    const currentRoom = model.world.getRoom(model.world.entities.player.inside);
+    const currentRoom = model.world.getRoom(model.world.entities.PLAYER.inside);
     const url = currentRoom?.soundtrack?.url;
     soundtrackPlayer.playUrl(url ? convertSoundtrackUrl(url) : null);
   });

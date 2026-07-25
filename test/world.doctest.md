@@ -37,7 +37,7 @@ starts in Intake — and Ama, who is nested _inside_ the player, resolves to the
 same room:
 
 ```ts
-world.entityRoom("player").id;
+world.entityRoom("PLAYER").id;
 => Intake
 
 world.entityRoom("Ama").id;
@@ -47,7 +47,7 @@ world.entityRoom("Ama").id;
 `isInside` reports containment directly, including that nesting:
 
 ```ts
-[world.isInside("player", "Intake"), world.isInside("Ama", "player")].join(" ");
+[world.isInside("PLAYER", "Intake"), world.isInside("Ama", "PLAYER")].join(" ");
 => true true
 ```
 

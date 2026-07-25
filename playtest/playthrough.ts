@@ -72,7 +72,7 @@ async function main() {
   }
 
   console.log(
-    `\n=== Done. ${model.updates.value.length} events, player in ${model.world.entities.player.inside}, ${model.world.timeOfDay} ===`
+    `\n=== Done. ${model.updates.value.length} events, player in ${model.world.entities.PLAYER.inside}, ${model.world.timeOfDay} ===`
   );
 }
 

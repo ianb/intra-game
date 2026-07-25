@@ -38,7 +38,7 @@ async function record(scenario: Scenario) {
   }
   restore();
 
-  const player = model.world.entities.player;
+  const player = model.world.entities.PLAYER;
   const ama = model.world.entities.Ama;
   console.log(
     "final state:",

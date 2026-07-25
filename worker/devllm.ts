@@ -33,7 +33,7 @@ function cannedResponse(request: ChatType): string {
   if (title === "player examine") {
     return `<description minutes="1">A developer-mode room, sketched in low detail.</description>`;
   }
-  return `<dialog character="Ama" to="player">This is developer mode; I am not really thinking.</dialog>`;
+  return `<dialog character="Ama" to="PLAYER">This is developer mode; I am not really thinking.</dialog>`;
 }
 
 function escapeText(s: string): string {

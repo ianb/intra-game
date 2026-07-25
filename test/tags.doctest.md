@@ -37,9 +37,9 @@ function apply(response: string, extra: Record<string, unknown> = {}) {
 entity, and `to=` is resolved to an entity id:
 
 ```ts
-const { event } = apply(`<dialog character="Ama" to="player">Welcome home.</dialog>`);
+const { event } = apply(`<dialog character="Ama" to="PLAYER">Welcome home.</dialog>`);
 JSON.stringify(event.actions[0]);
-=> {"type":"dialog","id":"Ama","toId":"player","text":"Welcome home."}
+=> {"type":"dialog","id":"Ama","toId":"PLAYER","text":"Welcome home."}
 ```
 
 Speaking costs time, so conversation advances the clock:
@@ -82,7 +82,7 @@ JSON.stringify(event.changes.Ama);
 The guard from `coerce.ts` applies here, so a non-answer never lands:
 
 ```ts
-JSON.stringify(apply(`<set attr="player.name">unknown</set>`).event.changes);
+JSON.stringify(apply(`<set attr="PLAYER.name">unknown</set>`).event.changes);
 => {}
 ```
 

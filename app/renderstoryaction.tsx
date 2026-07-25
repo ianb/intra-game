@@ -46,10 +46,10 @@ function renderArchivistAction(
   if (isStoryDialog(action)) {
     if (
       !action.toId ||
-      action.toId === "player" ||
+      action.toId === "PLAYER" ||
       action.toId === "Archivist"
     ) {
-      if (storyEvent.id === "player") {
+      if (storyEvent.id === "PLAYER") {
         return <WithBlinkingCursor>{action.text}</WithBlinkingCursor>;
       }
       const text = action.text.trim().replace(/^`+/, "").replace(/`+$/, "").trim();

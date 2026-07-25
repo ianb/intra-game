@@ -193,7 +193,7 @@ export class Model {
     let personEvents = 0;
     for (let i = this.liveUpdates.value.length - 1; i >= 0; i--) {
       const update = this.liveUpdates.value[i]!;
-      if (update.id === "player") {
+      if (update.id === "PLAYER") {
         playerEvents++;
       } else if (update.id === person.id) {
         personEvents++;
@@ -361,7 +361,7 @@ export class Model {
   }
 
   checkLaunch() {
-    if (!this.world.entities.player.launched) {
+    if (!this.world.entities.PLAYER.launched) {
       const schedules = this.world.setupDailySchedules();
       const scheduleChanges = Object.fromEntries(
         Object.entries(schedules)
@@ -399,7 +399,7 @@ export class Model {
         totalTime: 0,
         roomId: "Intake",
         changes: {
-          player: {
+          PLAYER: {
             before: {
               launched: false,
             },
@@ -427,7 +427,7 @@ export class Model {
       this.nextRollOverride = parsed.roll;
     }
     if (parsed.text) {
-      const player = this.world.entities.player;
+      const player = this.world.entities.PLAYER;
       await this.run(() => player.executePrompt(this, { input: parsed.text }));
       await this.run(() => this.scheduleTick());
     }

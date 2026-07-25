@@ -1,4 +1,5 @@
 import { model as gameModel } from "./model";
+import { migratePlayerId } from "@/lib/game/migrate";
 import type { Model } from "@/lib/game/model";
 import { listSaves, load, removeSave, save } from "./localsaves";
 
@@ -13,7 +14,7 @@ export interface SaveListType {
 }
 
 export function proposeSaveTitle(model: Model = gameModel): string {
-  return `${model.world.entities.player.name} ${formatDate(new Date())}`;
+  return `${model.world.entities.PLAYER.name} ${formatDate(new Date())}`;
 }
 
 export function saveGame(title: string, model: Model = gameModel): void {
@@ -21,7 +22,7 @@ export function saveGame(title: string, model: Model = gameModel): void {
 }
 
 export function loadGame(slug: string, model: Model = gameModel): void {
-  model.replaceLog(load(slug));
+  model.replaceLog(migratePlayerId(load(slug)));
 }
 
 export function listSavedGames(): SaveListType[] {

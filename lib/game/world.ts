@@ -255,7 +255,7 @@ export class World {
       }
       entity.applyChange(changes);
       if (
-        entityId === "player" &&
+        entityId === "PLAYER" &&
         changes.after.inside &&
         changes.before.inside !== changes.after.inside
       ) {
@@ -319,7 +319,7 @@ export class World {
       }
     }
     if (lowerName === "you") {
-      return "player";
+      return "PLAYER";
     }
     return null;
   }

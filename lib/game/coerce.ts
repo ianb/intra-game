@@ -50,7 +50,7 @@ export function fixupText(llmText: string) {
  * Should a `<set attr="...">` from the model be allowed to land?
  *
  * Guards the few properties where the model likes to write a non-answer instead
- * of omitting the tag — a profession of "unknown", or a name of "player". For
+ * of omitting the tag — a profession of "unknown", or a name of "PLAYER". For
  * pronouns only the three supported sets are accepted, since anything else
  * would break the pronoun lookup downstream.
  */
@@ -65,6 +65,8 @@ export function isValidPropertySet(key: string, value: unknown) {
     return v !== "unspecified" && v !== "unknown";
   } else if (key === "name") {
     return (
+      // `v` is already lowercased, so this catches "PLAYER" — the marker the
+      // prompts use for the player — as well as a literal "player".
       v !== "unspecified" && v !== "unknown" && v !== "player" && v !== "you"
     );
   }

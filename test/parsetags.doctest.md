@@ -1,7 +1,7 @@
 # Parsing LLM tag output
 
 The LLM never emits real HTML or XML — it emits _tag-shaped_ output like
-`<dialog character="Ama">...</dialog>` and `<set attr="player.name">...</set>`
+`<dialog character="Ama">...</dialog>` and `<set attr="PLAYER.name">...</set>`
 that the engine parses into game actions. `parseTags` is the permissive parser
 that turns that text into a tree of `TagType` nodes, and `unfoldTags` flattens a
 tree so that action tags buried inside a container (like `<dialog>`) surface as
@@ -181,7 +181,7 @@ question answering
 <dialog character="Ama">
 para1
 
-para2_start <set attr="player.profession">internet troll</set> para2_end
+para2_start <set attr="PLAYER.profession">internet troll</set> para2_end
 </dialog>
 `;
 const unfolded = unfoldTags(parseTags(input), {
@@ -211,7 +211,7 @@ unfolded[2]
 => {
   "type": "set",
   "attrs": {
-    "attr": "player.profession"
+    "attr": "PLAYER.profession"
   },
   "content": "internet troll"
 }

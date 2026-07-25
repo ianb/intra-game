@@ -583,7 +583,7 @@ export class Person<
       const update = this.world.model.liveUpdates.value[i]!;
       if (update.id === this.id) {
         for (const action of update.actions) {
-          if (isStoryDialog(action) && action.toId === "player") {
+          if (isStoryDialog(action) && action.toId === "PLAYER") {
             hasInteracted = true;
             break;
           }
@@ -608,7 +608,7 @@ export class Person<
 
           In this step you will be playing the part of a character named "${this.name}" (${this.pronouns}).
 
-          The human is playing a character referred to below as PLAYER, whose entity id is "player" (as in <set attr="player.name">). PLAYER's name and pronouns are given further down, and may change as ${this.name} learns them.
+          The human plays the character PLAYER — that is an id, used as-is in tags (as in <set attr="PLAYER.name">). PLAYER's name and pronouns are given further down, and may change as ${this.name} learns them.
 
           <characterDescription>
           ${this.description}
@@ -624,7 +624,7 @@ export class Person<
 
           [Everything above is fixed for this character. Everything below changes as the game is played.]
 
-          PLAYER is currently known as "${this.world.entities.player.name}" (${this.world.entities.player.pronouns}).
+          PLAYER is currently known as "${this.world.entities.PLAYER.name}" (${this.world.entities.PLAYER.pronouns}).
 
           The time is ${timeAsString(this.world.timestampMinutes)}
           ${this.name} is currently in the room "${this.myRoom().name}": ${this.myRoom().shortDescription}
@@ -730,7 +730,7 @@ export class Person<
       .some((x) => x.text.includes(this.id) || x.text.includes(this.name));
     const schedule = scheduleForTime(this, this.world.timestampMinutes);
     const isAttentive = !!schedule?.attentive;
-    if (storyEvent.id !== "player") {
+    if (storyEvent.id !== "PLAYER") {
       return undefined;
     }
     if (
@@ -746,9 +746,9 @@ export class Person<
     if (afterInside) {
       myRoom = this.world.getRoom(afterInside)!;
     }
-    const playerRoom = this.world.entityRoom("player");
+    const playerRoom = this.world.entityRoom("PLAYER");
     if (triggerText === undefined) {
-      if (storyEvent.changes?.player?.after?.inside) {
+      if (storyEvent.changes?.PLAYER?.after?.inside) {
         // Just don't chat with the player if they are moving around...
         return undefined;
       }
@@ -895,7 +895,7 @@ export class AmaClass extends Person<AmaParametersType> {
   override id = "Ama";
   override pronouns = "she/her";
   override color = "text-sky-300";
-  override inside = "player";
+  override inside = "PLAYER";
   override invisible = true;
 
   personality = "intro";
@@ -923,10 +923,10 @@ export class AmaClass extends Person<AmaParametersType> {
 
   override onStoryEvent(storyEvent: StoryEventType) {
     const result: ActionRequestType[] = [];
-    if (storyEvent?.changes.player?.after?.launched) {
+    if (storyEvent?.changes.PLAYER?.after?.launched) {
       if (
-        storyEvent.changes.player.before.launched === false &&
-        storyEvent.changes.player.after.launched === true
+        storyEvent.changes.PLAYER.before.launched === false &&
+        storyEvent.changes.PLAYER.after.launched === true
       ) {
         result.push(
           {
@@ -1078,7 +1078,7 @@ export class AmaClass extends Person<AmaParametersType> {
       }
     }
     if (
-      storyEvent.changes.player?.after?.inside === "Hollow_Atrium" &&
+      storyEvent.changes.PLAYER?.after?.inside === "Hollow_Atrium" &&
       this.world.entities.Hollow_Atrium.visits === 0
     ) {
       // First visit outside Intake, so give the player their first mystery
@@ -1094,7 +1094,7 @@ export class AmaClass extends Person<AmaParametersType> {
           {
             type: "dialog",
             id: this.id,
-            toId: "player",
+            toId: "PLAYER",
             text: m.introduction,
           },
         ],
@@ -1103,7 +1103,7 @@ export class AmaClass extends Person<AmaParametersType> {
     if (!result.find((x) => isPromptRequest(x))) {
       result.push(...(super.onStoryEvent(storyEvent) || []));
     }
-    if (!result.find((x) => isPromptRequest(x)) && storyEvent.id === "player") {
+    if (!result.find((x) => isPromptRequest(x)) && storyEvent.id === "PLAYER") {
       if (this.playerShouldBeInBed() && !this.playerIsInBed()) {
         // Ama wants you to be in bed!
         result.push(this.makePromptRequest({}));
@@ -1119,18 +1119,18 @@ export class AmaClass extends Person<AmaParametersType> {
   }
 
   playerIsInBed() {
-    return this.world.entities.player.inside === "Quarters_Yours";
+    return this.world.entities.PLAYER.inside === "Quarters_Yours";
   }
 
   override additionalPromptInstructions(parameters: AmaParametersType): string {
-    const player = this.world.entities.player;
+    const player = this.world.entities.PLAYER;
     if (parameters.prompt === "goExplore") {
-      const player = this.world.entities.player;
+      const player = this.world.entities.PLAYER;
       return tmpl`
       Ama has completed the intake process. She should now encourage the player to explore the Intra complex.
 
       Add this response to invent a very short description of the player given what you know:
-      <set attr="player.shortDescription">a very brief description</set>
+      <set attr="PLAYER.shortDescription">a very brief description</set>
 
       After that Ama MUST announce the introduction of the new citizen, ${player.name}, to the entire Intra complex like:
 
@@ -1140,7 +1140,7 @@ export class AmaClass extends Person<AmaParametersType> {
 
       [[${IF(parameters.prompt === "goExplore")}Create a very brief description of the player based on what you know, by adding the response:
 
-      <set attr="player.shortDescription">[1-2 sentences]</set>]]
+      <set attr="PLAYER.shortDescription">[1-2 sentences]</set>]]
       `;
     }
     if (parameters.prompt === "wakeup") {
@@ -1161,15 +1161,15 @@ export class AmaClass extends Person<AmaParametersType> {
       [[${IF(!this.knowsPlayerName)}PLAYER NAME: If the player indicates their name or corrects you about their name, change this. Before Ama knows the player's name she might say something like: "Welcome back, Citizen. It seems you were displaced, but no matter—I've retrieved your dossier. Ah, yes. According to my records, your name is... Stanley Johnson. No, no, wait—Sandra Jansen, perhaps?"
 
       IF you determine the name add this to the response:
-      <set attr="player.name">the player's name</set>]]
+      <set attr="PLAYER.name">the player's name</set>]]
 
       [[${IF(!this.knowsPlayerPronouns)}PLAYER PRONOUNS: If the player gives their name you can infer their pronouns if the name is clearly gendered; also set this if the player specifies their pronouns. IF you learn or guess the pronouns respond:
 
-      <set attr="player.pronouns">they/them</set>]]
+      <set attr="PLAYER.pronouns">they/them</set>]]
 
       [[${IF(askPlayerProfession)}PLAYER PROFESSION: Ama should ask the player their general profession. ONLY IN RESPONSE TO THE PLAYER, if the player has indicated their profession (or unemployed, student, etc) then add the response:
 
-      <set attr="player.profession">the player's profession</set>]]
+      <set attr="PLAYER.profession">the player's profession</set>]]
 
       [[${IF(!this.sharedSelf)}AMA INTRO: Ama should introduce herself (Ama) to the player. Include these details:
       1. Ama is named Ama, pronounced Ah-ma
@@ -1210,12 +1210,12 @@ export class AmaClass extends Person<AmaParametersType> {
 
       Ama's priority is to complete intake. Here are the important steps that you should go through in order:
 
-      [[${IF(!this.knowsPlayerName)}* Ask the player's name, and if the player gives their name add the response <set attr="player.name">...</set>]]
-      [[${IF(!this.knowsPlayerPronouns)}* The player's pronouns have not been established; you can guess them based on the player's name or ask. Once you know add the response <set attr="player.pronouns">...</set>]]
+      [[${IF(!this.knowsPlayerName)}* Ask the player's name, and if the player gives their name add the response <set attr="PLAYER.name">...</set>]]
+      [[${IF(!this.knowsPlayerPronouns)}* The player's pronouns have not been established; you can guess them based on the player's name or ask. Once you know add the response <set attr="PLAYER.pronouns">...</set>]]
       [[${IF(!this.sharedSelf)}* Introduce Ama to the player. Once Ama has introduced herself add the response <set attr="Ama.sharedSelf">true</set>]]
       [[${IF(!this.sharedIntra)}* Introduce Intra to the player. Once Ama has introduced Intra add the response <set attr="Ama.sharedIntra">true</set>]]
       [[${IF(askDisassociation)}* Introduce disassociation to the player. Once Ama has explained disassociation add the response <set attr="Ama.sharedDisassociation">true</set>]]
-      [[${IF(askPlayerProfession)}* Ask the player's profession, and if the player gives their profession add the response <set attr="player.profession">...</set>]]
+      [[${IF(askPlayerProfession)}* Ask the player's profession, and if the player gives their profession add the response <set attr="PLAYER.profession">...</set>]]
       [[${IF(sharePlayerAge)}* Share the player's age with them. Once Ama has shared the player's age add the response <set attr="Ama.sharedPlayerAge">true</set>]]
 
       Stay focused on completing these tasks and add the response <set> if you complete a step.
@@ -1227,7 +1227,7 @@ export class AmaClass extends Person<AmaParametersType> {
     if (getToBed) {
       const path = pathTo(
         this.world,
-        this.world.entities.player.inside,
+        this.world.entities.PLAYER.inside,
         "Quarters_Yours"
       );
       if (!path.length) {
@@ -1262,7 +1262,7 @@ export class AmaClass extends Person<AmaParametersType> {
       "This is a list of ALL people in the Intra Complex:",
     ];
     for (const person of this.world.allPeople()) {
-      if (person.invisible || person.id === "player" || person.id === this.id) {
+      if (person.invisible || person.id === "PLAYER" || person.id === this.id) {
         continue;
       }
       info.push(
@@ -1292,7 +1292,7 @@ export class AmaClass extends Person<AmaParametersType> {
     }
     const lines: string[] = ["Where everyone is right now:"];
     for (const person of this.world.allPeople()) {
-      if (person.invisible || person.id === "player" || person.id === this.id) {
+      if (person.invisible || person.id === "PLAYER" || person.id === this.id) {
         continue;
       }
       lines.push(`- ${person.name} is in ${person.inside}`);
@@ -1302,9 +1302,9 @@ export class AmaClass extends Person<AmaParametersType> {
 
   override afterPrompt(storyEvent: StoryEventType): StoryEventType {
     if (
-      storyEvent.changes.player?.after?.name ||
-      storyEvent.changes.player?.after?.pronouns ||
-      storyEvent.changes.player?.after?.profession
+      storyEvent.changes.PLAYER?.after?.name ||
+      storyEvent.changes.PLAYER?.after?.pronouns ||
+      storyEvent.changes.PLAYER?.after?.profession
     ) {
       if (!storyEvent.changes.Ama) {
         storyEvent.changes.Ama = {
@@ -1314,12 +1314,12 @@ export class AmaClass extends Person<AmaParametersType> {
       }
     }
     const ama = storyEvent.changes.Ama;
-    if (storyEvent.changes.player?.after?.name && !this.knowsPlayerName && ama) {
+    if (storyEvent.changes.PLAYER?.after?.name && !this.knowsPlayerName && ama) {
       ama.before.knowsPlayerName = false;
       ama.after.knowsPlayerName = true;
     }
     if (
-      storyEvent.changes.player?.after?.pronouns &&
+      storyEvent.changes.PLAYER?.after?.pronouns &&
       !this.knowsPlayerPronouns &&
       ama
     ) {
@@ -1327,7 +1327,7 @@ export class AmaClass extends Person<AmaParametersType> {
       ama.after.knowsPlayerPronouns = true;
     }
     if (
-      storyEvent.changes.player?.after?.profession &&
+      storyEvent.changes.PLAYER?.after?.profession &&
       !this.knowsPlayerProfession &&
       ama
     ) {
@@ -1348,7 +1348,7 @@ export type PlayerInputType = ParametersType & {
 export class PlayerClass extends Person<PlayerInputType> {
   override type = "person/player";
   override name = "You";
-  override id = "player";
+  override id = "PLAYER";
   override pronouns = "they/them";
   override color = "text-emerald-400";
   override inside = "Intake";
@@ -1380,7 +1380,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           content: tmpl`
           You are a computer assisting in running a text adventure game.
 
-          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}". The user has entered a command, and you will be interpreting that command in the context of the game.
+          The user controls the character PLAYER — that is an id, used as-is in tags — whose name is currently "${this.name}". The user has entered a command, and you will be interpreting that command in the context of the game.
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1413,17 +1413,17 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           The most likely case is that the player is speaking. For instance if they type \`hello\` you will respond with:
 
-          <dialog character="player">Hello!</dialog>
+          <dialog character="PLAYER">Hello!</dialog>
 
           If you can determine _who_ the player is speaking to, such as if they type "say hello to ${lastTo || "Jim"}" or "${lastTo || "Jim"}, hello" you can respond with:
 
-          <dialog character="player" to="${lastTo || "Jim"}">Hello</dialog>
+          <dialog character="PLAYER" to="${lastTo || "Jim"}">Hello</dialog>
 
           [[The player last spoke directly to ${lastTo}, so it's very likely the player is still speaking to them.]]
 
           If the user indicates some general speech (like typing "compliment") then you can expand this to specific speech like:
 
-          <dialog character="player">You look great today!</dialog>
+          <dialog character="PLAYER">You look great today!</dialog>
 
           IF AND ONLY IF THE USER INDICATES AN ACTION (that is not covered by <goto></goto>) you may describe the ATTEMPT at the action like:
 
@@ -1493,7 +1493,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           content: tmpl`
           You are a computer assisting in running a text adventure game.
 
-          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}".
+          The user controls the character PLAYER — that is an id, used as-is in tags — whose name is currently "${this.name}".
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1548,7 +1548,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           content: tmpl`
           You are a computer assisting in running a text adventure game.
 
-          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}".
+          The user controls the character PLAYER — that is an id, used as-is in tags — whose name is currently "${this.name}".
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1607,7 +1607,7 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           The genre is absurd and comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the movie Brazil.
 
-          The user controls a character in the game, referred to here as PLAYER, whose entity id is "player" and whose name is currently "${this.name}".
+          The user controls the character PLAYER — that is an id, used as-is in tags — whose name is currently "${this.name}".
 
           The player is located in: ${this.currentLocationPrompt(parameters)}
 
@@ -1738,7 +1738,7 @@ export class PlayerClass extends Person<PlayerInputType> {
         // The action resolution should have added a description of the failure
         return storyEvent;
       }
-      storyEvent.changes.player = {
+      storyEvent.changes.PLAYER = {
         before: {
           inside: currentRoom?.id,
         },
@@ -1904,7 +1904,7 @@ export class NarratorClass extends Entity {
   override color = "text-gray-300";
   override shortDescription = "The unseen narrator of the story.";
   override description = "";
-  override inside = "player";
+  override inside = "PLAYER";
   override invisible = true;
 }
 

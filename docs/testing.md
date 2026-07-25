@@ -29,7 +29,7 @@ payloads, disabled inline where they're declared. Two escape hatches keep it
 that way, and new code should reach for them rather than a local `as any`:
 
 - **`lib/game/dynamic.ts`** for the entity model's dynamism — `<set
-attr="player.name">` addressing a field by string, or indexing the world by
+attr="PLAYER.name">` addressing a field by string, or indexing the world by
   entity id. `fieldsOf(entity)` and `entitiesById(entities)`.
 - **`lib/debugglobal.ts`** for hanging something off `window` to poke at from
   the console. `exposeGlobal(name, value)` is a no-op outside the browser, so

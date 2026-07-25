@@ -177,7 +177,7 @@ export function updateToHistory(
   }
   return [
     {
-      role: update.id === "player" ? "user" : "assistant",
+      role: update.id === "PLAYER" ? "user" : "assistant",
       content: parts.join("\n\n"),
     },
   ];

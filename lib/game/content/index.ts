@@ -69,8 +69,8 @@ import {
  */
 export const entities = {
   // Special characters, whose behaviour is a class rather than a description:
-  player: new PlayerClass({ id: "player", inside: "Intake" }),
-  Ama: new AmaClass({ id: "Ama", inside: "player" }),
+  PLAYER: new PlayerClass({ id: "PLAYER", inside: "Intake" }),
+  Ama: new AmaClass({ id: "Ama", inside: "PLAYER" }),
   narrator: new NarratorClass({ id: "narrator" }),
 
   // Characters (./people.ts):

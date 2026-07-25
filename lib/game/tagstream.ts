@@ -6,7 +6,7 @@ import { parseAttrs } from "../parsetags";
  * The tag protocol is naturally streamable — tags close one at a time — but not
  * every tag can be shown as it arrives. Narrative tags (`<dialog>`,
  * `<description>`) are exactly what a player wants to watch appear. State
- * mutations are not: half of `<set attr="player.name">Ada Quill</set>` would set
+ * mutations are not: half of `<set attr="PLAYER.name">Ada Quill</set>` would set
  * the name to "Ad". So mutating tags surface only once complete.
  *
  * Two things this deliberately does NOT do:

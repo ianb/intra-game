@@ -13,7 +13,7 @@ import type { World } from "@/lib/game/world";
 export function asGraphviz(world: World, fullMap = false): string {
   const roomList: string[] = [];
   const connectionList: string[] = [];
-  const playerRoom = world.entityRoom("player");
+  const playerRoom = world.entityRoom("PLAYER");
   exposeGlobal("colors", colors);
   const allRooms = world.rooms.filter((room) => {
     return !world.getRoom(room)?.excludeFromMap && room !== playerRoom.id;

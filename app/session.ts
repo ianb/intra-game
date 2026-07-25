@@ -152,7 +152,7 @@ export async function initSession(): Promise<void> {
     return;
   }
   try {
-    await createSession(session, { email: "player" });
+    await createSession(session, { email: "PLAYER" });
     const { events } = await fetchEvents(session);
     model.adoptRemoteLog(events);
   } catch (e) {

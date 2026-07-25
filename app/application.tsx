@@ -441,7 +441,7 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
     <div
       className={twMerge(
         entity?.color,
-        entity?.id === "player" && "border-l-2 pl-2 border-emerald-300"
+        entity?.id === "PLAYER" && "border-l-2 pl-2 border-emerald-300"
       )}
     >
       {entity?.id !== "entity:narrator" && (
@@ -459,9 +459,9 @@ function ChatLogMovement({
 }) {
   useSignals();
   const children: React.ReactNode[] = [];
-  const playerPos = eventPos.positions.get("player");
+  const playerPos = eventPos.positions.get("PLAYER");
   for (const [entityId, changes] of Object.entries(eventPos.event.changes)) {
-    if (entityId === "player") {
+    if (entityId === "PLAYER") {
       continue;
     }
     const before = changes?.before?.inside;
@@ -719,7 +719,7 @@ function Inventory() {
   useSignals();
   // This is *based* on updates, so I'm using this to keep it updated:
   const _updates = model.updates.value;
-  const _player = model.world.entities.player;
+  const _player = model.world.entities.PLAYER;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Inventory</div>
@@ -732,7 +732,7 @@ function Inventory() {
 function AccessControl() {
   useSignals();
   const _updates = model.updates.value;
-  const _player = model.world.entities.player;
+  const _player = model.world.entities.PLAYER;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Access Control</div>
@@ -744,7 +744,7 @@ function AccessControl() {
 function Blips() {
   useSignals();
   const _updates = model.updates.value;
-  const _player = model.world.entities.player;
+  const _player = model.world.entities.PLAYER;
   return (
     <div className="flex-1 p-4">
       <div className="mb-2">Blips</div>
@@ -805,12 +805,12 @@ function Controls() {
 
 function NormalControls() {
   useSignals();
-  const room = model.world.entityRoom("player")!;
+  const room = model.world.entityRoom("PLAYER")!;
   // FIXME: actually collect the people:
   const folks: Person[] = model.world
     .entitiesInRoom(room)
     .filter((x) => isPerson(x))
-    .filter((x) => !x.invisible && x.id !== "player");
+    .filter((x) => !x.invisible && x.id !== "PLAYER");
   function onConverse(entity: Person) {
     if (!textareaRef?.current) {
       return;

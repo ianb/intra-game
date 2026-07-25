@@ -68,7 +68,7 @@ are rejected so they never land in the game state:
 [
   isValidPropertySet("name", "Ada Quill"),
   isValidPropertySet("name", "unknown"),
-  isValidPropertySet("name", "player"),
+  isValidPropertySet("name", "PLAYER"),
   isValidPropertySet("name", "You"),
 ].join(" ");
 => true false false false

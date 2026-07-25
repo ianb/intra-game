@@ -3,7 +3,7 @@
 The tag protocol is naturally streamable — tags close one at a time — but not
 everything can be shown while it's still arriving. Narrative tags are exactly
 what a player wants to watch appear; state mutations are not, because half of
-`<set attr="player.name">Ada Quill</set>` would set the name to "Ad".
+`<set attr="PLAYER.name">Ada Quill</set>` would set the name to "Ad".
 
 So `TagStreamParser` streams narrative tags and holds mutating ones until they
 complete, and the two states are distinct types so a partial can't be mistaken
@@ -48,7 +48,7 @@ A `<set>` produces exactly one event — its close. There is no point at which a
 consumer could see a half-written value:
 
 ```ts
-stream([`<set attr="player.name">Ada Quill</set>`]);
+stream([`<set attr="PLAYER.name">Ada Quill</set>`]);
 => [
   "close set \"Ada Quill\""
 ]

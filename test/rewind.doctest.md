@@ -16,7 +16,7 @@ import type { StoryEventType } from "../lib/types.js";
 // A player turn: the input event, then whatever it caused.
 function input(text: string): StoryEventType {
   return {
-    id: "player", roomId: "Intake", totalTime: 0, changes: {}, actions: [],
+    id: "PLAYER", roomId: "Intake", totalTime: 0, changes: {}, actions: [],
     llmParameters: { input: text },
   };
 }
@@ -35,7 +35,7 @@ const ids = (events: StoryEventType[]) => events.map((e) => e.id).join(", ");
 ```ts
 const log = [input("hello"), reply("Ama")];
 ids(applyRewinds(log));
-=> player, Ama
+=> PLAYER, Ama
 ```
 
 ## A rewind hides the events it supersedes — and itself
@@ -46,7 +46,7 @@ what came before:
 ```ts
 const log = [input("first"), reply("Ama"), input("second"), reply("Ama"), rewind(2)];
 ids(applyRewinds(log));
-=> player, Ama
+=> PLAYER, Ama
 ```
 
 The log itself is untouched — nothing was deleted, which is the point:

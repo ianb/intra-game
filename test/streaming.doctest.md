@@ -26,7 +26,7 @@ async function settle(model: Model) {
   while (model.runningSignal.value) await new Promise((r) => setTimeout(r, 10));
 }
 
-const AMA_REPLY = `<dialog character="Ama" to="player">Welcome home, dear one.</dialog>`;
+const AMA_REPLY = `<dialog character="Ama" to="PLAYER">Welcome home, dear one.</dialog>`;
 ```
 
 ## Text appears progressively

@@ -77,9 +77,9 @@ removed to avoid that feedback loop:
 
 ```ts
 const world = worldWith([
-  dialog("Intake", "player", "Hello there \u{1F600} friend ☀"),
+  dialog("Intake", "PLAYER", "Hello there \u{1F600} friend ☀"),
 ]);
-const message = historyForEntity(world.getPerson("player")!)[0]!;
+const message = historyForEntity(world.getPerson("PLAYER")!)[0]!;
 message.role;
 => user
 

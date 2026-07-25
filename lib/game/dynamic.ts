@@ -4,7 +4,7 @@ import type { Entity } from "./classes";
 /**
  * The blessed places where the entity model's dynamism is expressed.
  *
- * The game is deliberately dynamic in two ways: `<set attr="player.name">` can
+ * The game is deliberately dynamic in two ways: `<set attr="PLAYER.name">` can
  * address any field on any entity by string, and the world is one big named
  * object that gets indexed by entity id. Both need a cast to express in
  * TypeScript. Keeping those casts here — rather than sprinkling `as any`
