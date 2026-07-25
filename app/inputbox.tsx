@@ -6,7 +6,7 @@
 import React, { KeyboardEvent, useEffect, useRef } from "react";
 import { A, Button, CheckButton } from "@/components/input";
 import { effect, signal, useSignal } from "@preact/signals-react";
-import { initSession, playTurn } from "./session";
+import { initSession, playTurn, redoTurn, undoTurn } from "./session";
 import { model } from "./model";
 import { composer } from "./uistate";
 import { twMerge } from "tailwind-merge";
@@ -63,11 +63,11 @@ export function Input() {
       return;
     }
     if (event.shiftKey) {
-      // Perform the special behavior for shift-click
-      await model.redo();
+      // Shift-click undoes and replays, for when the model just needs another go.
+      await redoTurn();
       return;
     }
-    const lastInput = model.undo();
+    const lastInput = await undoTurn();
     if (lastInput) {
       textareaRef.current!.value = lastInput;
     }

@@ -1,6 +1,7 @@
 import type { StreamingTagState } from "@/lib/game/model";
 import { lastLlmError } from "@/lib/llm";
 import { persistentSignal } from "@/lib/persistentsignal";
+import { lastTurnInput, lastTurnLength } from "@/lib/game/rewind";
 import { model } from "./model";
 import { readSse } from "@/lib/ssestream";
 import type { StoryEventType } from "@/lib/types";
@@ -139,6 +140,38 @@ export async function playTurn(text: string): Promise<string | undefined> {
     model.streaming.value = null;
   }
   return undefined;
+}
+
+/**
+ * Undo the last turn, wherever this game runs.
+ *
+ * Locally that is a direct call on the model. Remotely it has to go through the
+ * same path as a turn: the server owns the log, and a client that appends its
+ * own rewind marker would hide a turn the server still believes in — they would
+ * disagree on the next move, and a reload would bring the undone turn back.
+ *
+ * Returns what the player typed on the undone turn, which the input box puts
+ * back so they can rephrase. That is read from the local mirror of the log in
+ * both modes, because the client has it either way.
+ */
+export async function undoTurn(): Promise<string> {
+  const text = lastTurnInput(model.liveUpdates.value);
+  if (!remoteSession.value) {
+    return model.undo();
+  }
+  if (!text && !lastTurnLength(model.liveUpdates.value)) {
+    return "";
+  }
+  await playTurn("/undo");
+  return text;
+}
+
+/** Undo the last turn and immediately replay it, so a reroll is one click. */
+export async function redoTurn(): Promise<void> {
+  const text = await undoTurn();
+  if (text) {
+    await playTurn(text);
+  }
 }
 
 /**

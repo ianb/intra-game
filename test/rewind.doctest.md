@@ -10,7 +10,7 @@ that the player took it back), while the game behaves as though those turns
 never happened.
 
 ```ts setup
-import { applyRewinds, lastTurnLength, isUserInput } from "../lib/game/rewind.js";
+import { applyRewinds, lastTurnInput, lastTurnLength, isUserInput } from "../lib/game/rewind.js";
 import type { StoryEventType } from "../lib/types.js";
 
 // A player turn: the input event, then whatever it caused.
@@ -97,4 +97,23 @@ Only events carrying player input count as the start of a turn:
 ```ts
 [isUserInput(input("hi")), isUserInput(reply("Ama"))].join(" ");
 => true false
+```
+
+## Getting the turn back to retry it
+
+Undo hands the player's own words back so the turn can be rephrased rather than
+retyped, which is most of why undo exists here — you try something, the model
+misreads it, you adjust a word.
+
+```ts
+lastTurnInput([input("first"), reply("Ama"), input("second"), reply("Ama")]);
+=> second
+```
+
+With no turn to undo there is nothing to hand back, and the caller gets an empty
+string rather than something that looks like input:
+
+```ts
+[lastTurnInput([]), lastTurnInput([reply("Ama")])].join("|").length;
+=> 1
 ```

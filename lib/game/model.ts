@@ -21,7 +21,7 @@ import { World } from "./world";
 import type { AllEntitiesType } from "./content";
 import { scheduleForTime } from "./scheduler";
 import { pathTo } from "./pathto";
-import { applyRewinds, lastTurnLength } from "./rewind";
+import { applyRewinds, lastTurnInput, lastTurnLength } from "./rewind";
 import type { PartialTag } from "./tagstream";
 
 export type ChatFn = (request: ChatType) => Promise<string>;
@@ -467,8 +467,7 @@ export class Model {
     if (!count) {
       return "";
     }
-    const undone = live[live.length - count]!;
-    const lastInput = (undone.llmParameters?.input as string) || "";
+    const lastInput = lastTurnInput(live);
     this.updates.value = [
       ...this.updates.value,
       {

@@ -45,6 +45,21 @@ export function lastTurnLength(live: StoryEventType[]): number {
   return 0;
 }
 
+/**
+ * What the player typed on the turn an undo would take back.
+ *
+ * The UI puts it back in the input box so the turn can be retried with a tweak,
+ * which is the main reason undo exists here — you try something, the model
+ * misreads it, and you want to rephrase rather than retype.
+ */
+export function lastTurnInput(live: StoryEventType[]): string {
+  const count = lastTurnLength(live);
+  if (!count) {
+    return "";
+  }
+  return (live[live.length - count]?.llmParameters?.input as string) || "";
+}
+
 /** A story event that came from the player typing something. */
 export function isUserInput(update: StoryEventType): boolean {
   return !!(update.id === "PLAYER" && update.llmParameters?.input);
