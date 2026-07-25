@@ -9,6 +9,7 @@ import {
   Room,
 } from "./classes";
 import { schedules } from "./schedules";
+import { fieldsOf } from "./dynamic";
 
 export const entities = {
   // Special characters:
@@ -1052,15 +1053,15 @@ for (const entity of Object.values(entities)) {
     "actionPrompt",
     "introduction",
   ]) {
-    if ((entity as any)[attr]) {
-      (entity as any)[attr] = dedent((entity as any)[attr]);
+    if (fieldsOf(entity)[attr]) {
+      fieldsOf(entity)[attr] = dedent(fieldsOf(entity)[attr] as string);
     }
   }
   for (const attr of ["availableHints", "revealedHints", "solvedHints"]) {
     for (const [entityId, hint] of Object.entries(
-      (entity as any)[attr] || {}
+      (fieldsOf(entity)[attr] as Record<string, unknown>) || {}
     )) {
-      (entity as any)[attr][entityId] = dedent(hint as string);
+      (fieldsOf(entity)[attr] as Record<string, string>)[entityId] = dedent(hint as string);
     }
   }
 }

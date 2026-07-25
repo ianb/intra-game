@@ -1,6 +1,9 @@
 import { GeneralScheduleType, PersonScheduleTemplateType } from "../types";
 
 function time(timeString: string): number {
+  // Fixed-width, fully anchored pattern applied to schedule literals defined
+  // in this repo - not user input, so backtracking is not a concern.
+  // eslint-disable-next-line security/detect-unsafe-regex
   const timeRegex = /^(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])$/;
   const match = timeString.trim().match(timeRegex);
   if (!match) {

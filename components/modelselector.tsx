@@ -1,14 +1,14 @@
-import { SignalType } from "@/lib/persistentsignal";
+import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
+import sortBy from "just-sort-by";
+import { useEffect } from "react";
 import type {
   ArchitectureType,
   ModelType,
   PricingType,
   TopProviderType,
 } from "@/lib/llm";
-import { useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
-import sortBy from "just-sort-by";
-import { useEffect } from "react";
+import { SignalType } from "@/lib/persistentsignal";
 
 export type { ArchitectureType, ModelType, PricingType, TopProviderType };
 

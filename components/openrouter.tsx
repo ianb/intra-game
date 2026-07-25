@@ -1,6 +1,6 @@
-import { openrouterCode } from "@/lib/llm";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
+import { openrouterCode } from "@/lib/llm";
 
 export { openrouterCode };
 

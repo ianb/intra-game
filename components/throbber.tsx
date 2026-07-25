@@ -135,6 +135,8 @@ export function CalculatingThrobber() {
   useSignals();
   // Signals for frame, phrase, color indices, and opacity
   const frameIndex = useSignal(0);
+  // random starting colour for a purely decorative throbber.
+  // eslint-disable-next-line react-hooks/purity -- pre-existing: picks a
   const colorIndex = useSignal(Math.floor(Math.random() * colors.length));
   const opacity = useSignal(0);
 

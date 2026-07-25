@@ -17,7 +17,7 @@ export function Button({
   const error = useSignal<Error | null>(null);
   const running = useSignal(false);
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    let resp: any;
+    let resp: void | Promise<void> = undefined;
     try {
       resp = onClick(event);
       error.value = null;
@@ -25,9 +25,9 @@ export function Button({
       error.value = e as Error;
       console.error("Error in handler:", e);
     }
-    if (resp && resp.then) {
+    if (resp && typeof (resp as Promise<void>).then === "function") {
       running.value = true;
-      resp
+      (resp as Promise<void>)
         .catch((e: Error) => {
           error.value = e;
         })

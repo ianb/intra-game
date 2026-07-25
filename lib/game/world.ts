@@ -1,4 +1,4 @@
-import type { Entity, Room, Person, Mystery } from "./classes";
+import colors from "tailwindcss/colors";
 import {
   EntityId,
   isPerson,
@@ -7,11 +7,12 @@ import {
   PersonScheduledEventType,
   StoryEventType,
 } from "../types";
+import { tmpl } from "../template";
+import type { Entity, Room, Person, Mystery } from "./classes";
 import type { AllEntitiesType } from "./gameobjs";
 import type { Model } from "./model";
-import { tmpl } from "../template";
-import colors from "tailwindcss/colors";
 import { generateExactSchedule, timeAsString } from "./scheduler";
+import { entitiesById } from "./dynamic";
 
 export const ONE_DAY = 24 * 60;
 
@@ -42,7 +43,7 @@ export class World {
   }
 
   getEntity(entityId: string): Entity | null {
-    return (this.entities as any)[entityId] || null;
+    return entitiesById(this.entities)[entityId] || null;
   }
 
   getRoom(roomId: string): Room | null {
@@ -172,7 +173,7 @@ export class World {
         throw new Error(`Object id ${obj.id} does not match key ${key}`);
       }
       obj.world = this;
-      if (obj.inside && !(this.original as any)[obj.inside]) {
+      if (obj.inside && !entitiesById(this.original)[obj.inside]) {
         throw new Error(
           `Object ${key} is inside ${obj.inside} which does not exist`
         );
@@ -180,7 +181,7 @@ export class World {
       if (isRoom(obj)) {
         this.rooms.push(obj.id);
         for (const exit of obj.exits) {
-          if (!(this.original as any)[exit.roomId]) {
+          if (!entitiesById(this.original)[exit.roomId]) {
             throw new Error(
               `Room ${obj.id} has exit to ${exit.roomId} which does not exist`
             );
@@ -193,7 +194,7 @@ export class World {
           throw new Error(`Person ${obj.id} has no inside`);
         } else if (inside === "Void") {
           console.error("Person", obj.id, "is in Void");
-        } else if (!(this.original as any)[inside]) {
+        } else if (!entitiesById(this.original)[inside]) {
           throw new Error(
             `Person ${obj.id} is inside ${JSON.stringify(inside)} which does not exist`
           );
@@ -201,7 +202,7 @@ export class World {
         for (const s of obj.scheduleTemplate || []) {
           const insides = Array.isArray(s.inside) ? s.inside : [s.inside];
           for (const inside of insides) {
-            if (!(this.original as any)[inside]) {
+            if (!entitiesById(this.original)[inside]) {
               throw new Error(
                 `Person ${obj.id} has schedule entry with inside ${inside} which does not exist`
               );
@@ -216,7 +217,7 @@ export class World {
             if (key === "*") {
               continue;
             }
-            if (!(this.original as any)[key]) {
+            if (!entitiesById(this.original)[key]) {
               throw new Error(
                 `Mystery ${obj.id} has hint ${key} which does not exist`
               );
@@ -225,6 +226,8 @@ export class World {
         }
       }
     }
+    // the fixed set of entity names defined in gameobjs.ts, not from user input.
+    // eslint-disable-next-line security/detect-non-literal-regexp -- built from
     this.nameRegex = new RegExp(
       `(^|[^a-zA-Z])(${regexParts.join("|")})([^a-zA-Z]|$)`,
       "ig"
@@ -429,7 +432,7 @@ export class World {
     if (!name) {
       return null;
     }
-    if ((this.entities as any)[name]) {
+    if (entitiesById(this.entities)[name]) {
       return name;
     }
     const lowerName = normalizeName(name);

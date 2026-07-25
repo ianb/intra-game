@@ -25,12 +25,12 @@ const NO_TOOLS = [
   "Task",
 ].join(" ");
 
-export type HaikuChatOptions = {
+export interface HaikuChatOptions {
   model?: string;
   timeoutMs?: number;
   // Called with (prompt, response) after each completion, for tracing.
   onCall?: (info: { title: string; response: string }) => void;
-};
+}
 
 export function haikuChat(options: HaikuChatOptions = {}): ChatFn {
   const model = options.model ?? HAIKU_MODEL;

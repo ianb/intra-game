@@ -1,7 +1,7 @@
 import { useSignals } from "@preact/signals-react/runtime";
 import React from "react";
 
-const DIGIT_SEGMENTS = {
+const DIGIT_SEGMENTS: Record<string, string> = {
   "0": "abcdef",
   "1": "bc",
   "2": "abdeg",
@@ -35,11 +35,11 @@ export function Clock({
           return <DigitalPM key={i} className="h-4 w-3 inline-block" />;
         } else if (c === "M" || c === "m" || c === " ") {
           return null;
-        } else if ((DIGIT_SEGMENTS as any)[c]) {
+        } else if (DIGIT_SEGMENTS[c]) {
           return (
             <Digit
               key={i}
-              segments={(DIGIT_SEGMENTS as any)[c]}
+              segments={DIGIT_SEGMENTS[c]!}
               bg={bg}
               className="h-4 w-3 inline-block"
             />

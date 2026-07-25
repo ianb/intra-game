@@ -1,13 +1,6 @@
 import clone from "just-clone";
 import { parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
-import { historyForEntity as computeHistoryForEntity } from "./history";
-import {
-  coerceBoolean,
-  coerceNumber,
-  fixupText,
-  isValidPropertySet,
-} from "./coerce";
 import {
   ChatType,
   EntityId,
@@ -28,13 +21,21 @@ import {
   type ChangesType,
   type ChangeType,
 } from "../types";
+import { historyForEntity as computeHistoryForEntity } from "./history";
+import {
+  coerceBoolean,
+  coerceNumber,
+  fixupText,
+  isValidPropertySet,
+} from "./coerce";
 import type { Model } from "./model";
 import { pathTo } from "./pathto";
 import { pronounsForGender } from "./pronouns";
 import { scheduleForTime, timeAsString } from "./scheduler";
 import type { World } from "./world";
+import { entitiesById, fieldsOf } from "./dynamic";
 
-export type EntityInitType = {
+export interface EntityInitType {
   id: EntityId;
   name?: string;
   shortDescription?: string;
@@ -42,11 +43,11 @@ export type EntityInitType = {
   inside?: EntityId;
   color?: string;
   invisible?: boolean;
-};
+}
 
-export type ParametersType = {
+export interface ParametersType {
   trigger?: string;
-};
+}
 
 export abstract class Entity<ParametersT extends ParametersType = object> {
   name: string = "";
@@ -114,7 +115,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
 
   applyChange(changes: ChangeType) {
     for (const [key, value] of Object.entries(changes.after)) {
-      if (key === "inside" && !(this.world.entities as any)[value]) {
+      if (key === "inside" && !entitiesById(this.world.entities)[value as EntityId]) {
         console.warn(
           `Updating ${this.id}.${key} be inside ${value} but entity does not exist`
         );
@@ -146,7 +147,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
               newExits.push(exit);
             }
           }
-          (this as any).exits = newExits;
+          fieldsOf(this).exits = newExits;
         }
         continue;
       }
@@ -163,12 +164,12 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         }
         continue;
       }
-      if ((this as any)[key] === undefined) {
+      if (fieldsOf(this)[key] === undefined) {
         console.warn(
           `Updating ${this.id}.${key} to ${value} but attribute does not exist`
         );
       }
-      (this as any)[key] = value;
+      fieldsOf(this)[key] = value;
     }
   }
 
@@ -294,14 +295,8 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
 
   async executePrompt(model: Model, parameters: ParametersT) {
     const prompt = this.assemblePrompt(parameters);
-    let resp = "";
     const roomId = this.world.entityRoom(this.id)?.id || "Void";
-    try {
-      resp = await model.run(() => model.chat(prompt));
-    } catch (e) {
-      // No special handling for LlmSafetyError, just rethrow
-      throw e;
-    }
+    let resp = await model.run(() => model.chat(prompt));
     resp = fixupText(resp);
 
     let tags = unfoldTags(parseTags(resp), {
@@ -322,7 +317,9 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       roomId,
       llmTitle: prompt.meta.title,
       llmResponse: resp,
-      llmParameters: parameters,
+      // Recorded for replay/undo; the concrete shape varies per entity type, so
+      // it is stored as a plain record.
+      llmParameters: parameters as Record<string, unknown>,
     };
     for (const tag of tags) {
       if (tag.type === "set") {
@@ -348,7 +345,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
           console.warn(`Set tag for entity ${id} which does not exist`);
           continue;
         }
-        const value = (entity as any)[key];
+        const value = fieldsOf(entity)[key];
         let content: any = tag.content;
         if (typeof value === "boolean") {
           content = coerceBoolean(content);
@@ -478,7 +475,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       after: {},
     };
     for (const [key, value] of Object.entries(values)) {
-      c.before[key] = (this as any)[key];
+      c.before[key] = fieldsOf(this)[key];
       c.after[key] = value;
     }
     return {
@@ -529,10 +526,10 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
   }
 }
 
-export type SoundTrackType = {
+export interface SoundTrackType {
   url: string;
   sunoUrl: string;
-};
+}
 
 export class Room extends Entity {
   type = "room";
@@ -600,22 +597,22 @@ export class Room extends Entity {
 // the view (app/renderstoryaction.tsx); this class only marks the room type.
 export class ArchivistRoom extends Room {}
 
-export type Exit = {
+export interface Exit {
   name?: string;
   roomId: EntityId;
   aliases?: string[];
   restriction?: string;
-};
+}
 
 export type RelationshipRatingType = "positive" | "negative" | "neutral";
 
-export type RelationshipType = {
+export interface RelationshipType {
   background?: string;
   polite?: RelationshipRatingType;
   fun?: RelationshipRatingType;
   respectable?: RelationshipRatingType;
   trustworthy?: RelationshipRatingType;
-};
+}
 
 export class Person<
   ParametersT extends ParametersType = ParametersType,

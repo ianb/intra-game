@@ -6,7 +6,7 @@ function nextIdentifier() {
 
 export function tmpl(
   strings: TemplateStringsArray | string[],
-  ...args: any[]
+  ...args: unknown[]
 ): string {
   const props = new Map();
   const parts = [];
@@ -23,7 +23,7 @@ export function tmpl(
 
 export function fillTemplate(
   template: string,
-  evaluator: (_name: string) => any
+  evaluator: (_name: string) => unknown
 ) {
   if (typeof template !== "string") {
     if (!template) {
@@ -36,7 +36,7 @@ export function fillTemplate(
   let match;
   const regex = /\{\{(.*?)\}\}/g;
   let pos = 0;
-  // eslint-disable-next-line no-cond-assign
+
   while ((match = regex.exec(template))) {
     parts.push(template.slice(pos, match.index));
     subs.push(evaluator(match[1]!));
@@ -48,12 +48,12 @@ export function fillTemplate(
 
 export function fillTemplateSimple(
   template: string,
-  values: Record<string, any>
+  values: Record<string, unknown>
 ) {
   return fillTemplate(template, (name) => values[name]);
 }
 
-function parseTemplate(template: string, props: Map<string, any>) {
+function parseTemplate(template: string, props: Map<string, unknown>) {
   const tailingPunctuationMatcher = /(\$\{placeholder-\d+\})([.,])/g;
   template = template.replace(
     tailingPunctuationMatcher,
@@ -108,7 +108,7 @@ function parseTemplate(template: string, props: Map<string, any>) {
     // This really just sets found and hasEmpty:
     inner.replace(
       /(\$\{placeholder-\d+\})/g,
-      (_varMatch: any, name: string) => {
+      (_varMatch: string, name: string) => {
         const value = props.get(name);
         if (isEmpty(value)) {
           hasEmpty = true;
@@ -128,17 +128,20 @@ function parseTemplate(template: string, props: Map<string, any>) {
     }
     return inner;
   });
+  // Applied only to prompt templates written in this repo, never to user or
+  // model input, so catastrophic backtracking is not reachable here.
+  // eslint-disable-next-line security/detect-unsafe-regex
   const loopMatcher = /(\n\s+)?\{\[([^]*?)(\n)?\]\}/g;
   template = template.replace(
     loopMatcher,
     (match, leading, inner, trailing) => {
-      const values: any = {};
+      const values: Record<string, unknown[]> = {};
       let firstName;
       const notLoopVariables: string[] = [];
       // This just sets values, firstName, and notLoopVariables:
       Array.from(inner.matchAll(/(\$\{placeholder-\d+\})/g)).forEach(
-        (item: any) => {
-          const name = item[1];
+        (item) => {
+          const name = (item as RegExpMatchArray)[1]!;
           const value = props.get(name);
           if (Array.isArray(value)) {
             values[name] = value;
@@ -158,12 +161,12 @@ function parseTemplate(template: string, props: Map<string, any>) {
         );
         return match;
       }
-      const number = values[firstName].length;
+      const number = values[firstName]!.length;
       const result = [];
       for (let i = 0; i < number; i++) {
         const resolved = new Map(props);
         for (const name of Object.keys(values)) {
-          resolved.set(name, values[name][i]);
+          resolved.set(name, values[name]![i]);
         }
         const loopValue = substituteTemplate(inner, resolved);
         result.push((leading || "") + loopValue + (trailing || ""));
@@ -174,7 +177,7 @@ function parseTemplate(template: string, props: Map<string, any>) {
   return substituteTemplate(template, props);
 }
 
-function substituteTemplate(template: string, props: any) {
+function substituteTemplate(template: string, props: Map<string, unknown>) {
   let result = template;
   for (const key of props.keys()) {
     result = result.replace(key, () => repr(props.get(key)));
@@ -184,17 +187,17 @@ function substituteTemplate(template: string, props: any) {
   return result;
 }
 
-export function isEmpty(v: any) {
+export function isEmpty(v: unknown) {
   return (
     v === null ||
     v === undefined ||
     v === "" ||
     (Array.isArray(v) && v.length === 0) ||
-    (v && v.isEmpty)
+    (typeof v === "object" && v !== null && "isEmpty" in v && Boolean((v as { isEmpty?: unknown }).isEmpty))
   );
 }
 
-export function repr(v: any): string {
+export function repr(v: unknown): string {
   if (v === null || v === undefined) {
     return "[No value]";
   }
@@ -242,9 +245,9 @@ export function dedent(template: string) {
   return `${firstLine}${result}`;
 }
 
-class TemplateBool {
-  value: any;
-  constructor(value: any) {
+export class TemplateBool {
+  value: unknown;
+  constructor(value: unknown) {
     this.value = value;
   }
 

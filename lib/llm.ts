@@ -5,7 +5,7 @@ import { ChatType, LlmLogType } from "./types";
 
 // OpenRouter model metadata (as returned by the /models API). These live in the
 // engine layer so the LLM transport doesn't depend on any view component.
-export type ModelType = {
+export interface ModelType {
   id: string;
   name: string;
   created: number;
@@ -14,27 +14,27 @@ export type ModelType = {
   architecture: ArchitectureType;
   pricing: PricingType;
   top_provider: TopProviderType;
-  per_request_limits: any;
-};
+  per_request_limits: unknown;
+}
 
-export type ArchitectureType = {
+export interface ArchitectureType {
   modality: string;
   tokenizer: string;
   instruct_type: string;
-};
+}
 
-export type PricingType = {
+export interface PricingType {
   prompt: string;
   completion: string;
   image: string;
   request: string;
-};
+}
 
-export type TopProviderType = {
+export interface TopProviderType {
   context_length: number;
   max_completion_tokens: number;
   is_moderated: boolean;
-};
+}
 
 // The OpenRouter auth code, persisted in browser storage. Defined here (not in a
 // view component) so the transport owns its own config; the view reads/writes it.

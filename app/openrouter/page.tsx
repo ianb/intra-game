@@ -1,9 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { openrouterCode } from "@/components/openrouter";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
 import { Suspense } from "react";
+import { openrouterCode } from "@/components/openrouter";
 
 export default function Page() {
   useSignals();

@@ -9,7 +9,23 @@ between blocks explains intent; the code blocks keep it honest.
 pnpm test           # run all doctests (tap)
 pnpm test:watch     # re-run on change
 pnpm typecheck      # tsc --noEmit under the strict config
+pnpm lint           # eslint (flat config, personal-vibe-check preset)
+pnpm lint:fix       # autofix what it can
+pnpm lint:oxlint    # supplemental fast linter
+pnpm lint:circular  # madge, value-import cycles only
+pnpm format         # prettier
 ```
+
+`eslint.config.mjs` layers this project's decisions over the shared preset, and
+every rule turned off there carries the reason inline. Two are deliberately
+warnings rather than errors — `max-lines`/`max-lines-per-function` (the
+in-progress codehealth signal) and `@typescript-eslint/no-explicit-any` (the
+remaining untyped surface, see below) — so `pnpm lint` stays a meaningful gate
+while that work continues.
+
+Dynamic entity access (`<set attr="player.name">`, indexing the world by id)
+goes through `lib/game/dynamic.ts`, which is the one blessed place those casts
+live. Prefer it over a local `as any`.
 
 Write a doctest as a `.doctest.md` under `test/`. A `ts setup` block holds the
 imports; regular blocks are examples where an expression followed by `=>` is

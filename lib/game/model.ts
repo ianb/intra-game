@@ -1,3 +1,4 @@
+import { computed } from "@preact/signals-react";
 import { persistentSignal, SignalType } from "../persistentsignal";
 import { TrackSettled } from "../tracksettled";
 import {
@@ -7,29 +8,28 @@ import {
   isStoryEvent,
 } from "../types";
 import { StoryEventType } from "../types";
-import { World } from "./world";
-import { AllEntitiesType, entities } from "./gameobjs";
 import { listSaves, load, removeSave, save } from "../localsaves";
-import { scheduleForTime } from "./scheduler";
 import type { EntityId, Person, StoryEventWithPositionsType } from "../types";
-import { pathTo } from "./pathto";
-import { computed } from "@preact/signals-react";
 import { chat as defaultChat } from "../llm";
 import type { ChatType } from "../types";
+import { World } from "./world";
+import { AllEntitiesType, entities } from "./gameobjs";
+import { scheduleForTime } from "./scheduler";
+import { pathTo } from "./pathto";
 
 export type ChatFn = (request: ChatType) => Promise<string>;
 
-export type ModelOptions = {
+export interface ModelOptions {
   // The LLM backend. Defaults to the real OpenRouter chat(); tests inject a fake.
   chat?: ChatFn;
-};
+}
 
-type ParsedInputType = {
+interface ParsedInputType {
   undo?: boolean;
   redo?: boolean;
   roll?: number;
   text?: string;
-};
+}
 
 export class Model {
   updates: SignalType<StoryEventType[]>;
@@ -420,7 +420,7 @@ export class Model {
     let lastInput = "";
     if (updates.length && isUserInput(updates.at(-1)!)) {
       const update = updates.pop()!;
-      lastInput = update.llmParameters?.input || lastInput;
+      lastInput = (update.llmParameters?.input as string) || lastInput;
     }
     this.updates.value = updates;
     this.world = new World({
@@ -482,11 +482,11 @@ export class Model {
   }
 }
 
-export type SaveListType = {
+export interface SaveListType {
   title: string;
   slug: string;
   date: string;
-};
+}
 
 function isUserInput(update: StoryEventType) {
   return !!(update.id === "player" && update.llmParameters?.input);

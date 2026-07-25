@@ -1,8 +1,8 @@
-import { logSignal } from "@/lib/llm";
-import { ChatType, LlmLogType } from "@/lib/types";
 import { useSignal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
 import { forwardRef, useEffect, useRef } from "react";
+import { ChatType, LlmLogType } from "@/lib/types";
+import { logSignal } from "@/lib/llm";
 
 export default function LlmLog() {
   useSignals();
@@ -137,6 +137,8 @@ function RequestTime({ start, end }: { start: number; end?: number }) {
 
 function RequestCountdown({ start }: { start: number }) {
   useSignals();
+  // display-only elapsed-time counter for the debug log.
+  // eslint-disable-next-line react-hooks/purity -- pre-existing: seeds a
   const elapsed = useSignal(Date.now() - start);
   useEffect(() => {
     const interval = setInterval(() => {

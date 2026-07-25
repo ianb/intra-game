@@ -4,10 +4,10 @@ import { useSignals } from "@preact/signals-react/runtime";
 
 type ScrollOnUpdateProps = {
   children: React.ReactNode;
-  watch: any;
+  watch: unknown;
   // Must be a better way, but a list will change every time...
-  watch2?: any;
-  watch3?: any;
+  watch2?: unknown;
+  watch3?: unknown;
 } & React.HTMLProps<HTMLDivElement>;
 
 export default function ScrollOnUpdate({
@@ -42,7 +42,9 @@ export default function ScrollOnUpdate({
     if (ref.current) {
       scrollDown();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Pre-existing: ref.current in the deps re-runs the scroll when the node
+    // appears; the ref identity is the intended trigger here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/refs
   }, [watch, watch2, watch3, ref.current]);
   return (
     <div ref={ref} {...props}>

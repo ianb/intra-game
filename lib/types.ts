@@ -1,12 +1,12 @@
 import type { Entity, Mystery, Person, Room } from "./game/classes";
 export { Entity, Person, Room };
 
-export type StoryEventWithPositionsType = {
+export interface StoryEventWithPositionsType {
   event: StoryEventType;
   positions: Map<EntityId, EntityId>;
-};
+}
 
-export type StoryEventType = {
+export interface StoryEventType {
   id: EntityId;
   roomId: EntityId;
   changes: ChangesType;
@@ -17,23 +17,23 @@ export type StoryEventType = {
   deferSchedule?: boolean;
   llmTitle?: string;
   llmResponse?: string;
-  llmParameters?: any;
+  llmParameters?: Record<string, unknown>;
   llmError?: { context: string; description: string };
   suggestions?: string;
   triggers?: Record<EntityId, string>;
-};
+}
 export type StoryActionType =
   | StoryDialogType
   | StoryDescriptionType
   | StoryActionAttemptType;
 
-export type StoryDialogType = {
+export interface StoryDialogType {
   type: "dialog";
   id: EntityId;
   toId?: EntityId;
   toOther?: string;
   text: string;
-};
+}
 
 export function isStoryDialog(
   storyAction: StoryActionType
@@ -41,12 +41,12 @@ export function isStoryDialog(
   return storyAction.type === "dialog";
 }
 
-export type StoryDescriptionType = {
+export interface StoryDescriptionType {
   type: "description";
   text: string;
   minutes?: number;
   subject?: string;
-};
+}
 
 export function isStoryDescription(
   storyAction: StoryActionType
@@ -54,14 +54,14 @@ export function isStoryDescription(
   return storyAction.type === "description";
 }
 
-export type StoryActionAttemptType = {
+export interface StoryActionAttemptType {
   type: "actionAttempt";
   id: EntityId;
   attempt: string;
   success: boolean;
   minutes: number;
   resolution: string;
-};
+}
 
 export function isStoryActionAttempt(
   actionRequest: StoryActionType
@@ -71,20 +71,20 @@ export function isStoryActionAttempt(
 
 export type ChangesType = Record<EntityId, ChangeType>;
 
-export type ChangeType = {
+export interface ChangeType {
   before: Record<string, any>;
   after: Record<string, any>;
-};
+}
 
 export type ActionRequestType<T = object> =
   | StoryEventType
   | PromptRequestType<T>;
 
-export type PromptRequestType<T = object> = {
+export interface PromptRequestType<T = object> {
   type: "promptRequest";
   id: EntityId;
   parameters: T;
-};
+}
 
 export function isStoryEvent(
   actionRequest: ActionRequestType
@@ -132,14 +132,14 @@ export type TimeType = number;
 
 export type ScheduleId = string;
 
-export type GeneralScheduleType = {
+export interface GeneralScheduleType {
   id: ScheduleId;
   time: TimeType;
   activity: string;
   description: string;
   // How long will this last (roughly) in minutes?
   minuteLength: number;
-};
+}
 
 export type PersonScheduleType = GeneralScheduleType & {
   // A single location, or a list of locations if the person can be in one of several locations during this time
@@ -158,38 +158,38 @@ export type PersonScheduleTemplateType = PersonScheduleType & {
   late: number;
 };
 
-export type PersonScheduledEventType = {
+export interface PersonScheduledEventType {
   scheduleId: ScheduleId;
   time: TimeType;
   inside: EntityId[];
   minuteLength: number;
-};
+}
 
 /* LLM types */
 
-export type ChatType = {
+export interface ChatType {
   meta: ChatMetaType;
   model?: string;
   messages: MessageType[];
-};
+}
 
-export type ChatMetaType = {
+export interface ChatMetaType {
   title: string;
   index?: number;
   start?: number;
-};
+}
 
 export type RoleType = "user" | "assistant" | "system";
 
-export type MessageType = {
+export interface MessageType {
   role: RoleType;
   content: string;
-};
+}
 
-export type LlmLogType = {
+export interface LlmLogType {
   request: ChatType;
   end?: number;
   response?: string;
   errorMessage?: string;
-  errorBody?: any;
-};
+  errorBody?: unknown;
+}

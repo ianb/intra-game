@@ -12,7 +12,7 @@ import type { ChatFn } from "../lib/game/model";
 // is deterministic. The playtest drivers seed Math.random (see seed.ts) so the
 // schedule — and therefore every prompt — reproduces exactly.
 
-export type CassetteEntry = { title: string; response: string };
+export interface CassetteEntry { title: string; response: string }
 export type Cassette = Record<string, CassetteEntry>;
 
 export function promptKey(request: ChatType): string {

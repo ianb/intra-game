@@ -23,11 +23,11 @@ import type { World } from "./world";
  * It needs very little of an entity, so it asks for only that (any `Entity`
  * satisfies it) rather than depending on the class hierarchy.
  */
-export type HistoryViewer = {
+export interface HistoryViewer {
   id: EntityId;
   name: string;
   world: World;
-};
+}
 
 /**
  * The events this character witnessed, oldest first.
@@ -140,6 +140,10 @@ export function updateToHistory(
       // I have a build problem keeping me from using the proper regex: /\p{Emoji}/gu
 
       const text = action.text.replace(
+        // surrogate ranges is intentional (see the note above); switching to a
+        // /u-flag \p{Emoji} class would change which characters are stripped, and
+        // with them the prompt text that recorded cassettes are keyed on.
+        // eslint-disable-next-line no-misleading-character-class -- matching raw
         /[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u26FF\u2700-\u27BF]/g,
         ""
       );

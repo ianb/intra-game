@@ -1,12 +1,12 @@
 /* Parses a string that has <tag attrs...>...</tag>, but
    permissive */
 
-export type TagType = {
+export interface TagType {
   type: string;
   attrs: Record<string, string>;
   content: string;
   subTags?: TagType[];
-};
+}
 
 export function parseTags(s: string, allowTags?: string[]): TagType[] {
   s = s.trim().replace(/^`+/, "").replace(/`+$/, "").trim();
@@ -16,7 +16,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
 
   while (pos < s.length) {
     const restOfString = s.slice(pos);
-    const nextMatch = restOfString.match(/<(\/)?([^\s>\/]+)([^>]*?)(\/)?>/);
+    const nextMatch = restOfString.match(/<(\/)?([^\s>/]+)([^>]*?)(\/)?>/);
     if (!nextMatch) {
       // No more tags, the rest is text
       const text = s.slice(pos);

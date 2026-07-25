@@ -1,4 +1,4 @@
-export type PronounsType = {
+export interface PronounsType {
   heshe: string;
   himher: string;
   hisher: string;
@@ -9,7 +9,7 @@ export type PronounsType = {
   Hisher: string;
   Hishers: string;
   Himselfherself: string;
-};
+}
 
 export type GenderNamesType = "male" | "female" | "neutral";
 

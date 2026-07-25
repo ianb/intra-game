@@ -1,3 +1,11 @@
+import { effect, signal, useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
+import compare from "just-compare";
+import sortBy from "just-sort-by";
+import React, { KeyboardEvent, useEffect, useRef } from "react";
+import { twMerge } from "tailwind-merge";
+import { renderStoryAction } from "./renderstoryaction";
+import { soundtrackPlayer } from "./soundtrack";
 import { Clock } from "@/components/digitalnumerals";
 import { A, Button, CheckButton } from "@/components/input";
 import LlmLog, { clearLogs } from "@/components/llmlog";
@@ -7,8 +15,6 @@ import ScrollOnUpdate from "@/components/scrollonupdate";
 import { CalculatingThrobber } from "@/components/throbber";
 import { ZoomOverlay } from "@/components/zoom";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
-import { renderStoryAction } from "./renderstoryaction";
-import { soundtrackPlayer } from "./soundtrack";
 import { model, SaveListType } from "@/lib/game/model";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import {
@@ -28,12 +34,6 @@ import {
   StoryEventType,
   StoryEventWithPositionsType,
 } from "@/lib/types";
-import { effect, signal, useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
-import compare from "just-compare";
-import sortBy from "just-sort-by";
-import React, { KeyboardEvent, useEffect, useRef } from "react";
-import { twMerge } from "tailwind-merge";
 
 const activeTab = persistentSignal("activeTab", "map");
 const showInternals = persistentSignal("showInternals", false);
@@ -1152,7 +1152,7 @@ function TimePeriod({
   let timeChar = "";
   if (minutes && minutes >= 10) {
     const timePeriod = Math.min(Math.round(minutes / 5), 11);
-    timeChar = (CLOCK_CHARS as any)[timePeriod.toString()] || CLOCK_CHARS["11"];
+    timeChar = CLOCK_CHARS[timePeriod.toString()] || CLOCK_CHARS["11"]!;
   }
   if (limit !== undefined && minutes < limit) {
     return null;
@@ -1329,7 +1329,7 @@ function Settings() {
   );
 }
 
-const CLOCK_CHARS = {
+const CLOCK_CHARS: Record<string, string> = {
   "12": "🕛",
   "1": "🕐",
   "2": "🕑",

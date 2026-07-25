@@ -1,3 +1,5 @@
+import type { StoryEventType } from "./types";
+
 const LOCAL_PREFIX = "intra-save.";
 
 function sluggify(title: string) {
@@ -17,7 +19,7 @@ function uniqueSlug(slug: string) {
   return proposed;
 }
 
-export function save(title: string, value: any) {
+export function save(title: string, value: StoryEventType[]) {
   const slug = uniqueSlug(sluggify(title));
   const save = {
     title,

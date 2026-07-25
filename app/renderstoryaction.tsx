@@ -1,3 +1,4 @@
+import React from "react";
 import { WithBlinkingCursor } from "@/components/input";
 import { ArchivistRoom, Room } from "@/lib/game/classes";
 import {
@@ -7,7 +8,6 @@ import {
   StoryActionType,
   StoryEventType,
 } from "@/lib/types";
-import React from "react";
 
 // View-side rendering of a story action. This is the presentation counterpart
 // to the engine's action model, which lives entirely in lib/ and knows nothing
@@ -53,6 +53,9 @@ function renderArchivistAction(
         return <WithBlinkingCursor>{action.text}</WithBlinkingCursor>;
       }
       const text = action.text.trim().replace(/^`+/, "").replace(/`+$/, "").trim();
+      // non-breaking space is deliberate: it indents the Archivist console's
+      // output without collapsing in the <pre> the transcript renders into.
+      // eslint-disable-next-line no-irregular-whitespace -- the leading
       return ` ${text}`;
     }
   }

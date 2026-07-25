@@ -2,12 +2,12 @@ import { signal } from "@preact/signals-react";
 import { SignalType } from "./persistentsignal";
 
 type FuncType<T> = () => Promise<T>;
-type QueuedType<T> = {
+interface QueuedType<T> {
   func: FuncType<T>;
-  resolve: (v: any) => void;
+  resolve: (v: unknown) => void;
   reject: (error: Error) => void;
   number: number;
-};
+}
 
 export class TrackSettled {
   queue: QueuedType<unknown>[];

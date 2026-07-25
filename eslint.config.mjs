@@ -1,0 +1,80 @@
+import { vibeCheck } from "@ianbicking/personal-vibe-check/eslint";
+
+// The shared preset encodes callback-box's conventions. Most of it applies here,
+// but a few rules fight this project's architecture rather than finding bugs;
+// each is turned off below with the reason. Everything else is left on.
+export default [
+  ...vibeCheck({
+    react: true,
+    ignores: [".next/**", "out/**", "playtest/cassettes/**"],
+  }),
+  {
+    rules: {
+      // The entity model is deliberately dynamic: entities are looked up by id
+      // and narrowed with `as` (isRoom/isPerson guards plus casts). Banning type
+      // assertions outright would mean redesigning that model, not fixing bugs.
+      "no-restricted-syntax": "off",
+
+      // Preact signals are *made* to be assigned (`signal.value = x`). This rule
+      // assumes React hook return values, so every signal write is a false
+      // positive here.
+      "react-hooks/immutability": "off",
+
+      // Entity state is Record<EntityId, ...> keyed by ids from the fixed world
+      // definition, so dynamic indexing is the normal access pattern and this
+      // rule fires on nearly every line of it.
+      "security/detect-object-injection": "off",
+
+      // This project's tests are doctests under test/*.doctest.md, not .spec.ts
+      // files sitting next to the source.
+      "ddd/require-spec-file": "off",
+
+      // A callback-box UI convention about className on components; this app's
+      // markup predates it and doesn't follow that component structure.
+      "custom/jsx-classname-required": "off",
+
+      // Asset/model endpoints (soundtrack CDN, OpenRouter) are legitimately
+      // hardcoded in a client-only game with no server config to read from.
+      "default/no-hardcoded-urls": "off",
+      "default/no-localhost": "off",
+
+      // Custom error classes everywhere is a big convention to retrofit; the
+      // engine currently throws plain Errors that the UI surfaces as text.
+      // Left off deliberately as a possible later ratchet.
+      "error/require-custom-error": "off",
+      "error/no-generic-error": "off",
+      "error/no-literal-error-message": "off",
+
+      // Defaults in the signature are used throughout the engine's small pure
+      // helpers; another candidate for a later ratchet.
+      "default/no-default-params": "off",
+
+      // File/function size caps are the codehealth signal we're actively working
+      // down (classes.ts and friends), so surface them without failing the run.
+      "max-lines": "warn",
+      "max-lines-per-function": "warn",
+
+      // Down from 71 to ~29. The ones that had a real type now have it, and the
+      // dynamic entity access that caused most of them went through
+      // lib/game/dynamic.ts. What's left is genuinely untyped surface: the
+      // before/after payloads of ChangeType (read as .inside/.launched/... all
+      // over the engine, so `unknown` would only add casts at every read),
+      // browser globals attached for debugging, and a few `Entity<any>` type
+      // parameters. Tracked as a warning rather than pretending it's clean.
+      "@typescript-eslint/no-explicit-any": "warn",
+
+      // eslint-plugin-import's TypeScript resolver is incompatible with the
+      // version resolved here ("invalid interface loaded as resolver"), so this
+      // rule can only report that failure, not real ordering problems. Import
+      // order was already normalized by its autofix before turning it off, and
+      // the bundled import-x rules still cover import hygiene.
+      "import/order": "off",
+    },
+  },
+  {
+    // The playtest harness is a local dev tool that reads and writes cassette
+    // files by path; flagging that as a filesystem risk isn't meaningful here.
+    files: ["playtest/**"],
+    rules: { "security/detect-non-literal-fs-filename": "off" },
+  },
+];

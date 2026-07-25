@@ -1,6 +1,6 @@
+import { effect } from "@preact/signals-react";
 import { model } from "@/lib/game/model";
 import { SoundtrackPlayer } from "@/lib/soundtrack";
-import { effect } from "@preact/signals-react";
 
 // Soundtrack playback is a pure view/browser concern, so it lives here rather
 // than in the engine (lib/game/model.ts). This module owns the player and the
