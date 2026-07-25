@@ -16,6 +16,18 @@ imports; regular blocks are examples where an expression followed by `=>` is
 checked against the expected value. See `test/parsetags.doctest.md` for a
 worked example and the agent-doctest README for the full syntax.
 
+`test/headless-engine.doctest.md` shows the engine being driven headless with a
+scripted (deterministic) fake LLM — the pattern for engine-level tests.
+
+## Playtesting with a real model
+
+For exploratory playtesting against a real Haiku-level model (non-deterministic,
+not part of the test suite), see [`playtest/`](../playtest/README.md):
+
+```bash
+pnpm playtest "Hello?" "I'm Ada" "go to the foyer"
+```
+
 ## Setup notes (why the config looks the way it does)
 
 Getting agent-doctest running against this repo surfaced a few sharp edges,

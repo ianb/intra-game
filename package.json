@@ -11,7 +11,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "tap",
-    "test:watch": "tap --watch"
+    "test:watch": "tap --watch",
+    "playtest": "tsx playtest/playthrough.ts"
   },
   "dependencies": {
     "@preact/signals": "^1.3.0",
