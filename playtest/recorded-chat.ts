@@ -12,7 +12,10 @@ import type { ChatFn } from "../lib/game/model";
 // is deterministic. The playtest drivers seed Math.random (see seed.ts) so the
 // schedule — and therefore every prompt — reproduces exactly.
 
-export interface CassetteEntry { title: string; response: string }
+export interface CassetteEntry {
+  title: string;
+  response: string;
+}
 export type Cassette = Record<string, CassetteEntry>;
 
 export function promptKey(request: ChatType): string {
@@ -30,7 +33,7 @@ export function loadCassette(path: string): Cassette {
 // parses to no game action) so incidental variance never crashes a replay.
 export function replayChat(
   path: string,
-  options: { onMiss?: (request: ChatType) => string } = {}
+  options: { onMiss?: (request: ChatType) => string } = {},
 ): ChatFn {
   const cassette = loadCassette(path);
   const onMiss = options.onMiss ?? (() => "");

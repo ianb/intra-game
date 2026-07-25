@@ -50,7 +50,7 @@ export async function createSession(session: string): Promise<void> {
 /** The session's events from a cursor — how a reconnecting client catches up. */
 export async function fetchEvents(
   session: string,
-  since = 0
+  since = 0,
 ): Promise<{ total: number; events: StoryEventType[] }> {
   const response = await fetch(api("events", session) + `&since=${since}`, {
     credentials: "include",
@@ -65,7 +65,7 @@ export async function fetchEvents(
 export async function sendInput(
   session: string,
   text: string,
-  handlers: TurnHandlers = {}
+  handlers: TurnHandlers = {},
 ): Promise<StoryEventType[]> {
   const response = await fetch(api("input", session), {
     method: "POST",
@@ -107,7 +107,7 @@ export async function sendInput(
  */
 export const remoteSession = persistentSignal<string | null>(
   "remoteSession",
-  null
+  null,
 );
 
 /**

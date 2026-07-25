@@ -19,7 +19,7 @@ function shuffle<T>(array: T[]): T[] {
 
 // Main function to generate the exact schedule
 export function generateExactSchedule(
-  generalSchedule: PersonScheduleTemplateType[]
+  generalSchedule: PersonScheduleTemplateType[],
 ): PersonScheduledEventType[] {
   if (!generalSchedule.length) {
     return [];
@@ -104,7 +104,7 @@ export function generateExactSchedule(
 export function scheduleForTime(
   person: Person,
   time: number,
-  schedule?: PersonScheduledEventType[]
+  schedule?: PersonScheduledEventType[],
 ): PersonScheduleType | undefined {
   // Just use the time of day:
   schedule = schedule || person.todaysSchedule;
@@ -115,7 +115,7 @@ export function scheduleForTime(
   for (const event of schedule) {
     if (time < event.time + event.minuteLength) {
       const source = person.scheduleTemplate?.find(
-        (template) => template.id === event.scheduleId
+        (template) => template.id === event.scheduleId,
       );
       if (!source) {
         console.warn("No source for event", person.id, event);
@@ -153,7 +153,7 @@ export const ONE_DAY = 24 * 60;
  */
 export function intraActivityForTime(
   time: number,
-  schedule: GeneralScheduleType[] = intraSchedule
+  schedule: GeneralScheduleType[] = intraSchedule,
 ): GeneralScheduleType | undefined {
   const minutes = ((time % ONE_DAY) + ONE_DAY) % ONE_DAY;
   for (const event of schedule) {

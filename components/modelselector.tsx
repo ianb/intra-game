@@ -64,7 +64,7 @@ export function ModelSelector({
         .then((data) => {
           const models: ModelType[] = data.data;
           availableModels.value = sortBy(models, (x) =>
-            parseFloat(x.pricing.prompt)
+            parseFloat(x.pricing.prompt),
           );
         });
     }
@@ -75,7 +75,7 @@ export function ModelSelector({
       (model) =>
         model.pricing.prompt === "0" &&
         model.pricing.completion === "0" &&
-        model.pricing.request === "0"
+        model.pricing.request === "0",
     );
   }
   return (
@@ -96,7 +96,7 @@ export function ModelSelector({
           const match = models?.filter(
             (model) =>
               RATINGS[model.id] === rating ||
-              (!RATINGS[model.id] && rating === "unknown")
+              (!RATINGS[model.id] && rating === "unknown"),
           );
           if (!match?.length) {
             return null;
@@ -144,7 +144,7 @@ function priceString(model: ModelType) {
   }
   const prompt = (parseFloat(model.pricing.prompt) * 1000000).toFixed(2);
   const completion = (parseFloat(model.pricing.completion) * 1000000).toFixed(
-    2
+    2,
   );
   return `$${prompt}/$${completion}`;
 }

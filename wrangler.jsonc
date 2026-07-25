@@ -17,7 +17,7 @@
   // One Durable Object per game session: it owns the append-only event log and
   // runs the engine, and DOs serialize requests so turns cannot interleave.
   "durable_objects": {
-    "bindings": [{ "name": "GAME_SESSION", "class_name": "GameSession" }]
+    "bindings": [{ "name": "GAME_SESSION", "class_name": "GameSession" }],
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameSession"] }],
   // Cloudflare Access gates /api/*; empty here means the API fails closed (404
@@ -27,9 +27,9 @@
     "directory": "./dist",
     "binding": "ASSETS",
     // Two client-side routes (/ and /openrouter) served from one HTML shell.
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }

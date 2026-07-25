@@ -37,7 +37,7 @@ export interface TagContext {
 export function applyTag(
   tag: TagType,
   event: StoryEventType,
-  ctx: TagContext
+  ctx: TagContext,
 ): boolean {
   const { world, roomId } = ctx;
   switch (tag.type) {
@@ -177,7 +177,7 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
   if (!isValidPropertySet(key, content)) {
     console.warn(
       `Ignoring invalid property set of: ${entity.id}.${key} =`,
-      value
+      value,
     );
     return;
   }

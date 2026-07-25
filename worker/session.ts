@@ -115,9 +115,8 @@ export class GameSession {
     if (!text) {
       return json({ error: "missing text" }, 400);
     }
-    const credential = await this.state.storage.get<StoredCredential>(
-      CREDENTIAL_KEY
-    );
+    const credential =
+      await this.state.storage.get<StoredCredential>(CREDENTIAL_KEY);
     const backend = this.chatBackend(credential);
     if (!backend) {
       return json({ error: "AI Gateway not configured" }, 503);
@@ -133,7 +132,7 @@ export class GameSession {
     const encoder = new TextEncoder();
     const send = (event: string, data: unknown) =>
       writer.write(
-        encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+        encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`),
       );
 
     // Mirror provisional narrative text to the client as the engine receives it.
@@ -210,7 +209,7 @@ export class GameSession {
  */
 function watchStreaming(
   model: Model,
-  onChange: (state: unknown) => void
+  onChange: (state: unknown) => void,
 ): () => void {
   return effect(() => {
     const current = model.streaming.value;

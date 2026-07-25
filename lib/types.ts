@@ -26,9 +26,7 @@ export interface StoryEventType {
   rewind?: number;
 }
 export type StoryActionType =
-  | StoryDialogType
-  | StoryDescriptionType
-  | StoryActionAttemptType;
+  StoryDialogType | StoryDescriptionType | StoryActionAttemptType;
 
 export interface StoryDialogType {
   type: "dialog";
@@ -39,7 +37,7 @@ export interface StoryDialogType {
 }
 
 export function isStoryDialog(
-  storyAction: StoryActionType
+  storyAction: StoryActionType,
 ): storyAction is StoryDialogType {
   return storyAction.type === "dialog";
 }
@@ -52,7 +50,7 @@ export interface StoryDescriptionType {
 }
 
 export function isStoryDescription(
-  storyAction: StoryActionType
+  storyAction: StoryActionType,
 ): storyAction is StoryDescriptionType {
   return storyAction.type === "description";
 }
@@ -67,7 +65,7 @@ export interface StoryActionAttemptType {
 }
 
 export function isStoryActionAttempt(
-  actionRequest: StoryActionType
+  actionRequest: StoryActionType,
 ): actionRequest is StoryActionAttemptType {
   return actionRequest.type === "actionAttempt";
 }
@@ -91,8 +89,7 @@ export interface ChangeType {
 }
 
 export type ActionRequestType<T = object> =
-  | StoryEventType
-  | PromptRequestType<T>;
+  StoryEventType | PromptRequestType<T>;
 
 export interface PromptRequestType<T = object> {
   type: "promptRequest";
@@ -101,13 +98,13 @@ export interface PromptRequestType<T = object> {
 }
 
 export function isStoryEvent(
-  actionRequest: ActionRequestType
+  actionRequest: ActionRequestType,
 ): actionRequest is StoryEventType {
   return (actionRequest as StoryEventType).changes !== undefined;
 }
 
 export function isPromptRequest(
-  actionRequest: ActionRequestType
+  actionRequest: ActionRequestType,
 ): actionRequest is PromptRequestType {
   return (actionRequest as PromptRequestType).type === "promptRequest";
 }

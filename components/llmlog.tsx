@@ -122,7 +122,7 @@ const LlmResponse = forwardRef<HTMLPreElement, { response?: string }>(
         <strong>model:</strong> {response}
       </pre>
     );
-  }
+  },
 );
 
 LlmResponse.displayName = "LlmResponse";
@@ -160,7 +160,7 @@ function timeElapsed(ms: number) {
 export function clearLogs() {
   console.log("clear");
   logSignal.value = logSignal.value.filter(
-    (log) => log.end === undefined && !log.errorMessage
+    (log) => log.end === undefined && !log.errorMessage,
   );
   console.log("done", logSignal.value);
 }

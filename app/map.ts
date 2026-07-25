@@ -62,14 +62,14 @@ export function asGraphviz(world: World, fullMap = false): string {
     const headerColor = skipExits.includes(room) ? "black" : "white";
     const lines = [`<TABLE BORDER="0">`];
     lines.push(
-      `<TR><TD ALIGN="CENTER"><FONT COLOR="${headerColor}"><B>${roomObj.name}</B></FONT></TD></TR>`
+      `<TR><TD ALIGN="CENTER"><FONT COLOR="${headerColor}"><B>${roomObj.name}</B></FONT></TD></TR>`,
     );
     for (const occupant of occupants) {
       if (!occupant) {
         continue;
       }
       lines.push(
-        `<TR><TD ALIGN="LEFT"><FONT COLOR="white" POINT-SIZE="8">${occupant}</FONT></TD></TR>`
+        `<TR><TD ALIGN="LEFT"><FONT COLOR="white" POINT-SIZE="8">${occupant}</FONT></TD></TR>`,
       );
     }
     lines.push("</TABLE>");
@@ -85,7 +85,7 @@ export function asGraphviz(world: World, fullMap = false): string {
         fillcolor="${color}",
         style="filled",
       ];
-    `
+    `,
     );
     if (!skipExits.includes(room)) {
       for (const exit of roomObj.exits) {
@@ -98,7 +98,7 @@ export function asGraphviz(world: World, fullMap = false): string {
         connectionList.push(
           tmpl`
         ${roomObj.id} -> ${exit.roomId};
-      `
+      `,
         );
       }
     }

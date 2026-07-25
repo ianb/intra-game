@@ -23,7 +23,7 @@ export function tmpl(
 
 export function fillTemplate(
   template: string,
-  evaluator: (_name: string) => unknown
+  evaluator: (_name: string) => unknown,
 ) {
   if (typeof template !== "string") {
     if (!template) {
@@ -48,7 +48,7 @@ export function fillTemplate(
 
 export function fillTemplateSimple(
   template: string,
-  values: Record<string, unknown>
+  values: Record<string, unknown>,
 ) {
   return fillTemplate(template, (name) => values[name]);
 }
@@ -63,7 +63,7 @@ function parseTemplate(template: string, props: Map<string, unknown>) {
         return name;
       }
       return name + punctuation;
-    }
+    },
   );
   const markdownListMatcher =
     /^(\s*)(\d+\.|\*|-)\s+\.\.\.(\$\{placeholder-\d+\})/gm;
@@ -96,10 +96,10 @@ function parseTemplate(template: string, props: Map<string, unknown>) {
             }
             return `${indent}${bullet} ${repr(v)}`;
           })
-          .join("\n")
+          .join("\n"),
       );
       return newId;
-    }
+    },
   );
   const conditionalMatcher = /\[\[([^]*?)\]\]/g;
   template = template.replace(conditionalMatcher, (match, inner) => {
@@ -115,7 +115,7 @@ function parseTemplate(template: string, props: Map<string, unknown>) {
         }
         found = true;
         return match;
-      }
+      },
     );
     if (!found) {
       // No variables found anywhere
@@ -139,25 +139,23 @@ function parseTemplate(template: string, props: Map<string, unknown>) {
       let firstName;
       const notLoopVariables: string[] = [];
       // This just sets values, firstName, and notLoopVariables:
-      Array.from(inner.matchAll(/(\$\{placeholder-\d+\})/g)).forEach(
-        (item) => {
-          const name = (item as RegExpMatchArray)[1]!;
-          const value = props.get(name);
-          if (Array.isArray(value)) {
-            values[name] = value;
-            firstName = name;
-          } else {
-            notLoopVariables.push(name);
-          }
+      Array.from(inner.matchAll(/(\$\{placeholder-\d+\})/g)).forEach((item) => {
+        const name = (item as RegExpMatchArray)[1]!;
+        const value = props.get(name);
+        if (Array.isArray(value)) {
+          values[name] = value;
+          firstName = name;
+        } else {
+          notLoopVariables.push(name);
         }
-      );
+      });
       if (!firstName) {
         // No list variables found
         console.warn(
           "No list variables found in loop",
           match,
           "not arrays:",
-          notLoopVariables
+          notLoopVariables,
         );
         return match;
       }
@@ -172,7 +170,7 @@ function parseTemplate(template: string, props: Map<string, unknown>) {
         result.push((leading || "") + loopValue + (trailing || ""));
       }
       return result.join("");
-    }
+    },
   );
   return substituteTemplate(template, props);
 }
@@ -193,7 +191,10 @@ export function isEmpty(v: unknown) {
     v === undefined ||
     v === "" ||
     (Array.isArray(v) && v.length === 0) ||
-    (typeof v === "object" && v !== null && "isEmpty" in v && Boolean((v as { isEmpty?: unknown }).isEmpty))
+    (typeof v === "object" &&
+      v !== null &&
+      "isEmpty" in v &&
+      Boolean((v as { isEmpty?: unknown }).isEmpty))
   );
 }
 

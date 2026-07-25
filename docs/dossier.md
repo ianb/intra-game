@@ -432,7 +432,7 @@ Helperton is relentlessly positive, with a tone that’s halfway between a child
 **Example Dialogue**:
 
 - _"Oh, wonderful! You've found the door! Now, let's explore the magical world of handles! Just grasp it firmly... That's your hand, yes, the thing at the end of your arm! Splendid work!"_
-- *"This next step is a *bit* advanced, so stay with me—you're going to *pull*. I know it sounds tricky, but I believe in you!"*
+- _"This next step is a *bit* advanced, so stay with me—you're going to *pull*. I know it sounds tricky, but I believe in you!"_
 
 Helperton is your first taste of the Blip AI world in Intra, where "helpful" and "tedious" often go hand in hand.
 

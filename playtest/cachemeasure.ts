@@ -24,7 +24,10 @@ const model = new Model(entities, {
   chat: async (request: ChatType) => {
     const title = request.meta.title;
     if (title === "prompt Ama") {
-      prompts.push({ text: String(request.messages[0]!.content), afterName: named });
+      prompts.push({
+        text: String(request.messages[0]!.content),
+        afterName: named,
+      });
     }
     if (title?.startsWith("player")) {
       return `<dialog character="PLAYER">hello</dialog>`;
@@ -45,7 +48,14 @@ async function settle() {
 
 model.checkLaunch();
 await settle();
-for (const t of ["I'm Ada Quill", "she/her", "I was a data analyst", "tell me about Intra", "what time is it", "look around"]) {
+for (const t of [
+  "I'm Ada Quill",
+  "she/her",
+  "I was a data analyst",
+  "tell me about Intra",
+  "what time is it",
+  "look around",
+]) {
   await model.sendText(t);
   await settle();
 }
@@ -62,11 +72,22 @@ const commonPrefix = (ss: string[]) => {
 };
 
 const report = (label: string, texts: string[]) => {
-  if (texts.length < 2) return console.log(`${label}: only ${texts.length} prompt(s)`);
+  if (texts.length < 2)
+    return console.log(`${label}: only ${texts.length} prompt(s)`);
   const shared = commonPrefix(texts);
-  const avg = Math.round(texts.reduce((a, p) => a + p.length, 0) / texts.length);
-  console.log(`${label}: ${texts.length} prompts, shared ${shared} of ~${avg} (${Math.round((shared / avg) * 100)}%)`);
+  const avg = Math.round(
+    texts.reduce((a, p) => a + p.length, 0) / texts.length,
+  );
+  console.log(
+    `${label}: ${texts.length} prompts, shared ${shared} of ~${avg} (${Math.round((shared / avg) * 100)}%)`,
+  );
 };
 
-report("all Ama prompts", prompts.map((p) => p.text));
-report("after the name is known", prompts.filter((p) => p.afterName).map((p) => p.text));
+report(
+  "all Ama prompts",
+  prompts.map((p) => p.text),
+);
+report(
+  "after the name is known",
+  prompts.filter((p) => p.afterName).map((p) => p.text),
+);

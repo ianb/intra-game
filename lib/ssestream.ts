@@ -22,7 +22,7 @@ export interface SseEvent {
  * dropped.
  */
 export async function* readSse(
-  body: ReadableStream<Uint8Array>
+  body: ReadableStream<Uint8Array>,
 ): AsyncGenerator<SseEvent> {
   const reader = body.getReader();
   const decoder = new TextDecoder();

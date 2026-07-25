@@ -1,0 +1,8 @@
+dist/
+.wrangler/
+pnpm-lock.yaml
+playtest/cassettes/
+
+# agent-doctest blocks use `=>` for expected values, which prettier reformats
+# into something the runner no longer recognises.
+test/**/*.doctest.md

@@ -106,7 +106,7 @@ export class World {
       room = aRoom;
     }
     return Object.values(this.entities).filter((entity) =>
-      this.isInside(entity, room)
+      this.isInside(entity, room),
     );
   }
 
@@ -134,7 +134,7 @@ export class World {
       pos = this.getEntity(pos.inside)!;
       if (!pos) {
         throw new Error(
-          `Entity ${entity.id} is inside ${entity.inside} but ${entity.inside} does not exist`
+          `Entity ${entity.id} is inside ${entity.inside} but ${entity.inside} does not exist`,
         );
       }
     }
@@ -154,7 +154,7 @@ export class World {
       const nextPos = this.getEntity(pos.inside);
       if (!nextPos) {
         throw new Error(
-          `Entity ${entityId} is inside ${pos.id}->${pos.inside} but ${pos.inside} does not exist `
+          `Entity ${entityId} is inside ${pos.id}->${pos.inside} but ${pos.inside} does not exist `,
         );
       }
       pos = nextPos;
@@ -174,7 +174,7 @@ export class World {
       obj.world = this;
       if (obj.inside && !entitiesById(this.original)[obj.inside]) {
         throw new Error(
-          `Object ${key} is inside ${obj.inside} which does not exist`
+          `Object ${key} is inside ${obj.inside} which does not exist`,
         );
       }
       if (isRoom(obj)) {
@@ -182,7 +182,7 @@ export class World {
         for (const exit of obj.exits) {
           if (!entitiesById(this.original)[exit.roomId]) {
             throw new Error(
-              `Room ${obj.id} has exit to ${exit.roomId} which does not exist`
+              `Room ${obj.id} has exit to ${exit.roomId} which does not exist`,
             );
           }
         }
@@ -195,7 +195,7 @@ export class World {
           console.error("Person", obj.id, "is in Void");
         } else if (!entitiesById(this.original)[inside]) {
           throw new Error(
-            `Person ${obj.id} is inside ${JSON.stringify(inside)} which does not exist`
+            `Person ${obj.id} is inside ${JSON.stringify(inside)} which does not exist`,
           );
         }
         for (const s of obj.scheduleTemplate || []) {
@@ -203,7 +203,7 @@ export class World {
           for (const inside of insides) {
             if (!entitiesById(this.original)[inside]) {
               throw new Error(
-                `Person ${obj.id} has schedule entry with inside ${inside} which does not exist`
+                `Person ${obj.id} has schedule entry with inside ${inside} which does not exist`,
               );
             }
           }
@@ -218,7 +218,7 @@ export class World {
             }
             if (!entitiesById(this.original)[key]) {
               throw new Error(
-                `Mystery ${obj.id} has hint ${key} which does not exist`
+                `Mystery ${obj.id} has hint ${key} which does not exist`,
               );
             }
           }
@@ -229,7 +229,7 @@ export class World {
     // eslint-disable-next-line security/detect-non-literal-regexp -- built from
     this.nameRegex = new RegExp(
       `(^|[^a-zA-Z])(${regexParts.join("|")})([^a-zA-Z]|$)`,
-      "ig"
+      "ig",
     );
     this.applyUpdates();
   }

@@ -4,7 +4,7 @@ import type { World } from "./world";
 export function pathTo(
   world: World,
   current: EntityId,
-  dest: EntityId
+  dest: EntityId,
 ): EntityId[] {
   const visited = new Set<EntityId>();
   const queue = [[current]];

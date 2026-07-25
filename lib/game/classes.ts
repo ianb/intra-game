@@ -92,11 +92,9 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
   }
 
   clone(): this {
-    const newInstance = new (this.constructor as new ({
-      id,
-    }: {
-      id: string;
-    }) => this)({
+    const newInstance = new (
+      this.constructor as new ({ id }: { id: string }) => this
+    )({
       id: this.id,
     });
     Object.assign(newInstance, this);
@@ -116,9 +114,12 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
 
   applyChange(changes: ChangeType) {
     for (const [key, value] of Object.entries(changes.after)) {
-      if (key === "inside" && !entitiesById(this.world.entities)[value as EntityId]) {
+      if (
+        key === "inside" &&
+        !entitiesById(this.world.entities)[value as EntityId]
+      ) {
         console.warn(
-          `Updating ${this.id}.${key} be inside ${value} but entity does not exist`
+          `Updating ${this.id}.${key} be inside ${value} but entity does not exist`,
         );
         continue;
       }
@@ -142,7 +143,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
           } else {
             if (existingExit) {
               newExits = newExits.map((x) =>
-                x.roomId === exit.roomId ? exit : x
+                x.roomId === exit.roomId ? exit : x,
               );
             } else {
               newExits.push(exit);
@@ -170,7 +171,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       }
       if (fieldsOf(this)[key] === undefined) {
         console.warn(
-          `Updating ${this.id}.${key} to ${value} but attribute does not exist`
+          `Updating ${this.id}.${key} to ${value} but attribute does not exist`,
         );
       }
       fieldsOf(this)[key] = value;
@@ -178,7 +179,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
   }
 
   onStoryEvent(
-    storyEvent: StoryEventType
+    storyEvent: StoryEventType,
   ): ActionRequestType<ParametersT>[] | void {
     return undefined;
   }
@@ -267,7 +268,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         lines.push(`  id = ${JSON.stringify(entity.id)}`);
       }
       lines.push(
-        `  ${entity.promptPersonDescription({ includeName: false, join: "\n  ", fullDescription: true })}`
+        `  ${entity.promptPersonDescription({ includeName: false, join: "\n  ", fullDescription: true })}`,
       );
       lines.push("}");
     }
@@ -296,7 +297,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         Exit locationId "${exit.roomId}" {
           name: ${target.name}
           "${target.shortDescription}"
-        `
+        `,
       );
       if (exit.aliases) {
         lines.push(`  aliases: ${exit.aliases.join(", ")}`);
@@ -331,7 +332,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     };
     try {
       const text = await model.chatStream(prompt, (delta) =>
-        show(parser.feed(delta))
+        show(parser.feed(delta)),
       );
       show(parser.end());
       return text;
@@ -712,7 +713,7 @@ export class Person<
   }
 
   override onStoryEvent(
-    storyEvent: StoryEventType
+    storyEvent: StoryEventType,
   ): void | ActionRequestType<ParametersT>[] {
     const triggerText =
       storyEvent.triggers && storyEvent.triggers[this.id] !== undefined
@@ -823,10 +824,10 @@ export class Person<
       } else {
         // Traveling to the location where the activity takes place
         parts.push(
-          `${this.name} is on ${this.hisher} way to: ${schedule.inside[0]}`
+          `${this.name} is on ${this.hisher} way to: ${schedule.inside[0]}`,
         );
         parts.push(
-          `When ${this.name} arrives ${this.heshe} intends to: ${schedule.description}`
+          `When ${this.name} arrives ${this.heshe} intends to: ${schedule.description}`,
         );
       }
     }
@@ -972,7 +973,7 @@ export class AmaClass extends Person<AmaParametersType> {
           },
           this.makePromptRequest({
             prompt: "intro",
-          })
+          }),
         );
       }
     }
@@ -1075,7 +1076,7 @@ export class AmaClass extends Person<AmaParametersType> {
               text: "You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.\n\n★★★ Look to the right and you'll see a list of rooms you can go to from here ---->",
             },
           ],
-        }
+        },
       );
     }
     if (
@@ -1253,7 +1254,7 @@ export class AmaClass extends Person<AmaParametersType> {
       const path = pathTo(
         this.world,
         this.world.entities.PLAYER.inside,
-        "Quarters_Yours"
+        "Quarters_Yours",
       );
       if (!path.length) {
         getToBed = false;
@@ -1291,7 +1292,7 @@ export class AmaClass extends Person<AmaParametersType> {
         continue;
       }
       info.push(
-        `- ${person.name} ${person.pronouns}: ${person.shortDescription}`
+        `- ${person.name} ${person.pronouns}: ${person.shortDescription}`,
       );
     }
     info.push("\nAnd this is a list of ALL the rooms:");
@@ -1300,7 +1301,7 @@ export class AmaClass extends Person<AmaParametersType> {
         continue;
       }
       info.push(
-        `- ${room.name}: ${room.shortDescription} (connected to: ${room.exits.map((x) => x.roomId).join(", ")})`
+        `- ${room.name}: ${room.shortDescription} (connected to: ${room.exits.map((x) => x.roomId).join(", ")})`,
       );
     }
     return tmpl`
@@ -1339,7 +1340,11 @@ export class AmaClass extends Person<AmaParametersType> {
       }
     }
     const ama = storyEvent.changes.Ama;
-    if (storyEvent.changes.PLAYER?.after?.name && !this.knowsPlayerName && ama) {
+    if (
+      storyEvent.changes.PLAYER?.after?.name &&
+      !this.knowsPlayerName &&
+      ama
+    ) {
       ama.before.knowsPlayerName = false;
       ama.after.knowsPlayerName = true;
     }
@@ -1701,7 +1706,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       if (isPerson(entity)) {
         entityLines.push(`  pronouns: ${entity.pronouns}`);
         entityLines.push(
-          `  ${entity.promptPersonDescription({ includeName: false, join: "\n  ", fullDescription: true })}`
+          `  ${entity.promptPersonDescription({ includeName: false, join: "\n  ", fullDescription: true })}`,
         );
       } else {
         entityLines.push(`  description: ${entity.description}`);
@@ -1739,7 +1744,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       }
       const currentRoom = this.world.entityRoom(this.id);
       const exit = (currentRoom?.exits || []).find(
-        (exit) => exit.roomId === room.id
+        (exit) => exit.roomId === room.id,
       );
       if (!exit) {
         storyEvent.actions.push({
@@ -1790,7 +1795,7 @@ export class PlayerClass extends Person<PlayerInputType> {
           }
         }
         peopleLines.push(
-          `  ${person.name}: ${person.shortDescription}${extra}`
+          `  ${person.name}: ${person.shortDescription}${extra}`,
         );
       }
       const peopleDescription = folks.length
@@ -1857,7 +1862,7 @@ export class PlayerClass extends Person<PlayerInputType> {
       console.log(
         "handing action resolution",
         tag,
-        coerceBoolean(tag.attrs.success, true)
+        coerceBoolean(tag.attrs.success, true),
       );
       storyEvent.actions.push({
         type: "actionAttempt",
@@ -1917,7 +1922,9 @@ export class PlayerClass extends Person<PlayerInputType> {
   }
 
   // This suppresses the normal Person response
-  override onStoryEvent(storyEvent: StoryEventType): void | ActionRequestType[] {
+  override onStoryEvent(
+    storyEvent: StoryEventType,
+  ): void | ActionRequestType[] {
     return undefined;
   }
 }
@@ -1989,5 +1996,3 @@ export class Mystery extends Entity {
 function IF(cond: unknown) {
   return cond ? TemplateTrue : TemplateFalse;
 }
-
-

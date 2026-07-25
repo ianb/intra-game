@@ -185,13 +185,13 @@ async function verifySignature({
       { kty: "RSA", n: jwk.n, e: jwk.e, alg: "RS256", ext: true },
       { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
       false,
-      ["verify"]
+      ["verify"],
     );
     return await crypto.subtle.verify(
       { name: "RSASSA-PKCS1-v1_5" },
       key,
       signature,
-      data
+      data,
     );
   } catch {
     // A malformed key or signature is a verification failure, not a 500.
@@ -274,7 +274,7 @@ function asJwks(raw: unknown): readonly Jwk[] | null {
 
 function decodeJson<T>(
   segment: string,
-  validate: (raw: unknown) => T | null
+  validate: (raw: unknown) => T | null,
 ): T | null {
   const text = base64UrlToString(segment);
   if (text === null) return null;
@@ -337,7 +337,9 @@ export function jwksFetcherFor(teamDomain: string): GetJwks {
     try {
       const response = await fetch(url, { method: "GET" });
       if (!response.ok) {
-        console.warn(`Access JWKS for ${teamDomain} returned ${response.status}`);
+        console.warn(
+          `Access JWKS for ${teamDomain} returned ${response.status}`,
+        );
         return null;
       }
       const keys = asJwks(await response.json());
@@ -359,8 +361,7 @@ export function jwksFetcherFor(teamDomain: string): GetJwks {
 // --- Worker-facing gate -------------------------------------------------------
 
 export type AuthResult =
-  | { ok: true; email: string }
-  | { ok: false; response: Response };
+  { ok: true; email: string } | { ok: false; response: Response };
 
 /**
  * Authenticate a request, with the fail-closed policy:
@@ -374,7 +375,7 @@ export async function authenticate(
     ACCESS_TEAM_DOMAIN?: string;
     ACCESS_AUD?: string;
     DEV_IDENTITY?: string;
-  }
+  },
 ): Promise<AuthResult> {
   const config = accessConfig(env);
   if (!config) {

@@ -16,7 +16,7 @@ import {
 export function renderStoryAction(
   room: Room,
   storyEvent: StoryEventType,
-  action: StoryActionType
+  action: StoryActionType,
 ): React.ReactNode {
   if (room instanceof ArchivistRoom) {
     const archived = renderArchivistAction(storyEvent, action);
@@ -41,7 +41,7 @@ function renderBaseAction(action: StoryActionType): React.ReactNode {
 
 function renderArchivistAction(
   storyEvent: StoryEventType,
-  action: StoryActionType
+  action: StoryActionType,
 ): React.ReactNode | undefined {
   if (isStoryDialog(action)) {
     if (
@@ -52,7 +52,11 @@ function renderArchivistAction(
       if (storyEvent.id === "PLAYER") {
         return <WithBlinkingCursor>{action.text}</WithBlinkingCursor>;
       }
-      const text = action.text.trim().replace(/^`+/, "").replace(/`+$/, "").trim();
+      const text = action.text
+        .trim()
+        .replace(/^`+/, "")
+        .replace(/`+$/, "")
+        .trim();
       // non-breaking space is deliberate: it indents the Archivist console's
       // output without collapsing in the <pre> the transcript renders into.
       // eslint-disable-next-line no-irregular-whitespace -- the leading

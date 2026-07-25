@@ -1,29 +1,14 @@
 {
   "extends": "@ianbicking/personal-vibe-check/tsconfig.base.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "jsx": "react-jsx",
     "incremental": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "build.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    ".next",
-    "worker"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", "build.ts"],
+  "exclude": ["node_modules", "dist", ".next", "worker"]
 }

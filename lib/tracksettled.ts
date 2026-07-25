@@ -31,7 +31,7 @@ export class TrackSettled {
       if (!this.running.includes(number)) {
         console.error(
           "PromiseQueue: promise queue missing expected item",
-          number
+          number,
         );
       }
       this.running = this.running.filter((n) => n !== number);

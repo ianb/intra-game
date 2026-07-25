@@ -1,6 +1,10 @@
 import { Model } from "../lib/game/model";
 import { entities } from "../lib/game/content";
-import { isStoryActionAttempt, isStoryDescription, isStoryDialog } from "../lib/types";
+import {
+  isStoryActionAttempt,
+  isStoryDescription,
+  isStoryDialog,
+} from "../lib/types";
 import type { StoryEventType } from "../lib/types";
 import { haikuChat } from "./haiku-chat";
 
@@ -44,7 +48,9 @@ function renderEvent(model: Model, event: StoryEventType) {
       console.log(`  … ${action.text.trim()}`);
     } else if (isStoryActionAttempt(action)) {
       const ok = action.success ? "✓" : "✗";
-      console.log(`  ${ok} ${action.attempt.trim()} → ${action.resolution.trim()}`);
+      console.log(
+        `  ${ok} ${action.attempt.trim()} → ${action.resolution.trim()}`,
+      );
     }
   }
 }
@@ -72,7 +78,7 @@ async function main() {
   }
 
   console.log(
-    `\n=== Done. ${model.updates.value.length} events, player in ${model.world.entities.PLAYER.inside}, ${model.world.timeOfDay} ===`
+    `\n=== Done. ${model.updates.value.length} events, player in ${model.world.entities.PLAYER.inside}, ${model.world.timeOfDay} ===`,
   );
 }
 

@@ -7,7 +7,7 @@ export { openrouterCode };
 const thisOrigin = typeof window !== "undefined" ? window.location.origin : "";
 
 const OPENROUTER_ENDPOINT = `https://openrouter.ai/auth?callback_url=${encodeURIComponent(
-  thisOrigin
+  thisOrigin,
 )}/openrouter`;
 
 export function OpenRouterConnect() {

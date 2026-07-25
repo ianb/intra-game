@@ -26,7 +26,7 @@ async function record(scenario: Scenario) {
   const model = new Model(entities, {
     chat: recordingChat(
       scenario.cassette,
-      haikuChat({ onCall: ({ title }) => console.error(`  [rec:${title}]`) })
+      haikuChat({ onCall: ({ title }) => console.error(`  [rec:${title}]`) }),
     ),
   });
   model.checkLaunch();
@@ -56,8 +56,8 @@ async function record(scenario: Scenario) {
         sharedPlayerAge: ama.sharedPlayerAge,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }
 

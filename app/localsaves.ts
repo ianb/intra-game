@@ -30,7 +30,7 @@ export function save(title: string, value: StoryEventType[]) {
   console.info(
     `Saved "${LOCAL_PREFIX + slug}":`,
     JSON.stringify(save).length,
-    "bytes"
+    "bytes",
   );
 }
 

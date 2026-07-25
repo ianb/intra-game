@@ -15,7 +15,7 @@ export function persistentSignal<T>(
   defaultValue: T,
   options?: {
     sessionStorage?: boolean;
-  }
+  },
 ): SignalType<T> {
   if (typeof window === "undefined") {
     // On the server
@@ -71,7 +71,7 @@ export class SignalView<T> implements SignalType<T> {
   constructor(
     public signal: SignalType<Record<string, unknown>>,
     public attr: string,
-    public defaultValue: T
+    public defaultValue: T,
   ) {
     this.signal = signal;
     this.attr = attr;

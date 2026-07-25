@@ -65,7 +65,7 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
  */
 async function readSseDeltas(
   body: ReadableStream<Uint8Array>,
-  onDelta: (delta: string) => void
+  onDelta: (delta: string) => void,
 ): Promise<string> {
   let full = "";
   for await (const { data } of readSse(body)) {

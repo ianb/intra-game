@@ -42,7 +42,10 @@ export function updatesSeenBy(viewer: HistoryViewer): StoryEventType[] {
   for (const eventPos of viewer.world.model.updatesWithPositions.value) {
     if (eventPos.event.id === "narrator" && eventPos.event.roomId === "Void") {
       results.push(
-        ...movementUpdatesForPosition(eventPos, eventPos.positions.get(viewer.id))
+        ...movementUpdatesForPosition(
+          eventPos,
+          eventPos.positions.get(viewer.id),
+        ),
       );
     }
     if (eventPos.positions.get(viewer.id) === eventPos.event.roomId) {
@@ -58,7 +61,7 @@ export function updatesSeenBy(viewer: HistoryViewer): StoryEventType[] {
  */
 export function movementUpdatesForPosition(
   eventPos: StoryEventWithPositionsType,
-  position: EntityId | undefined
+  position: EntityId | undefined,
 ): StoryEventType[] {
   const changes: ChangesType = {};
   if (!position) {
@@ -95,7 +98,7 @@ export function movementUpdatesForPosition(
 export function updateToHistory(
   viewer: HistoryViewer,
   update: StoryEventType,
-  { lastUpdate }: { lastUpdate?: StoryEventType }
+  { lastUpdate }: { lastUpdate?: StoryEventType },
 ): MessageType[] {
   const parts: string[] = [];
   if (!lastUpdate || lastUpdate.roomId !== update.roomId) {
@@ -104,7 +107,7 @@ export function updateToHistory(
       parts.push(
         tmpl`
         [The following events occur in room ${thisRoom.id}]
-        `
+        `,
       );
     }
   }
@@ -121,7 +124,7 @@ export function updateToHistory(
       parts.push(
         tmpl`
         [${viewer.world.getEntity(entityId)?.name} arrives from ${changes.before.inside}]
-        `
+        `,
       );
     } else if (
       changes.before.inside &&
@@ -130,7 +133,7 @@ export function updateToHistory(
       parts.push(
         tmpl`
         [${viewer.world.getEntity(entityId)?.name} leaves to ${changes.after.inside}]
-        `
+        `,
       );
     }
   }
@@ -145,7 +148,7 @@ export function updateToHistory(
         // with them the prompt text that recorded cassettes are keyed on.
         // eslint-disable-next-line no-misleading-character-class -- matching raw
         /[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u2600-\u26FF\u2700-\u27BF]/g,
-        ""
+        "",
       );
       parts.push(tmpl`
         <dialog character="${action.id}"[[ to="${action.toId}"]]>
@@ -193,7 +196,7 @@ export function updateToHistory(
  */
 export function historyForEntity(
   viewer: HistoryViewer,
-  { limit }: { limit?: number } = {}
+  { limit }: { limit?: number } = {},
 ): MessageType[] {
   let history: MessageType[] = [];
   const updates = updatesSeenBy(viewer);

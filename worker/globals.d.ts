@@ -8,6 +8,5 @@ interface StorageLike {
   removeItem(key: string): void;
 }
 declare const window:
-  | { localStorage: StorageLike; sessionStorage: StorageLike }
-  | undefined;
+  { localStorage: StorageLike; sessionStorage: StorageLike } | undefined;
 declare const location: { origin: string } | undefined;

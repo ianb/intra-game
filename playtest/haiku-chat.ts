@@ -74,7 +74,7 @@ function runClaude({
         "--append-system-prompt",
         system,
       ],
-      { stdio: ["pipe", "pipe", "pipe"] }
+      { stdio: ["pipe", "pipe", "pipe"] },
     );
     let out = "";
     let err = "";

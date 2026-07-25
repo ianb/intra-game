@@ -189,14 +189,11 @@ export function serializeTags(tags: TagType[], omit?: OmitArgument) {
 }
 
 type OmitArgument =
-  | null
-  | string
-  | string[]
-  | ((_key: string, _value: string) => boolean);
+  null | string | string[] | ((_key: string, _value: string) => boolean);
 
 export function serializeAttrs(
   attrs: Record<string, string>,
-  omit?: OmitArgument
+  omit?: OmitArgument,
 ) {
   const result = [];
   for (const [key, value] of Object.entries(attrs)) {
@@ -222,7 +219,7 @@ export function serializeAttrs(
 
 export function addAttributesToTags(
   tags: TagType[],
-  attrs: Record<string, string>
+  attrs: Record<string, string>,
 ): TagType[] {
   return tags.map((tag) => {
     return {
@@ -242,7 +239,7 @@ export function unfoldTags(
     ignoreContainers?: string[];
     ignoreTags?: string[];
     trimEmpty?: string[];
-  } = {}
+  } = {},
 ): TagType[] {
   const todo = [...tags];
   const result: TagType[] = [];
@@ -269,10 +266,10 @@ export function unfoldTags(
       continue;
     }
     const newSubTags: TagType[] | undefined = tag.subTags.filter(
-      (x) => ignoreTags.includes(x.type) || x.type === "comment"
+      (x) => ignoreTags.includes(x.type) || x.type === "comment",
     );
     const unfoldTags = tag.subTags.filter(
-      (x) => !ignoreTags.includes(x.type) && x.type !== "comment"
+      (x) => !ignoreTags.includes(x.type) && x.type !== "comment",
     );
     const content = serializeTags(newSubTags);
     const newTag = {

@@ -45,7 +45,7 @@ export interface TopProviderType {
 // view component) so the transport owns its own config; the view reads/writes it.
 export const openrouterCode = persistentSignal<string | null>(
   "openrouterCode",
-  null
+  null,
 );
 
 export {
@@ -56,11 +56,11 @@ export {
 
 export const customEndpoint = persistentSignal<string | null>(
   "customEndpoint",
-  null
+  null,
 );
 export const openrouterModel = persistentSignal<ModelType | null>(
   "openrouter",
-  null
+  null,
 );
 
 export const logSignal = signal<LlmLogType[]>([]);
@@ -108,12 +108,12 @@ export async function chat(request: ChatType) {
     } else {
       if (!openrouterCode.value) {
         throw new OpenRouterError(
-          "No OpenRouter API key found. Please connect to OpenRouter first."
+          "No OpenRouter API key found. Please connect to OpenRouter first.",
         );
       }
       if (!openrouterModel.value) {
         throw new OpenRouterError(
-          "No OpenRouter model selected. Please select a model first."
+          "No OpenRouter model selected. Please select a model first.",
         );
       }
 
@@ -194,12 +194,12 @@ function upliftInstructions(chat: ChatType): ChatType {
   // If we found instructions, insert them into the first system message or create one
   if (allInstructions.length > 0) {
     const systemMessages = newChat.messages.filter(
-      (msg) => msg.role === "system"
+      (msg) => msg.role === "system",
     );
     if (systemMessages.length > 0) {
       // Insert into the first system message
       const firstSystemIndex = newChat.messages.findIndex(
-        (msg) => msg.role === "system"
+        (msg) => msg.role === "system",
       );
       const firstSystem = newChat.messages[firstSystemIndex]!;
       if (firstSystem.content.includes("<insert-system />")) {
@@ -207,12 +207,12 @@ function upliftInstructions(chat: ChatType): ChatType {
           ...firstSystem,
           content: firstSystem.content.replace(
             /<insert-system\s*\/>/i,
-            allInstructions.join("\n")
+            allInstructions.join("\n"),
           ),
         };
       } else {
         throw new Error(
-          "Instructions were not inserted into system instruction"
+          "Instructions were not inserted into system instruction",
         );
       }
     } else {

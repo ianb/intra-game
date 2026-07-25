@@ -33,7 +33,7 @@ export type ChatFn = (request: ChatType) => Promise<string>;
  */
 export type ChatStreamFn = (
   request: ChatType,
-  onDelta: (delta: string) => void
+  onDelta: (delta: string) => void,
 ) => Promise<string>;
 
 /** A narrative tag currently arriving, for provisional display. */
@@ -150,19 +150,19 @@ export class Model {
         const path = pathTo(this.world, person.inside, dest);
         if (!path.length) {
           console.info(
-            `Person ${person.id} can't go from ${person.inside}=>${dest}`
+            `Person ${person.id} can't go from ${person.inside}=>${dest}`,
           );
           continue;
         }
         if (path.length === 1) {
           console.info(
             `Person ${person.id} goes directly from ${person.inside}=>${dest}${schedule.inside.length > 1 ? ` of ${schedule.inside}` : ""}`,
-            schedule.inside
+            schedule.inside,
           );
         } else {
           console.info(
             `Person ${person.id} goes from ${person.inside}=>${path[0]} to get to ${dest}${schedule.inside.length > 1 ? ` of ${schedule.inside}` : ""}`,
-            path
+            path,
           );
         }
         const change: ChangeType = {
@@ -277,17 +277,17 @@ export class Model {
       } else if (isPromptRequest(action)) {
         console.info(
           `Executing prompt request for ${action.id}:`,
-          action.parameters
+          action.parameters,
         );
         const entity = this.world.getEntity(action.id);
         if (!entity) {
           console.warn(
-            `Prompt action for entity ${action.id} which does not exist`
+            `Prompt action for entity ${action.id} which does not exist`,
           );
           continue;
         }
         await this.run(() =>
-          entity.executePrompt(this, action.parameters || {})
+          entity.executePrompt(this, action.parameters || {}),
         );
       } else {
         console.warn("Unknown action type", action);
@@ -372,7 +372,7 @@ export class Model {
             const nowSchedule = scheduleForTime(
               person,
               this.world.timestampMinutes,
-              schedule
+              schedule,
             );
             if (!person || !nowSchedule) {
               return [id, change];
@@ -392,7 +392,7 @@ export class Model {
             change.before.runningScheduleId = person.runningScheduleId;
             change.after.runningScheduleId = nowSchedule.id;
             return [id, change];
-          })
+          }),
       );
       this.addStoryEvent({
         id: "narrator",
@@ -547,4 +547,3 @@ export class Model {
     return Math.floor(Math.random() * sides) + 1;
   }
 }
-

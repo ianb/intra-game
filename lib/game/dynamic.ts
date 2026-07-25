@@ -17,6 +17,8 @@ export function fieldsOf(entity: object): Record<string, unknown> {
 }
 
 /** The world's entity map, indexed by id (missing ids give undefined). */
-export function entitiesById(entities: object): Record<EntityId, Entity | undefined> {
+export function entitiesById(
+  entities: object,
+): Record<EntityId, Entity | undefined> {
   return entities as unknown as Record<EntityId, Entity | undefined>;
 }

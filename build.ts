@@ -29,7 +29,9 @@ const buildOptions: BuildOptions = {
   jsx: "automatic",
   sourcemap: true,
   minify: !dev,
-  define: { "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production") },
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production"),
+  },
   // The `@/...` alias used throughout the app, matching tsconfig paths.
   alias: { "@": root },
   loader: { ".svg": "file", ".ico": "file" },
@@ -46,7 +48,7 @@ function buildCss() {
       resolve(outdir, "styles.css"),
       ...(dev ? [] : ["--minify"]),
     ],
-    { stdio: "inherit", shell: true }
+    { stdio: "inherit", shell: true },
   );
   if (result.status !== 0) {
     throw new Error(`tailwindcss exited with ${result.status}`);
@@ -77,7 +79,9 @@ async function main() {
   await ctx.watch();
   if (serve) {
     const { host, port } = await ctx.serve({ servedir: outdir, port: 3000 });
-    console.log(`Serving http://${host === "0.0.0.0" ? "localhost" : host}:${port}`);
+    console.log(
+      `Serving http://${host === "0.0.0.0" ? "localhost" : host}:${port}`,
+    );
   }
 }
 
