@@ -1,11 +1,11 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { stringify } from "yaml";
+import { parse, stringify } from "yaml";
 import type { ChatFn } from "../lib/game/model";
 import { cliChat } from "../playtest/clichat";
 import { runScenario, type ScenarioResult } from "./harness";
 import { openRouterChat } from "./openrouter";
-import type { ModelRun } from "./page";
+import type { ModelRun, ResultsFile } from "./page";
 import { writeReports, RESULTS_DIR, SUMMARY, PAGE } from "./report";
 import { EVAL_SCENARIOS } from "./scenarios";
 
@@ -48,6 +48,33 @@ function backendFor(name: string, model: string): ChatFn {
     return cliChat({ model });
   }
   throw new Error(`Unknown backend "${name}" (expected cli or openrouter)`);
+}
+
+/**
+ * Fold a run into whatever is already recorded for the day.
+ *
+ * Running one scenario, or one model, must not throw away the rest of the day's
+ * record — `--scenario mystery` used to leave a results file claiming that was
+ * the only thing ever measured. New results win where they overlap; everything
+ * else is left alone.
+ */
+function merge(path: string, runs: ModelRun[]): ModelRun[] {
+  if (!existsSync(path)) {
+    return runs;
+  }
+  const existing = (parse(readFileSync(path, "utf8")) as ResultsFile).runs;
+  const merged = existing.map((old) => {
+    const fresh = runs.find((r) => r.model === old.model);
+    if (!fresh) {
+      return old;
+    }
+    const kept = old.scenarios.filter(
+      (s) => !fresh.scenarios.some((f) => f.scenario === s.scenario),
+    );
+    return { ...fresh, scenarios: [...kept, ...fresh.scenarios] };
+  });
+  const added = runs.filter((r) => !existing.some((o) => o.model === r.model));
+  return [...merged, ...added];
 }
 
 async function main() {
@@ -93,7 +120,10 @@ async function main() {
   const date = new Date().toISOString().slice(0, 10);
   mkdirSync(RESULTS_DIR, { recursive: true });
   const path = join(RESULTS_DIR, `${date}.yaml`);
-  writeFileSync(path, stringify({ date, runs }, { lineWidth: 0 }));
+  writeFileSync(
+    path,
+    stringify({ date, runs: merge(path, runs) }, { lineWidth: 0 }),
+  );
   console.log(`\nwrote ${path}`);
   writeReports();
   console.log(`wrote ${SUMMARY} and ${PAGE}`);

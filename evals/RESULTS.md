@@ -9,8 +9,8 @@ checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
 ## 2026-07-25
 
-| model | intake | movement | in-character | total |
-| --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | **16/16** |
-| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | **16/16** |
+| model | intake | movement | in-character | mystery | total |
+| --- | --- | --- | --- | --- | --- |
+| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | **21/21** |
+| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | **21/21** |
 

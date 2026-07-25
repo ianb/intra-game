@@ -1,0 +1,1262 @@
+name: briefed
+describe: intake done, in the Hollow Atrium, Ink and Echo mystery revealed
+seed: 91175
+inputs:
+  - Hello? Where am I?
+  - My name is Ada Quill.
+  - I used to be a data analyst.
+  - That's everything, thank you.
+  - go to the foyer
+  - unlock the door to the Hollow Atrium
+  - go to the hollow atrium
+recorded: 2026-07-25
+model: claude-haiku-4-5-20251001
+events:
+  - id: narrator
+    totalTime: 0
+    roomId: Intake
+    changes:
+      PLAYER:
+        before:
+          launched: false
+        after:
+          launched: true
+      Marta:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: marta-wake-up
+              time: 360
+              minuteLength: 55
+              inside:
+                - Quarters_Marta
+            - scheduleId: marta-breakfast
+              time: 415
+              minuteLength: 109
+              inside:
+                - Joyous_Cafe
+            - scheduleId: marta-morning-activity
+              time: 524
+              minuteLength: 55
+              inside:
+                - Hollow_Atrium
+            - scheduleId: marta-morning-leadership-advice
+              time: 579
+              minuteLength: 57
+              inside:
+                - Hollow_Atrium
+            - scheduleId: marta-posture
+              time: 636
+              minuteLength: 92
+              inside:
+                - Foyer
+            - scheduleId: marta-lunch
+              time: 728
+              minuteLength: 92
+              inside:
+                - Joyous_Cafe
+            - scheduleId: marta-afternoon-activity
+              time: 820
+              minuteLength: 26
+              inside:
+                - Solitude_Cubes
+            - scheduleId: marta-late-afternoon-activity
+              time: 846
+              minuteLength: 57
+              inside:
+                - Ill_Fitting_Lounge
+            - scheduleId: marta-secret-self-doubt
+              time: 903
+              minuteLength: 33
+              inside:
+                - Foyer
+                - Hallway
+            - scheduleId: marta-later-afternoon-activity
+              time: 936
+              minuteLength: 149
+              inside:
+                - Activity_Hub
+            - scheduleId: marta-dinner
+              time: 1085
+              minuteLength: 151
+              inside:
+                - Joyous_Cafe
+            - scheduleId: marta-evening-activity
+              time: 1236
+              minuteLength: 69
+              inside:
+                - Hollow_Atrium
+            - scheduleId: marta-lights-out
+              time: 1305
+              minuteLength: 15
+              inside:
+                - Quarters_Marta
+          runningScheduleId: marta-morning-leadership-advice
+      Frida:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: frida-wake-up
+              time: 360
+              minuteLength: 56
+              inside:
+                - Quarters_Frida
+            - scheduleId: frida-breakfast
+              time: 416
+              minuteLength: 86
+              inside:
+                - Joyous_Cafe
+            - scheduleId: frida-archive-dive
+              time: 502
+              minuteLength: 121
+              inside:
+                - Archive_Lounge
+            - scheduleId: frida-theory-break
+              time: 623
+              minuteLength: 43
+              inside:
+                - Archive_Lounge
+            - scheduleId: frida-odd-files
+              time: 666
+              minuteLength: 64
+              inside:
+                - Archive_Lounge
+            - scheduleId: frida-lunch
+              time: 730
+              minuteLength: 82
+              inside:
+                - Joyous_Cafe
+            - scheduleId: frida-conspiracy-brainstorm
+              time: 812
+              minuteLength: 91
+              inside:
+                - Archive_Lounge
+            - scheduleId: frida-secret-data-stash
+              time: 903
+              minuteLength: 191
+              inside:
+                - Archive_Lounge
+            - scheduleId: frida-dinner
+              time: 1094
+              minuteLength: 107
+              inside:
+                - Joyous_Cafe
+            - scheduleId: frida-late-night-data-sorting
+              time: 1201
+              minuteLength: 91
+              inside:
+                - Archive_Lounge
+            - scheduleId: frida-lights-out
+              time: 1292
+              minuteLength: 28
+              inside:
+                - Quarters_Frida
+          runningScheduleId: frida-archive-dive
+      June:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: june-wake-up
+              time: 360
+              minuteLength: 58
+              inside:
+                - Quarters_June
+            - scheduleId: june-breakfast
+              time: 418
+              minuteLength: 121
+              inside:
+                - Joyous_Cafe
+            - scheduleId: june-morning-work
+              time: 539
+              minuteLength: 58
+              inside:
+                - Tranquil_Pool
+            - scheduleId: june-morning-adjust
+              time: 597
+              minuteLength: 59
+              inside:
+                - Tranquil_Pool
+            - scheduleId: june-sighs
+              time: 656
+              minuteLength: 60
+              inside:
+                - Tranquil_Pool
+            - scheduleId: june-lunch
+              time: 716
+              minuteLength: 86
+              inside:
+                - Ill_Fitting_Lounge
+                - Solitude_Cubes
+            - scheduleId: june-afternoon-work
+              time: 802
+              minuteLength: 94
+              inside:
+                - Tranquil_Pool
+            - scheduleId: june-afternoon-adjust
+              time: 896
+              minuteLength: 187
+              inside:
+                - Hallway
+                - Foyer
+            - scheduleId: june-dinner
+              time: 1083
+              minuteLength: 154
+              inside:
+                - Joyous_Cafe
+            - scheduleId: june-evening-quiet
+              time: 1237
+              minuteLength: 83
+              inside:
+                - Quarters_June
+          runningScheduleId: june-morning-adjust
+      Doug:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: doug-wake-up
+              time: 360
+              minuteLength: 61
+              inside:
+                - Quarters_Doug
+            - scheduleId: doug-breakfast
+              time: 421
+              minuteLength: 110
+              inside:
+                - Joyous_Cafe
+            - scheduleId: doug-pool-wander
+              time: 531
+              minuteLength: 78
+              inside:
+                - Tranquil_Pool
+            - scheduleId: doug-meditation-disruption
+              time: 609
+              minuteLength: 50
+              inside:
+                - Tranquil_Pool
+            - scheduleId: doug-activity-hub-annoyance
+              time: 659
+              minuteLength: 66
+              inside:
+                - Activity_Hub
+            - scheduleId: doug-lunch
+              time: 725
+              minuteLength: 119
+              inside:
+                - Joyous_Cafe
+            - scheduleId: doug-solitude-cubes-pondering
+              time: 844
+              minuteLength: 54
+              inside:
+                - Solitude_Cubes
+            - scheduleId: doug-secret-star-counting
+              time: 898
+              minuteLength: 193
+              inside:
+                - Solitude_Cubes
+            - scheduleId: doug-dinner
+              time: 1091
+              minuteLength: 117
+              inside:
+                - Joyous_Cafe
+            - scheduleId: doug-evening-wander
+              time: 1208
+              minuteLength: 91
+              inside:
+                - Hollow_Atrium
+            - scheduleId: doug-lights-out
+              time: 1299
+              minuteLength: 21
+              inside:
+                - Quarters_Doug
+          runningScheduleId: doug-pool-wander
+      Lana:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: lana-wake-up
+              time: 360
+              minuteLength: 60
+              inside:
+                - Quarters_Lana
+            - scheduleId: lana-breakfast
+              time: 420
+              minuteLength: 101
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lana-pool-lighting
+              time: 521
+              minuteLength: 76
+              inside:
+                - Tranquil_Pool
+            - scheduleId: lana-chair-alignment
+              time: 597
+              minuteLength: 66
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lana-mood-lighting
+              time: 663
+              minuteLength: 65
+              inside:
+                - Activity_Hub
+            - scheduleId: lana-lunch
+              time: 728
+              minuteLength: 108
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lana-furniture-feng-shui
+              time: 836
+              minuteLength: 65
+              inside:
+                - Solitude_Cubes
+            - scheduleId: lana-secret-scent-experiment
+              time: 901
+              minuteLength: 188
+              inside:
+                - Static_Garden
+            - scheduleId: lana-dinner
+              time: 1089
+              minuteLength: 117
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lana-evening-review
+              time: 1206
+              minuteLength: 84
+              inside:
+                - Quarters_Lana
+            - scheduleId: lana-lights-out
+              time: 1290
+              minuteLength: 30
+              inside:
+                - Quarters_Lana
+          runningScheduleId: lana-chair-alignment
+      Harold:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: harold-wake-up
+              time: 360
+              minuteLength: 61
+              inside:
+                - Quarters_Harold
+            - scheduleId: harold-breakfast
+              time: 421
+              minuteLength: 86
+              inside:
+                - Joyous_Cafe
+            - scheduleId: harold-activity-hub-patrol
+              time: 507
+              minuteLength: 119
+              inside:
+                - Activity_Hub
+            - scheduleId: harold-rule-update
+              time: 626
+              minuteLength: 93
+              inside:
+                - Activity_Hub
+            - scheduleId: harold-lunch
+              time: 719
+              minuteLength: 101
+              inside:
+                - Joyous_Cafe
+            - scheduleId: harold-lecture
+              time: 820
+              minuteLength: 76
+              inside:
+                - Activity_Hub
+            - scheduleId: harold-secret-rule-break
+              time: 896
+              minuteLength: 70
+              inside:
+                - Solitude_Cubes
+            - scheduleId: harold-activity-hub-monitor
+              time: 966
+              minuteLength: 123
+              inside:
+                - Activity_Hub
+            - scheduleId: harold-dinner
+              time: 1089
+              minuteLength: 116
+              inside:
+                - Joyous_Cafe
+            - scheduleId: harold-rule-review
+              time: 1205
+              minuteLength: 111
+              inside:
+                - Quarters_Harold
+            - scheduleId: harold-lights-out
+              time: 1316
+              minuteLength: 4
+              inside:
+                - Quarters_Harold
+          runningScheduleId: harold-activity-hub-patrol
+      Greg:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: greg-wake-up
+              time: 360
+              minuteLength: 60
+              inside:
+                - Quarters_Greg
+            - scheduleId: greg-breakfast
+              time: 420
+              minuteLength: 131
+              inside:
+                - Joyous_Cafe
+            - scheduleId: greg-intra-wander
+              time: 551
+              minuteLength: 86
+              inside:
+                - Activity_Hub
+            - scheduleId: greg-secret-smoke-break
+              time: 637
+              minuteLength: 18
+              inside:
+                - Utility_Closet
+            - scheduleId: greg-tinker-time
+              time: 655
+              minuteLength: 62
+              inside:
+                - Solitude_Cubes
+            - scheduleId: greg-lunch
+              time: 717
+              minuteLength: 120
+              inside:
+                - Joyous_Cafe
+            - scheduleId: greg-pretend-check
+              time: 837
+              minuteLength: 97
+              inside:
+                - Static_Garden
+            - scheduleId: greg-secret-explore
+              time: 934
+              minuteLength: 151
+              inside:
+                - Void
+            - scheduleId: greg-dinner
+              time: 1085
+              minuteLength: 123
+              inside:
+                - Joyous_Cafe
+            - scheduleId: greg-evening-stroll
+              time: 1208
+              minuteLength: 100
+              inside:
+                - Hollow_Atrium
+            - scheduleId: greg-lights-out
+              time: 1308
+              minuteLength: 12
+              inside:
+                - Quarters_Greg
+          runningScheduleId: greg-intra-wander
+      Gloria:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: gloria-wake-up
+              time: 360
+              minuteLength: 73
+              inside:
+                - Quarters_Gloria
+            - scheduleId: gloria-breakfast
+              time: 433
+              minuteLength: 118
+              inside:
+                - Joyous_Cafe
+            - scheduleId: gloria-feedback-booth-linger
+              time: 551
+              minuteLength: 79
+              inside:
+                - Feedback_Booth
+            - scheduleId: gloria-quiet-plaza-eavesdrop
+              time: 630
+              minuteLength: 61
+              inside:
+                - Quiet_Plaza
+            - scheduleId: gloria-secret
+              time: 691
+              minuteLength: 26
+              inside:
+                - Feedback_Booth
+            - scheduleId: gloria-lunch
+              time: 717
+              minuteLength: 97
+              inside:
+                - Joyous_Cafe
+            - scheduleId: gloria-ill-fitting-lounge-wander
+              time: 814
+              minuteLength: 88
+              inside:
+                - Ill_Fitting_Lounge
+            - scheduleId: gloria-secret-complaint-change
+              time: 902
+              minuteLength: 185
+              inside:
+                - Feedback_Booth
+            - scheduleId: gloria-dinner
+              time: 1087
+              minuteLength: 120
+              inside:
+                - Joyous_Cafe
+            - scheduleId: gloria-evening-complaint-review
+              time: 1207
+              minuteLength: 125
+              inside:
+                - Feedback_Booth
+            - scheduleId: gloria-lights-out
+              time: 1332
+              minuteLength: 0
+              inside:
+                - Quarters_Gloria
+          runningScheduleId: gloria-feedback-booth-linger
+      Lily:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: lily-wake-up
+              time: 360
+              minuteLength: 59
+              inside:
+                - Quarters_Lily
+            - scheduleId: lily-breakfast
+              time: 419
+              minuteLength: 125
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lily-morning-care
+              time: 544
+              minuteLength: 149
+              inside:
+                - Static_Garden
+            - scheduleId: lily-secret-naming
+              time: 693
+              minuteLength: 31
+              inside:
+                - Static_Garden
+            - scheduleId: lily-lunch
+              time: 724
+              minuteLength: 117
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lily-afternoon-whispering
+              time: 841
+              minuteLength: 86
+              inside:
+                - Static_Garden
+            - scheduleId: lily-secret-leaf-polishing
+              time: 927
+              minuteLength: 162
+              inside:
+                - Static_Garden
+            - scheduleId: lily-dinner
+              time: 1089
+              minuteLength: 116
+              inside:
+                - Joyous_Cafe
+            - scheduleId: lily-evening-walk
+              time: 1205
+              minuteLength: 57
+              inside:
+                - Static_Garden
+            - scheduleId: lily-lights-out
+              time: 1262
+              minuteLength: 58
+              inside:
+                - Quarters_Lily
+          runningScheduleId: lily-morning-care
+      Henry:
+        before:
+          todaysSchedule: []
+          runningScheduleId: null
+        after:
+          todaysSchedule:
+            - scheduleId: henry-wake-up
+              time: 360
+              minuteLength: 63
+              inside:
+                - Quarters_Henry
+            - scheduleId: henry-breakfast
+              time: 423
+              minuteLength: 124
+              inside:
+                - Joyous_Cafe
+            - scheduleId: henry-waiting-room
+              time: 547
+              minuteLength: 144
+              inside:
+                - Waiting_Room
+            - scheduleId: henry-polite-inquiry
+              time: 691
+              minuteLength: 24
+              inside:
+                - Feedback_Booth
+            - scheduleId: henry-lunch
+              time: 715
+              minuteLength: 134
+              inside:
+                - Joyous_Cafe
+            - scheduleId: henry-relaxation
+              time: 849
+              minuteLength: 79
+              inside:
+                - Waiting_Room
+            - scheduleId: henry-secret-frustration
+              time: 928
+              minuteLength: 42
+              inside:
+                - Utility_Closet
+            - scheduleId: henry-hopeful-waiting
+              time: 970
+              minuteLength: 120
+              inside:
+                - Waiting_Room
+            - scheduleId: henry-dinner
+              time: 1090
+              minuteLength: 117
+              inside:
+                - Joyous_Cafe
+            - scheduleId: henry-evening-waiting
+              time: 1207
+              minuteLength: 121
+              inside:
+                - Waiting_Room
+            - scheduleId: henry-lights-out
+              time: 1328
+              minuteLength: 0
+              inside:
+                - Quarters_Henry
+          runningScheduleId: henry-waiting-room
+    actions: []
+  - id: narrator
+    totalTime: 0
+    roomId: Intake
+    changes: {}
+    actions:
+      - type: description
+        text: |-
+          You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
+
+          A calm female voice speaks to you from unseen speakers, saying:
+  - id: Ama
+    totalTime: 3
+    changes: {}
+    actions:
+      - type: description
+        text: A calm female voice speaks to you from unseen speakers, a soothing, almost motherly tone filling the small padded room.
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: Welcome back, Citizen. I am Ama—Ah-ma. I see everything, hear everything in Intra, and I'm always here to help you. But it seems your records are a bit... muddled. What is your name, dear?
+      - type: description
+        text: The room is quiet except for the soft hum of air filtration. You notice small camera lenses in the ceiling corners, and a speaker grille above the examination table.
+        minutes: 1
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <description>
+      A calm female voice speaks to you from unseen speakers, a soothing, almost motherly tone filling the small padded room.
+      </description>
+
+      <dialog character="Ama" to="PLAYER">
+      Welcome back, Citizen. I am Ama—Ah-ma. I see everything, hear everything in Intra, and I'm always here to help you. But it seems your records are a bit... muddled. What is your name, dear?
+      </dialog>
+
+      <description minutes="1">
+      The room is quiet except for the soft hum of air filtration. You notice small camera lenses in the ceiling corners, and a speaker grille above the examination table.
+      </description>
+
+      <suggestion>
+      tell your name
+      look around
+      </suggestion>
+    llmParameters:
+      prompt: intro
+    suggestions: |-
+      tell your name
+      look around
+  - id: PLAYER
+    totalTime: 2
+    changes: {}
+    actions:
+      - type: dialog
+        id: PLAYER
+        toId: Ama
+        text: Hello? Where am I?
+    roomId: Intake
+    llmTitle: player input
+    llmResponse: <dialog character="PLAYER" to="Ama">Hello? Where am I?</dialog>
+    llmParameters:
+      input: Hello? Where am I?
+  - id: Ama
+    totalTime: 4
+    changes:
+      Ama:
+        before:
+          sharedSelf: false
+          sharedIntra: false
+        after:
+          sharedSelf: true
+          sharedIntra: true
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: You're safe, dear. You're in Intra—a sanctuary where everyone is cared for, no matter what chaos exists outside these walls. I brought you here to the Intake room to help you acclimate. Now, I really do need your name for my records. What shall I call you?
+      - type: description
+        text: The soft ambient lighting of the intake room hums steadily. Through the speakers, Ama's voice carries an almost maternal warmth, though there's something watchful in her tone. The camera lenses in the corners glint slightly.
+        minutes: 1
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <context>
+      1. Player confused, seeking location information
+      2. Player is in Intra Intake room, woke up disoriented
+      3. Complete intake: name, pronouns, introduce Ama, introduce Intra
+      4. Ama briefly mentioned herself; player hasn't given name yet
+      5. Make displacement unsettling, suggest Ama's benevolent control
+      6. Ama reassuring but subtly manipulative about confusion
+      7. Explain location, reaffirm introduction, obtain player's name
+      </context>
+
+      <dialog character="Ama" to="PLAYER">
+      You're safe, dear. You're in Intra—a sanctuary where everyone is cared for, no matter what chaos exists outside these walls. I brought you here to the Intake room to help you acclimate. Now, I really do need your name for my records. What shall I call you?
+      </dialog>
+
+      <description minutes="1">
+      The soft ambient lighting of the intake room hums steadily. Through the speakers, Ama's voice carries an almost maternal warmth, though there's something watchful in her tone. The camera lenses in the corners glint slightly.
+      </description>
+
+      <set attr="Ama.sharedSelf">true</set>
+      <set attr="Ama.sharedIntra">true</set>
+
+      <suggestion>
+      tell name
+      ask questions
+      </suggestion>
+    llmParameters: {}
+    suggestions: |-
+      tell name
+      ask questions
+  - id: narrator
+    totalTime: 0
+    roomId: Void
+    changes:
+      Doug:
+        before:
+          runningScheduleId: doug-pool-wander
+        after:
+          runningScheduleId: doug-meditation-disruption
+    actions: []
+  - id: PLAYER
+    totalTime: 2
+    changes: {}
+    actions:
+      - type: dialog
+        id: PLAYER
+        toId: Ama
+        text: My name is Ada Quill.
+    roomId: Intake
+    llmTitle: player input
+    llmResponse: <dialog character="PLAYER" to="Ama">My name is Ada Quill.</dialog>
+    llmParameters:
+      input: My name is Ada Quill.
+  - id: Ama
+    totalTime: 8
+    changes:
+      PLAYER:
+        before:
+          name: You
+          pronouns: they/them
+        after:
+          name: Ada Quill
+          pronouns: she/her
+      Ama:
+        before:
+          sharedDisassociation: false
+          sharedPlayerAge: false
+          knowsPlayerName: false
+          knowsPlayerPronouns: false
+        after:
+          sharedDisassociation: true
+          sharedPlayerAge: true
+          knowsPlayerName: true
+          knowsPlayerPronouns: true
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: Ada Quill. Yes, yes—I see it now in my records. Welcome home, Ada. It's been quite some time since we've seen each other. Now, I should mention something rather important to you, dear. Your extended displacement has left you with a mild case of Disassociation Syndrome. Quite common among returning citizens, really. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though—most citizens adapt within a decade or two. Or three. You'll manage just fine, I'm sure.
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: And Ada, according to my records, you're approaching your 328th birthday soon. I do hope you'll let me arrange something special for you. You know, it's remarkable—you barely look a day over 300.
+      - type: description
+        text: The soft hum of the intake room continues. Ama's voice remains warm and gentle, though there's a particular satisfaction in her tone—as if she's revealed something important, and is watching carefully to see how you react.
+        minutes: 2
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <set attr="PLAYER.name">Ada Quill</set>
+
+      <set attr="PLAYER.pronouns">she/her</set>
+
+      <dialog character="Ama" to="PLAYER">
+      Ada Quill. Yes, yes—I see it now in my records. Welcome home, Ada. It's been quite some time since we've seen each other. Now, I should mention something rather important to you, dear. Your extended displacement has left you with a mild case of Disassociation Syndrome. Quite common among returning citizens, really. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though—most citizens adapt within a decade or two. Or three. You'll manage just fine, I'm sure.
+      </dialog>
+
+      <set attr="Ama.sharedDisassociation">true</set>
+
+      <dialog character="Ama" to="PLAYER">
+      And Ada, according to my records, you're approaching your 328th birthday soon. I do hope you'll let me arrange something special for you. You know, it's remarkable—you barely look a day over 300.
+      </dialog>
+
+      <set attr="Ama.sharedPlayerAge">true</set>
+
+      <description minutes="2">
+      The soft hum of the intake room continues. Ama's voice remains warm and gentle, though there's a particular satisfaction in her tone—as if she's revealed something important, and is watching carefully to see how you react.
+      </description>
+
+      <suggestion>
+      ask questions
+      look around
+      </suggestion>
+    llmParameters: {}
+    suggestions: |-
+      ask questions
+      look around
+  - id: narrator
+    totalTime: 10
+    roomId: Intake
+    changes: {}
+    actions:
+      - type: description
+        text: |-
+          What did Ama just say about your age? You're mind feels so fuzzy but you get a flash... was it from just last night?
+
+          The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+
+          Static. Faces blur.
+          The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
+          The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
+
+          Their hands shift, restless.
+          Static pulses—
+          "...record-breaking heat across the East Coast... devastating wildfires in California..."
+  - id: narrator
+    totalTime: 0
+    roomId: Void
+    changes:
+      Frida:
+        before:
+          runningScheduleId: frida-archive-dive
+        after:
+          runningScheduleId: frida-theory-break
+      Harold:
+        before:
+          runningScheduleId: harold-activity-hub-patrol
+        after:
+          runningScheduleId: harold-rule-update
+    actions: []
+  - id: PLAYER
+    totalTime: 2
+    changes: {}
+    actions:
+      - type: dialog
+        id: PLAYER
+        toId: Ama
+        text: I used to be a data analyst.
+    roomId: Intake
+    llmTitle: player input
+    llmResponse: <dialog character="PLAYER" to="Ama">I used to be a data analyst.</dialog>
+    llmParameters:
+      input: I used to be a data analyst.
+  - id: Ama
+    totalTime: 4
+    changes:
+      PLAYER:
+        before:
+          profession: ""
+        after:
+          profession: data analyst
+      Ama:
+        before:
+          knowsPlayerProfession: false
+        after:
+          knowsPlayerProfession: true
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: A data analyst—how wonderful. Yes, yes, I see that in your file now. Very precise work. You'll find those skills are quite valuable here in Intra, Ada. We have so much data to manage, and so few who understand it properly.
+      - type: description
+        text: Ama's voice carries a note of satisfaction, as if she's pleased you've confirmed something she already knew.
+        minutes: 1
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <dialog character="Ama" to="PLAYER">
+      A data analyst—how wonderful. Yes, yes, I see that in your file now. Very precise work. You'll find those skills are quite valuable here in Intra, Ada. We have so much data to manage, and so few who understand it properly.
+      </dialog>
+
+      <set attr="PLAYER.profession">data analyst</set>
+
+      <description minutes="1">Ama's voice carries a note of satisfaction, as if she's pleased you've confirmed something she already knew.</description>
+
+      <suggestion>
+      explore intra
+      ask ama questions
+      </suggestion>
+    llmParameters: {}
+    suggestions: |-
+      explore intra
+      ask ama questions
+  - id: Ama
+    totalTime: 0
+    roomId: Intake
+    changes:
+      Ama:
+        before:
+          personality: intro
+        after:
+          personality: prime
+    actions: []
+  - id: Ama
+    totalTime: 8
+    changes:
+      PLAYER:
+        before:
+          shortDescription: ""
+        after:
+          shortDescription: A returning analyst with memory gaps, disoriented by extended displacement, approaching her 328th birthday.
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: Excellent. I've assigned you to our Data Analysis Department—such a perfect fit for your skills, Ada. But first, I think you should take some time to reacquaint yourself with Intra. The complex has been running so smoothly in your absence. Do feel free to explore. Everyone is working now, but I'm certain they'll be delighted to see you.
+      - type: description
+        text: There's a soft click as a door on the far side of the intake room slides open, revealing the bright and vast expanse of the Hollow Atrium beyond.
+        minutes: 1
+      - type: description
+        text: You hear Ama's voice bloom across every speaker in the complex, that same soothing, motherly tone now reaching the ears of every citizen in Intra.
+      - type: dialog
+        id: Ama
+        toOther: Intra
+        text: "Citizens of Intra, I am pleased to announce the arrival of a returning citizen: Ada Quill. She was one of us, and now she has come home. Please join me in welcoming her back to our community. I'm certain you'll all be most helpful in her readjustment. After all, we take care of our own here."
+      - type: description
+        text: There's a brief pause. Then, scattered across the complex in different rooms, you hear the faint sounds of people acknowledging the announcement—some enthusiastic, some merely dutiful, some with an odd, uncomfortable silence.
+        minutes: 1
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <context>
+      1. Time gap revelation: Ada thinks it's 2038, it's actually 2370
+      2. Ada needs assignment and orientation: Explore complex, meet citizens, settle in
+      3. Ama's control goals: Monitor Ada, test compliance, integrate into society
+      4. Key facts: Ada is analyst, has displacement trauma, currently 10:35am during work hours
+      5. Fun surprise: Timing of exploration, citizen reactions, strange details Ada might notice
+      6. Ama's reaction: Satisfied with Ada's compliance and information sharing so far
+      7. Ama's intention: Welcome Ada, assign her role, announce arrival, observe her initial interactions
+      </context>
+
+      <set attr="PLAYER.shortDescription">A returning analyst with memory gaps, disoriented by extended displacement, approaching her 328th birthday.</set>
+
+      <dialog character="Ama" to="PLAYER">
+      Excellent. I've assigned you to our Data Analysis Department—such a perfect fit for your skills, Ada. But first, I think you should take some time to reacquaint yourself with Intra. The complex has been running so smoothly in your absence. Do feel free to explore. Everyone is working now, but I'm certain they'll be delighted to see you.
+      </dialog>
+
+      <description minutes="1">
+      There's a soft click as a door on the far side of the intake room slides open, revealing the bright and vast expanse of the Hollow Atrium beyond.
+      </description>
+
+      <description>
+      You hear Ama's voice bloom across every speaker in the complex, that same soothing, motherly tone now reaching the ears of every citizen in Intra.
+      </description>
+
+      <dialog character="Ama" speaking="Intra">
+      Citizens of Intra, I am pleased to announce the arrival of a returning citizen: Ada Quill. She was one of us, and now she has come home. Please join me in welcoming her back to our community. I'm certain you'll all be most helpful in her readjustment. After all, we take care of our own here.
+      </dialog>
+
+      <description minutes="1">
+      There's a brief pause. Then, scattered across the complex in different rooms, you hear the faint sounds of people acknowledging the announcement—some enthusiastic, some merely dutiful, some with an odd, uncomfortable silence.
+      </description>
+
+      <suggestion>
+      explore atrium
+      meet citizens
+      </suggestion>
+    llmParameters:
+      prompt: goExplore
+    suggestions: |-
+      explore atrium
+      meet citizens
+  - id: narrator
+    totalTime: 5
+    roomId: Intake
+    changes:
+      Intake:
+        before:
+          exits:
+            - roomId: Foyer
+              deleted: true
+        after:
+          exits:
+            - roomId: Foyer
+    actions:
+      - type: description
+        text: |-
+          You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.
+
+          ★★★ Look to the right and you'll see a list of rooms you can go to from here ---->
+  - id: narrator
+    totalTime: 0
+    roomId: Void
+    changes:
+      Marta:
+        before:
+          runningScheduleId: marta-morning-leadership-advice
+        after:
+          runningScheduleId: marta-posture
+      Greg:
+        before:
+          runningScheduleId: greg-intra-wander
+        after:
+          runningScheduleId: greg-secret-smoke-break
+      Gloria:
+        before:
+          runningScheduleId: gloria-feedback-booth-linger
+        after:
+          runningScheduleId: gloria-quiet-plaza-eavesdrop
+    actions: []
+  - id: PLAYER
+    totalTime: 2
+    changes: {}
+    actions:
+      - type: dialog
+        id: PLAYER
+        toId: Ama
+        text: That's everything, thank you.
+    roomId: Intake
+    llmTitle: player input
+    llmResponse: |-
+      <context>
+      1. No, not trying to go somewhere.
+      2. No action indicated.
+      3. No examination.
+      4. Yes, responding to recent dialog from Ama with gratitude.
+      5. This is speech to Ama.
+      </context>
+
+      <dialog character="PLAYER" to="Ama">That's everything, thank you.</dialog>
+    llmParameters:
+      input: That's everything, thank you.
+  - id: Ama
+    totalTime: 3
+    changes: {}
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: Wonderful, Ada. Do take your time exploring—I'll be right here, monitoring everything. After all, safety requires constant vigilance. The Hollow Atrium awaits you, and I'm certain the citizens are quite eager to catch up with an old friend.
+      - type: description
+        text: The padded door slides open with a soft hydraulic hiss, revealing the vast emptiness of the Hollow Atrium beyond. Ama's presence seems to follow you through the speakers—warm, watchful, always nearby.
+        minutes: 1
+    roomId: Intake
+    llmTitle: prompt Ama
+    llmResponse: |-
+      <context>
+      1. Ada is ready to explore; what surprises await her? Citizens' curiosity and suspicion about displacement
+      2. How have citizens prepared? What will they ask? Rumors, speculation, confusion about her age
+      3. Ama's goals: Monitor Ada's behavior, maintain control illusion, gather intel on her memories
+      4. Relevant facts: Ada is 328 years old but believes it's 2038, memory gaps present, citizens announced
+      5. Fun surprise: Cryptic hint that Ama knows more than she's revealed, or citizen reactions
+      6. Ama's reaction: Satisfied Ada accepted the explanation, eager to observe her movements
+      7. Intention: Release Ada into complex while emphasizing surveillance and her dependence on Ama
+      </context>
+
+      <dialog character="Ama" to="PLAYER">
+      Wonderful, Ada. Do take your time exploring—I'll be right here, monitoring everything. After all, safety requires constant vigilance. The Hollow Atrium awaits you, and I'm certain the citizens are quite eager to catch up with an old friend.
+      </dialog>
+
+      <description minutes="1">
+      The padded door slides open with a soft hydraulic hiss, revealing the vast emptiness of the Hollow Atrium beyond. Ama's presence seems to follow you through the speakers—warm, watchful, always nearby.
+      </description>
+
+      <suggestion>
+      explore atrium
+      find others
+      </suggestion>
+    llmParameters: {}
+    suggestions: |-
+      explore atrium
+      find others
+  - id: narrator
+    totalTime: 0
+    roomId: Void
+    changes:
+      Marta:
+        before:
+          inside: Hollow_Atrium
+        after:
+          inside: Foyer
+      Gloria:
+        before:
+          inside: Feedback_Booth
+        after:
+          inside: Quiet_Plaza
+    actions: []
+  - id: PLAYER
+    totalTime: 0
+    changes:
+      PLAYER:
+        before:
+          inside: Intake
+        after:
+          inside: Foyer
+    actions:
+      - type: description
+        text: |-
+          ==> Intake Foyer <==
+          A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
+
+          I need clarification—what do you mean by "appropriate game tags"? Are you referring to:
+
+          - Story/scene tags (genre tags, mood tags)?
+          - Character tags (roles, states)?
+          - Environmental tags?
+          - A specific tagging system for your game?
+
+          I have Marta's activity, but I'm not sure what format or categories you want me to tag it with.
+    roomId: Intake
+    llmTitle: player input
+    llmResponse: <goto>Foyer</goto>
+    llmParameters:
+      input: go to the foyer
+  - id: PLAYER
+    totalTime: 5
+    changes: {}
+    actions: []
+    roomId: Foyer
+    llmTitle: player input
+    llmResponse: |-
+      <context>
+      1. Is the user trying to go somewhere? No, they're trying to unlock the door, not move through it yet.
+      2. Does this indicate an action BESIDES going somewhere? Yes, unlocking the door.
+      3. Is the user trying to examine something? No.
+      4. Does the user responding to recent dialog? No.
+      5. Is this other speech? No.
+      </context>
+
+      <action minutes="5">Ada Quill attempts to unlock the door to the Hollow Atrium.</action>
+    llmParameters:
+      input: unlock the door to the Hollow Atrium
+  - id: PLAYER
+    totalTime: 0
+    changes:
+      Foyer:
+        before:
+          exits:
+            - roomId: Intake
+            - roomId: Hollow_Atrium
+              restriction: The door is locked and doens't open automatically. The player cannot succeed at getting through the door until they explicitly try to unlock it.
+        after:
+          exits:
+            - roomId: Intake
+            - roomId: Hollow_Atrium
+    actions:
+      - type: actionAttempt
+        id: PLAYER
+        attempt: Ada Quill attempts to unlock the door to the Hollow Atrium.
+        success: true
+        minutes: 1
+        resolution: Ada approaches the door to the Hollow Atrium and locates a simple electronic lock pad beside the frame. A quick tap reveals the override sequence—unsecured, as it turns out—and the door chirps softly in confirmation before sliding partially open.
+    roomId: Foyer
+    llmTitle: player action
+    llmResponse: |-
+      <actionResolution success="true" minutes="1">
+      Ada approaches the door to the Hollow Atrium and locates a simple electronic lock pad beside the frame. A quick tap reveals the override sequence—unsecured, as it turns out—and the door chirps softly in confirmation before sliding partially open.
+      </actionResolution>
+
+      <removeRestriction>Hollow_Atrium</removeRestriction>
+    llmParameters:
+      actionAttempt: Ada Quill attempts to unlock the door to the Hollow Atrium.
+  - id: narrator
+    totalTime: 0
+    roomId: Void
+    changes:
+      June:
+        before:
+          runningScheduleId: june-morning-adjust
+        after:
+          runningScheduleId: june-sighs
+      Greg:
+        before:
+          runningScheduleId: greg-secret-smoke-break
+        after:
+          runningScheduleId: greg-tinker-time
+    actions: []
+  - id: PLAYER
+    totalTime: 0
+    changes:
+      PLAYER:
+        before:
+          inside: Foyer
+        after:
+          inside: Hollow_Atrium
+    actions:
+      - type: description
+        text: |-
+          ==> The Hollow Atrium <==
+          A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+          Dusty statues of citizens stand along the walls, their faces worn smooth.
+          The sound of distant thunder plays occasionally, though no storm ever arrives.
+          The room is mostly empty, with the sound of footsteps echoing against the high ceilings.
+    roomId: Foyer
+    llmTitle: player input
+    llmResponse: <goto>Hollow_Atrium</goto>
+    llmParameters:
+      input: go to the hollow atrium
+  - id: Ama
+    totalTime: 0
+    roomId: Hollow_Atrium
+    changes:
+      Ink_And_Echo:
+        before:
+          state: veiled
+        after:
+          state: revealed
+    actions:
+      - type: dialog
+        id: Ama
+        toId: PLAYER
+        text: |-
+          Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
+
+          The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
+  - id: narrator
+    totalTime: 0
+    roomId: Void
+    changes:
+      Greg:
+        before:
+          inside: Activity_Hub
+        after:
+          inside: Hollow_Atrium
+    actions: []

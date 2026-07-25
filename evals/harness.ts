@@ -2,6 +2,7 @@ import { entities } from "../lib/game/content";
 import { Model } from "../lib/game/model";
 import type { StoryEventType } from "../lib/types";
 import { installSeededRandom } from "../playtest/seed";
+import { loadCheckpoint } from "./checkpoints";
 
 /**
  * Running a scenario against a model and scoring what came back.
@@ -30,6 +31,15 @@ export interface Scenario {
   seed: number;
   inputs: string[];
   checks: Check[];
+  /**
+   * A checkpoint to start from instead of a new game.
+   *
+   * Without this every scenario pays for intake before it can test anything
+   * else, which puts the later two thirds of the game out of reach: the model
+   * calls to walk there cost more than the thing being measured, and a failure
+   * anywhere on the way looks like a failure of whatever you were testing.
+   */
+  from?: string;
 }
 
 /**
@@ -157,7 +167,13 @@ export async function runScenario(
   let error: string | undefined;
 
   try {
-    model.checkLaunch();
+    if (scenario.from) {
+      // The log is the state, so replaying one puts the world exactly where
+      // that game was — same schedules, same rooms visited, same history.
+      model.replaceLog(loadCheckpoint(scenario.from).events);
+    } else {
+      model.checkLaunch();
+    }
     await settle(model);
     for (const input of scenario.inputs) {
       const before = model.updates.value.length;

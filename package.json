@@ -15,6 +15,7 @@
     "playtest:cache": "tsx playtest/cachemeasure.ts",
     "playtest:record": "tsx playtest/record.ts",
     "evals": "tsx evals/run.ts",
+    "evals:checkpoint": "tsx evals/recordcheckpoint.ts",
     "evals:report": "tsx evals/reportonly.ts",
     "lint:fix": "eslint . --fix",
     "lint:oxlint": "oxlint -A no-unused-vars",
