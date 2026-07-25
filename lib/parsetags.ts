@@ -137,7 +137,7 @@ export function parseTags(s: string, allowTags?: string[]): TagType[] {
   }
 }
 
-function parseAttrs(s: string): Record<string, string> {
+export function parseAttrs(s: string): Record<string, string> {
   if (!s || !s.trim()) {
     return {};
   }
