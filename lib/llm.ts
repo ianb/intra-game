@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals-react";
+import { signal } from "@preact/signals-core";
 import OpenAI from "openai";
 import { persistentSignal } from "./persistentsignal";
 import { ChatType, LlmLogType } from "./types";

@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals-react";
+import { signal } from "@preact/signals-core";
 import { SignalType } from "./persistentsignal";
 
 type FuncType<T> = () => Promise<T>;

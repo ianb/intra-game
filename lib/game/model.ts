@@ -1,4 +1,4 @@
-import { computed } from "@preact/signals-react";
+import { computed } from "@preact/signals-core";
 import { persistentSignal, SignalType } from "../persistentsignal";
 import { TrackSettled } from "../tracksettled";
 import {

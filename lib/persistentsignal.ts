@@ -1,4 +1,4 @@
-import { signal, effect } from "@preact/signals-react";
+import { signal, effect } from "@preact/signals-core";
 
 export interface SignalType<T> {
   value: T;

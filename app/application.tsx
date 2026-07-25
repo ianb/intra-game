@@ -5,6 +5,7 @@ import sortBy from "just-sort-by";
 import React, { KeyboardEvent, useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { renderStoryAction } from "./renderstoryaction";
+import { asGraphviz } from "./map";
 import { soundtrackPlayer } from "./soundtrack";
 import { Clock } from "@/components/digitalnumerals";
 import { A, Button, CheckButton } from "@/components/input";
@@ -982,7 +983,7 @@ function LoadControls({ onDone }: { onDone: () => void }) {
 function Map() {
   useSignals();
   const zoomed = useSignal(false);
-  const g = model.world.asGraphviz(revealMap.value);
+  const g = asGraphviz(model.world, revealMap.value);
   const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
   return (
     <div className="flex justify-center mt-1">
