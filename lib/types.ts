@@ -21,6 +21,9 @@ export interface StoryEventType {
   llmError?: { context: string; description: string };
   suggestions?: string;
   triggers?: Record<EntityId, string>;
+  // Set on an undo marker: supersedes this many preceding live events. The
+  // log stays append-only; see lib/game/rewind.ts.
+  rewind?: number;
 }
 export type StoryActionType =
   | StoryDialogType

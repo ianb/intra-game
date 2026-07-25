@@ -241,7 +241,7 @@ export class World {
       newEntities[key].world = this;
     }
     this.entities = newEntities as AllEntitiesType;
-    for (const update of this.model.updates.value) {
+    for (const update of this.model.liveUpdates.value) {
       this.applyStoryEvent(update);
     }
   }

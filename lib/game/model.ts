@@ -16,6 +16,7 @@ import { World } from "./world";
 import { AllEntitiesType, entities } from "./gameobjs";
 import { scheduleForTime } from "./scheduler";
 import { pathTo } from "./pathto";
+import { applyRewinds, lastTurnLength } from "./rewind";
 
 export type ChatFn = (request: ChatType) => Promise<string>;
 
@@ -36,6 +37,12 @@ export class Model {
   world: World;
   promiseQueue: TrackSettled;
   updatesWithPositions: SignalType<StoryEventWithPositionsType[]>;
+  /**
+   * The events still in effect. `updates` is the full append-only log (and the
+   * audit record); this is that log with undone turns filtered out. Everything
+   * that reflects game state should read this, not `updates`.
+   */
+  liveUpdates: SignalType<StoryEventType[]>;
   nextRollOverride: number | null = null;
   chat: ChatFn;
 
@@ -46,6 +53,7 @@ export class Model {
     }
     this.promiseQueue = new TrackSettled();
     this.updates = persistentSignal<StoryEventType[]>("updates", []);
+    this.liveUpdates = computed(() => applyRewinds(this.updates.value));
     this.updatesWithPositions = computed(() => this._eventsWithPositions());
     this.world = new World({
       original: startingEntities,
@@ -149,8 +157,8 @@ export class Model {
   isDeferringSchedule(person: Person) {
     let playerEvents = 0;
     let personEvents = 0;
-    for (let i = this.updates.value.length - 1; i >= 0; i--) {
-      const update = this.updates.value[i]!;
+    for (let i = this.liveUpdates.value.length - 1; i >= 0; i--) {
+      const update = this.liveUpdates.value[i]!;
       if (update.id === "player") {
         playerEvents++;
       } else if (update.id === person.id) {
@@ -200,8 +208,8 @@ export class Model {
 
   recentReferencedEntities(): EntityId[] {
     let result: EntityId[] = [];
-    for (let i = this.updates.value.length - 1; i >= 0; i--) {
-      const update = this.updates.value[i]!;
+    for (let i = this.liveUpdates.value.length - 1; i >= 0; i--) {
+      const update = this.liveUpdates.value[i]!;
       for (let j = update.actions.length - 1; j >= 0; j--) {
         const action = update.actions[j]!;
         if (isStoryDialog(action) && action.toId) {
@@ -214,7 +222,7 @@ export class Model {
         break;
       }
     }
-    const lastUpdate = this.updates.value.at(-1);
+    const lastUpdate = this.liveUpdates.value.at(-1);
     if (lastUpdate && lastUpdate.triggers) {
       for (const id of Object.keys(lastUpdate.triggers)) {
         result = [id, ...result.filter((e) => e !== id)];
@@ -279,7 +287,7 @@ export class Model {
         console.warn("Entity not in room and no path to room", notInRoom);
       }
     }
-    for (const update of this.updates.value) {
+    for (const update of this.liveUpdates.value) {
       const insideUpdates = new Map<string, string>();
       for (const [id, change] of Object.entries(update.changes)) {
         if (change.after.inside) {
@@ -412,17 +420,32 @@ export class Model {
     return resp;
   }
 
+  /**
+   * Undo the last player turn.
+   *
+   * Appends a rewind marker rather than deleting anything, so the log stays
+   * append-only and the undone turn remains visible to an auditor. Returns the
+   * input that was undone, so redo can replay it.
+   */
   undo(): string {
-    const updates = [...this.updates.value];
-    while (updates.length && !isUserInput(updates.at(-1)!)) {
-      updates.pop();
+    const live = this.liveUpdates.value;
+    const count = lastTurnLength(live);
+    if (!count) {
+      return "";
     }
-    let lastInput = "";
-    if (updates.length && isUserInput(updates.at(-1)!)) {
-      const update = updates.pop()!;
-      lastInput = (update.llmParameters?.input as string) || lastInput;
-    }
-    this.updates.value = updates;
+    const undone = live[live.length - count]!;
+    const lastInput = (undone.llmParameters?.input as string) || "";
+    this.updates.value = [
+      ...this.updates.value,
+      {
+        id: "narrator",
+        totalTime: 0,
+        roomId: "Void",
+        changes: {},
+        actions: [],
+        rewind: count,
+      },
+    ];
     this.world = new World({
       original: this.world.original,
       model: this,
@@ -486,10 +509,6 @@ export interface SaveListType {
   title: string;
   slug: string;
   date: string;
-}
-
-function isUserInput(update: StoryEventType) {
-  return !!(update.id === "player" && update.llmParameters?.input);
 }
 
 function formatDate(date: Date) {

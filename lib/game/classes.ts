@@ -531,8 +531,8 @@ export class Person<
   override assemblePrompt(parameters: ParametersT): ChatType {
     const lastTo = this.lastSpokeTo()?.id || "";
     let hasInteracted = false;
-    for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
-      const update = this.world.model.updates.value[i]!;
+    for (let i = this.world.model.liveUpdates.value.length - 1; i >= 0; i--) {
+      const update = this.world.model.liveUpdates.value[i]!;
       if (update.id === this.id) {
         for (const action of update.actions) {
           if (isStoryDialog(action) && action.toId === "player") {
@@ -716,8 +716,8 @@ export class Person<
       }
       return person;
     };
-    for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
-      const update = this.world.model.updates.value[i]!;
+    for (let i = this.world.model.liveUpdates.value.length - 1; i >= 0; i--) {
+      const update = this.world.model.liveUpdates.value[i]!;
       const dialogs = update.actions.filter(isStoryDialog);
       const dialog = dialogs.at(-1);
       if (dialog && (update.id === this.id || dialog.toId === this.id)) {
@@ -1007,8 +1007,8 @@ export class AmaClass extends Person<AmaParametersType> {
         4 * 60;
       let goBackMinutes = this.world.timestampMinutes - earlyDate;
       // Maybe we need a wakeup...
-      for (let i = this.world.model.updates.value.length - 1; i >= 0; i--) {
-        const update = this.world.model.updates.value[i]!;
+      for (let i = this.world.model.liveUpdates.value.length - 1; i >= 0; i--) {
+        const update = this.world.model.liveUpdates.value[i]!;
         goBackMinutes -= update.totalTime;
         if (goBackMinutes < 0) {
           // She hasn't woken the user up yet
