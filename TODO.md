@@ -158,6 +158,16 @@ original write-up, plus whatever the last few sessions turned up.
 
 ### Tooling
 
+- **The sliding history makes caching stop at the system message** `engine` `L`
+  — `historyForEntity` returns the last N events, so once the window fills,
+  every turn drops the oldest message and this turn's history isn't a prefix of
+  the last one. Combined with the volatile system content sitting _before_ the
+  history, the cacheable prefix is ~1484 tokens of a ~2671-token request and
+  cannot grow (`pnpm playtest:cache`). Fixing it needs both halves: move the
+  volatile system text after the history, and re-anchor the window in chunks
+  (hold it for K turns, then jump) instead of sliding by one, which buys K-1
+  hits out of K. Trades directly against context bloat, so it wants numbers
+  before it wants code.
 - **Nothing actually asks for prompt caching** `engine` `M` — there is no
   `cache_control` anywhere in `lib/llm.ts`, `worker/aigateway.ts` or
   `evals/openrouter.ts`. Anthropic caching is opt-in per content block, and the
@@ -168,9 +178,12 @@ original write-up, plus whatever the last few sessions turned up.
   blocks, and mark the stable one. Do it for the character prompts only —
   `pnpm playtest:cache` says they are ~2530 tokens with 86% stable, while every
   player-side prompt is 480–870 tokens and under Anthropic's 1024-token
-  minimum, so no ordering could make them cacheable. Needs testing against a
-  real provider before it ships: a malformed content block fails the request,
-  which breaks the game rather than merely costing money.
+  minimum, so no ordering could make them cacheable. Note the cacheable region
+  is ~1484 tokens (see the item above), which clears the Sonnet-class minimum
+  but not the ~2048 for Haiku-class — the tier this game targets — so on Haiku
+  this buys nothing until the sliding-window problem is fixed too. Needs testing
+  against a real provider before it ships: a malformed content block fails the
+  request, which breaks the game rather than merely costing money.
 
 - **Keep Claude's voice out of the game** `content` `M` — see
   [CLAUDE.md](CLAUDE.md). The rule for now is "don't write content prose, and

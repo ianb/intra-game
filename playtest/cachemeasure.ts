@@ -74,6 +74,15 @@ for (const t of [
   "she/her",
   "I was a data analyst",
   "tell me about Intra",
+  "what is this place",
+  "who else lives here",
+  "tell me about the food",
+  "tell me about the rules",
+  "how long have I been here",
+  "what happens next",
+  "is anyone else awake",
+  "tell me about yourself",
+  "what should I do now",
   "look at the statues",
   "look at the ceiling",
   "look at the floor",
@@ -156,6 +165,34 @@ for (const kind of kinds) {
   report(
     `  ${kind}`,
     prompts.filter((p) => p.title === kind).map((p) => p.whole),
+  );
+}
+
+// The steady state, and the number that decides what can be cached in practice.
+//
+// The message array is [system, ...history, user], and historyForEntity returns
+// the *last* N events — a sliding window, not a growing conversation. So once
+// the window is full every turn drops the oldest message, the history differs
+// from the previous turn, and nothing after the system message can ever be part
+// of a shared prefix. The cacheable region is exactly the stable half of the
+// system message, no matter how long the game runs.
+const settled = prompts.filter((p) => p.title === "prompt Ama" && p.afterName);
+report(
+  "\nprompt Ama, steady state (whole request)",
+  settled.map((p) => p.whole),
+);
+report(
+  "prompt Ama, steady state (system only)",
+  settled.map((p) => p.text),
+);
+if (settled.length > 1) {
+  const cacheable = commonPrefix(settled.map((p) => p.whole));
+  const total = Math.round(
+    settled.reduce((a, p) => a + p.whole.length, 0) / settled.length,
+  );
+  console.log(
+    `  → cacheable prefix ~${tokens(cacheable)} tokens of ~${tokens(total)}; ` +
+      `the remaining ~${tokens(total - cacheable)} are re-read every turn`,
   );
 }
 

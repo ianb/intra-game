@@ -166,6 +166,41 @@ and that puts them under the floor; there is nothing to optimise there, and
 `player action` at 60% shared is a reminder that a good ratio on a small prompt
 is still worth nothing.
 
+### Where the cacheable part stops, and why
+
+For the one prompt worth caching, the steady state is:
+
+```
+prompt Ama, steady state: ~2671 tokens, of which ~1484 are a shared prefix
+  → ~1187 tokens re-read on every turn, for the whole game
+```
+
+The shared prefix ends exactly where the system message stops being stable. It
+never extends into the history, and no amount of play makes it longer, because
+of two things in the message array `[system, ...history, user]`:
+
+1. **The history is a sliding window, not a conversation.** `historyForEntity`
+   returns the _last_ N events (10 for a character, 3–4 for the player prompts).
+   Once the window is full, every turn drops the oldest message, so this turn's
+   history is not a prefix of the last one. A normal chat app caches almost
+   everything precisely because its history only ever grows; this one gives that
+   up by design.
+2. **The volatile half of the system message sits in front of the history.** The
+   time, the room, who is present, the task list. So even an append-only history
+   could not be cached — there is changing text before it either way.
+
+Making the history cacheable would need both: move the volatile system content
+_after_ the history, and re-anchor the window in chunks (hold it fixed for K
+turns, then jump) rather than sliding by one. That buys K-1 hits out of K
+instead of none. It is a real design change and it trades against context bloat,
+which is already on the known-problems list.
+
+Worth noting the awkward part of ~1484: it clears Anthropic's ~1024-token
+minimum for Sonnet-class models, and is **under the ~2048 minimum for
+Haiku-class** — which is the tier the game is written and playtested against. On
+the model this game actually targets, today's prompts would not be cached even
+if anything asked for it.
+
 (Token counts are chars/4, which is close enough for prompts that are far from
 the threshold. `player input` at ~870 is within estimation error of 1024, so
 that one would need a real tokenizer before anyone acts on it.)
