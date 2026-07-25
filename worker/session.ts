@@ -5,6 +5,7 @@ import { DEFAULT_FLASH_MODEL } from "../lib/models";
 import type { StoryEventType } from "../lib/types";
 import { gatewayChatStream } from "./aigateway";
 import { devChatStream } from "./devllm";
+import { SessionLog } from "./eventlog";
 
 /**
  * One game session: its event log, and the execution that appends to it.
@@ -27,7 +28,6 @@ import { devChatStream } from "./devllm";
 /** How the router tells a session who the Access-verified caller is. */
 export const OWNER_HEADER = "x-intra-owner";
 
-const LOG_KEY = "log";
 const OWNER_KEY = "owner";
 /** Deliberately separate from the log; see invariant 2 above. */
 const CREDENTIAL_KEY = "credential";
@@ -54,10 +54,12 @@ export interface SessionEnv {
 export class GameSession {
   private state: DurableObjectState;
   private env: SessionEnv;
+  private sessionLog: SessionLog;
 
   constructor(state: DurableObjectState, env: SessionEnv) {
     this.state = state;
     this.env = env;
+    this.sessionLog = new SessionLog(state.storage);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -91,15 +93,15 @@ export class GameSession {
     if (body.credential) {
       await this.state.storage.put(CREDENTIAL_KEY, body.credential);
     }
-    const log = await this.log();
-    return json({ owner, events: log.length });
+    return json({ owner, events: await this.sessionLog.count() });
   }
 
   /** The event log from a cursor, so a reconnecting client can catch up. */
   private async events(url: URL): Promise<Response> {
     const since = Number(url.searchParams.get("since") ?? "0") || 0;
-    const log = await this.log();
-    return json({ since, total: log.length, events: log.slice(since) });
+    // Reads only what the client is missing, rather than the whole game.
+    const events = await this.sessionLog.read(since);
+    return json({ since, total: await this.sessionLog.count(), events });
   }
 
   /**
@@ -123,7 +125,7 @@ export class GameSession {
     }
     const model = new Model(entities, { chatStream: backend });
 
-    const log = await this.log();
+    const log = await this.sessionLog.read();
     model.replaceLog(log);
     const before = model.updates.value.length;
 
@@ -150,7 +152,7 @@ export class GameSession {
         }
         const appended = model.updates.value.slice(before);
         if (appended.length) {
-          await this.append(appended);
+          await this.sessionLog.append(appended);
         }
         await send("events", appended);
       } catch (e) {
@@ -184,16 +186,6 @@ export class GameSession {
       model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
       providerKey: credential?.key,
     });
-  }
-
-  private async log(): Promise<StoryEventType[]> {
-    return (await this.state.storage.get<StoryEventType[]>(LOG_KEY)) ?? [];
-  }
-
-  /** Append events. The only mutation of the log there is. */
-  async append(events: StoryEventType[]): Promise<void> {
-    const log = await this.log();
-    await this.state.storage.put(LOG_KEY, [...log, ...events]);
   }
 }
 
