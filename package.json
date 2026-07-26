@@ -47,13 +47,11 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260724.1",
-    "@ianbicking/personal-vibe-check": "file:../../../workspace/callback-box/personal-vibe-check",
     "@preact/signals-react-transform": "^0.4.0",
     "@tapjs/core": "^4.5.8",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "agent-doctest": "file:../../../workspace/callback-box/agent-doctest",
     "eslint": "^9.39.5",
     "knip": "^6.29.0",
     "madge": "^8.0.0",
@@ -63,6 +61,10 @@
     "tap": "^21.7.4",
     "typescript": "^5",
     "wrangler": "^4.114.0"
+  },
+  "optionalDependencies": {
+    "@ianbicking/personal-vibe-check": "file:../../../workspace/callback-box/personal-vibe-check",
+    "agent-doctest": "file:../../../workspace/callback-box/agent-doctest"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

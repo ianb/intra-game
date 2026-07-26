@@ -48,9 +48,11 @@ original write-up, plus whatever the last few sessions turned up.
   additionally confirm the `cf-aig-authorization` header, which nothing has ever
   sent for real.
 - **Publish the callback-box dev deps** `tooling` `S` — `agent-doctest` and
-  `personal-vibe-check` are `file:` dependencies pointing outside the repo.
-  `pnpm install --prod` skips them so the Cloudflare builder is fine, but nobody
-  else can run the test suite.
+  `personal-vibe-check` are `file:` dependencies pointing outside the repo, so
+  nobody without that checkout can run the test suite or the linter. They are
+  `optionalDependencies` so at least `pnpm install` succeeds without them: as
+  devDependencies pnpm tried to link them even under `--prod`, which failed the
+  install outright and would have failed the first Cloudflare build.
 
 ## Next
 

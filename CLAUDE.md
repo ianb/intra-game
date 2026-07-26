@@ -1,7 +1,12 @@
 # Working in this repo
 
+**New here? Start with [docs/agent-install.md](./docs/agent-install.md)** — it
+gets you installed, explains how the engine is put together, and lists the traps
+that have already caught people.
+
 Orientation:
 
+- [INSTALL.md](./INSTALL.md) — setup, for playing, developing, or the server
 - [TODO.md](./TODO.md) — the issue list, and what's known to be broken
 - [docs/testing.md](./docs/testing.md) — doctests, cassettes, checkpoints
 - [docs/deploying.md](./docs/deploying.md) — the Cloudflare setup

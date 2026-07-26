@@ -4,6 +4,11 @@ This is a game written from September 27-29, 2024, for the [Text Adventure Hack]
 
 # Installation instructions
 
+**[INSTALL.md](./INSTALL.md) is the full setup**, covering playing it, working
+on it, and running the server locally. [docs/agent-install.md](./docs/agent-install.md)
+is the same thing plus a tour of the architecture and the tooling, for anyone
+(or anything) arriving cold.
+
 The game runs either way: entirely in your browser against your own model key,
 or on the server, where the engine runs in a Cloudflare Durable Object and the
 browser is just a renderer. Settings switches between them. It deploys to
@@ -29,6 +34,9 @@ The tech stack:
 4. In the game, go to Settings (⚙) and connect to OpenRouter.ai to access LLM models
 
 The game will work with free models, but you can also connect your own API keys through OpenRouter for access to premium models.
+
+If `pnpm install` fails, it's the two `file:` dependencies pointing at a
+callback-box checkout — [INSTALL.md](./INSTALL.md) covers both ways around it.
 
 ## Deploying
 

@@ -41,14 +41,20 @@ Dashboard → **Workers & Pages** → **Create** → **Import a repository**, an
 | Deploy command    | `npx wrangler deploy`                                 |
 | Root directory    | `/`                                                   |
 
-**The `--prod` matters.** Two devDependencies (`agent-doctest` and
-`@ianbicking/personal-vibe-check`) are `file:` paths into a callback-box
-checkout that only exists on your machine. A plain `pnpm install` in
-Cloudflare's builder would fail on them. `--prod` skips devDependencies
-entirely, and everything the build itself needs — esbuild, tsx, tailwindcss,
-postcss — is in `dependencies` for exactly this reason. Don't move them back
-without changing the build command too. (When callback-box is published this
-can all go back to a normal `pnpm install`.)
+**Why `--prod`, and why the tooling is optional.** `agent-doctest` and
+`@ianbicking/personal-vibe-check` are `file:` paths into a callback-box checkout
+that exists only on your machine, and the builder has no way to resolve them.
+`--prod` keeps them out of the build, and everything the build itself needs —
+esbuild, tsx, tailwindcss, postcss — is in `dependencies` for exactly that
+reason. Don't move those without changing the build command too.
+
+`--prod` alone was not enough, which is worth knowing before changing it back.
+As plain devDependencies pnpm still tried to _link_ them under `--prod` and
+failed with `ERR_PNPM_LINKED_PKG_DIR_NOT_FOUND`, so this build command would
+have failed the first deploy. They are `optionalDependencies` now, which pnpm
+skips when they can't be resolved. Verified by running the exact build command
+in a directory where those paths don't exist. (When callback-box is published,
+all of this can go back to a plain `pnpm install`.)
 
 The first build deploys to `https://intra-game.<your-subdomain>.workers.dev`.
 Open it: the game should load and be playable with your own OpenRouter key,
