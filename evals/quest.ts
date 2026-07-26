@@ -59,6 +59,8 @@ export interface QuestResult {
   roomsVisited: string[];
   /** Inputs repeated verbatim; a player going in circles. */
   repeats: number;
+  /** Turns where the first reply wasn't a command; see llmplayer.ts. */
+  fumbles: number;
   dropped: string[];
   ms: number;
   log: QuestTurn[];
@@ -137,6 +139,7 @@ export async function runQuest({
   const seen = new Set<string>();
   const log: QuestTurn[] = [];
   let repeats = 0;
+  let fumbles = 0;
   let error: string | undefined;
   let model: Model | undefined;
   let restore: () => void = () => undefined;
@@ -157,7 +160,10 @@ export async function runQuest({
       // Only what happened since the player last looked, so the transcript
       // isn't re-sent whole every turn.
       const view = playerView(model, cursor);
-      const { input } = await nextCommand(view);
+      const { input, fumbled } = await nextCommand(view);
+      if (fumbled) {
+        fumbles++;
+      }
       if (!input) {
         error = "player produced no command";
         break;
@@ -211,6 +217,7 @@ export async function runQuest({
       .filter((name) => !reached.has(name)),
     roomsVisited: [...rooms],
     repeats,
+    fumbles,
     dropped: [...new Set(classifyWarnings(captured.warnings).dropped)],
     ms: Date.now() - started,
     log,

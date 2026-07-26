@@ -85,6 +85,11 @@ async function main() {
   if (result.repeats) {
     console.log(`  repeated the same command ${result.repeats} time(s)`);
   }
+  if (result.fumbles) {
+    console.log(
+      `  had to be asked again for a command ${result.fumbles} time(s)`,
+    );
+  }
   for (const warning of result.dropped.slice(0, 3)) {
     console.log(`  dropped: ${warning.slice(0, 110)}`);
   }

@@ -38,7 +38,23 @@ something else instead.`;
 export interface PlayerTurn {
   input: string;
   raw: string;
+  /** True when the first reply wasn't a command and had to be asked for again. */
+  fumbled: boolean;
 }
+
+/**
+ * Replies that are a label rather than a command.
+ *
+ * Observed rather than imagined: in the first recorded quest the player spent 4
+ * of its 20 turns typing "location: Archive Console", echoing the format of the
+ * Archivist's terminal output back at the game. A turn thrown away like that
+ * measures nothing about the puzzle, which is the thing being measured, so it's
+ * worth one retry — and worth counting, so a weak player still shows as weak.
+ *
+ * Deliberately narrow. "Marta: I know it was you" is a player talking, and a
+ * looser rule would eat it.
+ */
+const NOT_A_COMMAND = /^(location|position|room|status|inventory|exits)\s*:/i;
 
 /**
  * Reduce a model's reply to the one line the game can take.
@@ -73,13 +89,28 @@ export function extractCommand(raw: string): string {
 export function llmPlayer(chat: ChatFn, options: { limit?: number } = {}) {
   const history: MessageType[] = [];
   const limit = options.limit ?? 30;
-  return async function nextCommand(view: PlayerViewType): Promise<PlayerTurn> {
-    history.push({ role: "user", content: renderPlayerView(view) });
-    const raw = await chat({
+  async function ask(): Promise<string> {
+    return chat({
       meta: { title: "llm player" },
       messages: [{ role: "system", content: SYSTEM }, ...history.slice(-limit)],
     });
+  }
+  return async function nextCommand(view: PlayerViewType): Promise<PlayerTurn> {
+    history.push({ role: "user", content: renderPlayerView(view) });
+    let raw = await ask();
+    let fumbled = false;
+    if (NOT_A_COMMAND.test(extractCommand(raw))) {
+      fumbled = true;
+      history.push({ role: "assistant", content: raw });
+      history.push({
+        role: "user",
+        content:
+          "That was not a command. Reply with one line saying what you do or " +
+          "say next, like `go to the archive lounge` or `ask Frida about the poems`.",
+      });
+      raw = await ask();
+    }
     history.push({ role: "assistant", content: raw });
-    return { input: extractCommand(raw), raw };
+    return { input: extractCommand(raw), raw, fumbled };
   };
 }

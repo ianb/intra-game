@@ -15,7 +15,7 @@ the hints are the answer, and they are never read.
 import { Model } from "../lib/game/model.js";
 import { entities } from "../lib/game/content/index.js";
 import { playerView, renderPlayerView } from "../evals/playerview.js";
-import { extractCommand } from "../evals/llmplayer.js";
+import { extractCommand, llmPlayer } from "../evals/llmplayer.js";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 
@@ -121,4 +121,32 @@ rather than inventing a turn the player didn't take:
 ```ts
 JSON.stringify(extractCommand("   \n  \n"));
 => ""
+```
+
+## Asking again for a command
+
+The first recorded quest spent 4 of its 20 turns typing "location: Archive
+Console" — the player echoing the format of the Archivist's terminal output back
+at the game. A thrown-away turn measures nothing about the puzzle, which is what
+the quest is for, so a reply that is a label rather than a command gets one
+retry. It is also counted, so a weak player still reads as weak rather than
+being quietly tidied up.
+
+The rule is deliberately narrow, because a player addressing someone by name
+looks similar and must survive:
+
+```ts
+const view = { room: "r", exits: [], people: [], todos: [], mysteries: [], transcript: [] };
+const replies = ["location: Archive Console", "go to the archive lounge"];
+const player = llmPlayer(async () => replies.shift()!);
+const turn = await player(view);
+[turn.input, turn.fumbled].join(" | ");
+=> go to the archive lounge | true
+```
+
+``` continue
+const speaking = llmPlayer(async () => "Marta: I know it was you");
+const said = await speaking(view);
+[said.input, said.fumbled].join(" | ");
+=> Marta: I know it was you | false
 ```
