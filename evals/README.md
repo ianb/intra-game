@@ -195,6 +195,44 @@ _right_ — and that's what running the scenarios both ways answers. Today only
 `player move` and `player action` are on the expensive one because that is what
 they have always been, not because anyone has checked.
 
+## Letting a model play
+
+Everything above scores whether a model can _run_ the game. This asks the
+opposite question — whether the game can be **solved** by someone who isn't the
+author:
+
+```bash
+pnpm evals:play                                      # both roles on the default model
+pnpm evals:play --player claude-sonnet-4-5-20250929  # a better player, same game
+```
+
+A quest starts from a checkpoint, shows the model exactly what the interface
+shows, and lets it type one line at a time until it solves the mystery or runs
+out of turns. `--player` and `--model` are separate because "this puzzle is
+unsolvable" and "this player is bad at adventure games" look identical from a
+single run, and varying them independently is the only way to tell them apart.
+
+**The scoring is milestones, not pass/fail.** Solved-or-not says nothing about
+_where_ a player got stuck, which is the entire reason to run this. The Ink and
+Echo quest tracks leaving the atrium, meeting one of the two people who found a
+note, reaching the Archivist, reaching Marta, and solving — so a run that stalls
+tells you which step is too hard to find. Repeated commands and rooms visited
+are recorded too, since a player going in circles is a different failure from a
+player exploring and coming up empty.
+
+**What the player sees is the whole design.** The engine holds the answer in
+plain English — one hint begins "Marta is actually Ink and Echo" — so a view
+built from world state would produce a confident number that means nothing.
+`playerview.ts` assembles the view from the interface instead: story events, the
+room, its exits, who is visibly present, the task list, and the _names_ of open
+mysteries. A name is the question; the hints are the answer, and they are never
+read. [test/playerview.doctest.md](../test/playerview.doctest.md) checks that by
+looking for the answer in the rendered view.
+
+Results go to `quests/`, one file per run, transcript included. These are slow
+and cost real calls — one player call plus several game calls per turn — so they
+are run deliberately rather than as part of `pnpm evals`.
+
 ## Backends
 
 `--backend cli` (the default) shells out to `claude -p`, which needs no API key

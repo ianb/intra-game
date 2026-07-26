@@ -18,6 +18,7 @@
     "evals": "tsx evals/run.ts",
     "checkpoint": "tsx playtest/recordcheckpoint.ts",
     "evals:report": "tsx evals/reportonly.ts",
+    "evals:play": "tsx evals/runquest.ts",
     "lint:fix": "eslint . --fix",
     "lint:oxlint": "oxlint -A no-unused-vars",
     "lint:circular": "madge --circular --extensions ts,tsx lib app components",

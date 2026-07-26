@@ -45,11 +45,10 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
-- **An LLM plays the game** `tooling` `L` — an eval where the model is the
-  _player_, not the narrator: give it the room description and its task list,
-  let it type, and score whether it solves the mystery. Starts from a checkpoint
-  so it doesn't re-solve intake every time. This is the only way to find out
-  whether the puzzles are solvable by someone who isn't already the author.
+- **More quests, and a baseline** `tooling` `M` — `pnpm evals:play` now lets a
+  model play Ink and Echo from the `briefed` checkpoint, scored on milestones.
+  One quest and one run is an anecdote: it needs the other mysteries, and enough
+  repeat runs to say whether a stall is the puzzle or the sampling.
 - **Evals that discriminate at the top** `tooling` `M` — the two Claude tiers
   score within a check of each other, so the scenarios establish a floor (where
   a model fails this game) and say nothing about which model plays it _best_.
