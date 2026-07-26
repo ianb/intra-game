@@ -17,6 +17,14 @@ short, and it is about a real hazard here.
 
 ## 1. Get it running
 
+If you were handed a link to this file and have no checkout yet, start there —
+ask where they want it, and don't assume a directory:
+
+```bash
+git clone https://github.com/ianb/intra-game
+cd intra-game
+```
+
 Full detail in [INSTALL.md](../INSTALL.md). The short version:
 
 ```bash
