@@ -12,7 +12,7 @@ Setting it up with an AI agent? Hand it
 how the engine fits together. Paste this:
 
 ```
-Read https://github.com/ianb/intra-game/blob/main/docs/agent-install.md and get me set up.
+Read https://raw.githubusercontent.com/ianb/intra-game/main/docs/agent-install.md and get me set up.
 ```
 
 The game runs either way: entirely in your browser against your own model key,
@@ -41,8 +41,9 @@ The tech stack:
 
 The game will work with free models, but you can also connect your own API keys through OpenRouter for access to premium models.
 
-If `pnpm install` fails, it's the two `file:` dependencies pointing at a
-callback-box checkout — [INSTALL.md](./INSTALL.md) covers both ways around it.
+If `pnpm test` or `pnpm lint` can't find a module, you're missing the two
+callback-box dev tools — they live outside the repo and are optional, so the
+install succeeds without them. [INSTALL.md](./INSTALL.md) covers it.
 
 ## Deploying
 
