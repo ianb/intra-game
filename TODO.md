@@ -23,17 +23,6 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Now
 
-- **The Worker doesn't authenticate the site, only the API** `infra` `M` —
-  `worker/index.ts` gates `/api/*` and hands everything else to
-  `env.ASSETS.fetch()` unauthenticated. Today that's covered because
-  [docs/deploying.md](docs/deploying.md) has you protect the whole hostname with
-  Access, so the request never reaches the Worker — but the privacy of the game
-  and of `/evals/` rests entirely on that one dashboard field. Scope the Access
-  application to `/api/*` by accident and the UI goes public with no code
-  change and no error. The fix is for the Worker to authenticate asset requests
-  too; what makes it more than a one-liner is local play, which is meant to work
-  with no Access and no account, so "unauthenticated" can't simply become 404.
-
 - **Finish the Cloudflare setup** `infra` `M` `blocked:account-setup` — the
   deployment path is written and dry-run clean but has never run against real
   Cloudflare. Follow [docs/deploying.md](docs/deploying.md): Workers Builds, AI

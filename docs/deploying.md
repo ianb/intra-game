@@ -168,12 +168,11 @@ secret, so either the dashboard or `wrangler.jsonc` works:
 | `ACCESS_TEAM_DOMAIN` | `<team>.cloudflareaccess.com` |
 | `ACCESS_AUD`         | the AUD tag                   |
 
-> **Leave the Path field empty.** The Worker authenticates `/api/*` and serves
-> everything else — the game UI, `/evals/` — straight from static assets, so the
-> privacy of those rests on Access covering the whole hostname. Scoping the
-> application to `/api/*` would leave the API locked and the site public, with
-> no error to notice. This is tracked in [TODO.md](../TODO.md) as something the
-> Worker should enforce itself.
+> **Leave the Path field empty**, so Access covers the whole app. If you scope
+> it to `/api/*` the Worker will still refuse to serve the site — it gates every
+> path once `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` are set — but visitors get a
+> bare 401 instead of a login page, which is a worse experience than the one
+> line of config it takes to avoid.
 
 If you put them in `wrangler.jsonc` instead, replace the empty strings in
 `vars` and push; that keeps the deployment reproducible from the repo, at the

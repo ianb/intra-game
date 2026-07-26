@@ -1,4 +1,4 @@
-import { authenticate } from "./access";
+import { accessConfig, authenticate } from "./access";
 import { OWNER_HEADER } from "./session";
 import { MAX_SESSIONS, type SessionSummary } from "./sessionindex";
 
@@ -33,13 +33,33 @@ export interface Env {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    if (!url.pathname.startsWith("/api/")) {
+    const api = url.pathname.startsWith("/api/");
+
+    // The site is gated whenever Access is configured, not only the API.
+    //
+    // Access normally stops a request before it reaches the Worker, so this is
+    // usually redundant — but only if the Access application covers the whole
+    // hostname. Scope it to /api/* by accident and the game, the transcript and
+    // /evals/ go public with no error to notice, which is not a property that
+    // should live in one dashboard field. Configuring Access is the statement
+    // "this is private", and the Worker now enforces it either way.
+    //
+    // Deliberately keyed on Access being configured rather than on a separate
+    // flag. A deployment without Access is the local-play case — the engine
+    // runs in the player's browser on their own key, there is nothing to
+    // protect, and requiring a login to serve a static bundle would break the
+    // way this is meant to be runnable.
+    const gated = accessConfig(env) !== null;
+    if (!api && !gated) {
       return env.ASSETS.fetch(request);
     }
 
     const auth = await authenticate(request, env);
     if (!auth.ok) {
       return auth.response;
+    }
+    if (!api) {
+      return env.ASSETS.fetch(request);
     }
 
     if (url.pathname === "/api/sessions") {

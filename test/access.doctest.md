@@ -9,6 +9,7 @@ testing here: the gate should never admit anyone on doubt.
 
 ```ts setup
 import { verifyAccessAssertion, accessConfig, authenticate } from "../worker/access.js";
+import worker, { type Env } from "../worker/index.js";
 
 const config = { teamDomain: "https://team.cloudflareaccess.com", aud: "aud-tag" };
 
@@ -28,6 +29,19 @@ async function reject(request: Request, getJwks = noKeys) {
   const result = await verifyAccessAssertion({ request, config, getJwks });
   return result.ok ? "ADMITTED" : result.reason;
 }
+
+// A stand-in Env whose asset binding records whether it was reached.
+let served = 0;
+const env = (over: Record<string, string> = {}) =>
+  ({
+    ASSETS: { fetch: async () => { served++; return new Response("the game"); } },
+    ...over,
+  }) as unknown as Env;
+
+const accessOn = {
+  ACCESS_TEAM_DOMAIN: "https://team.cloudflareaccess.com",
+  ACCESS_AUD: "aud-tag",
+};
 ```
 
 ## Unconfigured deployments have no gate to open
@@ -147,4 +161,55 @@ configured.ok;
 
 configured.ok ? "ADMITTED" : configured.response.status;
 => 401
+```
+
+## The site is gated too, not just the API
+
+The Worker serves `/api/*` itself and hands everything else — the game, the
+transcript, `/evals/` — to static assets. Access normally stops a request before
+the Worker sees it, so gating assets here is usually redundant. *Usually*: only
+if the Access application covers the whole hostname. Scoped to `/api/*` by
+accident, the API stays locked and the site goes public, with no error anywhere.
+
+So the Worker decides for itself. Configuring Access is the statement "this is
+private", and it then applies to every path.
+
+```ts
+// No Access: this is the local-play deployment. The engine runs in the
+// player's browser on their own key, so there is nothing here to protect.
+const open = await worker.fetch(new Request("https://game.example/"), env());
+[open.status, served].join(" / ");
+=> 200 / 1
+```
+
+With Access configured and no assertion, the page is refused rather than
+served — and the assets binding is never reached, so nothing leaks:
+
+``` continue
+const beforeGated = served;
+const gated = await worker.fetch(new Request("https://game.example/"), env(accessOn));
+[gated.status, served - beforeGated].join(" / ");
+=> 401 / 0
+```
+
+That covers the deep links too, which is where this would have bitten:
+
+``` continue
+const beforeEvals = served;
+const evals = await worker.fetch(new Request("https://game.example/evals/"), env(accessOn));
+[evals.status, served - beforeEvals].join(" / ");
+=> 401 / 0
+```
+
+Local development is unaffected, because `DEV_IDENTITY` only applies while
+Access is unconfigured — the same rule that stops it being a production bypass:
+
+``` continue
+const beforeDev = served;
+const dev = await worker.fetch(
+  new Request("https://game.example/"),
+  env({ DEV_IDENTITY: "dev@localhost" }),
+);
+[dev.status, served - beforeDev].join(" / ");
+=> 200 / 1
 ```
