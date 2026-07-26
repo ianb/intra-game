@@ -45,6 +45,16 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **Ink and Echo can't be won when you get it right** `content` `M` — Marta
+  confesses only if accused **and** alone with the player and Ama. Nothing tells
+  the player that, and the failure mode is indistinguishable from the success
+  signal: deflecting is her scripted behaviour whenever the mystery comes up, so
+  accusing her in company reads as more evidence rather than as wrong
+  conditions. Found by `pnpm evals:play`: Sonnet gathered five correct pieces of
+  evidence, named Marta, and accused her to her face with Henry and June in the
+  room. Nothing happened, and it spent its last five turns wandering. Options
+  are for Marta to signal the precondition when accused in company ("not here"),
+  or to relax it — both are content changes, so they want the author.
 - **More quests, and a baseline** `tooling` `M` — `pnpm evals:play` now lets a
   model play Ink and Echo from the `briefed` checkpoint, scored on milestones.
   One quest and one run is an anecdote: it needs the other mysteries, and enough
@@ -220,7 +230,9 @@ rediscovers them from scratch.
   difference between that and something real. Hallucinated objects are the most
   visible form.
 - **Puzzles are pass/fail.** There's no partial progress and no second route, so
-  a stuck player is stuck.
+  a stuck player is stuck. Worse where a puzzle has a hidden precondition: doing
+  the right thing under the wrong conditions can produce feedback that looks
+  like progress. See the Ink and Echo item above.
 - **NPC reactions are flat.** Characters respond to the last thing said, at
   roughly the same intensity, whatever happened before.
 - **Latency and cost.** Several model calls per turn, none streamed to the
@@ -228,6 +240,11 @@ rediscovers them from scratch.
 - **Parsing is ambiguous.** The tag protocol is permissive by design, which
   means some model output is silently interpreted as something other than what
   it meant.
+- **Breaking frame inside a well-formed tag is invisible.** A quest run produced
+  a room description reading "I need clarification: do you want me to write the
+  game scene description as originally instructed...". The markup was fine, so
+  the protocol checks saw nothing, and the `in-character` scenario only reads
+  Ama's dialogue — not descriptions, and not other characters.
 - **Context bloat.** Every prompt carries more history than it needs, and the
   history is the same for every character.
 - **Event serialization is load-bearing.** The log is the save format, the
