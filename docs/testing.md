@@ -146,8 +146,29 @@ Two variables in `.dev.vars` (gitignored, never deployed) make that possible:
   deployment. `test/access.doctest.md` asserts exactly that.
 - `DEV_FAKE_LLM` swaps AI Gateway for a stand-in that emits well-formed protocol
   output in chunks. It exercises the plumbing — routing, the Durable Object, the
-  event log, SSE framing, the streaming parser's chunk boundaries — and is not
-  meant for actually playing.
+  event log, SSE framing, the streaming parser's chunk boundaries, the usage
+  records — and is not meant for actually playing.
+
+### Running against a real AI Gateway, locally
+
+There is a middle tier between the stand-in and a deployment, and it is the one
+worth knowing about: put `CF_ACCOUNT_ID` and `CF_AIG_TOKEN` in `.dev.vars`,
+comment out `DEV_FAKE_LLM`, and `pnpm preview` calls the real gateway from a
+Worker running on your machine.
+
+Nothing special makes this work. `wrangler dev` runs the Worker locally but its
+`fetch` calls go to the real internet, and `worker/aigateway.ts` talks to the
+gateway over plain HTTPS rather than through a Workers AI binding — so there is
+no emulation involved, no `--remote`, and no difference between what runs here
+and what runs deployed. (A binding would be a different story: those need either
+`--remote` or a local stand-in.)
+
+Two things to watch. `DEV_FAKE_LLM` is checked **first**, so leaving it set
+means the fake wins and the gateway is never called — the symptom is a game that
+works perfectly and costs nothing. And this spends real money on every turn,
+with no guard.
+
+See [.dev.vars.example](../.dev.vars.example) for all three tiers.
 
 The API lives under `/api/*` and is authenticated:
 

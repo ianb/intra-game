@@ -1,0 +1,45 @@
+# Local development variables for `wrangler dev`. Copy to `.dev.vars`, which is
+# gitignored and never deployed.
+#
+# There are three ways to run the server locally, in increasing order of what
+# they need and what they prove.
+#
+# ---------------------------------------------------------------------------
+# 1. Fully offline. No Cloudflare account, no key, no network.
+# ---------------------------------------------------------------------------
+# This is the default and what the test suite uses. DEV_FAKE_LLM swaps AI
+# Gateway for a stand-in that emits well-formed protocol output in chunks — it
+# exercises routing, the Durable Objects, the event log, SSE framing, the
+# streaming parser's chunk boundaries and the usage recording. It is not for
+# playing: the writing is canned.
+
+DEV_IDENTITY=dev@localhost
+DEV_FAKE_LLM=1
+
+# ---------------------------------------------------------------------------
+# 2. Local Worker, real AI Gateway. Needs an account and a token; costs money.
+# ---------------------------------------------------------------------------
+# `wrangler dev` runs the Worker locally but its fetches go to the real
+# internet, and worker/aigateway.ts talks to the gateway over plain HTTPS rather
+# than through a binding — so this needs no `--remote` and no emulation. It is
+# the cheapest way to find out whether the gateway path actually works, without
+# deploying anything.
+#
+# COMMENT OUT DEV_FAKE_LLM ABOVE to use this. It is checked first, so leaving it
+# set means the fake wins and the gateway is never called.
+#
+# CF_ACCOUNT_ID=your-account-id
+# CF_AIG_TOKEN=your-ai-gateway-token
+# GATEWAY_MODEL=anthropic/claude-sonnet-5
+# GATEWAY_FLASH_MODEL=anthropic/claude-haiku-4-5
+
+# ---------------------------------------------------------------------------
+# 3. Local Worker, real Access. Rarely what you want.
+# ---------------------------------------------------------------------------
+# Setting these makes the Worker verify real Access assertions, which a browser
+# hitting localhost will not have — so every request 401s. DEV_IDENTITY is
+# ignored the moment these are set (deliberately: that is what stops it being a
+# production bypass), so this is only useful for testing the failure paths.
+#
+# ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
+# ACCESS_AUD=your-application-audience-tag

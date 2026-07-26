@@ -290,4 +290,10 @@ pnpm build && pnpm preview
 
 `.dev.vars` (gitignored) supplies `DEV_IDENTITY` in place of an Access-verified
 user and `DEV_FAKE_LLM` in place of the gateway. See
-[testing.md](./testing.md#running-the-server-locally).
+[testing.md](./testing.md#running-the-server-locally) and
+[.dev.vars.example](../.dev.vars.example).
+
+You can also point a local Worker at the **real** AI Gateway — credentials in
+`.dev.vars`, `DEV_FAKE_LLM` commented out — which is the cheapest way to
+confirm this half of the setup before anything is deployed. Step 2 is the only
+part of this guide it needs.

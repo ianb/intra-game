@@ -39,10 +39,13 @@ original write-up, plus whatever the last few sessions turned up.
   Cloudflare. Follow [docs/deploying.md](docs/deploying.md): Workers Builds, AI
   Gateway, the API token, the Access application. Done when a push deploys and
   the deployed game is playable behind Access.
-- **Exercise the AI Gateway path for real** `infra` `S` `blocked:account-setup`
-  — the worker's gateway client is only covered by unit tests. One real
-  round-trip would confirm the `provider/model` ids and the
-  `cf-aig-authorization` header.
+- **Exercise the AI Gateway path for real** `infra` `S` — the worker's gateway
+  client has never made a real call, so the `provider/model` ids, the
+  `cf-aig-authorization` header, and whether `stream_options` actually yields
+  usage and cost are all unconfirmed. This does **not** need the deployment:
+  put `CF_ACCOUNT_ID` and `CF_AIG_TOKEN` in `.dev.vars`, comment out
+  `DEV_FAKE_LLM`, and `pnpm preview` calls the real gateway from a local
+  Worker. One turn answers it.
 - **Publish the callback-box dev deps** `tooling` `S` — `agent-doctest` and
   `personal-vibe-check` are `file:` dependencies pointing outside the repo.
   `pnpm install --prod` skips them so the Cloudflare builder is fine, but nobody
