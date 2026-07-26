@@ -17,29 +17,113 @@ import type { MessageType } from "../lib/types";
  * the model is best at.
  */
 
-const SYSTEM = `You are playing a text adventure game. You are the player.
+const SYSTEM = `You are the player in a text adventure game. You type one line at
+a time and the game responds.
 
-Each turn you will be shown what just happened, where you are, who is with you,
-where you can go, and what is on your list. Reply with exactly one line: the
-command or speech you want to try. Nothing else — no explanation, no quotes, no
-markdown.
+HOW THIS KIND OF GAME WORKS
 
-You can type anything. Some examples of the kinds of thing that work:
+The world is fixed. There is a set number of rooms, people and things, and they
+exist whether or not you have found them. Nothing is generated to suit you and
+nothing waits for you to be ready. You make progress by going to places and
+talking to people, not by reasoning about what you already know.
 
-go to the archive lounge
-ask Harold about the poems
-look at the desk
-tell Marta I know it was her
+Different characters know different things. Asking the same question of two
+people gives two different answers, and one of them may be the one that matters.
+A character who has nothing to say about one subject may know a great deal about
+another.
 
-Play to make progress on your list and the open questions. Talk to people, go
-places, and look at things. Don't repeat a command that just failed; try
-something else instead.`;
+When someone mentions a name, a place, or an object, that is a lead. Leads are
+the main way the game tells you where to go next.
+
+You cannot deduce your way to the end. If you find yourself reasoning about
+evidence instead of collecting more of it, go somewhere new.
+
+HOW TO PLAY WELL
+
+Your goal is whatever is on your list and in the open questions. Work toward it
+deliberately.
+
+- Prefer a person you have not met or a room you have not entered over asking
+  someone who has already answered.
+- If two turns in a row taught you nothing new, change location.
+- Track who you have not met yet and where you have not been. Go there.
+- Ask specific people about specific things: "ask Harold about the poems" beats
+  "ask about poems".
+- Someone unhelpful earlier may help once you know more. Coming back later with
+  a new name or fact is a real move.
+- Do not accuse anyone or announce a conclusion until more than one source
+  points the same way.
+- If you do not know where to go, ask a character where someone is, or what they
+  know. Asking for directions is a legitimate move.
+
+YOUR REPLY
+
+Reply in exactly this shape, every turn:
+
+NOTES
+(your running notes: leads, who you have met, who you have not met, places not
+yet visited, what you are trying next and why. Rewrite them each turn. These
+notes are the only thing you keep, so write down anything you will need later.)
+NEXT
+(one line: the command or speech you want to try, and nothing else)
+
+Example:
+
+NOTES
+- Ama wants me to find who writes the Ink and Echo poems.
+- Frida says the Archivist has records. Not yet asked.
+- Not yet met: Harold, Lily, Gloria, Marta.
+- Not yet visited: Static Garden, Activity Hub.
+- Plan: Archivist first, then find Harold and Lily.
+NEXT
+go to the archive console
+`;
 
 export interface PlayerTurn {
   input: string;
   raw: string;
+  /** The player's notebook after this turn; see parseReply. */
+  notes: string;
   /** True when the first reply wasn't a command and had to be asked for again. */
   fumbled: boolean;
+}
+
+/**
+ * Split a reply into the player's notes and the command.
+ *
+ * The notebook is the point. A model holds a plan in its head for about as long
+ * as the plan is in its context, and a game is exactly the situation where that
+ * fails: twenty turns of transcript push out the thing you were trying to do,
+ * and the player ends up re-interrogating whoever it last spoke to. The first
+ * recorded quest did that — eleven turns bouncing between two rooms, having
+ * forgotten there were people it had never met.
+ *
+ * Giving it somewhere to write things down, and handing that back every turn,
+ * is what a person does effortlessly with a scrap of paper and a model has no
+ * equivalent of. It is also honest: the notes are the player's own, not the
+ * game's, so nothing leaks by writing them.
+ *
+ * Tolerant of a model that ignores the format, because one that does has still
+ * told us what it wants to do.
+ */
+export function parseReply(raw: string): { notes?: string; input: string } {
+  const lines = raw.split("\n");
+  const nextAt = lines.findIndex((line) => /^\s*NEXT\s*:?\s*$/i.test(line));
+  if (nextAt === -1) {
+    return { input: extractCommand(raw) };
+  }
+  const notesAt = lines.findIndex((line) => /^\s*NOTES\s*:?\s*$/i.test(line));
+  const notes =
+    notesAt !== -1 && notesAt < nextAt
+      ? lines
+          .slice(notesAt + 1, nextAt)
+          .join("\n")
+          .trim()
+      : undefined;
+  return {
+    ...(notes ? { notes } : {}),
+    input: extractCommand(lines.slice(nextAt + 1).join("\n")),
+  };
 }
 
 /**
@@ -89,6 +173,8 @@ export function extractCommand(raw: string): string {
 export function llmPlayer(chat: ChatFn, options: { limit?: number } = {}) {
   const history: MessageType[] = [];
   const limit = options.limit ?? 30;
+  // Survives the history window, which is the whole reason it exists.
+  let notes = "";
   async function ask(): Promise<string> {
     return chat({
       meta: { title: "llm player" },
@@ -96,21 +182,31 @@ export function llmPlayer(chat: ChatFn, options: { limit?: number } = {}) {
     });
   }
   return async function nextCommand(view: PlayerViewType): Promise<PlayerTurn> {
-    history.push({ role: "user", content: renderPlayerView(view) });
+    const seen = renderPlayerView(view);
+    history.push({
+      role: "user",
+      content: notes ? `Your notes:\n${notes}\n\n${seen}` : seen,
+    });
     let raw = await ask();
+    let parsed = parseReply(raw);
     let fumbled = false;
-    if (NOT_A_COMMAND.test(extractCommand(raw))) {
+    if (NOT_A_COMMAND.test(parsed.input) || !parsed.input) {
       fumbled = true;
       history.push({ role: "assistant", content: raw });
       history.push({
         role: "user",
         content:
-          "That was not a command. Reply with one line saying what you do or " +
-          "say next, like `go to the archive lounge` or `ask Frida about the poems`.",
+          "That was not a command. Reply with your NOTES, then a NEXT line " +
+          "holding one command, like `go to the archive lounge` or " +
+          "`ask Frida about the poems`.",
       });
       raw = await ask();
+      parsed = parseReply(raw);
     }
     history.push({ role: "assistant", content: raw });
-    return { input: extractCommand(raw), raw, fumbled };
+    if (parsed.notes) {
+      notes = parsed.notes;
+    }
+    return { input: parsed.input, raw, notes, fumbled };
   };
 }

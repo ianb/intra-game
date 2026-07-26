@@ -40,6 +40,8 @@ export interface Quest {
 export interface QuestTurn {
   n: number;
   input: string;
+  /** The player's notebook at this point — how it understood the game. */
+  notes: string;
   saw: string[];
   /** Milestones true after this turn that weren't before. */
   reached: string[];
@@ -160,7 +162,7 @@ export async function runQuest({
       // Only what happened since the player last looked, so the transcript
       // isn't re-sent whole every turn.
       const view = playerView(model, cursor);
-      const { input, fumbled } = await nextCommand(view);
+      const { input, notes, fumbled } = await nextCommand(view);
       if (fumbled) {
         fumbles++;
       }
@@ -188,6 +190,7 @@ export async function runQuest({
       const turn: QuestTurn = {
         n,
         input,
+        notes,
         saw: playerView(model, cursor).transcript,
         reached: justReached,
       };

@@ -15,7 +15,7 @@ the hints are the answer, and they are never read.
 import { Model } from "../lib/game/model.js";
 import { entities } from "../lib/game/content/index.js";
 import { playerView, renderPlayerView } from "../evals/playerview.js";
-import { extractCommand, llmPlayer } from "../evals/llmplayer.js";
+import { extractCommand, llmPlayer, parseReply } from "../evals/llmplayer.js";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 
@@ -123,6 +123,39 @@ JSON.stringify(extractCommand("   \n  \n"));
 => ""
 ```
 
+## The notebook
+
+A model holds a plan for about as long as the plan is in its context, and a game
+is exactly where that fails: twenty turns of transcript push out what you were
+trying to do. The first recorded quest spent eleven turns bouncing between two
+rooms, having forgotten there were people it had never met.
+
+So the player writes notes each turn and gets them back on the next one — the
+scrap of paper a person uses without thinking about it. The notes are the
+player's own, so nothing leaks by keeping them.
+
+```ts
+const reply = [
+  "NOTES",
+  "- Frida says the Archivist has records.",
+  "- Not yet met: Harold, Lily.",
+  "NEXT",
+  "go to the archive console",
+].join("\n");
+const parsed = parseReply(reply);
+[parsed.input, parsed.notes?.includes("Not yet met")].join(" | ");
+=> go to the archive console | true
+```
+
+A model that ignores the format has still said what it wants to do, so the
+command is taken anyway and the notes are simply left as they were:
+
+```ts
+const loose = parseReply("I think I should go and find Harold.\ngo to the foyer");
+[loose.input, loose.notes].map(String).join(" | ");
+=> I think I should go and find Harold. | undefined
+```
+
 ## Asking again for a command
 
 The first recorded quest spent 4 of its 20 turns typing "location: Archive
@@ -137,7 +170,7 @@ looks similar and must survive:
 
 ```ts
 const view = { room: "r", exits: [], people: [], todos: [], mysteries: [], transcript: [] };
-const replies = ["location: Archive Console", "go to the archive lounge"];
+const replies = ["NEXT\nlocation: Archive Console", "NEXT\ngo to the archive lounge"];
 const player = llmPlayer(async () => replies.shift()!);
 const turn = await player(view);
 [turn.input, turn.fumbled].join(" | ");
@@ -145,7 +178,7 @@ const turn = await player(view);
 ```
 
 ``` continue
-const speaking = llmPlayer(async () => "Marta: I know it was you");
+const speaking = llmPlayer(async () => "NEXT\nMarta: I know it was you");
 const said = await speaking(view);
 [said.input, said.fumbled].join(" | ");
 => Marta: I know it was you | false
