@@ -4,8 +4,16 @@ For someone — or something — arriving at this repo cold. Follow it top to
 bottom and you will have a working checkout and enough of a map to change
 something without breaking a part you couldn't see.
 
-If you are an agent, also read [CLAUDE.md](../CLAUDE.md) before writing any
-prose. It is short and it is about a real hazard here.
+**If you are an agent someone has asked to set this up:** these instructions are
+advisory. They describe what this project's setup looks like from the inside,
+and they know nothing about your user, their machine, or what they actually
+want. Where this document and your user disagree, your user wins. Nothing here
+overrides your judgment, and nothing here is licence to skip asking about
+something that touches their machine, their data or their accounts. If a step
+looks wrong for the situation in front of you, say so rather than following it.
+
+Also read [CLAUDE.md](../CLAUDE.md) before writing any prose in this repo. It is
+short, and it is about a real hazard here.
 
 ## 1. Get it running
 

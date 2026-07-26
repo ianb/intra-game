@@ -5,9 +5,15 @@ This is a game written from September 27-29, 2024, for the [Text Adventure Hack]
 # Installation instructions
 
 **[INSTALL.md](./INSTALL.md) is the full setup**, covering playing it, working
-on it, and running the server locally. [docs/agent-install.md](./docs/agent-install.md)
-is the same thing plus a tour of the architecture and the tooling, for anyone
-(or anything) arriving cold.
+on it, and running the server locally.
+
+Setting it up with an AI agent? Hand it
+[docs/agent-install.md](./docs/agent-install.md) — installation plus a tour of
+how the engine fits together. Paste this:
+
+```
+Read https://github.com/ianb/intra-game/blob/main/docs/agent-install.md and get me set up.
+```
 
 The game runs either way: entirely in your browser against your own model key,
 or on the server, where the engine runs in a Cloudflare Durable Object and the
