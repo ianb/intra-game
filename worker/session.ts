@@ -3,6 +3,7 @@ import { entities } from "../lib/game/content";
 import { Model } from "../lib/game/model";
 import { DEFAULT_FLASH_MODEL } from "../lib/models";
 import type { StoryEventType } from "../lib/types";
+import type { UsageRecordType } from "../lib/usage";
 import { gatewayChatStream } from "./aigateway";
 import { devChatStream } from "./devllm";
 import { SessionLog } from "./eventlog";
@@ -29,6 +30,14 @@ import { SessionLog } from "./eventlog";
 export const OWNER_HEADER = "x-intra-owner";
 
 const OWNER_KEY = "owner";
+/**
+ * Usage records, one key per call, ordered like the event log.
+ *
+ * Deliberately not in the log: the log is the game and gets replayed, exported
+ * and checkpointed, and billing history has no business riding along in it.
+ */
+const USAGE_PREFIX = "usage:";
+const USAGE_DIGITS = 8;
 /** Deliberately separate from the log; see invariant 2 above. */
 const CREDENTIAL_KEY = "credential";
 
@@ -73,6 +82,8 @@ export class GameSession {
         return this.events(url);
       case "GET /info":
         return json({ events: await this.sessionLog.count() });
+      case "GET /usage":
+        return json({ usage: await this.readUsage() });
       case "POST /destroy":
         return this.destroy();
       case "POST /input":
@@ -114,6 +125,31 @@ export class GameSession {
    *
    * Credentials go with it, which is most of the point.
    */
+  /** Every usage record for this session, oldest first. */
+  private async readUsage(): Promise<UsageRecordType[]> {
+    const stored = await this.state.storage.list<UsageRecordType>({
+      prefix: USAGE_PREFIX,
+    });
+    return [...stored.values()];
+  }
+
+  /**
+   * Append a usage record.
+   *
+   * Keyed by count so the order is the order the calls happened. A lost record
+   * is a hole in the accounting and nothing worse, so this never fails a turn:
+   * the player's game matters more than the bookkeeping about it.
+   */
+  private async writeUsage(record: UsageRecordType): Promise<void> {
+    try {
+      const existing = await this.state.storage.list({ prefix: USAGE_PREFIX });
+      const key = `${USAGE_PREFIX}${String(existing.size).padStart(USAGE_DIGITS, "0")}`;
+      await this.state.storage.put({ [key]: record });
+    } catch (e) {
+      console.warn("Could not record usage", e);
+    }
+  }
+
   private async destroy(): Promise<Response> {
     await this.state.storage.deleteAll();
     return json({ destroyed: true });
@@ -142,7 +178,12 @@ export class GameSession {
     }
     const credential =
       await this.state.storage.get<StoredCredential>(CREDENTIAL_KEY);
-    const backend = this.chatBackend(credential);
+    // Whose turn this is, recorded with what it cost. Read from stored
+    // ownership rather than the request, which is the same rule the log
+    // follows: a client that could name its own user would be writing the
+    // record it is meant to appear in.
+    const owner = await this.state.storage.get<SessionOwner>(OWNER_KEY);
+    const backend = this.chatBackend(credential, owner?.email);
     if (!backend) {
       return json({ error: "AI Gateway not configured" }, 503);
     }
@@ -196,9 +237,14 @@ export class GameSession {
   }
 
   /** The LLM backend: AI Gateway, or the local stand-in in development. */
-  private chatBackend(credential: StoredCredential | undefined) {
+  private chatBackend(credential: StoredCredential | undefined, user?: string) {
     if (this.env.DEV_FAKE_LLM) {
-      return devChatStream();
+      return devChatStream({
+        user,
+        onUsage: (record) => {
+          void this.writeUsage(record);
+        },
+      });
     }
     if (!this.env.CF_ACCOUNT_ID || !this.env.CF_AIG_TOKEN) {
       return null;
@@ -209,6 +255,10 @@ export class GameSession {
       model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
       flashModel: this.env.GATEWAY_FLASH_MODEL,
       providerKey: credential?.key,
+      user,
+      onUsage: (record) => {
+        void this.writeUsage(record);
+      },
     });
   }
 }

@@ -1,6 +1,7 @@
 import type { ChatStreamFn } from "../lib/game/model";
 import { readSse } from "../lib/ssestream";
 import { modelForTier } from "../lib/models";
+import { usageRecord, type RawUsage, type UsageRecordType } from "../lib/usage";
 import type { ChatType } from "../lib/types";
 
 /**
@@ -32,6 +33,10 @@ export interface GatewayConfig {
   flashModel?: string;
   /** A player's own provider key, when they brought one. */
   providerKey?: string;
+  /** Called once per completed call with what it cost; see lib/usage.ts. */
+  onUsage?: (record: UsageRecordType) => void;
+  /** Stamped onto usage records — the Access-verified caller. */
+  user?: string;
 }
 
 function endpoint(accountId: string): string {
@@ -44,6 +49,7 @@ function endpoint(accountId: string): string {
  */
 export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
   return async (request: ChatType, onDelta: (delta: string) => void) => {
+    const started = Date.now();
     const headers: Record<string, string> = {
       "content-type": "application/json",
       "cf-aig-authorization": `Bearer ${config.token}`,
@@ -62,13 +68,41 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
         }),
         messages: request.messages,
         stream: true,
+        // A streamed call reports nothing about itself unless asked; with this
+        // the final chunk carries the token counts and, where the provider
+        // supports it, the cost.
+        stream_options: { include_usage: true },
       }),
+    });
+    const model = modelForTier(request.model, {
+      pro: config.model,
+      flash: config.flashModel,
     });
     if (!response.ok || !response.body) {
       const detail = await response.text().catch(() => "");
-      throw new Error(`AI Gateway ${response.status}: ${detail.slice(0, 500)}`);
+      const error = `AI Gateway ${response.status}: ${detail.slice(0, 500)}`;
+      config.onUsage?.(
+        usageRecord({
+          request,
+          model,
+          ms: Date.now() - started,
+          user: config.user,
+          error,
+        }),
+      );
+      throw new Error(error);
     }
-    return readSseDeltas(response.body, onDelta);
+    const { text, usage } = await readSseDeltas(response.body, onDelta);
+    config.onUsage?.(
+      usageRecord({
+        request,
+        model,
+        raw: usage,
+        ms: Date.now() - started,
+        user: config.user,
+      }),
+    );
+    return text;
   };
 }
 
@@ -79,25 +113,33 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
 async function readSseDeltas(
   body: ReadableStream<Uint8Array>,
   onDelta: (delta: string) => void,
-): Promise<string> {
+): Promise<{ text: string; usage?: RawUsage }> {
   let full = "";
+  // Arrives in a chunk of its own at the end, after the last content delta,
+  // and only because stream_options asked for it.
+  let usage: RawUsage | undefined;
   for await (const { data } of readSse(body)) {
     if (data === "[DONE]") {
       continue;
     }
-    let content: unknown;
+    let parsed: {
+      choices?: { delta?: { content?: string } }[];
+      usage?: RawUsage;
+    };
     try {
-      content = (
-        JSON.parse(data) as { choices?: { delta?: { content?: string } }[] }
-      ).choices?.[0]?.delta?.content;
+      parsed = JSON.parse(data);
     } catch {
       // A non-JSON keepalive line is not fatal; skip it.
       continue;
     }
+    if (parsed.usage) {
+      usage = parsed.usage;
+    }
+    const content = parsed.choices?.[0]?.delta?.content;
     if (typeof content === "string" && content) {
       full += content;
       onDelta(content);
     }
   }
-  return full;
+  return { text: full, usage };
 }

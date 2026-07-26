@@ -3,6 +3,7 @@
  */
 
 import { useEffect } from "react";
+import { Costs } from "./costs";
 import { twMerge } from "tailwind-merge";
 import {
   customEndpoint,
@@ -89,6 +90,7 @@ export function Settings() {
         </div>
         <div className="mt-4">
           <ServerPlay />
+          <Costs />
         </div>
         <div className="mt-4">
           Set a custom endpoint: <br />

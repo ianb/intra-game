@@ -6,6 +6,7 @@ import { checkpointFromUrl, loadCheckpoint } from "./checkpoints";
 import { model } from "./model";
 import { readSse } from "@/lib/ssestream";
 import type { StoryEventType } from "@/lib/types";
+import type { UsageRecordType } from "@/lib/usage";
 
 /**
  * Talking to the session server.
@@ -174,6 +175,19 @@ export async function deleteServerSession(id: string): Promise<void> {
   if (remoteSession.value === id) {
     remoteSession.value = null;
   }
+}
+
+/** What this server session has spent; see lib/usage.ts. */
+export async function fetchServerUsage(
+  session: string,
+): Promise<UsageRecordType[]> {
+  const response = await fetch(api("usage", session), {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error(`Could not read usage: ${response.status}`);
+  }
+  return ((await response.json()) as { usage: UsageRecordType[] }).usage;
 }
 
 // --- Choosing where a turn runs ----------------------------------------------

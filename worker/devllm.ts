@@ -1,5 +1,6 @@
 import type { ChatStreamFn } from "../lib/game/model";
 import type { ChatType } from "../lib/types";
+import { usageRecord, type UsageRecordType } from "../lib/usage";
 
 /**
  * A stand-in LLM for local development and functional tests.
@@ -9,8 +10,14 @@ import type { ChatType } from "../lib/types";
  * API key and no network. It produces well-formed protocol output, not good
  * writing; it is for testing plumbing, never for playing.
  */
-export function devChatStream(): ChatStreamFn {
+export interface DevChatOptions {
+  onUsage?: (record: UsageRecordType) => void;
+  user?: string;
+}
+
+export function devChatStream(options: DevChatOptions = {}): ChatStreamFn {
   return async (request: ChatType, onDelta: (delta: string) => void) => {
+    const started = Date.now();
     const response = cannedResponse(request);
     // Deliberately chunked mid-tag, so the streaming parser's chunk-boundary
     // handling is exercised rather than bypassed.
@@ -18,6 +25,25 @@ export function devChatStream(): ChatStreamFn {
       onDelta(response.slice(i, i + 7));
       await new Promise((r) => setTimeout(r, 5));
     }
+    // Usage too, so the recording path — storage, the endpoint, the display —
+    // can be exercised offline. Token counts are estimated from the text, which
+    // is honest enough to be useful. Cost is deliberately absent and the model
+    // is named "dev": a fabricated price that looked real would be worse than
+    // no price at all.
+    options.onUsage?.(
+      usageRecord({
+        request,
+        model: "dev",
+        raw: {
+          prompt_tokens: Math.round(
+            request.messages.reduce((n, m) => n + m.content.length, 0) / 4,
+          ),
+          completion_tokens: Math.round(response.length / 4),
+        },
+        ms: Date.now() - started,
+        user: options.user,
+      }),
+    );
     return response;
   };
 }

@@ -205,6 +205,12 @@ export interface ChatMetaType {
   title: string;
   index?: number;
   start?: number;
+  /** The entity this prompt was assembled for; stamped in classes.ts. */
+  entity?: EntityId;
+  /** Log length when it was assembled — how far into the game this happened. */
+  turn?: number;
+  /** History messages carried, beyond the system prompt. */
+  historyTurns?: number;
 }
 
 export type RoleType = "user" | "assistant" | "system";

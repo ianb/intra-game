@@ -8,6 +8,7 @@ import {
   DEFAULT_PRO_MODEL,
 } from "./models";
 import { ChatType, LlmLogType } from "./types";
+import { usageRecord, type RawUsage, type UsageRecordType } from "./usage";
 
 // OpenRouter model metadata (as returned by the /models API). These live in the
 // engine layer so the LLM transport doesn't depend on any view component.
@@ -81,6 +82,26 @@ export const openrouterSmallModel = persistentSignal<ModelType | null>(
 
 export const logSignal = signal<LlmLogType[]>([]);
 
+/**
+ * What every model call in this tab cost.
+ *
+ * Persisted, and capped, because the question these answer is "how does this
+ * grow over a game" — which needs the whole game, not the last few calls, and
+ * survives a reload. The cap is a browser-storage limit, not a design
+ * statement: at ~200 bytes a record, 2000 calls is a few hundred KB and far
+ * more turns than one game has.
+ */
+export const USAGE_LIMIT = 2000;
+export const usageLog = persistentSignal<UsageRecordType[]>("usage", []);
+
+export function recordUsage(record: UsageRecordType): void {
+  usageLog.value = [...usageLog.value, record].slice(-USAGE_LIMIT);
+}
+
+export function clearUsage(): void {
+  usageLog.value = [];
+}
+
 export const lastLlmError = signal<string | null>(null);
 export const lastLlmErrorType = signal<"openrouter" | undefined>();
 
@@ -147,10 +168,18 @@ export async function chat(request: ChatType) {
 
     const messages = request.messages;
 
-    const completion = await openai.chat.completions.create({
+    // `usage: { include: true }` is an OpenRouter extension the OpenAI types
+    // don't know about, and without it a call reports tokens but no money —
+    // which answers the cheaper half of the question. Cast on the way in, and
+    // back to the non-streaming result on the way out.
+    const body = {
       model,
       messages,
-    });
+      usage: { include: true },
+    } as unknown as Parameters<typeof openai.chat.completions.create>[0];
+    const completion = (await openai.chat.completions.create(
+      body,
+    )) as OpenAI.Chat.Completions.ChatCompletion;
 
     if (!completion.choices[0]?.message?.content) {
       console.error("Bad Response", completion);
@@ -159,7 +188,23 @@ export async function chat(request: ChatType) {
     }
 
     text = completion.choices[0].message.content;
+    recordUsage(
+      usageRecord({
+        request,
+        model,
+        raw: completion.usage as RawUsage | undefined,
+        ms: Date.now() - (request.meta.start ?? Date.now()),
+      }),
+    );
   } catch (e) {
+    recordUsage(
+      usageRecord({
+        request,
+        model,
+        ms: Date.now() - (request.meta.start ?? Date.now()),
+        error: String(e),
+      }),
+    );
     const newLog = {
       ...log,
       end: Date.now(),

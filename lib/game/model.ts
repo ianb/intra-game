@@ -16,6 +16,7 @@ import type {
   StoryEventWithPositionsType,
 } from "../types";
 import { chat as defaultChat } from "../llm";
+import { historyTurnsOf } from "../usage";
 import type { ChatType } from "../types";
 import { World } from "./world";
 import type { AllEntitiesType } from "./content";
@@ -82,8 +83,16 @@ export class Model {
   streaming: SignalType<StreamingTagState | null>;
 
   constructor(startingEntities: AllEntitiesType, opts: ModelOptions = {}) {
-    this.chat = opts.chat ?? defaultChat;
-    this.chatStream = opts.chatStream;
+    // Both backends go through stampMeta, so a prompt cannot reach a provider
+    // without the context its usage record needs. Doing this at the six
+    // assemble sites instead would mean the one that forgot produced records
+    // that silently read as turn 0.
+    const baseChat = opts.chat ?? defaultChat;
+    this.chat = (request) => baseChat(this.stampMeta(request));
+    const baseStream = opts.chatStream;
+    this.chatStream = baseStream
+      ? (request, onDelta) => baseStream(this.stampMeta(request), onDelta)
+      : undefined;
     this.streaming = signal<StreamingTagState | null>(null);
     this.promiseQueue = new TrackSettled();
     // Versioned: this is the game itself, and the one stored thing where
@@ -362,6 +371,18 @@ export class Model {
       result.push({ event: update, positions: lastPositionsInRoom });
     }
     return result;
+  }
+
+  /**
+   * Record where in the game a prompt was assembled, for its usage record.
+   *
+   * `??=` rather than `=`: a caller that knows better — a replay, a harness —
+   * keeps what it set.
+   */
+  private stampMeta(request: ChatType): ChatType {
+    request.meta.turn ??= this.updates.value.length;
+    request.meta.historyTurns ??= historyTurnsOf(request.messages);
+    return request;
   }
 
   checkLaunch() {

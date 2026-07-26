@@ -67,6 +67,30 @@ game's first line — a saved event log, replayed. That's what makes the later
 parts of the game cheap to look at, and it's how the eval scenarios reach the
 mystery. `pnpm checkpoint --list` shows what's recorded.
 
+## Model usage and cost
+
+Every model call records what it cost and enough context to ask why: which
+prompt ran, which character it was for, which model answered, how far into the
+game it happened (`turn`), and how much history it carried (`historyTurns`).
+See [lib/usage.ts](../lib/usage.ts).
+
+Where the records live follows where the game runs. Local play keeps them in the
+browser alongside the game; a server session keeps them with the session, since
+the point of a server session is that it outlives the tab. Settings shows the
+totals, a per-prompt-type breakdown, and a CSV download — "how does cost grow as
+the game goes on" is a spreadsheet question.
+
+The breakdown is the part worth having. A total says the game is expensive; only
+the per-prompt rows say it is expensive because the character prompt carries the
+history and is never cached. `cachedTokens` staying at zero is the current
+expected reading, because nothing sends `cache_control` yet (see
+[TODO.md](../TODO.md)); this is how that gets noticed when it changes.
+
+`DEV_FAKE_LLM` produces records too, with token counts estimated from the text
+and deliberately no cost, so the whole path — storage, endpoint, display — can
+be exercised with no account and no network. The model is recorded as `dev` so
+those numbers can't be mistaken for real ones.
+
 ## Setup notes (why the config looks the way it does)
 
 Getting agent-doctest running against this repo surfaced a few sharp edges,

@@ -318,6 +318,9 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
    * ability to show a turn while it is still arriving.
    */
   private async streamOrChat(model: Model, prompt: ChatType): Promise<string> {
+    // Which character this prompt is for, for its usage record. Set here rather
+    // than in each assemblePrompt because every entity prompt passes through.
+    prompt.meta.entity ??= this.id;
     if (!model.chatStream) {
       return model.chat(prompt);
     }
