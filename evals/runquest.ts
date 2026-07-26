@@ -9,8 +9,8 @@ import type { ChatFn } from "../lib/game/model";
 /**
  * Let a model play the game and see how far it gets.
  *
- *     pnpm evals:play
- *     pnpm evals:play --player claude-sonnet-4-5-20250929
+ *     pnpm evals:play                                    # Sonnet plays a Haiku game
+ *     pnpm evals:play --model claude-sonnet-4-5-20250929  # ...and a Sonnet game
  *     pnpm evals:play --player openai/gpt-5.2 --backend openrouter
  *
  * `--player` is the model holding the controller; `--model` is the one running
@@ -18,12 +18,23 @@ import type { ChatFn } from "../lib/game/model";
  * player is bad at adventure games" look identical from one run, and varying
  * them independently is the only way to tell.
  *
+ * They also default differently, because the two jobs are not equally hard.
+ * Being an NPC is bounded: respond in character, once, to what is in front of
+ * you. Playing is open-ended — hold a goal across twenty turns, remember what
+ * you have and haven't tried, and decide where to go next unprompted. The game
+ * is written and playtested against a Haiku-class model so that stays the
+ * default for running it, but a Haiku-class *player* is below the floor for the
+ * task, and a quest it fails says nothing about the puzzle.
+ *
  * This is slow and costs real calls — one player call plus several game calls
  * per turn — so it isn't part of `pnpm evals`.
  */
 
 const QUESTS = [INK_AND_ECHO_QUEST];
 const RESULTS_DIR = "evals/quests";
+
+/** Playing is harder than being an NPC; see the note above. */
+const DEFAULT_PLAYER_MODEL = "claude-sonnet-4-5-20250929";
 
 function parseArgs(argv: string[]) {
   const args: Record<string, string> = {};
@@ -43,7 +54,7 @@ function backend(name: string, model: string): ChatFn {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const gameModel = args.model ?? DEFAULT_CLI_MODEL;
-  const playerModel = args.player ?? DEFAULT_CLI_MODEL;
+  const playerModel = args.player ?? DEFAULT_PLAYER_MODEL;
   const quest = QUESTS.find((q) => q.name === args.quest) ?? QUESTS[0]!;
 
   console.log(`\n=== ${quest.name}: ${quest.describe} ===`);

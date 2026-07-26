@@ -202,9 +202,18 @@ opposite question — whether the game can be **solved** by someone who isn't th
 author:
 
 ```bash
-pnpm evals:play                                      # both roles on the default model
-pnpm evals:play --player claude-sonnet-4-5-20250929  # a better player, same game
+pnpm evals:play                                     # Sonnet plays a Haiku game
+pnpm evals:play --model claude-sonnet-4-5-20250929  # ...and a Sonnet game
+pnpm evals:play --player openai/gpt-5.2 --backend openrouter
 ```
+
+The two roles default to different models, because they are not equally hard.
+Being an NPC is bounded: respond in character, once, to what is in front of you.
+Playing is open-ended — hold a goal for twenty turns, remember what you have
+already tried, and decide where to go next with nothing prompting you. The game
+targets a Haiku-class model and that stays the default for _running_ it; a
+Haiku-class player is below the floor for _playing_, and a quest it fails tells
+you nothing about the puzzle.
 
 A quest starts from a checkpoint, shows the model exactly what the interface
 shows, and lets it type one line at a time until it solves the mystery or runs
