@@ -149,6 +149,30 @@ Two variables in `.dev.vars` (gitignored, never deployed) make that possible:
   event log, SSE framing, the streaming parser's chunk boundaries, the usage
   records — and is not meant for actually playing.
 
+### Running against OpenRouter, locally
+
+Probably the practical choice for developing the server path. OpenRouter is
+already what browser play uses, so the key is one you have, and it needs no
+Cloudflare account and no gateway:
+
+```
+OPENROUTER_API_KEY=sk-or-...
+GATEWAY_MODEL=anthropic/claude-sonnet-5
+GATEWAY_FLASH_MODEL=anthropic/claude-haiku-4-5
+```
+
+Model ids are the same `provider/model` strings the gateway takes, so moving
+between the two changes nothing else. It's checked _before_ the gateway, so
+setting it wins over any `CF_*` vars lying around — and after `DEV_FAKE_LLM`,
+which still wins over everything.
+
+**Without spending anything:** `pnpm fakeprovider` serves the same protocol on
+localhost, and `OPENROUTER_BASE_URL` points the Worker at it. That exercises
+streaming, SSE framing, the usage chunk, cost and cached-token accounting, and
+per-tier model routing — the parts that otherwise can't be tested without a real
+provider. It logs what each request actually contained, so "did the flash tier
+really pick the small model" is answerable rather than assumed.
+
 ### Running against a real AI Gateway, locally
 
 There is a middle tier between the stand-in and a deployment, and it is the one

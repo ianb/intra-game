@@ -5,6 +5,7 @@ import { DEFAULT_FLASH_MODEL } from "../lib/models";
 import type { StoryEventType } from "../lib/types";
 import type { UsageRecordType } from "../lib/usage";
 import { gatewayChatStream } from "./aigateway";
+import { openRouterChatStream } from "./openrouter";
 import { devChatStream } from "./devllm";
 import { SessionLog } from "./eventlog";
 
@@ -58,6 +59,15 @@ export interface SessionEnv {
   GATEWAY_MODEL?: string;
   /** Optional cheaper model for prompts that ask for the "flash" tier. */
   GATEWAY_FLASH_MODEL?: string;
+  /**
+   * Talk to OpenRouter directly instead of AI Gateway.
+   *
+   * The practical way to develop the server path: no Cloudflare account, no
+   * gateway, and the same key browser play already uses.
+   */
+  OPENROUTER_API_KEY?: string;
+  /** Point OpenRouter at a stand-in; see worker/openrouter.ts. */
+  OPENROUTER_BASE_URL?: string;
   /** Local development: use the stand-in LLM instead of AI Gateway. */
   DEV_FAKE_LLM?: string;
 }
@@ -185,7 +195,14 @@ export class GameSession {
     const owner = await this.state.storage.get<SessionOwner>(OWNER_KEY);
     const backend = this.chatBackend(credential, owner?.email);
     if (!backend) {
-      return json({ error: "AI Gateway not configured" }, 503);
+      return json(
+        {
+          error:
+            "No model backend configured — set OPENROUTER_API_KEY, or " +
+            "CF_ACCOUNT_ID and CF_AIG_TOKEN, or DEV_FAKE_LLM",
+        },
+        503,
+      );
     }
     const model = new Model(entities, { chatStream: backend });
 
@@ -240,6 +257,22 @@ export class GameSession {
   private chatBackend(credential: StoredCredential | undefined, user?: string) {
     if (this.env.DEV_FAKE_LLM) {
       return devChatStream({
+        user,
+        onUsage: (record) => {
+          void this.writeUsage(record);
+        },
+      });
+    }
+    // OpenRouter before the gateway: a deployment sets gateway credentials and
+    // nothing else, so this branch is only reached when someone has explicitly
+    // asked for it — which is the dev case.
+    if (this.env.OPENROUTER_API_KEY) {
+      return openRouterChatStream({
+        apiKey: this.env.OPENROUTER_API_KEY,
+        endpoint: this.env.OPENROUTER_BASE_URL,
+        model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
+        flashModel: this.env.GATEWAY_FLASH_MODEL,
+        providerKey: credential?.key,
         user,
         onUsage: (record) => {
           void this.writeUsage(record);

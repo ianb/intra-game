@@ -34,6 +34,28 @@ DEV_FAKE_LLM=1
 # GATEWAY_FLASH_MODEL=anthropic/claude-haiku-4-5
 
 # ---------------------------------------------------------------------------
+# 2b. Local Worker, OpenRouter directly. Probably what you want for dev.
+# ---------------------------------------------------------------------------
+# OpenRouter is already what browser play uses, so the key is one you have, and
+# this needs no Cloudflare account and no gateway. Model ids are the same
+# `provider/model` strings, so switching between this and the gateway changes
+# nothing else about the game. Checked *before* the gateway, so setting this
+# wins over any CF_* vars that happen to be around.
+#
+# Again: comment out DEV_FAKE_LLM above, or the fake wins silently.
+#
+# OPENROUTER_API_KEY=sk-or-...
+# GATEWAY_MODEL=anthropic/claude-sonnet-5
+# GATEWAY_FLASH_MODEL=anthropic/claude-haiku-4-5
+
+# OPENROUTER_BASE_URL points somewhere else entirely. With `pnpm fakeprovider`
+# running, this exercises streaming, the usage chunk, cost and tier routing for
+# free — the parts that otherwise cannot be tested without spending money.
+#
+# OPENROUTER_API_KEY=sk-or-anything
+# OPENROUTER_BASE_URL=http://127.0.0.1:8799/v1/chat/completions
+
+# ---------------------------------------------------------------------------
 # 3. Local Worker, real Access. Rarely what you want.
 # ---------------------------------------------------------------------------
 # Setting these makes the Worker verify real Access assertions, which a browser

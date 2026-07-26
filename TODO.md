@@ -39,13 +39,14 @@ original write-up, plus whatever the last few sessions turned up.
   Cloudflare. Follow [docs/deploying.md](docs/deploying.md): Workers Builds, AI
   Gateway, the API token, the Access application. Done when a push deploys and
   the deployed game is playable behind Access.
-- **Exercise the AI Gateway path for real** `infra` `S` — the worker's gateway
-  client has never made a real call, so the `provider/model` ids, the
-  `cf-aig-authorization` header, and whether `stream_options` actually yields
-  usage and cost are all unconfirmed. This does **not** need the deployment:
-  put `CF_ACCOUNT_ID` and `CF_AIG_TOKEN` in `.dev.vars`, comment out
-  `DEV_FAKE_LLM`, and `pnpm preview` calls the real gateway from a local
-  Worker. One turn answers it.
+- **Exercise a real provider from the server** `infra` `S` — the streaming path
+  is now verified against `pnpm fakeprovider` (framing, deltas, the usage chunk,
+  cost, cached tokens, per-tier model choice), so what's left is whether a real
+  provider agrees. OpenRouter is one key away: `OPENROUTER_API_KEY` in
+  `.dev.vars`, `DEV_FAKE_LLM` commented out, `pnpm preview`, one turn. The
+  gateway is the same exercise with `CF_ACCOUNT_ID`/`CF_AIG_TOKEN`, and would
+  additionally confirm the `cf-aig-authorization` header, which nothing has ever
+  sent for real.
 - **Publish the callback-box dev deps** `tooling` `S` — `agent-doctest` and
   `personal-vibe-check` are `file:` dependencies pointing outside the repo.
   `pnpm install --prod` skips them so the Cloudflare builder is fine, but nobody
