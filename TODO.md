@@ -107,6 +107,29 @@ original write-up, plus whatever the last few sessions turned up.
   Related to the progress-signal item above: both are about the player being
   unable to tell what counts.
 
+- **Characters send the player to rooms that don't exist** `content` `M` — in
+  the run that solved Ink and Echo, the Archivist gave step-by-step directions
+  to "Archive Sub-Level 4", said Marta was there, and named a first hop ("East
+  Corridor") that isn't an exit from the room the player was standing in. The
+  player spent three turns trying to get there and reported it twice. Nothing
+  stops a character inventing geography: room names aren't in the prompt as a
+  closed set, and a confidently wrong direction is indistinguishable from a
+  lead. Either the prompt constrains it to real exits, or the engine answers a
+  move to an unknown room in fiction rather than dropping it.
+
+- **A revealed mystery only lands on the list if it is revealed live** `engine`
+  `S` — `mysteryTodos` derives list entries from a state transition, so a
+  mystery already revealed when a checkpoint was saved produces nothing. The
+  `briefed` checkpoint is exactly that, which means the quest run that solved
+  Ink and Echo played the whole thing with an empty list and never saw the
+  progress signal the list is supposed to be. Wants a backfill from current
+  state, not just from transitions.
+
+- **`Got unexpected tag: [object Object]`** `engine` `S` — the warning for an
+  unrecognised tag stringifies the tag object into the message, so the one
+  protocol failure in the winning quest run is recorded as a log line naming
+  nothing. Whatever the model emitted, it isn't in the record.
+
 - **Characters don't volunteer tasks** `content` `S` — `<todo>` fires when a
   scenario asks for one directly (the `task-list` eval passes 5/5) and
   essentially never otherwise: zero across three full quest playthroughs. Either

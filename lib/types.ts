@@ -200,6 +200,14 @@ export interface ChatType {
   meta: ChatMetaType;
   /** Which tier this prompt needs; see lib/models.ts. Unset means "pro". */
   model?: ModelTier;
+  /**
+   * What this prompt wants back. Unset means the tag protocol.
+   *
+   * Most prompts ask for tags, but a few ask for plain text and the answer is
+   * used verbatim. A backend that nudges the model toward tags has to skip
+   * those; see playtest/clichat.ts.
+   */
+  expects?: "tags" | "prose";
   messages: MessageType[];
 }
 

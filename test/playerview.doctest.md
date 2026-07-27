@@ -16,7 +16,7 @@ import { Model } from "../lib/game/model.js";
 import { entities } from "../lib/game/content/index.js";
 import { playerView, renderPlayerView } from "../evals/playerview.js";
 import { extractCommand, llmPlayer, parseReply } from "../evals/llmplayer.js";
-import { buildPrompt, GAME_TAG_INSTRUCTION } from "../playtest/clichat.js";
+import { buildPrompt, GAME_TAG_INSTRUCTION, instructionFor } from "../playtest/clichat.js";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 
@@ -197,6 +197,22 @@ buildPrompt("say something").endsWith(GAME_TAG_INSTRUCTION);
 // The player passes "" and gets the conversation alone.
 buildPrompt("say something", "");
 => say something
+```
+
+It is also wrong for the game's own prose prompts. `describe people` asks for
+sentences and its answer goes into the room description as written, so told to
+emit tags it asked what game tags were, and that question was shown to the
+player as the description of who was in the room.
+
+Prompts now say which they want, so the nudge follows the prompt rather than the
+backend.
+
+``` continue
+const chat = (expects) => ({ meta: { title: "t" }, expects, messages: [] });
+[undefined, "tags", "prose"]
+  .map((expects) => instructionFor(chat(expects)) || "(nothing)")
+  .join(" | ");
+=> Respond now with ONLY the appropriate game tags, nothing else. | Respond now with ONLY the appropriate game tags, nothing else. | (nothing)
 ```
 
 ## Notes to the reader

@@ -1918,6 +1918,9 @@ export class PlayerClass extends Person<PlayerInputType> {
         title: "describe people",
       },
       model: "flash",
+      // The only prompt that wants sentences rather than tags: the result is
+      // written into the room description as-is.
+      expects: "prose",
       messages: [
         {
           role: "system",

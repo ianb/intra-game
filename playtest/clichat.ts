@@ -55,15 +55,25 @@ const NO_TOOLS = [
 ].join(" ");
 
 /**
- * The nudge the game protocol needs and the player must never see.
+ * The nudge the game protocol needs, and that anything else must never see.
  *
  * The CLI narrates by default, so the game path needs telling to emit tags and
- * nothing else. That instruction is specific to the *game* role, and appending
- * it to everything this backend sends was a real bug: the LLM player runs
- * through the same backend, so it was ordered to abandon its own reply format
- * on every single turn. It said so, in its SNAG report, seventeen times in one
- * run — "this creates an impossible contradiction" — while every quest since
- * the first quietly played against it.
+ * nothing else. That instruction is specific to prompts that speak the tag
+ * protocol, and appending it to everything this backend sends was a real bug,
+ * twice over.
+ *
+ * The LLM player runs through the same backend, so it was ordered to abandon
+ * its own reply format on every single turn. It said so, in its SNAG report,
+ * seventeen times in one run — "this creates an impossible contradiction".
+ *
+ * So does `describe people`, which asks for sentences and has its answer
+ * written into the room description verbatim. Told to emit tags it doesn't
+ * have, the model asked what game tags were, and the question was printed to
+ * the player as the description of who was in the room. Four times in the run
+ * that found it, each one reported as the narrator breaking character.
+ *
+ * Neither was visible in a milestone count. Both came from the player saying
+ * the game was behaving strangely.
  */
 export const GAME_TAG_INSTRUCTION =
   "Respond now with ONLY the appropriate game tags, nothing else.";
@@ -71,8 +81,9 @@ export const GAME_TAG_INSTRUCTION =
 export interface CliChatOptions {
   model?: string;
   /**
-   * Text appended after the conversation. Pass "" for a caller that is not
-   * speaking the game's tag protocol — the LLM player, for one.
+   * Text appended after the conversation, overriding the per-prompt default.
+   * Pass "" for a caller that is not speaking the game's tag protocol at all —
+   * the LLM player, for one.
    */
   instruction?: string;
   /**
@@ -105,11 +116,19 @@ export function cliChat(options: CliChatOptions = {}): ChatFn {
       .filter((m) => m.role !== "system")
       .map((m) => `[${m.role.toUpperCase()}]\n${m.content}`)
       .join("\n\n");
-    const prompt = buildPrompt(conversation, options.instruction);
+    const prompt = buildPrompt(
+      conversation,
+      options.instruction ?? instructionFor(request),
+    );
     const response = await runClaude({ model, system, prompt, timeoutMs });
     options.onCall?.({ title: request.meta.title, response });
     return response;
   };
+}
+
+/** The nudge a given prompt should get, from what it says it expects. */
+export function instructionFor(request: ChatType): string {
+  return request.expects === "prose" ? "" : GAME_TAG_INSTRUCTION;
 }
 
 /** The user-side text sent to the CLI: the conversation, plus any nudge. */
