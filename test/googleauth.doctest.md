@@ -289,3 +289,27 @@ And the honest control: the same machinery accepts a good token.
 await emailFromIdToken(await idToken(goodClaims), config, getJwks);
 => player@example.com
 ```
+
+## What Google said, rather than a guess about it
+
+The token exchange reported every failure as "could not reach Google", which
+covers a wrong client secret, a redirect URI the console doesn't have, a stale
+code and an actual network problem — four different fixes behind one sentence.
+It sent the first person to hit it looking at their network.
+
+Google names the problem in the body, and the name is the diagnosis.
+
+```ts
+const refused = await completeGoogleLogin(
+  new Request(`https://example.com/auth/callback?code=c&state=nonce-abc`, {
+    headers: { Cookie: `${STATE_COOKIE}=${await seal({ nonce: "nonce-abc", verifier: "v", next: "/", exp: Date.now() + 60_000 }, config.cookieSecret)}` },
+  }),
+  config,
+  { exchange: async () => ({ error: "invalid_client" }) },
+);
+await refused.text();
+=> Sign-in failed: Google refused the sign-in (invalid_client)
+```
+
+Only the code is shown. The description and the body are not ours to display,
+and one of them quotes the request back.

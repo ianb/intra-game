@@ -278,7 +278,7 @@ export type ExchangeFn = (params: {
   verifier: string;
   redirectUri: string;
   config: GoogleConfig;
-}) => Promise<TokenResponse | null>;
+}) => Promise<TokenResponse | { error: string } | null>;
 
 const exchangeWithGoogle: ExchangeFn = async ({
   code,
@@ -300,8 +300,20 @@ const exchangeWithGoogle: ExchangeFn = async ({
       }),
     });
     if (!response.ok) {
-      console.warn(`Google token exchange returned ${response.status}`);
-      return null;
+      // Google names the problem in the body, and the name is the whole
+      // diagnosis: invalid_client is a wrong secret, redirect_uri_mismatch is a
+      // console setting, invalid_grant is a stale code. Reporting all of them as
+      // "could not reach Google" sent the reader looking at their network.
+      //
+      // Only the error code is surfaced, never the description or the body,
+      // because neither is ours to show and one of them quotes the request.
+      const body = (await response.json().catch(() => ({}))) as {
+        error?: unknown;
+      };
+      const code =
+        typeof body.error === "string" ? body.error : `http ${response.status}`;
+      console.warn(`Google token exchange failed: ${code}`);
+      return { error: code };
     }
     return (await response.json()) as TokenResponse;
   } catch (e) {
@@ -408,10 +420,14 @@ export async function completeGoogleLogin(
   if (tokens === null) {
     return fail("could not reach Google");
   }
+  if ("error" in tokens && typeof tokens.error === "string") {
+    return fail(`Google refused the sign-in (${tokens.error})`);
+  }
+  const idToken = (tokens as TokenResponse).id_token;
   const email = await Promise.resolve(
     deps.getJwks
-      ? emailFromIdToken(tokens.id_token, config, deps.getJwks, now)
-      : emailFromIdToken(tokens.id_token, config, undefined, now),
+      ? emailFromIdToken(idToken, config, deps.getJwks, now)
+      : emailFromIdToken(idToken, config, undefined, now),
   );
   if (email === null) {
     return fail("Google did not confirm a verified email address");
