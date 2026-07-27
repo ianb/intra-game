@@ -412,6 +412,35 @@ Three deliberate holes, each of which is a decision rather than an oversight:
 investigating a bill. An unparseable value falls back to the default rather than
 meaning unlimited.
 
+## When the API answers with the homepage
+
+Cloudflare serves the static assets _before_ the Worker runs, and
+`not_found_handling: "single-page-application"` answers any unmatched path with
+`index.html`. That applies to browser navigations only — a `fetch()` sends
+`Sec-Fetch-Mode: cors` and falls through to the Worker.
+
+So every API call from the app worked, every curl passed, and clicking "Sign in"
+navigated to `/auth/login`, got the game shell back, and looked like a page
+reload that did nothing.
+
+`run_worker_first` in `wrangler.jsonc` is what fixes it:
+
+```jsonc
+"assets": {
+  "not_found_handling": "single-page-application",
+  "run_worker_first": ["/api/*", "/auth/*"]
+}
+```
+
+The way to see it from outside is to send what a browser sends:
+
+```bash
+curl -sI https://your-domain/auth/login \
+  -H 'Sec-Fetch-Mode: navigate' -H 'Accept: text/html'
+```
+
+A 302 is right. A 200 with `text/html` means the Worker never ran.
+
 ## Did the deploy land?
 
 `pnpm deployed` answers it, rather than reloading and squinting:

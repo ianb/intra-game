@@ -74,6 +74,15 @@
     "binding": "ASSETS",
     // Two client-side routes (/ and /openrouter) served from one HTML shell.
     "not_found_handling": "single-page-application",
+    // Without this, a *navigation* to /auth/login never reaches the Worker.
+    //
+    // The asset layer runs first and single-page-application handling answers
+    // any unmatched path with index.html — but only for requests that look like
+    // browser navigation. A fetch() sends Sec-Fetch-Mode: cors and falls
+    // through to the Worker, so every API call worked and every test passed;
+    // clicking "Sign in" navigated, got the game shell back, and looked exactly
+    // like a page reload that did nothing.
+    "run_worker_first": ["/api/*", "/auth/*"],
   },
   "observability": {
     "enabled": true,

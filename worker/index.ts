@@ -50,6 +50,17 @@ export default {
 
     const mode = authMode(env);
 
+    // One line per request the Worker handles, visible in `wrangler tail` and
+    // the dashboard's live logs.
+    //
+    // Worth having because of how this file's last bug hid: navigations to
+    // /auth/* were answered by the asset layer and never arrived here at all,
+    // so the Worker had nothing to say and the absence was the evidence. A
+    // request that is missing from this log is now itself a finding.
+    console.info(
+      `${request.method} ${url.pathname} mode=${mode} nav=${request.headers.get("Sec-Fetch-Mode") ?? "-"}`,
+    );
+
     // The sign-in legs are the one part of the site that must be reachable
     // while signed out, or there is no way to become signed in.
     const google = googleConfig(env);
@@ -58,7 +69,12 @@ export default {
         return startGoogleLogin(request, google);
       }
       if (url.pathname === CALLBACK_PATH) {
-        return completeGoogleLogin(request, google);
+        const response = await completeGoogleLogin(request, google);
+        console.info(
+          `auth callback -> ${response.status}` +
+            (response.status === 302 ? " (signed in)" : ""),
+        );
+        return response;
       }
       if (url.pathname === "/auth/logout") {
         return googleLogout(request);
