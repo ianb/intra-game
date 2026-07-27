@@ -37,27 +37,42 @@ export interface PlayerViewType {
   transcript: string[];
 }
 
-/** Render one event the way the transcript shows it. */
+/**
+ * Render one event the way the transcript shows it.
+ *
+ * The interface distinguishes these with colour, indentation and position: a
+ * speaker's name is coloured and set apart, narration is indented, an action's
+ * success or failure is a tick or a cross, a task arriving is an amber line. A
+ * model reading a flat paragraph loses all of that and has to infer who is
+ * speaking from the prose.
+ *
+ * So the same distinctions are carried in markup a model can read. This is not
+ * decoration: "who said this" and "did that work" are the two things a player
+ * checks every turn, and in the first quest runs the player repeatedly mistook
+ * a character's terminal-styled dialogue for game output and echoed it back as
+ * a command.
+ */
 function renderEvent(model: Model, event: StoryEventType): string[] {
   const nameFor = (id: string) => model.world.getEntity(id)?.name ?? id;
   const lines: string[] = [];
   for (const action of event.actions) {
     if (isStoryDialog(action)) {
-      const to = action.toId ? ` (to ${nameFor(action.toId)})` : "";
-      lines.push(`${nameFor(action.id)}${to}: "${action.text.trim()}"`);
+      const to = action.toId ? ` to ${nameFor(action.toId)}` : "";
+      lines.push(`[${nameFor(action.id)}${to}] "${action.text.trim()}"`);
     } else if (isStoryDescription(action)) {
       lines.push(action.text.trim());
     } else if (isStoryActionAttempt(action)) {
       lines.push(
-        `${action.success ? "You" : "You try to"} ${action.attempt.trim()} — ${action.resolution.trim()}`,
+        `[${action.success ? "worked" : "failed"}] ${action.attempt.trim()} — ` +
+          action.resolution.trim(),
       );
     }
   }
   for (const todo of event.todos || []) {
     lines.push(
       todo.done
-        ? `[crossed off your list: ${todo.title}]`
-        : `[added to your list: ${todo.title}]`,
+        ? `[list] crossed off: ${todo.title}`
+        : `[list] added: ${todo.title}`,
     );
   }
   return lines;
@@ -94,25 +109,30 @@ export function playerView(model: Model, since = 0): PlayerViewType {
 }
 
 /** The view as the text a player-model is given. */
+/**
+ * The view as the text a player-model is given.
+ *
+ * Laid out like the interface rather than as a paragraph: the transcript, then
+ * a status block for the things the game shows in a panel beside it. A player
+ * that cannot tell the room description from the exit list is being handicapped
+ * by the harness rather than by the puzzle.
+ */
 export function renderPlayerView(view: PlayerViewType): string {
   const parts: string[] = [];
   if (view.transcript.length) {
     parts.push(view.transcript.join("\n\n"));
   }
-  parts.push(`You are in ${view.room}`);
-  if (view.people.length) {
-    parts.push(`People here: ${view.people.join(", ")}`);
-  } else {
-    parts.push("Nobody else is here.");
-  }
-  parts.push(`You can go to: ${view.exits.join(", ") || "(nowhere)"}`);
+  const status = [
+    `LOCATION  ${view.room}`,
+    `PEOPLE    ${view.people.join(", ") || "nobody else here"}`,
+    `EXITS     ${view.exits.join(", ") || "(nowhere)"}`,
+  ];
   if (view.todos.length) {
-    parts.push(`Your list:\n${view.todos.map((t) => `- ${t}`).join("\n")}`);
+    status.push(`LIST      ${view.todos.join(" / ")}`);
   }
   if (view.mysteries.length) {
-    parts.push(
-      `Open questions:\n${view.mysteries.map((m) => `- ${m}`).join("\n")}`,
-    );
+    status.push(`QUESTIONS ${view.mysteries.join(" / ")}`);
   }
+  parts.push(status.join("\n"));
   return parts.join("\n\n");
 }

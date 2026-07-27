@@ -88,6 +88,30 @@ view.transcript.some((line) => line.includes("Ink and Echo"));
 => true
 ```
 
+## The interface's distinctions survive
+
+The transcript uses colour, indentation and position to say who is speaking and
+whether something worked. A model reading flat prose loses all of that and has
+to infer the speaker from the writing, which the early quest runs got wrong —
+the player mistook a character's terminal-styled dialogue for game output and
+echoed it back as a command. So the same distinctions are carried in markup:
+
+```ts
+renderPlayerView({
+  room: "The Yellow Room: very yellow",
+  exits: ["Hallway"],
+  people: ["Marta"],
+  todos: ["find the poet"],
+  mysteries: [],
+  transcript: [
+    `[Marta to Ada Quill] "I don't know anything about that."`,
+    `[failed] open the cabinet — it is locked`,
+    `[list] added: find the poet`,
+  ],
+}).split("\n").slice(-4).join(" / ");
+=> LOCATION  The Yellow Room: very yellow / PEOPLE    Marta / EXITS     Hallway / LIST      find the poet
+```
+
 ## Invisible characters stay invisible
 
 Ama is a voice from the ceiling, not someone in the room. The view uses the same

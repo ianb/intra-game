@@ -1,4 +1,7 @@
 import { spawn } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { ChatType } from "../lib/types";
 import type { ChatFn } from "../lib/game/model";
 import { modelForTier } from "../lib/models";
@@ -14,6 +17,30 @@ import { modelForTier } from "../lib/models";
 // calls. See playtest/README.md.
 
 export const DEFAULT_CLI_MODEL = "claude-haiku-4-5-20251001";
+
+/**
+ * An empty directory to run the CLI in.
+ *
+ * Claude Code reads the working directory: CLAUDE.md, the git repo, the project
+ * layout. Run from this repo and the model playing Ama has *read the source of
+ * the game it is acting in* — including a CLAUDE.md that explains the tag
+ * protocol, the prompts and the evals. Asked what project it is in, it answers
+ * "this is intra-game, a text-based game engine…".
+ *
+ * That contaminates everything measured through this backend in both
+ * directions. Protocol compliance is flattered, because the model has been
+ * briefed on the protocol somewhere other than the prompt under test. And the
+ * frame leaks: two quest runs produced room descriptions addressing the
+ * operator, one asking to "point me to a file in the project where tags are
+ * defined", which is a coding assistant answering, not Ama.
+ *
+ * An empty temp dir gives it nothing to read, so what it gets is the prompt and
+ * only the prompt — which is the thing being tested.
+ */
+const SANDBOX = mkdtempSync(join(tmpdir(), "intra-clichat-"));
+process.on("exit", () => {
+  rmSync(SANDBOX, { recursive: true, force: true });
+});
 
 const NO_TOOLS = [
   "Bash",
@@ -89,7 +116,8 @@ function runClaude({
         "--append-system-prompt",
         system,
       ],
-      { stdio: ["pipe", "pipe", "pipe"] },
+      // See SANDBOX: the model must not be able to read the game's source.
+      { stdio: ["pipe", "pipe", "pipe"], cwd: SANDBOX },
     );
     let out = "";
     let err = "";
