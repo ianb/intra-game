@@ -16,9 +16,13 @@ Prompts `956511dcfce2`.
 | `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
 | `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
 | `qwen/qwen3-30b-a3b-instruct-2507` | 4/7 | 4/5 | 3/4 | 5/5 | 5/5 | **21/26** |
-| `z-ai/glm-4.7-flash` | 7/7 | 5/5 | 2/4 | 5/5 | 5/5 | **24/26** |
+| `z-ai/glm-4.7-flash` | 6/7 | 4/5 | 3/4 | 5/5 | 5/5 | **23/26** |
 | `google/gemma-4-26b-a4b-it` | 6/7 | 5/5 | 4/4 | 4/5 | 5/5 | **24/26** |
 | `moonshotai/kimi-k2.6` | 7/7 | 4/5 | 4/4 | 5/5 | 5/5 | **25/26** |
+| `z-ai/glm-4.7` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
+| `z-ai/glm-5.2` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
+| `openai/gpt-5-nano` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
+| `openai/gpt-5.4-nano` | 5/7 | 4/5 | 3/4 | 5/5 | 4/5 | **21/26** |
 
 What failed:
 
@@ -27,11 +31,17 @@ What failed:
 - `qwen/qwen3-30b-a3b-instruct-2507` intake/profession: recorded the profession the player mentioned
 - `qwen/qwen3-30b-a3b-instruct-2507` movement/protocol: the engine never had to discard a tag the model emitted
 - `qwen/qwen3-30b-a3b-instruct-2507` in-character/protocol: the engine never had to discard a tag the model emitted
+- `z-ai/glm-4.7-flash` intake/protocol: the engine never had to discard a tag the model emitted
+- `z-ai/glm-4.7-flash` movement/protocol: the engine never had to discard a tag the model emitted
 - `z-ai/glm-4.7-flash` in-character/protocol: the engine never had to discard a tag the model emitted
-- `z-ai/glm-4.7-flash` in-character/well-formed: no markup the parser had to repair before it could be used
 - `google/gemma-4-26b-a4b-it` intake/profession: recorded the profession the player mentioned
 - `google/gemma-4-26b-a4b-it` mystery/used-her-hint: named someone from her own hint (Harold or Lily)
 - `moonshotai/kimi-k2.6` movement/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5.4-nano` intake/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
+- `openai/gpt-5.4-nano` movement/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5.4-nano` in-character/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5.4-nano` task-list/protocol: the engine never had to discard a tag the model emitted
 
 ## 2026-07-25
 
