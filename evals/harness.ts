@@ -181,6 +181,11 @@ export interface ScenarioResult {
  * console.warn is the engine's existing channel for "the model said something I
  * could not use" — see lib/game/tags.ts. Intercepting it means the eval learns
  * about new failure modes as the engine grows them.
+ *
+ * The cost of that blanket capture: anything else that warns during a scenario
+ * is scored as a protocol failure. A backend's retry notice was, until it was
+ * moved to console.info. Log from the harness side with info or error, and keep
+ * warn for the engine rejecting model output.
  */
 function captureWarnings(): { warnings: string[]; restore: () => void } {
   const warnings: string[] = [];

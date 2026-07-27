@@ -145,7 +145,12 @@ export function openRouterChat(options: OpenRouterOptions): ChatFn {
           throw e;
         }
         const waitMs = 2000 * 2 ** attempt;
-        console.warn(
+        // Not console.warn: the eval harness captures that channel as "the
+        // engine rejected something the model said", so a retry notice was
+        // being counted against the model's protocol score. It changed no
+        // result — the run that exposed it had a real failure alongside — but
+        // it could have failed a model for the network having a bad second.
+        console.info(
           `  retrying after ${String(e).slice(0, 80)} (${waitMs}ms)`,
         );
         await new Promise((r) => setTimeout(r, waitMs));
