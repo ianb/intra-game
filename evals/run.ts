@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse, stringify } from "yaml";
 import type { ChatFn } from "../lib/game/model";
+import type { UsageRecordType } from "../lib/usage";
 import { cliChat } from "../playtest/clichat";
 import { promptFingerprint } from "../playtest/fingerprint";
 import { runScenario, type ScenarioResult } from "./harness";
@@ -46,9 +47,10 @@ function backendFor(
   model: string,
   flashModel?: string,
   reasoningEffort?: string,
+  onUsage?: (record: UsageRecordType) => void,
 ): ChatFn {
   if (name === "openrouter") {
-    return openRouterChat({ model, flashModel, reasoningEffort });
+    return openRouterChat({ model, flashModel, reasoningEffort, onUsage });
   }
   if (name === "cli") {
     return cliChat({ model, flashModel });
@@ -145,10 +147,16 @@ async function main() {
     for (const scenario of scenarios) {
       process.stdout.write(`  ${scenario.name}... `);
       let result: Awaited<ReturnType<typeof runScenario>>;
+      // Collected per scenario, so a cost can be attributed to the thing that
+      // incurred it rather than to a whole run.
+      const usage: UsageRecordType[] = [];
       try {
         result = await runScenario(
           scenario,
-          backendFor(backend, model, flashModel, reasoning),
+          backendFor(backend, model, flashModel, reasoning, (record) =>
+            usage.push(record),
+          ),
+          usage,
         );
       } catch (e) {
         // One scenario failing is one scenario's score, not the batch's.
@@ -157,8 +165,14 @@ async function main() {
       }
       results.push({ ...result, promptFingerprint: fingerprint });
       const failed = result.checks.filter((c) => !c.passed).map((c) => c.name);
+      const spent = result.usage
+        ? ` $${result.usage.cost.toFixed(5)}` +
+          (result.usage.reasoningTokens
+            ? ` (${result.usage.reasoningTokens} thinking)`
+            : "")
+        : "";
       console.log(
-        `${result.passed}/${result.total} in ${Math.round(result.ms / 1000)}s` +
+        `${result.passed}/${result.total} in ${Math.round(result.ms / 1000)}s${spent}` +
           (failed.length ? ` — failed: ${failed.join(", ")}` : "") +
           (result.error ? ` — ERROR ${result.error}` : ""),
       );

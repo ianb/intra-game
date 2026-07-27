@@ -145,12 +145,12 @@ have to write a parser to ask it:
 
 ```ts
 toCsv([record({ promptType: "prompt Ama", turn: 4 })]).split("\n")[0];
-=> at,turn,promptType,entity,model,tier,historyTurns,promptTokens,cachedTokens,completionTokens,cost,ms,user,error
+=> at,turn,promptType,entity,model,tier,historyTurns,promptTokens,cachedTokens,completionTokens,reasoningTokens,cost,ms,user,error
 ```
 
 ``` continue
 toCsv([record({ turn: 4, entity: "Ama" })]).split("\n")[1];
-=> 2026-07-26T00:00:00.000Z,4,prompt Ama,Ama,anthropic/claude-haiku-4-5,,2,1000,0,100,0.001,100,,
+=> 2026-07-26T00:00:00.000Z,4,prompt Ama,Ama,anthropic/claude-haiku-4-5,,2,1000,0,100,,0.001,100,,
 ```
 
 Anything with a comma in it is quoted, so an error message can't shift every
@@ -159,4 +159,34 @@ column after it:
 ```ts
 toCsv([record({ error: 'rate limited, retry after 30s' })]).includes('"rate limited, retry after 30s"');
 => true
+```
+
+## Thinking tokens are the invisible half of a bill
+
+A model that reasons before answering emits those tokens inside
+`completion_tokens` and is billed for them at the output rate. They never appear
+in the answer, so nothing about the response suggests they happened.
+
+That is not a detail. Choosing a model on price here meant extrapolating output
+volume from a sample, and it came out four times too low: asked for a single tag
+from a 43-token prompt, one model emitted 776 completion tokens of which 640
+were reasoning. The number is reported when asked for, and now it is asked for.
+
+```ts
+const usage = parseUsage({
+  prompt_tokens: 43,
+  completion_tokens: 776,
+  completion_tokens_details: { reasoning_tokens: 640 },
+  cost: 0.00031255,
+});
+`${usage.completionTokens} out, ${usage.reasoningTokens} of it thinking`;
+=> 776 out, 640 of it thinking
+```
+
+Most models report nothing there, and zero is the honest reading — they did not
+think, rather than thinking an unknown amount:
+
+``` continue
+parseUsage({ prompt_tokens: 43, completion_tokens: 48 }).reasoningTokens;
+=> 0
 ```

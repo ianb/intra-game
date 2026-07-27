@@ -1,6 +1,7 @@
 import { Model } from "../lib/game/model";
 import type { StoryEventType } from "../lib/types";
 import { forkGame, settle } from "../playtest/fork";
+import { totals, type UsageRecordType, type UsageTotals } from "../lib/usage";
 
 /**
  * Running a scenario against a model and scoring what came back.
@@ -130,6 +131,15 @@ export interface ScenarioResult {
    * way to tell a real failure from a check matching something innocent.
    */
   transcript: string[];
+  /**
+   * What this scenario actually cost, when the backend reports it.
+   *
+   * The reason it is here: choosing a model on price meant extrapolating from a
+   * probe, and reasoning models made that wrong by a factor of four — they emit
+   * thousands of invisible thinking tokens, billed at the output rate, that no
+   * token estimate can see. A score without a price is half an answer.
+   */
+  usage?: UsageTotals;
   error?: string;
   checks: CheckResult[];
 }
@@ -159,6 +169,7 @@ function captureWarnings(): { warnings: string[]; restore: () => void } {
 export async function runScenario(
   scenario: Scenario,
   chat: Model["chat"],
+  usage?: UsageRecordType[],
 ): Promise<ScenarioResult> {
   const started = Date.now();
   // Warnings are captured around the fork as well as the run: replaying a
@@ -220,6 +231,7 @@ export async function runScenario(
     dropped: [...new Set(dropped)],
     repaired: [...new Set(repaired)],
     transcript: transcriptOf(result),
+    ...(usage?.length ? { usage: totals(usage) } : {}),
     error,
     checks,
   };

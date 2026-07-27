@@ -1,6 +1,7 @@
 import type { ChatFn } from "../lib/game/model";
 import { modelForTier } from "../lib/models";
 import type { ChatType } from "../lib/types";
+import { usageRecord, type RawUsage, type UsageRecordType } from "../lib/usage";
 
 /**
  * An OpenRouter backend for evals.
@@ -32,6 +33,8 @@ export interface OpenRouterOptions {
    * cost and most of the latency for nothing.
    */
   reasoningEffort?: string;
+  /** Called once per completed call with what it cost. */
+  onUsage?: (record: UsageRecordType) => void;
 }
 
 /**
@@ -66,6 +69,7 @@ export function openRouterChat(options: OpenRouterOptions): ChatFn {
   const retries = options.retries ?? 3;
 
   const once = async (request: ChatType): Promise<string> => {
+    const started = Date.now();
     const response = await fetch(ENDPOINT, {
       method: "POST",
       headers: {
@@ -78,6 +82,10 @@ export function openRouterChat(options: OpenRouterOptions): ChatFn {
           flash: options.flashModel,
         }),
         messages: request.messages,
+        // Ask for the bill. Without this a call reports nothing about itself,
+        // and a model's cost has to be guessed from token estimates — which is
+        // how a reasoning model's price came out four times too low.
+        usage: { include: true },
         ...(options.reasoningEffort
           ? { reasoning: { effort: options.reasoningEffort } }
           : {}),
@@ -90,7 +98,19 @@ export function openRouterChat(options: OpenRouterOptions): ChatFn {
     }
     const body = (await response.json()) as {
       choices?: { message?: { content?: string } }[];
+      usage?: RawUsage;
     };
+    options.onUsage?.(
+      usageRecord({
+        request,
+        model: modelForTier(request.model, {
+          pro: options.model,
+          flash: options.flashModel,
+        }),
+        raw: body.usage,
+        ms: Date.now() - started,
+      }),
+    );
     const text = body.choices?.[0]?.message?.content;
     if (typeof text !== "string") {
       throw new Error(

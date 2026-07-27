@@ -45,6 +45,8 @@ export interface UsageRecordType {
   historyTurns: number;
   promptTokens: number;
   completionTokens: number;
+  /** Of the completion tokens, how many were thinking. Zero for most models. */
+  reasoningTokens: number;
   /** Of `promptTokens`, how many were served from a prompt cache. */
   cachedTokens: number;
   /** USD, when the provider reports it. OpenRouter does; not everything does. */
@@ -68,6 +70,15 @@ export interface RawUsage {
   completion_tokens?: number;
   cost?: number;
   prompt_tokens_details?: { cached_tokens?: number };
+  /**
+   * Reasoning tokens, for models that think before answering.
+   *
+   * Counted inside `completion_tokens` and billed at the output rate, so they
+   * are not a separate charge — but they are most of one, and invisible: a
+   * model can emit five thousand of them to produce a one-line answer. Not
+   * recording them is how a cost estimate ends up wrong by a factor of four.
+   */
+  completion_tokens_details?: { reasoning_tokens?: number };
   cache_read_input_tokens?: number;
 }
 
@@ -75,6 +86,7 @@ export function parseUsage(raw: RawUsage | undefined | null): {
   promptTokens: number;
   completionTokens: number;
   cachedTokens: number;
+  reasoningTokens: number;
   cost?: number;
 } {
   return {
@@ -84,6 +96,7 @@ export function parseUsage(raw: RawUsage | undefined | null): {
       raw?.prompt_tokens_details?.cached_tokens ??
       raw?.cache_read_input_tokens ??
       0,
+    reasoningTokens: raw?.completion_tokens_details?.reasoning_tokens ?? 0,
     ...(typeof raw?.cost === "number" ? { cost: raw.cost } : {}),
   };
 }
@@ -129,6 +142,7 @@ export interface UsageTotals {
   promptTokens: number;
   completionTokens: number;
   cachedTokens: number;
+  reasoningTokens: number;
   cost: number;
   ms: number;
   errors: number;
@@ -139,6 +153,7 @@ const EMPTY: UsageTotals = {
   promptTokens: 0,
   completionTokens: 0,
   cachedTokens: 0,
+  reasoningTokens: 0,
   cost: 0,
   ms: 0,
   errors: 0,
@@ -151,6 +166,7 @@ export function totals(records: UsageRecordType[]): UsageTotals {
       promptTokens: sum.promptTokens + record.promptTokens,
       completionTokens: sum.completionTokens + record.completionTokens,
       cachedTokens: sum.cachedTokens + record.cachedTokens,
+      reasoningTokens: sum.reasoningTokens + record.reasoningTokens,
       cost: sum.cost + (record.cost ?? 0),
       ms: sum.ms + record.ms,
       errors: sum.errors + (record.error ? 1 : 0),
@@ -187,6 +203,7 @@ export const USAGE_COLUMNS = [
   "promptTokens",
   "cachedTokens",
   "completionTokens",
+  "reasoningTokens",
   "cost",
   "ms",
   "user",
