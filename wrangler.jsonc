@@ -48,6 +48,10 @@
     // URLs; the token that actually authorises anything is a secret.
     "CF_ACCOUNT_ID": "bb530e5839d03156b34799ccb702c28a",
     "CF_GATEWAY_ID": "intra",
+    // Dollars per player per rolling 30 days of server play. A player using
+    // their own key isn't metered; see worker/quota.ts.
+    "QUOTA_USD": "1",
+    "QUOTA_PERIOD_DAYS": "30",
   },
   "assets": {
     "directory": "./dist",

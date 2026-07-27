@@ -12,6 +12,8 @@ import { usageRecord, type UsageRecordType } from "../lib/usage";
  */
 export interface DevChatOptions {
   onUsage?: (record: UsageRecordType) => void;
+  /** Dollars per call, for exercising the quota offline. Off unless set. */
+  fakeCost?: string;
   user?: string;
 }
 
@@ -27,9 +29,16 @@ export function devChatStream(options: DevChatOptions = {}): ChatStreamFn {
     }
     // Usage too, so the recording path — storage, the endpoint, the display —
     // can be exercised offline. Token counts are estimated from the text, which
-    // is honest enough to be useful. Cost is deliberately absent and the model
-    // is named "dev": a fabricated price that looked real would be worse than
-    // no price at all.
+    // is honest enough to be useful. Cost is absent and the model is named
+    // "dev": a fabricated price that looked real would be worse than no price
+    // at all.
+    //
+    // Except when asked for one. Per-player quotas are enforced on cost, so
+    // with no cost there is no way to exercise them without spending money,
+    // and an untested limit is not a limit. DEV_FAKE_COST is opt-in for that,
+    // and still reports as model "dev" so nothing downstream can mistake it
+    // for a real price.
+    const fakeCost = Number(options.fakeCost);
     options.onUsage?.(
       usageRecord({
         request,
@@ -39,6 +48,9 @@ export function devChatStream(options: DevChatOptions = {}): ChatStreamFn {
             request.messages.reduce((n, m) => n + m.content.length, 0) / 4,
           ),
           completion_tokens: Math.round(response.length / 4),
+          ...(Number.isFinite(fakeCost) && fakeCost > 0
+            ? { cost: fakeCost }
+            : {}),
         },
         ms: Date.now() - started,
         user: options.user,

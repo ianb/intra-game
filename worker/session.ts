@@ -8,6 +8,7 @@ import { gatewayChatStream } from "./aigateway";
 import { openRouterChatStream } from "./openrouter";
 import { devChatStream } from "./devllm";
 import { SessionLog } from "./eventlog";
+import type { QuotaVerdict } from "./quota";
 
 /**
  * One game session: its event log, and the execution that appends to it.
@@ -72,6 +73,16 @@ export interface SessionEnv {
   OPENROUTER_BASE_URL?: string;
   /** Local development: use the stand-in LLM instead of AI Gateway. */
   DEV_FAKE_LLM?: string;
+  /** Dollars per fake call, so the quota can be exercised without spending. */
+  DEV_FAKE_COST?: string;
+  /**
+   * Per-player spending, enforced against the DO in PLAYER_SESSIONS.
+   *
+   * Absent when a deployment has no player index — the local development and
+   * test paths construct this DO directly — in which case there is nothing to
+   * meter against and play is unmetered.
+   */
+  PLAYER_SESSIONS?: DurableObjectNamespace;
 }
 
 export class GameSession {
@@ -125,18 +136,72 @@ export class GameSession {
     return json({ owner, events: await this.sessionLog.count() });
   }
 
+  /** The player's DO, or null where this deployment has no index. */
+  private playerStub(email: string) {
+    const ns = this.env.PLAYER_SESSIONS;
+    if (!ns) {
+      return null;
+    }
+    return ns.get(ns.idFromName(email));
+  }
+
   /**
-   * Delete this session outright.
+   * May this player spend? Null means there is nothing to ask.
    *
-   * Not a hole in "the log is append-only": that invariant is about editing
-   * history — an undo appends a rewind marker rather than removing a turn, so
-   * the record of what happened stays honest. Throwing a whole game away at its
-   * owner's request is a different act, and the alternative is worse: a deleted
-   * game that still bills storage and still holds whatever the player said in
-   * it, forever, because nothing can reach it.
-   *
-   * Credentials go with it, which is most of the point.
+   * A quota service that cannot be reached does not block play. The failure
+   * mode of guessing wrong here is asymmetric: refusing wrongly locks a player
+   * out of a game they are entitled to, while allowing wrongly costs one turn
+   * and is caught by the next check.
    */
+  private async checkQuota(email: string): Promise<QuotaVerdict | null> {
+    const stub = this.playerStub(email);
+    if (!stub) {
+      return null;
+    }
+    try {
+      const response = await stub.fetch("https://player/quota");
+      return response.ok ? ((await response.json()) as QuotaVerdict) : null;
+    } catch (e) {
+      console.warn("Could not read quota", e);
+      return null;
+    }
+  }
+
+  /** Report what a call cost, so the next check sees it. */
+  private async recordSpend(email: string, cost: number): Promise<void> {
+    const stub = this.playerStub(email);
+    if (!stub || !cost) {
+      return;
+    }
+    try {
+      await stub.fetch("https://player/quota/spend", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ cost }),
+      });
+    } catch (e) {
+      // Same rule as the usage log: bookkeeping never fails a turn.
+      console.warn("Could not record spend", e);
+    }
+  }
+
+  /**
+   * Record a call: to this session's usage log, and to the player's budget.
+   *
+   * One place, because the three backends each report usage and each of them
+   * would otherwise have to remember to meter it. A backend added later gets
+   * both for free.
+   *
+   * A call made on the player's own key is logged but not metered — `user` is
+   * still stamped, so the accounting stays complete either way.
+   */
+  private noteUsage(record: UsageRecordType, metered: boolean): void {
+    void this.writeUsage(record);
+    if (metered && record.user && record.cost) {
+      void this.recordSpend(record.user, record.cost);
+    }
+  }
+
   /** Every usage record for this session, oldest first. */
   private async readUsage(): Promise<UsageRecordType[]> {
     const stored = await this.state.storage.list<UsageRecordType>({
@@ -162,6 +227,18 @@ export class GameSession {
     }
   }
 
+  /**
+   * Delete this session outright.
+   *
+   * Not a hole in "the log is append-only": that invariant is about editing
+   * history — an undo appends a rewind marker rather than removing a turn, so
+   * the record of what happened stays honest. Throwing a whole game away at its
+   * owner's request is a different act, and the alternative is worse: a deleted
+   * game that still bills storage and still holds whatever the player said in
+   * it, forever, because nothing can reach it.
+   *
+   * Credentials go with it, which is most of the point.
+   */
   private async destroy(): Promise<Response> {
     await this.state.storage.deleteAll();
     return json({ destroyed: true });
@@ -195,6 +272,21 @@ export class GameSession {
     // follows: a client that could name its own user would be writing the
     // record it is meant to appear in.
     const owner = await this.state.storage.get<SessionOwner>(OWNER_KEY);
+
+    // Checked once, before the turn starts. A turn is three or four model calls
+    // and stopping between them would leave the story mid-sentence with the log
+    // already written, so the last turn of a budget is allowed to run over. The
+    // overshoot is one turn, which is fractions of a cent.
+    //
+    // A player on their own key is not metered: they aren't spending the
+    // deployment's money.
+    if (!credential?.key && owner?.email) {
+      const quota = await this.checkQuota(owner.email);
+      if (quota && !quota.allowed) {
+        return json({ error: quota.message, quota }, 429);
+      }
+    }
+
     const backend = this.chatBackend(credential, owner?.email);
     if (!backend) {
       return json(
@@ -257,11 +349,14 @@ export class GameSession {
 
   /** The LLM backend: AI Gateway, or the local stand-in in development. */
   private chatBackend(credential: StoredCredential | undefined, user?: string) {
+    // A player on their own key spends their own money, so it isn't metered.
+    const metered = !credential?.key;
     if (this.env.DEV_FAKE_LLM) {
       return devChatStream({
         user,
+        fakeCost: this.env.DEV_FAKE_COST,
         onUsage: (record) => {
-          void this.writeUsage(record);
+          this.noteUsage(record, metered);
         },
       });
     }
@@ -277,7 +372,7 @@ export class GameSession {
         providerKey: credential?.key,
         user,
         onUsage: (record) => {
-          void this.writeUsage(record);
+          this.noteUsage(record, metered);
         },
       });
     }
@@ -293,7 +388,7 @@ export class GameSession {
       providerKey: credential?.key,
       user,
       onUsage: (record) => {
-        void this.writeUsage(record);
+        this.noteUsage(record, metered);
       },
     });
   }

@@ -79,7 +79,18 @@ export async function sendInput(
   });
   if (!response.ok || !response.body) {
     const detail = await response.text().catch(() => "");
-    const message = `Turn failed: ${response.status} ${detail.slice(0, 200)}`;
+    // A refusal the server wrote for the player — currently the spending limit
+    // — is already a sentence. Wrapping it in "Turn failed: 429" would bury the
+    // one part they can act on.
+    let message = `Turn failed: ${response.status} ${detail.slice(0, 200)}`;
+    try {
+      const { error } = JSON.parse(detail) as { error?: string };
+      if (error) {
+        message = error;
+      }
+    } catch {
+      // Not JSON; the status line above is the best available.
+    }
     handlers.onError?.(message);
     throw new Error(message);
   }

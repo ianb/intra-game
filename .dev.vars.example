@@ -16,6 +16,13 @@
 DEV_IDENTITY=dev@localhost
 DEV_FAKE_LLM=1
 
+# The fake LLM reports token counts but no cost, because a made-up price that
+# looked real would be worse than none. Per-player quotas are enforced on cost,
+# though, so exercising them offline needs one on purpose:
+#
+# DEV_FAKE_COST=0.01     # dollars per call; still reported as model "dev"
+# QUOTA_USD=0.05         # low enough to hit in a couple of turns
+
 # DEV_IDENTITY stands in for a signed-in user and only works while no real
 # identity source is configured. Set the Google variables below and it stops
 # being consulted, which is deliberate: a leftover dev identity must not become

@@ -21,6 +21,14 @@
  * or delete one.
  */
 
+import {
+  currentWindow,
+  quotaConfig,
+  spend,
+  verdict,
+  type QuotaState,
+} from "./quota";
+
 export interface SessionSummary {
   id: string;
   title: string;
@@ -35,6 +43,7 @@ export interface IndexStorage {
 }
 
 const SESSIONS_KEY = "sessions";
+const QUOTA_KEY = "quota";
 /** Enough for any real player, and a bound on what one request can fan out to. */
 export const MAX_SESSIONS = 50;
 
@@ -109,11 +118,25 @@ export class SessionIndex {
   }
 }
 
-/** The Durable Object wrapper; the logic above is what's worth testing. */
+export interface QuotaEnv {
+  QUOTA_USD?: string;
+  QUOTA_PERIOD_DAYS?: string;
+}
+
+/**
+ * The Durable Object wrapper; the logic above is what's worth testing.
+ *
+ * This also holds the player's spending, because it is already the one object
+ * per identity and a Durable Object serialises its own requests — two turns
+ * racing cannot both read the same total and both decide there was room.
+ */
 export class PlayerSessions {
   private index: SessionIndex;
 
-  constructor(private state: DurableObjectState) {
+  constructor(
+    private state: DurableObjectState,
+    private env: QuotaEnv = {},
+  ) {
     this.index = new SessionIndex(state.storage);
   }
 
@@ -123,6 +146,7 @@ export class PlayerSessions {
       ? ((await request.json().catch(() => ({}))) as {
           id?: string;
           title?: string;
+          cost?: number;
         })
       : {};
     switch (`${request.method} ${url.pathname}`) {
@@ -150,6 +174,29 @@ export class PlayerSessions {
         return renamed
           ? json({ session: renamed })
           : json({ error: "no such session" }, 404);
+      }
+      case "GET /quota": {
+        const config = quotaConfig(this.env);
+        const now = Date.now();
+        const state = currentWindow(
+          await this.state.storage.get<QuotaState>(QUOTA_KEY),
+          config,
+          now,
+        );
+        return json(verdict(state, config, now));
+      }
+      case "POST /quota/spend": {
+        const config = quotaConfig(this.env);
+        const now = Date.now();
+        const before = await this.state.storage.get<QuotaState>(QUOTA_KEY);
+        const after = spend(
+          before ?? currentWindow(undefined, config, now),
+          body.cost ?? 0,
+          config,
+          now,
+        );
+        await this.state.storage.put({ [QUOTA_KEY]: after });
+        return json(verdict(after, config, now));
       }
       case "DELETE /forget":
         if (!body.id) {

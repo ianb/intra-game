@@ -378,6 +378,40 @@ these links can't cost you a game.
 Preview URLs sit behind the same Access application as the live site, since the
 policy covers the whole worker.
 
+## What a player may spend
+
+The gateway's own cap bounds the bill but not who consumes it: one enthusiastic
+stranger can spend the month's allowance in an afternoon, and everyone else gets
+a dead site until it resets. A total cap turns an unbounded-money problem into a
+denial-of-service problem, so there is a per-player limit as well.
+
+| Var                 | Default | Meaning                                         |
+| ------------------- | ------- | ----------------------------------------------- |
+| `QUOTA_USD`         | `1`     | dollars per player per period                   |
+| `QUOTA_PERIOD_DAYS` | `30`    | a rolling window, starting when they first play |
+
+At roughly $0.007 a turn on Haiku, a dollar is about 140 turns.
+
+The window rolls per player rather than per calendar month, so budgets don't all
+refill at midnight on the 1st and take the site down on the same day each month.
+Totals live in the player's own Durable Object, which serialises its own
+requests — two turns racing can't both see room and both take it.
+
+Three deliberate holes, each of which is a decision rather than an oversight:
+
+- **A player on their own key isn't metered.** They aren't spending your money.
+- **A turn is checked before it starts, never interrupted.** A turn is three or
+  four model calls; stopping between them would leave the story mid-sentence
+  with the log already written. The last turn of a budget may run over, by at
+  most one turn.
+- **An unreachable quota service doesn't block play.** Refusing wrongly locks
+  someone out of a game they're entitled to; allowing wrongly costs one turn and
+  the next check catches it.
+
+`QUOTA_USD=0` means "no server play for anyone", which is what you set while
+investigating a bill. An unparseable value falls back to the default rather than
+meaning unlimited.
+
 ## Did the deploy land?
 
 `pnpm deployed` answers it, rather than reloading and squinting:
