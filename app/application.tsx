@@ -41,8 +41,22 @@ import { useSignals } from "@preact/signals-react/runtime";
 function SignInLink() {
   useSignals();
   const auth = authState.value;
-  if (!auth?.loginUrl || auth.email) {
+  if (!auth?.loginUrl) {
     return null;
+  }
+  // Signed in, and saying so. Previously the only sign that a login had worked
+  // was this button disappearing, which from the player's side is
+  // indistinguishable from the click doing nothing at all — the page reloads,
+  // the game looks the same, and there is no way to tell success from failure.
+  if (auth.email) {
+    return (
+      <span
+        className="text-gray-400 text-sm mr-2 hidden sm:inline"
+        title={auth.email}
+      >
+        {auth.email.split("@")[0]}
+      </span>
+    );
   }
   return (
     <Button
