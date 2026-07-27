@@ -1,4 +1,11 @@
-import { accessConfig, authenticate } from "./access";
+import { authenticate, authMode } from "./access";
+import {
+  CALLBACK_PATH,
+  completeGoogleLogin,
+  googleConfig,
+  googleLogout,
+  startGoogleLogin,
+} from "./googleauth";
 import { OWNER_HEADER } from "./session";
 import { MAX_SESSIONS, type SessionSummary } from "./sessionindex";
 
@@ -25,6 +32,11 @@ export interface Env {
   ASSETS: Fetcher;
   ACCESS_TEAM_DOMAIN?: string;
   ACCESS_AUD?: string;
+  /** Google sign-in; see worker/googleauth.ts. The secrets never leave here. */
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  SESSION_SECRET?: string;
+  DEV_IDENTITY?: string;
   /** AI Gateway credentials; never sent to the client. */
   CF_AIG_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
@@ -36,22 +48,53 @@ export default {
     const url = new URL(request.url);
     const api = url.pathname.startsWith("/api/");
 
-    // The site is gated whenever Access is configured, not only the API.
+    const mode = authMode(env);
+
+    // The sign-in legs are the one part of the site that must be reachable
+    // while signed out, or there is no way to become signed in.
+    const google = googleConfig(env);
+    if (google && mode === "google" && url.pathname.startsWith("/auth/")) {
+      if (url.pathname === "/auth/login") {
+        return startGoogleLogin(request, google);
+      }
+      if (url.pathname === CALLBACK_PATH) {
+        return completeGoogleLogin(request, google);
+      }
+      if (url.pathname === "/auth/logout") {
+        return googleLogout(request);
+      }
+      return new Response("Not found", { status: 404 });
+    }
+
+    // Who am I, if anyone. Deliberately outside the gate: a signed-out client
+    // has to be able to ask, or it cannot render a sign-in button. It reports
+    // an identity and never a credential.
+    if (url.pathname === "/api/auth") {
+      const auth = await authenticate(request, env);
+      return json({
+        mode,
+        email: auth.ok ? auth.email : null,
+        loginUrl: mode === "google" ? "/auth/login" : null,
+      });
+    }
+
+    // Whether the *site* is gated, or only the API, follows from which identity
+    // source is configured — because the two are answers to different
+    // questions.
     //
-    // Access normally stops a request before it reaches the Worker, so this is
-    // usually redundant — but only if the Access application covers the whole
-    // hostname. Scope it to /api/* by accident and the game, the transcript and
-    // /evals/ go public with no error to notice, which is not a property that
-    // should live in one dashboard field. Configuring Access is the statement
-    // "this is private", and the Worker now enforces it either way.
+    // Access means "this deployment is private". It normally stops a request
+    // before the Worker sees it, but only if the application covers the whole
+    // hostname; scope it to /api/* by accident and the game, the transcripts and
+    // /evals/ go public with nothing to notice. So the Worker gates every path
+    // itself rather than trusting one dashboard field.
     //
-    // Deliberately keyed on Access being configured rather than on a separate
-    // flag. A deployment without Access is the local-play case — the engine
-    // runs in the player's browser on their own key, there is nothing to
-    // protect, and requiring a login to serve a static bundle would break the
-    // way this is meant to be runnable.
-    const gated = accessConfig(env) !== null;
-    if (!api && !gated) {
+    // Google sign-in means the opposite: the game is public and anyone may
+    // read it, running the engine in their own browser on their own key. What
+    // needs an identity is the *server* — saved games, sessions, spending the
+    // deployment's model budget — so only /api/* is gated. Gating the bundle
+    // too would put a login wall in front of a game that doesn't need one.
+    const gateEverything = mode === "access";
+    if (!api && !gateEverything) {
       return env.ASSETS.fetch(request);
     }
 

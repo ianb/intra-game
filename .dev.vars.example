@@ -16,6 +16,11 @@
 DEV_IDENTITY=dev@localhost
 DEV_FAKE_LLM=1
 
+# DEV_IDENTITY stands in for a signed-in user and only works while no real
+# identity source is configured. Set the Google variables below and it stops
+# being consulted, which is deliberate: a leftover dev identity must not become
+# a way past a gate that is switched on.
+
 # ---------------------------------------------------------------------------
 # 2. Local Worker, real AI Gateway. Needs an account and a token; costs money.
 # ---------------------------------------------------------------------------
@@ -70,3 +75,17 @@ DEV_FAKE_LLM=1
 #
 # ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
 # ACCESS_AUD=your-application-audience-tag
+
+# ---------------------------------------------------------------------------
+# 4. Google sign-in, locally.
+# ---------------------------------------------------------------------------
+# Needs http://localhost:8787/auth/callback in the OAuth client's authorized
+# redirect URIs (`pnpm preview` pins that port so the registered URI matches).
+# SESSION_SECRET is not from Google — it is the key this Worker signs its own
+# cookies with, so any long random string will do: openssl rand -base64 32.
+#
+# Setting these turns DEV_IDENTITY off. Comment them out to go back to it.
+#
+# GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
+# GOOGLE_CLIENT_SECRET=your-client-secret
+# SESSION_SECRET=a-long-random-string

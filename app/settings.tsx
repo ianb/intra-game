@@ -19,9 +19,13 @@ import { model } from "./model";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 import {
   deleteServerSession,
+  fetchAuth,
   listServerSessions,
   newServerSession,
   remoteSession,
+  signIn,
+  signOut,
+  type AuthState,
   type ServerSession,
 } from "./session";
 import { useSignals } from "@preact/signals-react/runtime";
@@ -129,11 +133,44 @@ export function Settings() {
  */
 function ServerPlay() {
   useSignals();
+  const auth = useSignal<AuthState | null>(null);
+  useEffect(() => {
+    void fetchAuth().then((state) => {
+      auth.value = state;
+    });
+  }, [auth]);
   const session = remoteSession.value;
+
+  // Nothing to offer: this deployment has no server to play on.
+  if (auth.value?.mode === "none") {
+    return <>Playing in this tab, using your own model access.</>;
+  }
+  // Signed out where signing in is possible. Deliberately the only thing shown:
+  // starting a server game while signed out fails at the first request, and an
+  // enabled button that 401s is worse than one that isn't there.
+  if (auth.value && !auth.value.email && auth.value.loginUrl) {
+    return (
+      <>
+        Playing in this tab, using your own model access.
+        <div className="mt-2 text-sm">
+          Sign in to keep games on the server, where they outlive this browser.
+        </div>
+        <Button
+          className="mt-2"
+          onClick={() => {
+            signIn(auth.value!.loginUrl!);
+          }}
+        >
+          Sign in with Google
+        </Button>
+      </>
+    );
+  }
   if (session) {
     return (
       <>
         Playing on the server.
+        <SignedInAs auth={auth.value} />
         <br />
         <Button
           className="mt-2"
@@ -170,7 +207,33 @@ function ServerPlay() {
       >
         Play on the server (reloads)
       </Button>
+      <SignedInAs auth={auth.value} />
     </>
+  );
+}
+
+/**
+ * Who you're signed in as, and how to stop being.
+ *
+ * Only shown where signing out is a thing the player can do. Under Access the
+ * session belongs to Cloudflare rather than to us, so a sign-out button here
+ * would clear a cookie we didn't set and leave them signed in anyway.
+ */
+function SignedInAs({ auth }: { auth: AuthState | null }) {
+  if (!auth?.email || auth.mode !== "google") {
+    return null;
+  }
+  return (
+    <div className="mt-2 text-sm text-gray-300">
+      Signed in as {auth.email}.{" "}
+      <A
+        onClick={() => {
+          signOut();
+        }}
+      >
+        Sign out
+      </A>
+    </div>
   );
 }
 

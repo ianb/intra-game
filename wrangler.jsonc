@@ -28,9 +28,22 @@
     { "tag": "v1", "new_sqlite_classes": ["GameSession"] },
     { "tag": "v2", "new_sqlite_classes": ["PlayerSessions"] },
   ],
-  // Cloudflare Access gates /api/*; empty here means the API fails closed (404
-  // "not configured") until a deployment fills these in.
-  "vars": { "ACCESS_TEAM_DOMAIN": "", "ACCESS_AUD": "" },
+  // Non-secret configuration lives here rather than in the dashboard, so a
+  // deployment is reproducible from the repo and nothing has to be re-entered
+  // by hand. Note that `wrangler deploy` makes this file authoritative: a var
+  // set in the dashboard is overwritten on the next deploy. Secrets are a
+  // separate store and are never touched by it.
+  //
+  // GOOGLE_CLIENT_ID is public by design — it appears in the authorize URL in
+  // every player's browser. Its secret is set with `wrangler secret put`.
+  //
+  // Empty ACCESS_* means the API fails closed (404 "not configured") unless
+  // Google sign-in is configured instead; see docs/deploying.md §5.
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    "GOOGLE_CLIENT_ID": "369663211714-da9tf8klvfs450kea9ji0rtsk00it7hd.apps.googleusercontent.com",
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",

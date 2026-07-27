@@ -99,6 +99,50 @@ export async function sendInput(
   return events;
 }
 
+// --- Who the server thinks you are -------------------------------------------
+
+export interface AuthState {
+  /** Which identity source this deployment uses. */
+  mode: "access" | "google" | "dev" | "none";
+  /** The verified address, or null when signed out. */
+  email: string | null;
+  /** Where to send the browser to sign in, when that's a thing here. */
+  loginUrl: string | null;
+}
+
+/**
+ * Ask the server who this is.
+ *
+ * Outside the API gate on purpose: a signed-out client has to be able to ask,
+ * or it can't know to offer a sign-in. It answers with an identity and never a
+ * credential.
+ *
+ * A deployment with no identity source at all answers `none`, which is the
+ * local-play case — there is no server to sign in to and nothing to show.
+ */
+export async function fetchAuth(): Promise<AuthState> {
+  try {
+    const response = await fetch("/api/auth", { credentials: "include" });
+    if (!response.ok) {
+      return { mode: "none", email: null, loginUrl: null };
+    }
+    return (await response.json()) as AuthState;
+  } catch {
+    return { mode: "none", email: null, loginUrl: null };
+  }
+}
+
+/** Sign in, coming back to where the player was. */
+export function signIn(loginUrl: string): void {
+  const next = window.location.pathname + window.location.search;
+  window.location.href = `${loginUrl}?next=${encodeURIComponent(next)}`;
+}
+
+export function signOut(): void {
+  const next = window.location.pathname + window.location.search;
+  window.location.href = `/auth/logout?next=${encodeURIComponent(next)}`;
+}
+
 // --- The player's games on the server ----------------------------------------
 
 export interface ServerSession {

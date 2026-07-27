@@ -12,7 +12,23 @@
  *
  * Ported from callback-box's pub-worker (src/access.ts), with the schema
  * validation written out by hand rather than pulling in a validation library.
+ *
+ * The RS256 and JWKS machinery lives in ./jwt.ts, shared with the Google ID
+ * token verification that does the same job for the public sign-in.
  */
+
+import {
+  isRecord,
+  jwksFetcher,
+  readCookie,
+  verifyRs256,
+  type GetJwks,
+} from "./jwt";
+import {
+  googleConfig,
+  verifyGoogleSession,
+  type GoogleConfig,
+} from "./googleauth";
 
 export interface AccessConfig {
   /** Full origin, e.g. `https://myteam.cloudflareaccess.com` — also the `iss`. */
@@ -25,27 +41,11 @@ export type AccessResult =
   | { ok: true; email: string }
   | { ok: false; reason: "no-assertion" | "invalid" | "jwks-unavailable" };
 
-export interface Jwk {
-  kid: string;
-  kty: string;
-  n: string;
-  e: string;
-}
-
-/** Supplies the current JWKS; null means unavailable, which fails closed. */
-export type GetJwks = () => Promise<readonly Jwk[] | null>;
-
 /** Access tokens are edge-minted, so allow a little clock skew. */
 const CLOCK_SKEW_MS = 60_000;
-/** Access certs rotate slowly; trust a fetched key set this long. */
-const JWKS_TTL_MS = 10 * 60_000;
 
 export const ACCESS_HEADER = "Cf-Access-Jwt-Assertion";
 
-interface JwtHeader {
-  alg: string;
-  kid: string;
-}
 interface JwtPayload {
   aud: string | string[];
   iss: string;
@@ -88,47 +88,12 @@ export async function verifyAccessAssertion({
     return { ok: false, reason: "no-assertion" };
   }
 
-  const parts = token.split(".");
-  const [headerB64, payloadB64, signatureB64] = parts;
-  if (
-    parts.length !== 3 ||
-    headerB64 === undefined ||
-    payloadB64 === undefined ||
-    signatureB64 === undefined
-  ) {
-    return { ok: false, reason: "invalid" };
+  const verified = await verifyRs256(token, getJwks);
+  if (!verified.ok) {
+    return { ok: false, reason: verified.reason };
   }
-
-  const header = decodeJson(headerB64, asJwtHeader);
-  // Cloudflare Access uses RS256; pin it rather than trusting the token's own
-  // `alg`, which is how `alg: "none"` downgrade attacks work.
-  if (header === null || header.alg !== "RS256") {
-    return { ok: false, reason: "invalid" };
-  }
-
-  const payload = decodeJson(payloadB64, asJwtPayload);
+  const payload = asJwtPayload(verified.payload);
   if (payload === null) {
-    return { ok: false, reason: "invalid" };
-  }
-
-  const jwks = await getJwks();
-  if (jwks === null) {
-    return { ok: false, reason: "jwks-unavailable" };
-  }
-
-  const signature = base64UrlToBytes(signatureB64);
-  if (signature === null) {
-    return { ok: false, reason: "invalid" };
-  }
-
-  const signingInput = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
-  const valid = await verifySignature({
-    jwks,
-    kid: header.kid,
-    signature,
-    data: signingInput,
-  });
-  if (!valid) {
     return { ok: false, reason: "invalid" };
   }
   if (!claimsValid({ payload, config, nowMs })) {
@@ -143,60 +108,7 @@ function extractToken(request: Request): string | null {
   if (header !== null && header.length > 0) {
     return header;
   }
-  const cookie = request.headers.get("Cookie");
-  if (cookie === null) {
-    return null;
-  }
-  return readCookie(cookie, "CF_Authorization");
-}
-
-function readCookie(cookieHeader: string, name: string): string | null {
-  for (const pair of cookieHeader.split(";")) {
-    const eq = pair.indexOf("=");
-    if (eq === -1) {
-      continue;
-    }
-    if (pair.slice(0, eq).trim() === name) {
-      const value = pair.slice(eq + 1).trim();
-      return value.length > 0 ? value : null;
-    }
-  }
-  return null;
-}
-
-async function verifySignature({
-  jwks,
-  kid,
-  signature,
-  data,
-}: {
-  jwks: readonly Jwk[];
-  kid: string;
-  signature: Uint8Array;
-  data: Uint8Array;
-}): Promise<boolean> {
-  const jwk = jwks.find((k) => k.kid === kid);
-  if (jwk === undefined) {
-    return false;
-  }
-  try {
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      { kty: "RSA", n: jwk.n, e: jwk.e, alg: "RS256", ext: true },
-      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-      false,
-      ["verify"],
-    );
-    return await crypto.subtle.verify(
-      { name: "RSASSA-PKCS1-v1_5" },
-      key,
-      signature,
-      data,
-    );
-  } catch {
-    // A malformed key or signature is a verification failure, not a 500.
-    return false;
-  }
+  return readCookie(request.headers.get("Cookie"), "CF_Authorization");
 }
 
 function claimsValid({
@@ -229,18 +141,7 @@ function claimsValid({
   return true;
 }
 
-// --- Hand-written validation (no schema library here) -------------------------
-
-function isRecord(v: unknown): v is Record<string, unknown> {
-  return typeof v === "object" && v !== null;
-}
-
-function asJwtHeader(raw: unknown): JwtHeader | null {
-  if (!isRecord(raw)) return null;
-  const { alg, kid } = raw;
-  if (typeof alg !== "string" || typeof kid !== "string" || !kid) return null;
-  return { alg, kid };
-}
+// --- Hand-written validation (Access-specific claims) -------------------------
 
 function asJwtPayload(raw: unknown): JwtPayload | null {
   if (!isRecord(raw)) return null;
@@ -257,105 +158,9 @@ function asJwtPayload(raw: unknown): JwtPayload | null {
   return { aud: aud as string | string[], iss, exp, email, nbf, iat };
 }
 
-function asJwks(raw: unknown): readonly Jwk[] | null {
-  if (!isRecord(raw) || !Array.isArray(raw.keys)) return null;
-  const keys: Jwk[] = [];
-  for (const k of raw.keys) {
-    if (!isRecord(k)) return null;
-    const { kid, kty, n, e } = k;
-    if (kty !== "RSA") continue;
-    if (typeof kid !== "string" || !kid) return null;
-    if (typeof n !== "string" || !n) return null;
-    if (typeof e !== "string" || !e) return null;
-    keys.push({ kid, kty, n, e });
-  }
-  return keys;
-}
-
-function decodeJson<T>(
-  segment: string,
-  validate: (raw: unknown) => T | null,
-): T | null {
-  const text = base64UrlToString(segment);
-  if (text === null) return null;
-  let raw: unknown;
-  try {
-    raw = JSON.parse(text);
-  } catch {
-    return null;
-  }
-  return validate(raw);
-}
-
-function base64UrlToBytes(input: string): Uint8Array | null {
-  const normalized = input.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
-  let binary: string;
-  try {
-    binary = atob(padded);
-  } catch {
-    return null;
-  }
-  const bytes = new Uint8Array(binary.length);
-  // atob yields a latin1 string: each char is exactly one 0-255 byte.
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
-
-function base64UrlToString(input: string): string | null {
-  const bytes = base64UrlToBytes(input);
-  if (bytes === null) return null;
-  try {
-    return new TextDecoder("utf-8").decode(bytes);
-  } catch {
-    return null;
-  }
-}
-
-// --- Production JWKS fetcher (module-cached per team domain) -------------------
-
-const fetchers = new Map<string, GetJwks>();
-
-/**
- * The production JWKS supplier for a team domain, cached at module scope so the
- * key set survives across requests in a warm Worker. Returns null on any
- * fetch/parse failure with no valid cache, which the caller turns into a 401.
- */
+/** Cloudflare's Access JWKS for a team domain. */
 export function jwksFetcherFor(teamDomain: string): GetJwks {
-  const existing = fetchers.get(teamDomain);
-  if (existing !== undefined) {
-    return existing;
-  }
-  const url = `${teamDomain}/cdn-cgi/access/certs`;
-  let cache: { keys: readonly Jwk[]; expiresAt: number } | null = null;
-  const fetcher: GetJwks = async () => {
-    if (cache !== null && Date.now() < cache.expiresAt) {
-      return cache.keys;
-    }
-    try {
-      const response = await fetch(url, { method: "GET" });
-      if (!response.ok) {
-        console.warn(
-          `Access JWKS for ${teamDomain} returned ${response.status}`,
-        );
-        return null;
-      }
-      const keys = asJwks(await response.json());
-      if (keys === null) {
-        console.warn(`Access JWKS for ${teamDomain} failed validation`);
-        return null;
-      }
-      cache = { keys, expiresAt: Date.now() + JWKS_TTL_MS };
-      return keys;
-    } catch (e) {
-      console.warn(`Access JWKS fetch failed for ${teamDomain}: ${String(e)}`);
-      return null;
-    }
-  };
-  fetchers.set(teamDomain, fetcher);
-  return fetcher;
+  return jwksFetcher(`${teamDomain}/cdn-cgi/access/certs`);
 }
 
 // --- Worker-facing gate -------------------------------------------------------
@@ -363,45 +168,84 @@ export function jwksFetcherFor(teamDomain: string): GetJwks {
 export type AuthResult =
   { ok: true; email: string } | { ok: false; response: Response };
 
+/** Which identity source this deployment uses, if any. */
+export type AuthMode = "access" | "google" | "dev" | "none";
+
+/**
+ * How this deployment decides who someone is.
+ *
+ * Access and Google answer the same question and are not meant to be combined:
+ * Access is a private allowlist, Google is a public sign-in, and a deployment
+ * wanting both is a deployment that hasn't decided. Access wins where both are
+ * set, because it is the more restrictive of the two and silently loosening a
+ * gate is the wrong way to resolve a misconfiguration.
+ */
+export function authMode(env: {
+  ACCESS_TEAM_DOMAIN?: string;
+  ACCESS_AUD?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  SESSION_SECRET?: string;
+  DEV_IDENTITY?: string;
+}): AuthMode {
+  if (accessConfig(env)) {
+    return "access";
+  }
+  if (googleConfig(env)) {
+    return "google";
+  }
+  return env.DEV_IDENTITY ? "dev" : "none";
+}
+
+export interface AuthEnv {
+  ACCESS_TEAM_DOMAIN?: string;
+  ACCESS_AUD?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  SESSION_SECRET?: string;
+  DEV_IDENTITY?: string;
+}
+
 /**
  * Authenticate a request, with the fail-closed policy:
- *  - Access not configured → 404 (the gated surface isn't set up here, so treat
- *    it as missing rather than advertising it with a 401)
+ *  - no identity source configured → 404 (the gated surface isn't set up here,
+ *    so treat it as missing rather than advertising it with a 401)
  *  - anything else wrong → 401
+ *
+ * The DEV_IDENTITY bypass is reachable only in the "dev" mode, which by
+ * construction means neither real source is configured. That is the property
+ * worth keeping: a DEV_IDENTITY left in production variables cannot open a hole
+ * next to a configured gate, whichever gate it is.
  */
 export async function authenticate(
   request: Request,
-  env: {
-    ACCESS_TEAM_DOMAIN?: string;
-    ACCESS_AUD?: string;
-    DEV_IDENTITY?: string;
-  },
+  env: AuthEnv,
 ): Promise<AuthResult> {
-  const config = accessConfig(env);
-  if (!config) {
-    // No Access configured. For local development an explicit DEV_IDENTITY
-    // stands in for a verified user, so the server can be exercised offline
-    // with no Cloudflare account.
-    //
-    // This is safe by construction rather than by discipline: the branch is only
-    // reachable when Access is UNCONFIGURED. Any deployment that sets a team
-    // domain and aud takes the path below and verifies for real, so DEV_IDENTITY
-    // leaking into production vars cannot open a bypass.
-    if (env.DEV_IDENTITY) {
-      return { ok: true, email: env.DEV_IDENTITY };
-    }
-    return { ok: false, response: new Response("Not found", { status: 404 }) };
-  }
-  const result = await verifyAccessAssertion({
-    request,
-    config,
-    getJwks: jwksFetcherFor(config.teamDomain),
+  const unauthorized = (): AuthResult => ({
+    ok: false,
+    response: new Response("Unauthorized", { status: 401 }),
   });
-  if (!result.ok) {
-    return {
-      ok: false,
-      response: new Response("Unauthorized", { status: 401 }),
-    };
+  switch (authMode(env)) {
+    case "access": {
+      const config = accessConfig(env)!;
+      const result = await verifyAccessAssertion({
+        request,
+        config,
+        getJwks: jwksFetcherFor(config.teamDomain),
+      });
+      return result.ok ? { ok: true, email: result.email } : unauthorized();
+    }
+    case "google": {
+      const config: GoogleConfig = googleConfig(env)!;
+      const email = await verifyGoogleSession(request, config);
+      return email ? { ok: true, email } : unauthorized();
+    }
+    case "dev":
+      return { ok: true, email: env.DEV_IDENTITY! };
+    default:
+      return {
+        ok: false,
+        response: new Response("Not found", { status: 404 }),
+      };
   }
-  return { ok: true, email: result.email };
 }

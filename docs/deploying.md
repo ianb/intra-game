@@ -11,22 +11,22 @@ tests; run `pnpm test` before pushing, or add a checks-only Actions workflow
 later.
 
 Everything below is done once. Steps 1–3 get you a deployed, playable URL;
-steps 4–6 put it on your own domain, make it _yours_ rather than open to the
-internet, and let the server hold the model key instead of your browser.
+steps 4–6 put it on your own domain, decide who is allowed to play, and let the
+server hold the model key instead of the browser.
 
 ---
 
 ## What you are creating
 
-| Thing                      | Where                              | Why                                                                             |
-| -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------- |
-| A Worker                   | Workers & Pages                    | Serves the game and the API                                                     |
-| A Workers Build connection | The Worker → Settings → Build      | Deploys on push                                                                 |
-| An AI Gateway              | AI → AI Gateway                    | The model calls go through it; gives you billing limits and logs                |
-| An API token               | My Profile → API Tokens            | Lets the Worker call the gateway                                                |
-| A provider key             | The gateway → provider keys        | The gateway routes to Anthropic rather than being it                            |
-| A custom domain (optional) | The Worker → Domains & Routes      | Serves the game somewhere you chose                                             |
-| An Access application      | Zero Trust → Access → Applications | Makes the game yours alone, and gives the server a verified identity per player |
+| Thing                         | Where                              | Why                                                              |
+| ----------------------------- | ---------------------------------- | ---------------------------------------------------------------- |
+| A Worker                      | Workers & Pages                    | Serves the game and the API                                      |
+| A Workers Build connection    | The Worker → Settings → Build      | Deploys on push                                                  |
+| An AI Gateway                 | AI → AI Gateway                    | The model calls go through it; gives you billing limits and logs |
+| An API token                  | My Profile → API Tokens            | Lets the Worker call the gateway                                 |
+| A provider key                | The gateway → provider keys        | The gateway routes to Anthropic rather than being it             |
+| A custom domain (optional)    | The Worker → Domains & Routes      | Serves the game somewhere you chose                              |
+| A way to know who a player is | Google OAuth, or Zero Trust Access | Server-side play is keyed to a verified email                    |
 
 ---
 
@@ -183,7 +183,63 @@ bare 401 is a worse door than a login page. Either add both hostnames to the one
 Access application, or turn the workers.dev route off under **Domains &
 Routes**.
 
-## 5. Put Cloudflare Access in front
+## 5. Choose who can play
+
+Two ways to know who a player is, and they are alternatives rather than layers.
+Both end at the same place — `authenticate()` returns a verified email, and
+every server-side name is derived from it — so this decides the shape of the
+deployment, not the shape of the code.
+
+|              | **Google sign-in**                   | **Cloudflare Access**                      |
+| ------------ | ------------------------------------ | ------------------------------------------ |
+| Who gets in  | anyone with a Google account         | the emails you list                        |
+| What's gated | `/api/*` only; the game stays public | every path                                 |
+| Cost         | none                                 | per seat above Zero Trust's free allowance |
+| Set up       | §5a                                  | §5b                                        |
+
+If both are configured Access wins, because it is the more restrictive and
+resolving a misconfiguration by opening a gate is the wrong direction.
+
+### 5a. Google sign-in (a public game)
+
+The game itself stays public: anyone can load it and play in their own browser
+on their own model key, no account needed. Signing in is what buys server-side
+play — games that outlive the browser, on your model budget.
+
+In the Google Cloud console, **APIs & Services** → **Credentials** → **Create
+OAuth client ID** → **Web application**:
+
+| Field                         | Value                                                   |
+| ----------------------------- | ------------------------------------------------------- |
+| Authorized JavaScript origins | leave empty — this is a server-side code flow           |
+| Authorized redirect URIs      | `https://<your-domain>/auth/callback`                   |
+|                               | `http://localhost:8787/auth/callback` for local testing |
+
+Then **Google Auth Platform** → **Audience**: scopes `openid` and `email` only,
+and click **Publish app**. While the app is in Testing only listed test users
+can sign in, capped at 100, which quietly recreates the allowlist you are trying
+to avoid. Publishing with only those two scopes needs no verification review.
+
+Three variables on the Worker:
+
+| Name                   | Kind      | Value                                                                                           |
+| ---------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| `GOOGLE_CLIENT_ID`     | plain var | it appears in a redirect URL; not a secret                                                      |
+| `GOOGLE_CLIENT_SECRET` | secret    | `npx wrangler secret put GOOGLE_CLIENT_SECRET`                                                  |
+| `SESSION_SECRET`       | secret    | **not from Google** — the key this Worker signs its own cookies with. `openssl rand -base64 32` |
+
+Rotating `SESSION_SECRET` signs everybody out, which is the lever to pull if a
+session is ever suspect.
+
+What the Worker does with them: an authorization-code flow with PKCE, a state
+cookie carrying the verifier and a nonce, Google's ID token verified against
+their published keys with `iss`, `aud` and `email_verified` all checked, and a
+session cookie it signs itself — HttpOnly, Secure, SameSite=Lax. No access token
+is kept and no refresh token is asked for. `test/googleauth.doctest.md` covers
+the refusals, including the one that is easy to skip: an unverified address is
+rejected as hard as a bad signature.
+
+### 5b. Put Cloudflare Access in front
 
 This does two jobs: it keeps the game private to you, and it gives the server a
 _verified_ email per request, which is what sessions are keyed by. Without it
