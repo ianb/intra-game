@@ -33,8 +33,30 @@ export interface ArchitectureType {
 export interface PricingType {
   prompt: string;
   completion: string;
-  image: string;
-  request: string;
+  /** Absent on some models; OpenRouter omits fields rather than sending "0". */
+  image?: string;
+  request?: string;
+}
+
+/**
+ * Is this model free to use?
+ *
+ * A missing price is not a price of unknown size — OpenRouter omits the field
+ * rather than sending "0", and it currently omits `request` on every model. The
+ * old check compared it to the string "0", so it matched nothing at all and the
+ * free-models list came out empty: a player without their own OpenRouter code
+ * opened the settings panel and found nothing to choose. That is the path the
+ * quota message points people at when their server allowance runs out, so it
+ * needs to work for the people least likely to have an account.
+ */
+export function isFreeModel(model: ModelType): boolean {
+  const free = (price: string | undefined) =>
+    price === undefined || Number(price) === 0;
+  return (
+    free(model.pricing.prompt) &&
+    free(model.pricing.completion) &&
+    free(model.pricing.request)
+  );
 }
 
 export interface TopProviderType {

@@ -8,6 +8,7 @@ import type {
   PricingType,
   TopProviderType,
 } from "@/lib/llm";
+import { isFreeModel } from "@/lib/llm";
 import { SignalType } from "@/lib/persistentsignal";
 
 export type { ArchitectureType, ModelType, PricingType, TopProviderType };
@@ -71,12 +72,7 @@ export function ModelSelector({
   });
   let models = availableModels.value;
   if (freeOnly && models) {
-    models = models.filter(
-      (model) =>
-        model.pricing.prompt === "0" &&
-        model.pricing.completion === "0" &&
-        model.pricing.request === "0",
-    );
+    models = models.filter(isFreeModel);
   }
   return (
     <div>
