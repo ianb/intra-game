@@ -5,10 +5,21 @@
 
 import React, { KeyboardEvent, useEffect, useRef } from "react";
 import { A, Button, CheckButton } from "@/components/input";
+import { customEndpoint } from "@/lib/llm";
 import { effect, signal, useSignal } from "@preact/signals-react";
-import { initSession, playTurn, redoTurn, undoTurn } from "./session";
+import {
+  authState,
+  initSession,
+  playable,
+  playTurn,
+  redoTurn,
+  remoteSession,
+  signIn,
+  undoTurn,
+} from "./session";
 import { model } from "./model";
-import { composer } from "./uistate";
+import { openrouterCode } from "@/components/openrouter";
+import { composer, openSettings } from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
 
@@ -33,8 +44,13 @@ export function Input() {
       onSubmit();
     }
   }
+  const can = playable({
+    auth: authState.value,
+    session: remoteSession.value,
+    hasKey: Boolean(openrouterCode.value || customEndpoint.value),
+  });
   async function onSubmit() {
-    if (model.runningSignal.value) {
+    if (model.runningSignal.value || !can.ok) {
       return;
     }
     if (!textareaRef.current) {
@@ -74,7 +90,9 @@ export function Input() {
     textareaRef.current!.focus();
   }
   let placeholder = "Waiting...";
-  if (!model.runningSignal.value) {
+  if (!can.ok) {
+    placeholder = can.why;
+  } else if (!model.runningSignal.value) {
     placeholder =
       model.world.lastSuggestions || "ENTER COMMAND OR INSTRUCTIONS";
     if (model.updates.value.length < 7) {
@@ -82,26 +100,57 @@ export function Input() {
         "These are just SUGGESTIONS, you can type anything...\n" + placeholder;
     }
   }
+  const blocked = !can.ok;
   return (
-    <div className="flex mt-4">
-      <textarea
-        ref={textareaRef}
-        rows={2}
-        className={twMerge(
-          "flex-1 resize-none bg-gray-800 text-white border-none p-2",
-          model.runningSignal.value && "opacity-50 bg-gray-600",
-        )}
-        placeholder={placeholder}
-        disabled={model.runningSignal.value}
-        onKeyDown={onKeyDown}
-      />
-      <div className="flex flex-col ml-2">
-        <Button className="bg-green-600 text-green-100" onClick={onSubmit}>
-          Send
-        </Button>
-        <Button className="bg-yellow-500 text-yellow-900" onClick={onUndo}>
-          Undo
-        </Button>
+    <div className="mt-4">
+      {blocked && (
+        <div className="flex gap-2 mb-2">
+          {can.loginUrl && (
+            <Button
+              className="bg-blue-700"
+              onClick={() => {
+                signIn(can.loginUrl!);
+              }}
+            >
+              Sign in with Google
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              openSettings.value = true;
+            }}
+          >
+            ⚙ {can.loginUrl ? "Or use your own key" : "Open settings"}
+          </Button>
+        </div>
+      )}
+      <div className="flex">
+        <textarea
+          ref={textareaRef}
+          rows={2}
+          className={twMerge(
+            "flex-1 resize-none bg-gray-800 text-white border-none p-2",
+            (model.runningSignal.value || blocked) && "opacity-50 bg-gray-600",
+          )}
+          placeholder={placeholder}
+          disabled={model.runningSignal.value || blocked}
+          onKeyDown={onKeyDown}
+        />
+        <div className="flex flex-col ml-2">
+          <Button
+            className={twMerge(
+              "bg-green-600 text-green-100",
+              blocked && "opacity-50",
+            )}
+            disabled={blocked}
+            onClick={onSubmit}
+          >
+            Send
+          </Button>
+          <Button className="bg-yellow-500 text-yellow-900" onClick={onUndo}>
+            Undo
+          </Button>
+        </div>
       </div>
     </div>
   );

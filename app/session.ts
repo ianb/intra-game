@@ -266,6 +266,49 @@ export const remoteSession = persistentSignal<string | null>(
 );
 
 /**
+ * Whether a turn can go anywhere, and what to do about it if not.
+ *
+ * Server play needs a signed-in identity; local play needs the player's own
+ * model access. The composer used to accept typing in either case and fail
+ * afterwards, which spends a player's first impression on an error about an API
+ * key. Better to say up front which of the two things is missing.
+ */
+export interface Playable {
+  ok: boolean;
+  /** Why not, as a sentence to show. Empty when ok. */
+  why: string;
+  /** Signing in would fix it, and here's where. */
+  loginUrl: string | null;
+}
+
+export function playable({
+  auth,
+  session,
+  hasKey,
+}: {
+  auth: AuthState | null;
+  session: string | null;
+  hasKey: boolean;
+}): Playable {
+  const loginUrl = auth?.loginUrl && !auth.email ? auth.loginUrl : null;
+  if (session) {
+    return auth && !auth.email && auth.mode !== "none" && auth.mode !== "dev"
+      ? { ok: false, why: "Sign in to play this game.", loginUrl }
+      : { ok: true, why: "", loginUrl: null };
+  }
+  if (hasKey) {
+    return { ok: true, why: "", loginUrl: null };
+  }
+  return {
+    ok: false,
+    why: loginUrl
+      ? "Sign in to play, or add your own model key in settings."
+      : "Add your own model key in settings to play.",
+    loginUrl,
+  };
+}
+
+/**
  * Play one turn, wherever this game runs.
  *
  * The two modes differ only in who generates the events: locally the engine
