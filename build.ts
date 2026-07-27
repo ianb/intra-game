@@ -27,6 +27,33 @@ const watch = process.argv.includes("--watch");
 const serve = process.argv.includes("--serve");
 const dev = watch || serve;
 
+/**
+ * What is in this build, so a deployment can be identified from outside.
+ *
+ * "Wait a couple of minutes and see if it looks different" is not a way to
+ * know whether a deploy landed, and it is wrong twice over: the build may not
+ * be finished, and the browser may be holding a cached bundle. Both are
+ * answerable if the build says which commit it is.
+ *
+ * Cloudflare's builder sets WORKERS_CI_COMMIT_SHA. Locally there is git. In
+ * neither case is a failure worth stopping a build over.
+ */
+function buildVersion(): { sha: string; built: string } {
+  const fromCi = process.env.WORKERS_CI_COMMIT_SHA;
+  if (fromCi) {
+    return { sha: fromCi.slice(0, 7), built: new Date().toISOString() };
+  }
+  const git = spawnSync("git", ["rev-parse", "--short=7", "HEAD"], {
+    encoding: "utf8",
+  });
+  return {
+    sha: git.status === 0 ? git.stdout.trim() : "unknown",
+    built: new Date().toISOString(),
+  };
+}
+
+const version = buildVersion();
+
 const buildOptions: BuildOptions = {
   entryPoints: [resolve(root, "app/main.tsx")],
   outfile: resolve(outdir, "main.js"),
@@ -38,6 +65,8 @@ const buildOptions: BuildOptions = {
   minify: !dev,
   define: {
     "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production"),
+    // So the running page can say which build it is, without a fetch.
+    __BUILD_SHA__: JSON.stringify(version.sha),
   },
   // The `@/...` alias used throughout the app, matching tsconfig paths.
   alias: { "@": root },
@@ -63,6 +92,12 @@ function buildCss() {
 }
 
 function copyStatic() {
+  // Served at /version.json, and deployed in the same `wrangler deploy` as the
+  // Worker — so if this is current, the Worker is too.
+  writeFileSync(
+    resolve(outdir, "version.json"),
+    JSON.stringify(version, null, 2),
+  );
   cpSync(resolve(root, "app/index.html"), resolve(outdir, "index.html"));
   cpSync(resolve(root, "app/favicon.ico"), resolve(outdir, "favicon.ico"));
   cpSync(resolve(root, "app/assets"), resolve(outdir, "assets"), {

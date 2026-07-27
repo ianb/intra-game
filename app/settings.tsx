@@ -109,11 +109,57 @@ export function Settings() {
           />
         </div>
       </div>
+      <BuildVersion />
       <div className="flex justify-center">
         <span className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4">
           DONE
         </span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Which build this page is, and whether the server has a newer one.
+ *
+ * Two different things look identical from a browser: a deploy that hasn't
+ * finished, and a deploy that has, with the tab still running a cached bundle.
+ * They want opposite responses — wait, versus reload — so this compares the
+ * bundle's own stamp against what the server is currently serving and says
+ * which of the two it is.
+ */
+function BuildVersion() {
+  useSignals();
+  const server = useSignal<string | null>(null);
+  useEffect(() => {
+    void fetch(`/version.json?t=${Date.now()}`, {
+      headers: { "cache-control": "no-cache" },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((v: { sha?: string } | null) => {
+        server.value = v?.sha ?? null;
+      })
+      .catch(() => {
+        server.value = null;
+      });
+  }, [server]);
+  const stale = server.value && server.value !== __BUILD_SHA__;
+  return (
+    <div className="text-xs text-gray-400 text-center mt-4">
+      build {__BUILD_SHA__}
+      {stale && (
+        <>
+          {" — the server has "}
+          {server.value}.{" "}
+          <A
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            Reload
+          </A>
+        </>
+      )}
     </div>
   );
 }

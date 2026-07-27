@@ -378,6 +378,25 @@ these links can't cost you a game.
 Preview URLs sit behind the same Access application as the live site, since the
 policy covers the whole worker.
 
+## Did the deploy land?
+
+`pnpm deployed` answers it, rather than reloading and squinting:
+
+```bash
+pnpm deployed                     # checks playintra.win
+pnpm deployed https://other.url
+```
+
+Every build writes `dist/version.json` with the commit it was built from, and it
+ships in the same `wrangler deploy` as the Worker, so a current `version.json`
+means a current Worker. The command compares it to your checkout and says which
+way round the difference is — behind means the build is still running, ahead
+means this checkout is stale, and those need opposite responses.
+
+The same stamp is in the page, at the bottom of Settings. That covers the other
+half: a browser holding a cached bundle looks exactly like a deploy that hasn't
+landed, and only the page itself can tell you which it is.
+
 ## Rolling back
 
 Worker → **Deployments** → pick a previous version → **Rollback**. Because the

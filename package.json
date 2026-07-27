@@ -25,6 +25,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "wrangler dev --port 8787",
+    "deployed": "tsx playtest/deployed.ts",
     "deploy": "wrangler deploy",
     "typecheck:worker": "tsc --noEmit -p worker/tsconfig.json"
   },
