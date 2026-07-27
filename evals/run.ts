@@ -118,6 +118,16 @@ async function main() {
   const fingerprint = await promptFingerprint();
   console.log(`prompts ${fingerprint}`);
 
+  // An unhandled rejection used to kill the process outright, discarding every
+  // model not yet scored — a provider's bad minute costing an hour of runs. The
+  // engine fires prompts it doesn't await (see lib/tracksettled.ts), so a
+  // failure there escapes the try/catch around the scenario. Log and carry on:
+  // the scenario it belonged to will fail on its own merits, which is the
+  // honest outcome.
+  process.on("unhandledRejection", (reason) => {
+    console.warn(`  unhandled: ${String(reason).slice(0, 200)}`);
+  });
+
   const runs: ModelRun[] = [];
   for (const model of models) {
     console.log(
@@ -126,10 +136,17 @@ async function main() {
     const results: ScenarioResult[] = [];
     for (const scenario of scenarios) {
       process.stdout.write(`  ${scenario.name}... `);
-      const result = await runScenario(
-        scenario,
-        backendFor(backend, model, flashModel),
-      );
+      let result: Awaited<ReturnType<typeof runScenario>>;
+      try {
+        result = await runScenario(
+          scenario,
+          backendFor(backend, model, flashModel),
+        );
+      } catch (e) {
+        // One scenario failing is one scenario's score, not the batch's.
+        console.log(`ERROR ${String(e).slice(0, 200)}`);
+        continue;
+      }
       results.push({ ...result, promptFingerprint: fingerprint });
       const failed = result.checks.filter((c) => !c.passed).map((c) => c.name);
       console.log(
