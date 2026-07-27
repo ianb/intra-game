@@ -191,6 +191,19 @@ export function serializeTags(tags: TagType[], omit?: OmitArgument) {
 type OmitArgument =
   null | string | string[] | ((_key: string, _value: string) => boolean);
 
+/**
+ * A tag in one short line, for warnings and logs.
+ *
+ * Enough to identify what a model emitted — the name, its attributes, and the
+ * shape of the content — without pasting a paragraph of prose into a log line.
+ */
+export function describeTag(tag: TagType): string {
+  const attrs = serializeAttrs(tag.attrs);
+  const content = tag.content.trim().replace(/\s+/g, " ");
+  const shown = content.length > 60 ? `${content.slice(0, 60)}...` : content;
+  return `<${tag.type}${attrs}>${shown}</${tag.type}>`;
+}
+
 export function serializeAttrs(
   attrs: Record<string, string>,
   omit?: OmitArgument,

@@ -124,11 +124,6 @@ original write-up, plus whatever the last few sessions turned up.
   a result, there is no way to tell whether the player had a task list in front
   of it, and I read one wrong on exactly that point.
 
-- **`Got unexpected tag: [object Object]`** `engine` `S` — the warning for an
-  unrecognised tag stringifies the tag object into the message, so the one
-  protocol failure in the winning quest run is recorded as a log line naming
-  nothing. Whatever the model emitted, it isn't in the record.
-
 - **Characters don't volunteer tasks** `content` `S` — `<todo>` fires when a
   scenario asks for one directly (the `task-list` eval passes 5/5) and
   essentially never otherwise: zero across three full quest playthroughs. Either

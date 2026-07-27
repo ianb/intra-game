@@ -1,5 +1,5 @@
 import clone from "just-clone";
-import { parseTags, TagType, unfoldTags } from "../parsetags";
+import { describeTag, parseTags, TagType, unfoldTags } from "../parsetags";
 import { TemplateFalse, TemplateTrue, tmpl } from "../template";
 import {
   ChatType,
@@ -206,7 +206,12 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     storyEvent: StoryEventType;
     llmResponse: string;
   }): Promise<StoryEventType> {
-    console.warn("Got unexpected tag:", tag);
+    // Name the tag rather than the object. The warning is what the evals count
+    // as a protocol failure, and `console.warn("...", tag)` stringified to
+    // "Got unexpected tag: [object Object]" — so the one record of what a model
+    // actually emitted said nothing, at exactly the moment it was being used to
+    // judge whether that model can run the game.
+    console.warn(`Got unexpected tag: ${describeTag(tag)}`);
     return storyEvent;
   }
 

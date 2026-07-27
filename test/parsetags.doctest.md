@@ -12,7 +12,7 @@ edge-case behavior (mismatched tags, unclosed tags, stray backticks) is part of
 the contract. These examples are that contract.
 
 ```ts setup
-import { parseTags, unfoldTags } from "../lib/parsetags.js";
+import { describeTag, parseTags, unfoldTags } from "../lib/parsetags.js";
 import { tmpl } from "../lib/template.js";
 ```
 
@@ -215,4 +215,26 @@ unfolded[2]
   },
   "content": "internet troll"
 }
+```
+
+## Naming a tag in a log line
+
+An unrecognised tag is what the evals count as a protocol failure, and the
+warning used to interpolate the tag object — so the only record of what a model
+emitted read `Got unexpected tag: [object Object]`. That went unnoticed until
+the number it produced was being used to choose a model, at which point the
+evidence needed to judge the failure turned out to say nothing.
+
+```ts
+const [tag] = parseTags('<playerPronouns to="Ama">they/them</playerPronouns>');
+describeTag(tag);
+=> <playerPronouns to="Ama">they/them</playerPronouns>
+```
+
+Long content is cut, because this goes in a log line rather than a transcript:
+
+``` continue
+const [speech] = parseTags(`<dialog character="Ama">${"the ficus ".repeat(20)}</dialog>`);
+describeTag(speech).length < 100;
+=> true
 ```
