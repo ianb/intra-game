@@ -29,7 +29,12 @@ DEV_FAKE_LLM=1
 # set means the fake wins and the gateway is never called.
 #
 # CF_ACCOUNT_ID=your-account-id
+# CF_GATEWAY_ID=the-gateway-name    # part of the URL; omit only if "default"
 # CF_AIG_TOKEN=your-ai-gateway-token
+#
+# The gateway routes to a provider rather than being one, so Anthropic still
+# needs paying: either store a key in the gateway (BYOK) or let the player
+# supply their own. Without either, the failure comes from Anthropic.
 # GATEWAY_MODEL=anthropic/claude-sonnet-5
 # GATEWAY_FLASH_MODEL=anthropic/claude-haiku-4-5
 

@@ -28,6 +28,7 @@ export interface Env {
   /** AI Gateway credentials; never sent to the client. */
   CF_AIG_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
+  CF_GATEWAY_ID?: string;
 }
 
 export default {

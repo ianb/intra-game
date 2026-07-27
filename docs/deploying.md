@@ -71,20 +71,38 @@ before adding the server side.
 
 ## 2. Create the AI Gateway
 
-Dashboard → **AI** → **AI Gateway** → **Create Gateway**. Any name; the game
-doesn't reference it by name — it calls the account-level OpenAI-compatible
-endpoint. What you need from this page is your **Account ID** (also in the URL
-of any dashboard page, and on the right of the Workers overview).
+Dashboard → **AI** → **AI Gateway** → **Create Gateway**. **The name matters** —
+a gateway is addressed by it:
+`https://gateway.ai.cloudflare.com/v1/<account>/<gateway>/compat/chat/completions`.
+Note what you call it, along with your **Account ID** (also in the URL of any
+dashboard page, and on the right of the Workers overview).
 
-Set it as a plain variable on the Worker — it isn't a secret:
+Set both as plain variables on the Worker — neither is a secret:
 
 Worker → **Settings** → **Variables and Secrets** → add
 
 | Name                  | Value                                              |
 | --------------------- | -------------------------------------------------- |
 | `CF_ACCOUNT_ID`       | your account id                                    |
+| `CF_GATEWAY_ID`       | the gateway's name; omit only if it is `default`   |
 | `GATEWAY_MODEL`       | optional; defaults to `anthropic/claude-haiku-4-5` |
 | `GATEWAY_FLASH_MODEL` | optional; a cheaper model for mechanical prompts   |
+
+### The provider key
+
+The gateway routes to a provider; it isn't one. A model id of
+`anthropic/claude-haiku-4-5` means Anthropic still has to be paid, and
+`cf-aig-authorization` only gets a request as far as Cloudflare. Two ways to
+supply the rest, and the Worker handles both:
+
+- **BYOK** — store an Anthropic key in the gateway (your gateway → provider
+  keys, backed by Secrets Store). Requests then carry no provider header at all,
+  which is what the Worker sends by default.
+- **The player's own key** — passed through as `Authorization`, so a player pays
+  for their own play while the gateway still logs it against your account.
+
+With neither, calls fail at the provider rather than at Cloudflare, so the error
+names Anthropic and not the gateway.
 
 Both are in `provider/model` form. The game runs several prompts per turn and
 they aren't the same kind of work: a character deciding what to say is the game,
@@ -107,13 +125,19 @@ Which prompts _should_ be on the small tier is a measurement, not a guess —
 
 ## 3. Create the API token
 
-**My Profile** → **API Tokens** → **Create Token** → **Custom token**.
+Quickest route is the **Create an AI Gateway authentication token** button on
+the gateway's own settings page, which pre-fills the permissions. Otherwise **My
+Profile** → **API Tokens** → **Create Token** → **Custom token**.
 
 | Setting           | Value                                              |
 | ----------------- | -------------------------------------------------- |
-| Permissions       | `Account` → `Workers AI` → `Edit`                  |
+| Permissions       | `Account` → `AI Gateway` → `Run`                   |
 | Account resources | Include → your account only                        |
 | TTL               | Set one if you want; you'll rotate it the same way |
+
+`AI Gateway` → `Run` is what `cf-aig-authorization` is checked against. The
+dashboard's own button also adds `Workers AI` → `Read`/`Edit`, which is harmless
+but only needed for `workers-ai/...` models.
 
 Copy the token — it is shown once. Then, from a checkout with wrangler
 authenticated:

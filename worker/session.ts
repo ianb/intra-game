@@ -56,6 +56,8 @@ export interface StoredCredential {
 export interface SessionEnv {
   CF_AIG_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
+  /** The gateway's name, which is part of its URL. Defaults to "default". */
+  CF_GATEWAY_ID?: string;
   GATEWAY_MODEL?: string;
   /** Optional cheaper model for prompts that ask for the "flash" tier. */
   GATEWAY_FLASH_MODEL?: string;
@@ -284,6 +286,7 @@ export class GameSession {
     }
     return gatewayChatStream({
       accountId: this.env.CF_ACCOUNT_ID,
+      gatewayId: this.env.CF_GATEWAY_ID,
       token: this.env.CF_AIG_TOKEN,
       model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
       flashModel: this.env.GATEWAY_FLASH_MODEL,

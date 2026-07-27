@@ -20,6 +20,11 @@ import type { UsageRecordType } from "../lib/usage";
 
 export interface GatewayConfig {
   accountId: string;
+  /**
+   * The gateway's name. Gateways are addressed by it, so it is part of the URL
+   * rather than decoration.
+   */
+  gatewayId?: string;
   /** Our Cloudflare AI Gateway token. Never sent to the client. */
   token: string;
   model: string;
@@ -30,8 +35,22 @@ export interface GatewayConfig {
   user?: string;
 }
 
-function endpoint(accountId: string): string {
-  return `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/v1/chat/completions`;
+/** Cloudflare's default when a gateway is created without a name. */
+export const DEFAULT_GATEWAY_ID = "default";
+
+/**
+ * The gateway's OpenAI-compatible endpoint.
+ *
+ * This used to point at `api.cloudflare.com/.../ai/v1/chat/completions`, which
+ * is Workers AI, not AI Gateway. Three things were wrong together and each hid
+ * the others: that host wants `Authorization` rather than `cf-aig-authorization`,
+ * it takes `@cf/...` model ids rather than `provider/model`, and it isn't a
+ * gateway at all, so none of the logging or limits the gateway exists for would
+ * have applied. Nothing caught it because no real call had ever been made — the
+ * fake provider answers any URL.
+ */
+function endpoint(accountId: string, gatewayId: string): string {
+  return `https://gateway.ai.cloudflare.com/v1/${accountId}/${gatewayId}/compat/chat/completions`;
 }
 
 export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
@@ -42,7 +61,10 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
     headers.authorization = `Bearer ${config.providerKey}`;
   }
   return openAiCompatibleStream({
-    endpoint: endpoint(config.accountId),
+    endpoint: endpoint(
+      config.accountId,
+      config.gatewayId || DEFAULT_GATEWAY_ID,
+    ),
     headers,
     model: config.model,
     flashModel: config.flashModel,
