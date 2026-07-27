@@ -48,8 +48,22 @@
     // URLs; the token that actually authorises anything is a secret.
     "CF_ACCOUNT_ID": "bb530e5839d03156b34799ccb702c28a",
     "CF_GATEWAY_ID": "intra",
+    // The model server-side play runs on, in provider/model form. Scored 26/26
+    // — the same as Haiku 4.5 and glm-4.7 — at about a sixth of Haiku's cost
+    // per turn. See evals/RESULTS.md.
+    //
+    // OpenAI is a native AI Gateway provider, so this works through the gateway
+    // and keeps its spend caps and logs. GLM would have meant bypassing the
+    // gateway entirely, since it has no Z.ai provider.
+    //
+    // It reasons before answering: ~776 output tokens for a call whose visible
+    // answer is one tag, and about ten seconds each. That is most of the cost
+    // and all of the latency, and it is why the cheaper-looking glm-4.7 is not
+    // actually cheaper.
+    "GATEWAY_MODEL": "openai/gpt-5-nano",
     // Dollars per player per rolling 30 days of server play. A player using
-    // their own key isn't metered; see worker/quota.ts.
+    // their own key isn't metered; see worker/quota.ts. At this model's prices
+    // a dollar is about 900 turns, against 160 on Haiku.
     "QUOTA_USD": "1",
     "QUOTA_PERIOD_DAYS": "30",
   },

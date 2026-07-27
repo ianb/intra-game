@@ -146,6 +146,12 @@ original write-up, plus whatever the last few sessions turned up.
   a model fails this game) and say nothing about which model plays it _best_.
   Needs harder scenarios, and an argument about what "harder" means beyond "more
   tags".
+- **Evals don't record what a run cost** `tooling` `S` — they score protocol
+  compliance and time, and nothing else, so choosing a model on price meant
+  computing it from a token estimate that turned out to be wrong by 4x for the
+  reasoning models. The usage record already carries tokens and cost for every
+  call; a scenario result should carry the sum.
+
 - **One eval run is one sample** `tooling` `S` — a check that flips between runs
   is indistinguishable from a real regression, which came up immediately when
   tuning the task-list prompt. Repeat runs and a pass rate, rather than a single

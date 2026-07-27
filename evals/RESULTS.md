@@ -57,3 +57,30 @@ What failed:
 
 - `claude-haiku-4-5-20251001` intake/protocol: the engine never had to discard a tag the model emitted
 
+## A correction on cost, 2026-07-27
+
+The per-turn prices first reported alongside these scores were wrong, and wrong
+in a way that changed the answer. They assumed ~600 completion tokens for a
+whole turn, taken from one measured turn on Haiku.
+
+Several of these models reason before answering. Asked for a single tag, from a
+43-token prompt, gpt-5-nano emitted 776 completion tokens of which 640 were
+reasoning; glm-4.7 emitted 526 with 487 reasoning; gpt-5.4-nano emitted 48 with
+none. That is most of the cost and all of the latency.
+
+Recomputed with measured output volume, over three calls and ~3200 prompt
+tokens per turn:
+
+| model | score | out tok/turn | $/turn | turns per $1 |
+| --- | --- | --- | --- | --- |
+| gpt-5-nano | 26/26 | 2328 | 0.00109 | 917 |
+| gpt-5.4-nano | 21/26 | 144 | 0.00082 | 1221 |
+| glm-4.7 | 26/26 | 1578 | 0.00404 | 248 |
+| glm-5.2 | 26/26 | 1578 | 0.00629 | 159 |
+| haiku-4.5 | 26/26 | 600 | 0.00619 | 161 |
+
+glm-4.7 was reported as 2.7x cheaper than Haiku and is 1.5x; glm-5.2 was
+reported as cheaper and is not.
+
+The evals record wall-clock but not tokens, which is why this took a separate
+measurement to notice. Recording usage per scenario would have shown it.
