@@ -54,8 +54,27 @@ const NO_TOOLS = [
   "Task",
 ].join(" ");
 
+/**
+ * The nudge the game protocol needs and the player must never see.
+ *
+ * The CLI narrates by default, so the game path needs telling to emit tags and
+ * nothing else. That instruction is specific to the *game* role, and appending
+ * it to everything this backend sends was a real bug: the LLM player runs
+ * through the same backend, so it was ordered to abandon its own reply format
+ * on every single turn. It said so, in its SNAG report, seventeen times in one
+ * run — "this creates an impossible contradiction" — while every quest since
+ * the first quietly played against it.
+ */
+export const GAME_TAG_INSTRUCTION =
+  "Respond now with ONLY the appropriate game tags, nothing else.";
+
 export interface CliChatOptions {
   model?: string;
+  /**
+   * Text appended after the conversation. Pass "" for a caller that is not
+   * speaking the game's tag protocol — the LLM player, for one.
+   */
+  instruction?: string;
   /**
    * Model for prompts that ask for the "flash" tier, if it should differ.
    *
@@ -86,11 +105,20 @@ export function cliChat(options: CliChatOptions = {}): ChatFn {
       .filter((m) => m.role !== "system")
       .map((m) => `[${m.role.toUpperCase()}]\n${m.content}`)
       .join("\n\n");
-    const prompt = `${conversation}\n\nRespond now with ONLY the appropriate game tags, nothing else.`;
+    const prompt = buildPrompt(conversation, options.instruction);
     const response = await runClaude({ model, system, prompt, timeoutMs });
     options.onCall?.({ title: request.meta.title, response });
     return response;
   };
+}
+
+/** The user-side text sent to the CLI: the conversation, plus any nudge. */
+export function buildPrompt(
+  conversation: string,
+  instruction?: string,
+): string {
+  const trailer = instruction ?? GAME_TAG_INSTRUCTION;
+  return trailer ? `${conversation}\n\n${trailer}` : conversation;
 }
 
 function runClaude({

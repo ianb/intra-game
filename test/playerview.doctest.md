@@ -16,6 +16,7 @@ import { Model } from "../lib/game/model.js";
 import { entities } from "../lib/game/content/index.js";
 import { playerView, renderPlayerView } from "../evals/playerview.js";
 import { extractCommand, llmPlayer, parseReply } from "../evals/llmplayer.js";
+import { buildPrompt, GAME_TAG_INSTRUCTION } from "../playtest/clichat.js";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 
@@ -175,6 +176,27 @@ const solve = {
 fresh.world.applyStoryEvent(solve);
 fresh.world.todos.map((t) => `${t.done ? "x" : " "} ${t.title}`).join(" | ");
 => x Who is writing notes as 'Ink and Echo'?
+```
+
+## The harness must not talk over the player
+
+`cliChat` appends a nudge telling the model to reply with game tags and nothing
+else. That is right for the game and wrong for anything else routed through the
+same backend — and the LLM player is routed through it, so for five quest runs
+the harness ordered the player to abandon its own reply format on every turn.
+
+It noticed. Seventeen SNAG reports in one run, escalating to "this creates an
+impossible contradiction". Nobody reading milestone counts would have seen it.
+
+```ts
+buildPrompt("say something").endsWith(GAME_TAG_INSTRUCTION);
+=> true
+```
+
+``` continue
+// The player passes "" and gets the conversation alone.
+buildPrompt("say something", "");
+=> say something
 ```
 
 ## Notes to the reader

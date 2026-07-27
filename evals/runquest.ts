@@ -51,6 +51,20 @@ function backend(name: string, model: string): ChatFn {
   return name === "openrouter" ? openRouterChat({ model }) : cliChat({ model });
 }
 
+/**
+ * The player's backend, which must not carry the game's tag instruction.
+ *
+ * cliChat appends "Respond now with ONLY the appropriate game tags" to
+ * everything, which is right for the game and actively hostile to the player:
+ * it is an order to abandon the NOTES/SNAG/NEXT format on every turn. The
+ * player reported exactly that, repeatedly, before anyone noticed.
+ */
+function playerBackend(name: string, model: string): ChatFn {
+  return name === "openrouter"
+    ? openRouterChat({ model })
+    : cliChat({ model, instruction: "" });
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const gameModel = args.model ?? DEFAULT_CLI_MODEL;
@@ -67,7 +81,7 @@ async function main() {
   const result = await runQuest({
     quest,
     game: backend(args.backend ?? "cli", gameModel),
-    player: backend(
+    player: playerBackend(
       args["player-backend"] ?? args.backend ?? "cli",
       playerModel,
     ),
