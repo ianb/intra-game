@@ -26,6 +26,8 @@ Prompts `956511dcfce2`.
 | `openai/gpt-5-nano` | 2/7 | 1/5 | 3/4 | 5/5 | 4/5 | **15/26** |
 | `openai/gpt-5-nano` | 6/7 | 4/5 | 3/4 | 5/5 | 4/5 | **22/26** |
 | `openai/gpt-5.4-nano` | 5/7 | 5/5 | 3/4 | 5/5 | 5/5 | **23/26** |
+| `openai/gpt-5.4-nano` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
+| `openai/gpt-5.4-nano` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
 
 What failed:
 
@@ -63,6 +65,8 @@ What failed:
 - `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
 - `openai/gpt-5.4-nano` intake/profession: recorded the profession the player mentioned
 - `openai/gpt-5.4-nano` in-character/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
+- `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
 
 ## 2026-07-25
 
