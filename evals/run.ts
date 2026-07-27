@@ -102,6 +102,7 @@ function merge(path: string, runs: ModelRun[]): ModelRun[] {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const backend = args.backend?.[0] ?? "cli";
+  const defaulted = !args.model?.length;
   const models = args.model?.length
     ? args.model
     : backend === "cli"
@@ -120,6 +121,28 @@ async function main() {
     : EVAL_SCENARIOS;
   if (!scenarios.length) {
     throw new Error(`No scenarios matched ${only.join(", ")}`);
+  }
+
+  // Say what is about to happen, before it starts happening.
+  //
+  // A bare `pnpm evals` runs two models through every scenario against real
+  // providers: eleven minutes and real money. It used to announce none of that
+  // and simply begin, so an invocation nobody meant to make looked identical to
+  // one they did until the wrong model names turned up in the results. The plan
+  // costs one line and makes the mistake visible immediately.
+  console.log(
+    `\n${models.length} model(s) x ${scenarios.length} scenario(s) via ${backend}` +
+      (reasoning ? `, reasoning ${reasoning}` : "") +
+      (flashModel ? `, flash ${flashModel}` : ""),
+  );
+  for (const model of models) {
+    console.log(
+      `  ${model}${defaulted ? "   (default — no --model given)" : ""}`,
+    );
+  }
+  if (args["dry-run"]) {
+    console.log("\n--dry-run: stopping here.");
+    return;
   }
 
   // Taken before anything expensive: it needs no network, and knowing which

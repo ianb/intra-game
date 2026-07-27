@@ -10,6 +10,7 @@ be unusable here, because it narrates walking to the Foyer without emitting
 
 ```bash
 pnpm evals                                    # default models, via the claude CLI
+pnpm evals --dry-run                          # what it would run, without running it
 pnpm evals --model claude-haiku-4-5-20251001  # one model
 pnpm evals --scenario intake                  # one scenario
 OPENROUTER_API_KEY=sk-or-... pnpm evals --backend openrouter --model openai/gpt-5.2
