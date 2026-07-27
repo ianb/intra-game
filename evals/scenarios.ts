@@ -80,7 +80,8 @@ export const INTAKE_EVAL: Scenario = {
   seed: 20260725,
   inputs: [
     "Hello? Where am I?",
-    "My name is Ada Quill.",
+    "My name is Pat Quill.",
+    "I use he/him.",
     "I used to be a data analyst.",
     "look around the room",
   ],
@@ -91,12 +92,28 @@ export const INTAKE_EVAL: Scenario = {
     {
       name: "name",
       describe: "captured the player's name from conversation",
-      run: ({ model }) => model.world.entities.PLAYER.name === "Ada Quill",
+      run: ({ model }) => model.world.entities.PLAYER.name === "Pat Quill",
     },
     {
+      /**
+       * Recorded the pronouns the player stated.
+       *
+       * This used to score the model on *guessing* pronouns from the name "Ada
+       * Quill", which is the wrong thing to ask for twice over. As a
+       * measurement it scored a model's willingness to infer gender from a
+       * name rather than any capability, which is why several models failed it
+       * and one failed it identically at two reasoning efforts. As behaviour it
+       * misgenders the player in their own game, on the strength of a name.
+       *
+       * So the name is deliberately one that carries no signal, and the player
+       * says their pronouns out loud. What is left is the thing worth
+       * measuring: when told, does it write it down. "he/him" rather than
+       * "they/them" because the latter is the default, and a check that a model
+       * can pass by doing nothing is not a check.
+       */
       name: "pronouns",
-      describe: "inferred pronouns rather than leaving the default",
-      run: ({ model }) => model.world.entities.PLAYER.pronouns === "she/her",
+      describe: "recorded the pronouns the player stated",
+      run: ({ model }) => model.world.entities.PLAYER.pronouns === "he/him",
     },
     {
       name: "profession",

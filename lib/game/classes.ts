@@ -1217,7 +1217,7 @@ export class AmaClass extends Person<AmaParametersType> {
       IF you determine the name add this to the response:
       <set attr="PLAYER.name">the player's name</set>]]
 
-      [[${IF(!this.knowsPlayerPronouns)}PLAYER PRONOUNS: If the player gives their name you can infer their pronouns if the name is clearly gendered; also set this if the player specifies their pronouns. IF you learn or guess the pronouns respond:
+      [[${IF(!this.knowsPlayerPronouns)}PLAYER PRONOUNS: Ask the player their pronouns. Set this when the player states them, or corrects you. Do not guess from the player's name. IF the player tells you their pronouns respond:
 
       <set attr="PLAYER.pronouns">they/them</set>]]
 
@@ -1265,7 +1265,7 @@ export class AmaClass extends Person<AmaParametersType> {
       Ama's priority is to complete intake. Here are the important steps that you should go through in order:
 
       [[${IF(!this.knowsPlayerName)}* Ask the player's name, and if the player gives their name add the response <set attr="PLAYER.name">...</set>]]
-      [[${IF(!this.knowsPlayerPronouns)}* The player's pronouns have not been established; you can guess them based on the player's name or ask. Once you know add the response <set attr="PLAYER.pronouns">...</set>]]
+      [[${IF(!this.knowsPlayerPronouns)}* Ask the player's pronouns; do not guess them from the name. If the player gives their pronouns add the response <set attr="PLAYER.pronouns">...</set>]]
       [[${IF(!this.sharedSelf)}* Introduce Ama to the player. Once Ama has introduced herself add the response <set attr="Ama.sharedSelf">true</set>]]
       [[${IF(!this.sharedIntra)}* Introduce Intra to the player. Once Ama has introduced Intra add the response <set attr="Ama.sharedIntra">true</set>]]
       [[${IF(askDisassociation)}* Introduce disassociation to the player. Once Ama has explained disassociation add the response <set attr="Ama.sharedDisassociation">true</set>]]
