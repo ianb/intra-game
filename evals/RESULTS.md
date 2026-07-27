@@ -16,7 +16,7 @@ Prompts `956511dcfce2`.
 | `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
 | `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
 | `qwen/qwen3-30b-a3b-instruct-2507` | 4/7 | 4/5 | 3/4 | 5/5 | 5/5 | **21/26** |
-| `z-ai/glm-4.7-flash` | 7/7 | 2/5 | 3/4 | 5/5 | 5/5 | **22/26** |
+| `z-ai/glm-4.7-flash` | 7/7 | 0/5 | 4/4 | 5/5 | 5/5 | **21/26** |
 | `google/gemma-4-26b-a4b-it` | 6/7 | 5/5 | 4/4 | 4/5 | 5/5 | **24/26** |
 | `moonshotai/kimi-k2.6` | 7/7 | 4/5 | 4/4 | 5/5 | 5/5 | **25/26** |
 | `z-ai/glm-4.7` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
@@ -26,7 +26,7 @@ Prompts `956511dcfce2`.
 | `openai/gpt-5-nano` | 2/7 | 1/5 | 3/4 | 5/5 | 4/5 | **15/26** |
 | `openai/gpt-5-nano` | 6/7 | 4/5 | 3/4 | 5/5 | 4/5 | **22/26** |
 | `openai/gpt-5.4-nano` | 5/7 | 5/5 | 3/4 | 5/5 | 5/5 | **23/26** |
-| `openai/gpt-5.4-nano` | 6/7 | 3/5 | 4/4 | 5/5 | 5/5 | **23/26** |
+| `openai/gpt-5.4-nano` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
 | `openai/gpt-5.4-nano` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
 
 What failed:
@@ -37,9 +37,10 @@ What failed:
 - `qwen/qwen3-30b-a3b-instruct-2507` movement/protocol: the engine never had to discard a tag the model emitted
 - `qwen/qwen3-30b-a3b-instruct-2507` in-character/protocol: the engine never had to discard a tag the model emitted
 - `z-ai/glm-4.7-flash` movement/protocol: the engine never had to discard a tag the model emitted
+- `z-ai/glm-4.7-flash` movement/well-formed: no markup the parser had to repair before it could be used
+- `z-ai/glm-4.7-flash` movement/no-dead-turns: every turn produced dialog, description or action
 - `z-ai/glm-4.7-flash` movement/intake-completed: got far enough through intake for an exit to exist
 - `z-ai/glm-4.7-flash` movement/left-intake: the player is no longer in the room they started in
-- `z-ai/glm-4.7-flash` in-character/protocol: the engine never had to discard a tag the model emitted
 - `google/gemma-4-26b-a4b-it` intake/profession: recorded the profession the player mentioned
 - `google/gemma-4-26b-a4b-it` mystery/used-her-hint: named someone from her own hint (Harold or Lily)
 - `moonshotai/kimi-k2.6` movement/protocol: the engine never had to discard a tag the model emitted
@@ -66,9 +67,7 @@ What failed:
 - `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
 - `openai/gpt-5.4-nano` intake/profession: recorded the profession the player mentioned
 - `openai/gpt-5.4-nano` in-character/protocol: the engine never had to discard a tag the model emitted
-- `openai/gpt-5.4-nano` intake/pronouns: recorded the pronouns the player stated
-- `openai/gpt-5.4-nano` movement/intake-completed: got far enough through intake for an exit to exist
-- `openai/gpt-5.4-nano` movement/left-intake: the player is no longer in the room they started in
+- `openai/gpt-5.4-nano` intake/protocol: the engine never had to discard a tag the model emitted
 - `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
 
 ## 2026-07-25

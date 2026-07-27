@@ -51,6 +51,12 @@ export function isTransient(error: unknown): boolean {
   const message = String(error);
   return (
     /OpenRouter (408|409|425|429|5\d\d)/.test(message) ||
+    // An empty message with finish_reason "stop" is a provider hiccup, not a
+    // model declining to answer. Classified as permanent at first, on the
+    // reasoning that a response which arrived and was unusable says something
+    // about the model; two runs lost to it say otherwise, both from the same
+    // upstream provider on a model that answered fine either side of it.
+    /OpenRouter returned no content/.test(message) ||
     /timeout|aborted|ECONNRESET|ETIMEDOUT|EAI_AGAIN|socket hang up|fetch failed|DNS/i.test(
       message,
     )

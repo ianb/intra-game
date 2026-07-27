@@ -32,18 +32,26 @@ busy.every(isTransient);
 
 ## Not worth trying again
 
-The request is wrong and will stay wrong, or the answer arrived and was
-unusable — which is a fact about the model and belongs in its score.
+The request is wrong and will stay wrong. Retrying only delays the report.
 
 ```ts
 const permanent = [
   "Error: OpenRouter 400: invalid model",
   "Error: OpenRouter 401: no auth credentials found",
   "Error: OpenRouter 404: no endpoints found for that model",
-  "Error: OpenRouter returned no content: {\"id\":\"gen-1\"}",
 ];
 permanent.some(isTransient);
 => false
+```
+
+An empty response moved from this list to the one above, on evidence. It reads
+like a fact about the model — the answer arrived and was unusable — but it cost
+two runs in one afternoon, both from the same upstream provider, on models that
+answered normally either side of it.
+
+``` continue
+isTransient("Error: OpenRouter returned no content: {\"provider\":\"DeepInfra\"}");
+=> true
 ```
 
 A 404 for an unknown model is the case worth being deliberate about. It looks
