@@ -117,13 +117,12 @@ original write-up, plus whatever the last few sessions turned up.
   lead. Either the prompt constrains it to real exits, or the engine answers a
   move to an unknown room in fiction rather than dropping it.
 
-- **A revealed mystery only lands on the list if it is revealed live** `engine`
-  `S` — `mysteryTodos` derives list entries from a state transition, so a
-  mystery already revealed when a checkpoint was saved produces nothing. The
-  `briefed` checkpoint is exactly that, which means the quest run that solved
-  Ink and Echo played the whole thing with an empty list and never saw the
-  progress signal the list is supposed to be. Wants a backfill from current
-  state, not just from transitions.
+- **Quest results record the transcript but not the status block** `tooling` `S`
+  — a run's `saw` is the new transcript lines only, so the LOCATION/PEOPLE/
+  EXITS/LIST block the player was actually looking at is nowhere in the result
+  file. That makes the record misleading in the direction that matters: reading
+  a result, there is no way to tell whether the player had a task list in front
+  of it, and I read one wrong on exactly that point.
 
 - **`Got unexpected tag: [object Object]`** `engine` `S` — the warning for an
   unrecognised tag stringifies the tag object into the message, so the one
