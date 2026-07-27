@@ -42,26 +42,55 @@ export interface Scenario {
 }
 
 /**
- * Warnings the engine recovered from, rather than dropping something.
+ * Markup mistakes the parser fixes without losing anything.
  *
- * A mismatched closing tag is sloppy markup the parser repairs and carries on
- * from; the game still happens. Everything else in the engine's warning
- * vocabulary means it threw something away. Unrecognised warnings count as
- * dropped, so a new failure mode shows up as a failure rather than being
- * silently forgiven.
+ * Each of these was checked rather than assumed: the sloppy input parses to
+ * exactly the same tags, attributes and content as the well-formed version
+ * (see test/parsetags.doctest.md). A model that forgets a closing tag at the
+ * end of its reply produces an identical game to one that remembers, so
+ * scoring it down measures tidiness the player cannot see.
+ *
+ * Deliberately not in here: a nested tag left unclosed, which duplicates the
+ * inner tag into its parent's content. That one is not lossless and is not
+ * forgiven; see TODO.md.
  */
-const REPAIRED = [/^Mismatched closing tag/];
+const LOSSLESS = [
+  /^Auto-closing unclosed tag/,
+  /^Mismatched closing tag/,
+  /^Unexpected closing tag/,
+];
+
+/**
+ * Warnings where the engine repaired something and lost part of it.
+ *
+ * Empty today, which is honest rather than an oversight: every repair the
+ * parser currently performs is lossless, and the ones that are not lose the
+ * whole tag and land in `dropped`. Kept because a future repair may be partial,
+ * and that is worth scoring separately from both.
+ */
+const REPAIRED: RegExp[] = [];
 
 export function classifyWarnings(warnings: string[]): {
+  /** Fixed with nothing lost; scored against nothing. */
+  lossless: string[];
   repaired: string[];
   dropped: string[];
 } {
+  const lossless: string[] = [];
   const repaired: string[] = [];
   const dropped: string[] = [];
   for (const warning of warnings) {
-    (REPAIRED.some((p) => p.test(warning)) ? repaired : dropped).push(warning);
+    if (LOSSLESS.some((p) => p.test(warning))) {
+      lossless.push(warning);
+    } else if (REPAIRED.some((p) => p.test(warning))) {
+      repaired.push(warning);
+    } else {
+      // Unrecognised warnings count as dropped, so a new failure mode shows up
+      // as a failure rather than being silently forgiven.
+      dropped.push(warning);
+    }
   }
-  return { repaired, dropped };
+  return { lossless, repaired, dropped };
 }
 
 /** One thing the player typed, and everything the game did in response. */
@@ -123,6 +152,8 @@ export interface ScenarioResult {
   dropped: string[];
   /** Warnings where it repaired sloppy markup and carried on. */
   repaired: string[];
+  /** Warnings where it fixed the markup with nothing lost. Not scored. */
+  lossless: string[];
   /**
    * What the characters said, so a failed text check can be audited later.
    *
@@ -221,7 +252,7 @@ export async function runScenario(
     passed: error === undefined && safely(() => check.run(result)),
   }));
 
-  const { repaired, dropped } = classifyWarnings(result.warnings);
+  const { lossless, repaired, dropped } = classifyWarnings(result.warnings);
   return {
     scenario: scenario.name,
     passed: checks.filter((c) => c.passed).length,
@@ -230,6 +261,7 @@ export async function runScenario(
     events: result.log.length,
     dropped: [...new Set(dropped)],
     repaired: [...new Set(repaired)],
+    lossless: [...new Set(lossless)],
     transcript: transcriptOf(result),
     ...(usage?.length ? { usage: totals(usage) } : {}),
     error,

@@ -238,3 +238,55 @@ const [speech] = parseTags(`<dialog character="Ama">${"the ficus ".repeat(20)}</
 describeTag(speech).length < 100;
 => true
 ```
+
+## Sloppy markup that costs nothing
+
+A model forgetting a closing tag was scored as a protocol failure — the same
+category as inventing a tag or naming a room that doesn't exist. It isn't the
+same thing: the parser closes it and the game is identical.
+
+The test is whether the sloppy input produces the same tags as the tidy one, so
+this compares them rather than asserting a shape.
+
+```ts setup
+const key = (s) =>
+  JSON.stringify(parseTags(s).map((t) => [t.type, t.attrs, t.content.trim()]));
+const same = (a, b) => key(a) === key(b);
+```
+
+```ts
+const pairs = [
+  [`<dialog character="Ama">Hi.</dialog><suggestion>go north`,
+   `<dialog character="Ama">Hi.</dialog><suggestion>go north</suggestion>`],
+  [`<dialog character="Ama">Hi.`, `<dialog character="Ama">Hi.</dialog>`],
+  [`<dialog character="Ama">Hi.</wrong>`, `<dialog character="Ama">Hi.</dialog>`],
+  [`<dialog character="Ama">Hi.</dialog></wrong>`, `<dialog character="Ama">Hi.</dialog>`],
+];
+const results = pairs.map(([sloppy, tidy]) => same(sloppy, tidy)).join(" ");
+results;
+=> true true true true
+```
+
+Those four are why `classifyWarnings` calls them lossless and scores nothing
+against them.
+
+## Sloppy markup that does cost something
+
+Not every recovery is free, and the difference is worth keeping. An unclosed tag
+*nested inside another* duplicates its own opening markup into the parent's
+content:
+
+```ts
+const nested = parseTags(`<description>A room.<set attr="x">1</set>`);
+nested[0].content.split("<set").length - 1;
+=> 2
+```
+
+The tidy version has one, so this is a real defect rather than untidiness, and it
+stays scored as a failure.
+
+``` continue
+const tidy = parseTags(`<description>A room.<set attr="x">1</set></description>`);
+tidy[0].content.split("<set").length - 1;
+=> 1
+```

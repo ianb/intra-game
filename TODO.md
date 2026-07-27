@@ -107,6 +107,15 @@ original write-up, plus whatever the last few sessions turned up.
   Related to the progress-signal item above: both are about the player being
   unable to tell what counts.
 
+- **A nested unclosed tag corrupts its parent's content** `engine` `S` — the
+  parser's auto-close appends the tag's raw source to the parent, but the
+  opening tag was already appended when it was read, so it lands twice:
+  `<description>A room.<set attr="x">1</set>` leaves the description holding
+  `A room.<set attr="x"><set attr="x">1</set>`. Every other recovery the parser
+  makes is lossless (there is a doctest comparing each against its well-formed
+  twin); this one is not, which is why it stays scored as a protocol failure
+  while the others no longer are.
+
 - **Characters send the player to rooms that don't exist** `content` `M` — in
   the run that solved Ink and Echo, the Archivist gave step-by-step directions
   to "Archive Sub-Level 4", said Marta was there, and named a first hop ("East
