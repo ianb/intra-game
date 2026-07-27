@@ -23,6 +23,15 @@ export interface OpenRouterOptions {
   timeoutMs?: number;
   /** How many times to retry a transient failure. */
   retries?: number;
+  /**
+   * How hard the model should think, where it can be told.
+   *
+   * Worth measuring rather than accepting: gpt-5-nano's default emits ~576
+   * reasoning tokens before a one-tag answer and takes nineteen seconds, while
+   * "low" emits 128 and takes two. If the score survives, that is most of the
+   * cost and most of the latency for nothing.
+   */
+  reasoningEffort?: string;
 }
 
 /**
@@ -69,6 +78,9 @@ export function openRouterChat(options: OpenRouterOptions): ChatFn {
           flash: options.flashModel,
         }),
         messages: request.messages,
+        ...(options.reasoningEffort
+          ? { reasoning: { effort: options.reasoningEffort } }
+          : {}),
       }),
       signal: AbortSignal.timeout(timeoutMs),
     });

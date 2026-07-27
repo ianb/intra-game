@@ -41,9 +41,14 @@ function parseArgs(argv: string[]) {
   return args;
 }
 
-function backendFor(name: string, model: string, flashModel?: string): ChatFn {
+function backendFor(
+  name: string,
+  model: string,
+  flashModel?: string,
+  reasoningEffort?: string,
+): ChatFn {
   if (name === "openrouter") {
-    return openRouterChat({ model, flashModel });
+    return openRouterChat({ model, flashModel, reasoningEffort });
   }
   if (name === "cli") {
     return cliChat({ model, flashModel });
@@ -68,7 +73,7 @@ function backendFor(name: string, model: string, flashModel?: string): ChatFn {
  * exists to support was the one it couldn't record.
  */
 function runKey(run: ModelRun): string {
-  return `${run.model}::${run.flashModel ?? ""}`;
+  return `${run.model}::${run.flashModel ?? ""}::${run.reasoning ?? ""}`;
 }
 
 function merge(path: string, runs: ModelRun[]): ModelRun[] {
@@ -105,6 +110,8 @@ async function main() {
   // measurable: score the same scenarios with and without it and read the
   // difference.
   const flashModel = args.flash?.[0];
+  // minimal | low | medium | high, for models that take direction on it.
+  const reasoning = args.reasoning?.[0];
   const only = args.scenario ?? [];
   const scenarios = only.length
     ? EVAL_SCENARIOS.filter((s) => only.includes(s.name))
@@ -131,7 +138,8 @@ async function main() {
   const runs: ModelRun[] = [];
   for (const model of models) {
     console.log(
-      `\n=== ${model}${flashModel ? ` + ${flashModel} (flash)` : ""} (${backend}) ===`,
+      `\n=== ${model}${flashModel ? ` + ${flashModel} (flash)` : ""}` +
+        `${reasoning ? ` [reasoning ${reasoning}]` : ""} (${backend}) ===`,
     );
     const results: ScenarioResult[] = [];
     for (const scenario of scenarios) {
@@ -140,7 +148,7 @@ async function main() {
       try {
         result = await runScenario(
           scenario,
-          backendFor(backend, model, flashModel),
+          backendFor(backend, model, flashModel, reasoning),
         );
       } catch (e) {
         // One scenario failing is one scenario's score, not the batch's.
@@ -165,6 +173,7 @@ async function main() {
       model,
       backend,
       ...(flashModel ? { flashModel } : {}),
+      ...(reasoning ? { reasoning } : {}),
       scenarios: results,
     });
   }

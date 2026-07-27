@@ -14,6 +14,8 @@ export interface ModelRun {
   backend: string;
   /** Set when the run used a second, cheaper model for the "flash" tier. */
   flashModel?: string;
+  /** Set when the run asked for a specific reasoning effort. */
+  reasoning?: string;
   scenarios: ScenarioResult[];
 }
 
