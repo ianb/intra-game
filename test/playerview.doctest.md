@@ -102,14 +102,15 @@ renderPlayerView({
   exits: ["Hallway"],
   people: ["Marta"],
   todos: ["find the poet"],
+  done: ["unlock the door"],
   mysteries: [],
   transcript: [
     `[Marta to Ada Quill] "I don't know anything about that."`,
     `[failed] open the cabinet — it is locked`,
     `[list] added: find the poet`,
   ],
-}).split("\n").slice(-4).join(" / ");
-=> LOCATION  The Yellow Room: very yellow / PEOPLE    Marta / EXITS     Hallway / LIST      find the poet
+}).split("\n").slice(-5).join(" / ");
+=> LOCATION  The Yellow Room: very yellow / PEOPLE    Marta / EXITS     Hallway / LIST      find the poet / DONE      unlock the door
 ```
 
 ## Invisible characters stay invisible
@@ -145,6 +146,35 @@ rather than inventing a turn the player didn't take:
 ```ts
 JSON.stringify(extractCommand("   \n  \n"));
 => ""
+```
+
+## A revealed mystery lands on the list
+
+The task list is the game's "you did it" signal, and until now the story never
+used it: the `briefed` checkpoint — Ama handing over the entire Ink and Echo
+mystery — recorded no tasks at all, and three full quest playthroughs produced
+none between them. A mystery changing state is the clearest concrete progress
+the game has, so it now writes to the list, derived in the fold rather than
+asked of the model.
+
+```ts
+const fresh = new Model(entities, { chat: async () => "" });
+fresh.replaceLog(parse(readFileSync("playtest/checkpoints/briefed.yaml", "utf8")).events);
+fresh.world.todos.map((t) => `${t.done ? "x" : " "} ${t.title}`).join(" | ");
+=>   Who is writing notes as 'Ink and Echo'?
+```
+
+Solving it crosses that same task off, rather than adding a second one — the
+mystery's name is the id, so the two ends match:
+
+``` continue
+const solve = {
+  id: "Ama", roomId: "Hollow_Atrium", totalTime: 0, actions: [],
+  changes: { Ink_And_Echo: { before: { state: "revealed" }, after: { state: "solved" } } },
+};
+fresh.world.applyStoryEvent(solve);
+fresh.world.todos.map((t) => `${t.done ? "x" : " "} ${t.title}`).join(" | ");
+=> x Who is writing notes as 'Ink and Echo'?
 ```
 
 ## Notes to the reader
@@ -210,7 +240,7 @@ The rule is deliberately narrow, because a player addressing someone by name
 looks similar and must survive:
 
 ```ts
-const view = { room: "r", exits: [], people: [], todos: [], mysteries: [], transcript: [] };
+const view = { room: "r", exits: [], people: [], todos: [], done: [], mysteries: [], transcript: [] };
 const replies = ["NEXT\nlocation: Archive Console", "NEXT\ngo to the archive lounge"];
 const player = llmPlayer(async () => replies.shift()!);
 const turn = await player(view);

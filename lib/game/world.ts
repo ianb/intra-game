@@ -6,6 +6,7 @@ import {
   PersonScheduledEventType,
   StoryEventType,
   TodoType,
+  TodoUpdateType,
 } from "../types";
 import { tmpl } from "../template";
 import type { Entity, Room, Person, Mystery } from "./classes";
@@ -13,7 +14,7 @@ import type { AllEntitiesType } from "./content";
 import type { Model } from "./model";
 import { generateExactSchedule, timeAsString } from "./scheduler";
 import { entitiesById } from "./dynamic";
-import { applyTodoUpdates } from "./todos";
+import { applyTodoUpdates, todoId } from "./todos";
 
 export const ONE_DAY = 24 * 60;
 
@@ -272,8 +273,22 @@ export class World {
     if (storyEvent.suggestions) {
       this.lastSuggestions = storyEvent.suggestions;
     }
-    if (storyEvent.todos?.length) {
-      this.todos = applyTodoUpdates(this.todos, storyEvent);
+    // A mystery arriving or being solved is the clearest "something concrete
+    // happened" the game has, and until now it touched nothing the player could
+    // see except a panel most of them never open. The task list is exactly the
+    // right place for it, and was sitting unused: the `briefed` checkpoint —
+    // Ama handing over the whole Ink and Echo mystery — recorded no tasks at
+    // all, and three full quest playthroughs produced none between them.
+    //
+    // Derived here in the fold rather than asked of the model, because the
+    // model already declines to do it, and because this way it replays
+    // identically from any checkpoint.
+    const fromMysteries = mysteryTodos(storyEvent, this);
+    if (storyEvent.todos?.length || fromMysteries.length) {
+      this.todos = applyTodoUpdates(this.todos, {
+        ...storyEvent,
+        todos: [...fromMysteries, ...(storyEvent.todos || [])],
+      });
     }
     this.timestampMinutes += storyEvent.totalTime;
   }
@@ -330,6 +345,40 @@ export class World {
     }
     return null;
   }
+}
+
+/**
+ * Task-list updates implied by a mystery changing state in this event.
+ *
+ * The mystery's `name` is already the question the player is chasing ("Who is
+ * writing notes as 'Ink and Echo'?"), so it needs no new prose: revealing puts
+ * it on the list, solving crosses it off. Model-written tasks in the same event
+ * win, since a character phrasing it in their own words is better than this.
+ */
+function mysteryTodos(
+  storyEvent: StoryEventType,
+  world: World,
+): TodoUpdateType[] {
+  const updates: TodoUpdateType[] = [];
+  for (const [entityId, change] of Object.entries(storyEvent.changes)) {
+    const state = change.after?.state;
+    if (state === undefined || state === change.before?.state) {
+      continue;
+    }
+    const mystery = world.getEntity(entityId);
+    if (!mystery || !isMystery(mystery)) {
+      continue;
+    }
+    if (state === "veiled") {
+      continue;
+    }
+    updates.push({
+      id: todoId(mystery.name),
+      title: mystery.name,
+      done: state === "solved",
+    });
+  }
+  return updates;
 }
 
 function normalizeName(name: string): string {

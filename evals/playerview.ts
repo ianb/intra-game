@@ -32,6 +32,8 @@ export interface PlayerViewType {
   exits: string[];
   people: string[];
   todos: string[];
+  /** Finished ones, kept visible: a player needs to see what it achieved. */
+  done: string[];
   mysteries: string[];
   /** What happened since the player last looked. */
   transcript: string[];
@@ -97,6 +99,11 @@ export function playerView(model: Model, since = 0): PlayerViewType {
       .filter((person) => !person.invisible && person.id !== "PLAYER")
       .map((person) => person.name),
     todos: world.todos.filter((todo) => !todo.done).map((todo) => todo.title),
+    // The interface strikes finished tasks through rather than removing them,
+    // and for the same reason: half the value of a list is seeing what is
+    // already behind you. Showing only what's left made the player's view less
+    // informative than the one a person gets.
+    done: world.todos.filter((todo) => todo.done).map((todo) => todo.title),
     // Names only. The name is the question; the hints are the answer.
     mysteries: world
       .unveiledMysteries()
@@ -129,6 +136,9 @@ export function renderPlayerView(view: PlayerViewType): string {
   ];
   if (view.todos.length) {
     status.push(`LIST      ${view.todos.join(" / ")}`);
+  }
+  if (view.done.length) {
+    status.push(`DONE      ${view.done.join(" / ")}`);
   }
   if (view.mysteries.length) {
     status.push(`QUESTIONS ${view.mysteries.join(" / ")}`);

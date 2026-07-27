@@ -55,28 +55,30 @@ original write-up, plus whatever the last few sessions turned up.
   room. Nothing happened, and it spent its last five turns wandering. Options
   are for Marta to signal the precondition when accused in company ("not here"),
   or to relax it — both are content changes, so they want the author.
-- **A reserved style for real progress** `ui` `M` — the game knows when
-  something concrete happened: a mystery moved state, a restriction lifted, a
-  task got crossed off, an action attempt succeeded. The player is told none of
-  that distinctly. It arrives as more prose, in the same voice as everything
-  else, so "you worked it out" reads exactly like "a character said something
-  atmospheric".
-
-  The quest runs made this measurable. Sonnet accused Marta, got a reaction
-  indistinguishable from success, and stopped pushing; earlier it treated
-  evasiveness as confirmation because nothing else was available to confirm
-  against. A player that cannot tell progress from noise stops being able to
-  plan, which is most of what went wrong in every run so far.
+- **Use the task list as the progress signal everywhere** `ui` `M` — the "you
+  did it" marker already exists; the story just wasn't using it. A revealed
+  mystery now lands on the list and solving it crosses it off, derived in the
+  fold rather than left to the model. That leaves the rest: an unlocked
+  restriction, a character finally telling you something, a place you were sent
+  to and reached. The engine knows when each of those happened and still reports
+  them as prose in the same voice as everything else, so "you worked it out"
+  reads like "a character said something atmospheric".
 
   Both kinds of player benefit. A human reading a wall of atmospheric prose has
-  the same problem and just complains about it less. The LLM player is useful
-  here as an instrument: what it visibly struggles with is what is
+  the same problem and just complains about it less, which makes the LLM player
+  useful as an instrument: what it visibly struggles with is what is
   under-exposed for everyone.
 
   The tension to design against is that a flashing "CORRECT!" would drain the
-  fiction, and Intra's whole register is that nothing is ever quite confirmed.
-  So it wants to be in the game's voice — Ama noticing, a task ticking over, the
-  interface marking it — rather than a scoreboard.
+  fiction, and Intra's register is that nothing is ever quite confirmed. It
+  wants to be Ama noticing, or a line ticking over, not a scoreboard.
+
+- **Characters don't volunteer tasks** `content` `S` — `<todo>` fires when a
+  scenario asks for one directly (the `task-list` eval passes 5/5) and
+  essentially never otherwise: zero across three full quest playthroughs. Either
+  the prompt needs to make it more expected, or the beats worth tracking should
+  be engine-side like the mystery link now is. Worth knowing which, because the
+  passing eval hid this for a while.
 
 - **Score evals on a backend without an assistant wrapper** `tooling` `S` — every
   number recorded so far is from `--backend cli`, which appends the game's prompt
