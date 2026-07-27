@@ -30,6 +30,14 @@ export interface StreamConfig {
    * prefix, so they were never in the same cache entry (`pnpm playtest:cache`).
    */
   flashModel?: string;
+  /**
+   * How hard the model should think, where it takes direction.
+   *
+   * Worth setting rather than leaving to the default: gpt-5.4-nano scored
+   * 21/26 at its own default and 25/26 at "medium", for a third of the latency
+   * a heavier model needs to match it. See evals/RESULTS.md.
+   */
+  reasoningEffort?: string;
   /** Names this backend in error messages. */
   label: string;
   /** Called once per completed call with what it cost; see lib/usage.ts. */
@@ -74,6 +82,9 @@ export function openAiCompatibleStream(config: StreamConfig): ChatStreamFn {
           // OpenRouter's extension that adds what it charged.
           stream_options: { include_usage: true },
           usage: { include: true },
+          ...(config.reasoningEffort
+            ? { reasoning: { effort: config.reasoningEffort } }
+            : {}),
         }),
       });
     } catch (e) {

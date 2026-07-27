@@ -26,6 +26,15 @@ export interface TagContext {
   roomId: EntityId;
   /** For `<description>`: what the player asked to examine, when this was one. */
   subject?: string;
+  /**
+   * Where a tag reports that it couldn't be used, in words meant for the model.
+   *
+   * Populated only when the caller supplies an array. What goes in is limited to
+   * mistakes a model could plausibly fix if told — a misspelt attribute, a value
+   * of the wrong shape — because the point is to hand it back and ask again.
+   * Anything the model cannot act on is a warning and stays one.
+   */
+  complaints?: string[];
 }
 
 /**
@@ -173,6 +182,13 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     return;
   }
   const value = fieldsOf(entity)[key];
+  if (value === undefined) {
+    // Applied anyway, as it always has been — some flows do add attributes —
+    // but recorded, because the common case is a model inventing a field name.
+    ctx.complaints?.push(
+      `<set attr="${entity.id}.${key}"> — ${entity.id} has no attribute "${key}".`,
+    );
+  }
   let content: string | number | boolean = tag.content;
   if (typeof value === "boolean") {
     content = coerceBoolean(tag.content);
@@ -183,6 +199,9 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     console.warn(
       `Ignoring invalid property set of: ${entity.id}.${key} =`,
       value,
+    );
+    ctx.complaints?.push(
+      `<set attr="${entity.id}.${key}"> — "${String(tag.content).slice(0, 40)}" is not a usable value for ${key}.`,
     );
     return;
   }

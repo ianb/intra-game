@@ -60,6 +60,8 @@ export interface SessionEnv {
   /** The gateway's name, which is part of its URL. Defaults to "default". */
   CF_GATEWAY_ID?: string;
   GATEWAY_MODEL?: string;
+  /** minimal | low | medium | high, for models that take direction on it. */
+  GATEWAY_REASONING?: string;
   /** Optional cheaper model for prompts that ask for the "flash" tier. */
   GATEWAY_FLASH_MODEL?: string;
   /**
@@ -369,6 +371,7 @@ export class GameSession {
         endpoint: this.env.OPENROUTER_BASE_URL,
         model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
         flashModel: this.env.GATEWAY_FLASH_MODEL,
+        reasoningEffort: this.env.GATEWAY_REASONING,
         providerKey: credential?.key,
         user,
         onUsage: (record) => {
@@ -385,6 +388,7 @@ export class GameSession {
       token: this.env.CF_AIG_TOKEN,
       model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
       flashModel: this.env.GATEWAY_FLASH_MODEL,
+      reasoningEffort: this.env.GATEWAY_REASONING,
       providerKey: credential?.key,
       user,
       onUsage: (record) => {

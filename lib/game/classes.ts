@@ -351,12 +351,84 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     }
   }
 
+  /**
+   * How many times to hand a broken response back and ask again.
+   *
+   * One. A model that misspells an attribute usually fixes it when told, and a
+   * model that doesn't fix it on the second go isn't going to on the third —
+   * meanwhile every retry is a whole prompt's worth of money and a second of
+   * the player waiting. Bounded at one because the failure being repaired is
+   * cosmetic to the player: the turn still happened, it just recorded less than
+   * it meant to.
+   */
+  static readonly PROTOCOL_RETRIES = 1;
+
   async executePrompt(model: Model, parameters: ParametersT) {
     const prompt = this.assemblePrompt(parameters);
     const roomId = this.world.entityRoom(this.id)?.id || "Void";
-    let resp = await model.run(() => this.streamOrChat(model, prompt));
-    resp = fixupText(resp);
 
+    let resp = "";
+    let result: StoryEventType | null = null;
+    let complaints: string[] = [];
+    for (
+      let attempt = 0;
+      attempt <= (this.constructor as typeof Entity).PROTOCOL_RETRIES;
+      attempt++
+    ) {
+      // On a retry the model is shown its own answer and what was wrong with
+      // it, which is the shape it can act on. Reassembling the prompt from
+      // scratch and hoping for better would be a reroll, not a correction.
+      const attemptPrompt =
+        attempt === 0
+          ? prompt
+          : {
+              ...prompt,
+              messages: [
+                ...prompt.messages,
+                { role: "assistant" as const, content: resp },
+                {
+                  role: "user" as const,
+                  content: `Some of that could not be applied:\n${complaints.join("\n")}\n\nReply again with the complete set of tags for this turn, fixing those. Use only attributes that already exist.`,
+                },
+              ],
+            };
+      resp = fixupText(
+        await model.run(() => this.streamOrChat(model, attemptPrompt)),
+      );
+      complaints = [];
+      result = await this.applyResponse({
+        model,
+        parameters,
+        resp,
+        roomId,
+        title: prompt.meta.title,
+        complaints,
+      });
+      if (!complaints.length) {
+        break;
+      }
+    }
+
+    result = this.afterPrompt(result!);
+    await model.addStoryEvent(result);
+  }
+
+  /** Turn one response into a story event, collecting what wouldn't apply. */
+  private async applyResponse({
+    model,
+    parameters,
+    resp,
+    roomId,
+    title,
+    complaints,
+  }: {
+    model: Model;
+    parameters: ParametersT;
+    resp: string;
+    roomId: EntityId;
+    title: string;
+    complaints: string[];
+  }): Promise<StoryEventType> {
     let tags = unfoldTags(parseTags(resp), {
       // We don't want to unfold this, because it's for planning, not action:
       ignoreContainers: ["context"],
@@ -373,7 +445,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       changes: {},
       actions: [],
       roomId,
-      llmTitle: prompt.meta.title,
+      llmTitle: title,
       llmResponse: resp,
       // Recorded for replay/undo; the concrete shape varies per entity type, so
       // it is stored as a plain record.
@@ -385,6 +457,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       roomId,
       // FIXME: kind of a hack that should be done in a subclass:
       subject: (parameters as { examine?: string }).examine || undefined,
+      complaints,
     };
     for (const tag of tags) {
       if (applyTag(tag, result, tagContext)) {
@@ -399,8 +472,7 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         llmResponse: resp,
       });
     }
-    result = this.afterPrompt(result);
-    await model.addStoryEvent(result);
+    return result;
   }
 
   changes(values: Partial<this>): Record<string, ChangeType> {

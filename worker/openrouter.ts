@@ -22,6 +22,7 @@ export interface OpenRouterConfig {
   apiKey: string;
   model: string;
   flashModel?: string;
+  reasoningEffort?: string;
   /** A player's own OpenRouter key, when they brought one. */
   providerKey?: string;
   /**
@@ -45,6 +46,7 @@ export function openRouterChatStream(config: OpenRouterConfig): ChatStreamFn {
     },
     model: config.model,
     flashModel: config.flashModel,
+    reasoningEffort: config.reasoningEffort,
     label: "OpenRouter",
     onUsage: config.onUsage,
     user: config.user,

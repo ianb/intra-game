@@ -124,3 +124,47 @@ handle its own `<goto>` / `<examine>` / `<action>` via `processTag`:
 apply(`<goto>Foyer</goto><examine>the door</examine>`).unhandled.join(", ");
 => goto, examine
 ```
+
+## Telling the model what it got wrong
+
+A `<set>` naming an attribute that doesn't exist is the most common protocol
+failure across every model measured — `PLAYER.intakeStep`, `Ama.askingProfession`,
+field names invented on the spot. The engine warned and moved on, so the game
+recorded less than the story said had happened, silently.
+
+A caller can now ask what wouldn't apply, in words meant for the model rather
+than for a log. The entity re-prompts once with its own answer and this list;
+see `executePrompt`.
+
+```ts setup
+const complain = (markup) => {
+  const complaints = [];
+  const event = { id: "Ama", roomId: "Intake", totalTime: 0, changes: {}, actions: [] };
+  for (const tag of parseTags(markup)) {
+    applyTag(tag, event, { world, entityId: "Ama", roomId: "Intake", complaints });
+  }
+  return complaints;
+};
+```
+
+```ts
+complain(`<set attr="PLAYER.intakeStep">done</set>`).join("");
+=> <set attr="PLAYER.intakeStep"> — PLAYER has no attribute "intakeStep".
+```
+
+A real attribute given a real value says nothing:
+
+``` continue
+complain(`<set attr="PLAYER.name">Pat Quill</set>`).length;
+=> 0
+```
+
+Collecting is opt-in — a caller that passes no array gets the old behaviour,
+warnings and all:
+
+``` continue
+const event = { id: "Ama", roomId: "Intake", totalTime: 0, changes: {}, actions: [] };
+const [tag] = parseTags(`<set attr="PLAYER.intakeStep">done</set>`);
+applyTag(tag, event, { world, entityId: "Ama", roomId: "Intake" });
+=> true
+```

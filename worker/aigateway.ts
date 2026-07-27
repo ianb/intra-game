@@ -29,6 +29,7 @@ export interface GatewayConfig {
   token: string;
   model: string;
   flashModel?: string;
+  reasoningEffort?: string;
   /** A player's own provider key, when they brought one. */
   providerKey?: string;
   onUsage?: (record: UsageRecordType) => void;
@@ -68,6 +69,7 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
     headers,
     model: config.model,
     flashModel: config.flashModel,
+    reasoningEffort: config.reasoningEffort,
     label: "AI Gateway",
     onUsage: config.onUsage,
     user: config.user,
