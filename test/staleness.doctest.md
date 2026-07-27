@@ -11,6 +11,7 @@ import { join } from "node:path";
 import { cassetteMissMessage, promptKey, replayChat } from "../playtest/recorded-chat.js";
 import { promptFingerprint } from "../playtest/fingerprint.js";
 import { fingerprintNote } from "../evals/report.js";
+import { listCheckpoints } from "../playtest/checkpoints.js";
 import type { ChatType } from "../lib/types.js";
 
 const ask = (content: string, title = "prompt Ama"): ChatType => ({
@@ -152,4 +153,32 @@ provenance they don't have:
 ``` continue
 fingerprintNote({ date: "2026-07-24", runs: [run()] });
 => Recorded before prompt fingerprints, so what was measured isn't known.
+```
+
+## A checkpoint keeps whatever the harness did wrong
+
+Checkpoints are recorded through the same backend the game runs on, so a bug in
+the backend is written into the saved transcript and replays from then on. That
+happened: `cliChat` appended "respond with ONLY game tags" to `describe people`,
+which asks for sentences, and the model's reply — asking what game tags were —
+was saved as a room description. Every quest run since started by showing the
+player the game asking its operator about tag formats.
+
+Re-recording fixed it, but the checkpoint had been on disk for days without the
+suite noticing, because nothing reads a checkpoint for whether it sounds like an
+assistant. This does:
+
+```ts
+const assistantVoice = [
+  "game tags", "could you clarify", "let me know if",
+  "in the context you've provided", "I don't have context",
+];
+const suspect = listCheckpoints().flatMap((checkpoint) =>
+  checkpoint.events.flatMap((event) =>
+    (event.actions || [])
+      .map((action) => ("text" in action ? action.text : action.resolution) || "")
+      .filter((text) => assistantVoice.some((tell) => text.toLowerCase().includes(tell)))
+      .map((text) => `${checkpoint.name}: ${text.slice(0, 60)}`)));
+suspect.join("\n") || "nothing";
+=> nothing
 ```
