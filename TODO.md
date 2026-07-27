@@ -73,31 +73,36 @@ original write-up, plus whatever the last few sessions turned up.
   fiction, and Intra's register is that nothing is ever quite confirmed. It
   wants to be Ama noticing, or a line ticking over, not a scoreboard.
 
-- **Let characters mark a reply as colour** `engine` `M` — every line in this
-  game is richly written, so there is no texture difference between a lead and
-  atmosphere. A traditional adventure gives you that for free (an object
-  described in detail is usually usable); here everything is described in
-  detail, and the quest runs show the cost. The player read Marta's evasiveness
-  as confirmation, read the Archivist's terminal styling as a command format,
-  and spent turns interrogating characters who were never sources for anything.
+- **Consider letting characters mark a reply as colour** `engine` `M` — a
+  proposal to decide on, not a decided task. Every line in this game is richly
+  written, so there is no texture difference between a lead and atmosphere. A
+  traditional adventure gives you that for free (an object described in detail
+  is usually usable); here everything is described in detail, and the quest runs
+  show the cost. The player read Marta's evasiveness as confirmation, read the
+  Archivist's terminal styling as a command format, and spent turns
+  interrogating characters who were never sources for anything.
 
-  The criteria are per character, which is the part that makes it tractable: a
-  character already knows what they are a source _for_, because that is exactly
-  what their mystery hints are. Doug's lunch opinions are colour. Marta on the
-  vents is colour; Marta on the poems is not.
+  The criteria would be per character, which is the part that makes it
+  tractable: a character already knows what they are a source _for_, because
+  that is exactly what their mystery hints are. Doug's lunch opinions are
+  colour. Marta on the vents is colour; Marta on the poems is not.
 
   Mechanism is open. The model could mark it (an attribute on `<dialog>`, or a
   separate tag), or the engine could derive it from whether the speaker holds a
-  hint for anything currently open — less expressive, no protocol burden, no
-  model discretion to get wrong.
+  hint for anything currently open, which is less expressive but carries no
+  protocol burden and no model discretion to get wrong.
 
-  **The tension is real and worth designing against.** The colour _is_ the game.
-  Intra is a decaying place full of absurd people, and labelling that as
-  unimportant tells the player not to enjoy the thing they came for. Colour also
-  stops being colour later — Gloria's theory about the Hollow Atrium in the
-  mornings is atmosphere until it isn't. An in-fiction signal ("I wouldn't know
-  anything about that") may do the same work without a meta flag that reads as
-  the game marking its own writing filler.
+  Caveats, which are the reason this is a "consider" and not a "do":
+
+  - The colour _is_ the game. Intra is a decaying place full of absurd people,
+    and labelling that as unimportant tells the player not to enjoy the thing
+    they came for.
+  - Colour stops being colour later. Gloria's theory about the Hollow Atrium in
+    the mornings is atmosphere until it isn't, and a flag set at write time
+    can't know that.
+  - A meta flag reads as the game marking its own writing as filler. An
+    in-fiction signal ("I wouldn't know anything about that") may do the same
+    work without that cost, and is a content change rather than an engine one.
 
   Related to the progress-signal item above: both are about the player being
   unable to tell what counts.
