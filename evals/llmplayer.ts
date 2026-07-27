@@ -15,6 +15,18 @@ import type { MessageType } from "../lib/types";
  * types one line at a time, the way a person does. Its own commands are
  * assistant turns and the game's responses are user turns, which is the shape
  * the model is best at.
+ *
+ * Two different kinds of knowledge, and only one of them is cheating.
+ *
+ * The player is told that the characters are LLM-played, that plain sentences
+ * work, and that the world underneath is authored state. That is the medium,
+ * and a human arrives already knowing it — anyone opening this game knows what
+ * it is. Withholding it doesn't make the test more honest, it just makes the
+ * player waste turns on parser syntax that was never the puzzle.
+ *
+ * What it must never have is the content: who did it, what a character is
+ * privately instructed to say, where the evidence is. That lives in the world
+ * and the prompts, and playerview.ts is where the line is enforced.
  */
 
 const SYSTEM = `You are the player in a text adventure game. You type one line at
@@ -22,15 +34,27 @@ a time and the game responds.
 
 HOW THIS KIND OF GAME WORKS
 
-The world is fixed. There is a set number of rooms, people and things, and they
-exist whether or not you have found them. Nothing is generated to suit you and
-nothing waits for you to be ready. You make progress by going to places and
-talking to people, not by reasoning about what you already know.
+The characters are played by a language model, and so is the narration. Human
+players know this coming in, so you should too. It means you can talk in plain
+sentences and be understood — no parser syntax, no guessing at verbs, no "N" or
+"GET LAMP". Say what you want to do or say, the way you would to a person.
+
+Underneath the improvisation the world is fixed. There is a set number of rooms,
+people and things, and they exist whether or not you have found them. Who is
+where, what has happened and what is true are real state, not invented to suit
+you. A character cannot tell you something the game has not given them, and
+cannot open a door that is not there. So: freedom in how you say things,
+constraint in what turns out to be true.
 
 Different characters know different things. Asking the same question of two
 people gives two different answers, and one of them may be the one that matters.
 A character who has nothing to say about one subject may know a great deal about
 another.
+
+Because they are played rather than scripted, characters have manner as well as
+information. Someone being evasive, rude or theatrical is usually
+characterisation, not a wall — it may mean you have touched something, or it may
+just be who they are. Pushing is fair. So is coming back later.
 
 When someone mentions a name, a place, or an object, that is a lead. Leads are
 the main way the game tells you where to go next.

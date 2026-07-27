@@ -253,6 +253,16 @@ It works. The first run under this framing reported: _"Game keeps asking about
 right, and it was the cli backend leaking (see Backends below) — a real defect
 found by the player rather than by someone reading a turn log afterwards.
 
+**Two kinds of knowledge, and only one is cheating.** The player is told that the
+characters are LLM-played, that plain sentences work rather than parser syntax,
+and that the world underneath is authored state that improvisation can't
+override. That is the medium, and a human arrives already knowing it — anyone
+opening this game knows what it is. Withholding it wouldn't make the test more
+honest, it would just spend turns on "GET LAMP".
+
+What it must never have is the content: who did it, what a character is
+privately instructed to say, where the evidence is.
+
 **What the player sees is the whole design.** The engine holds the answer in
 plain English — one hint begins "Marta is actually Ink and Echo" — so a view
 built from world state would produce a confident number that means nothing.
