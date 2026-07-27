@@ -21,11 +21,40 @@ import { Help } from "./help";
 import { Input } from "./inputbox";
 import { Settings } from "./settings";
 import { ZoomOverlay } from "@/components/zoom";
-import { initSession, loadAuth, playTurn } from "./session";
+import { authState, initSession, loadAuth, playTurn, signIn } from "./session";
 import { model } from "./model";
 import { openHelp, openSettings, seenHelp, soundOn } from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
+
+/**
+ * Sign in, in the header, where it is visible without provoking an error.
+ *
+ * Two earlier attempts put this somewhere a signed-out visitor never looked: in
+ * Settings, and then on the "no model key" error. Both are places you arrive at
+ * only after something has gone wrong or you went looking. A person who lands
+ * on a game they could sign into should be able to see that from the game.
+ *
+ * Nothing renders where signing in isn't possible, so a local-only deployment
+ * and a signed-in player both get the header they had before.
+ */
+function SignInLink() {
+  useSignals();
+  const auth = authState.value;
+  if (!auth?.loginUrl || auth.email) {
+    return null;
+  }
+  return (
+    <Button
+      className="bg-inherit border border-green-300 rounded-full py-0 px-3 mr-2 text-sm hover:bg-green-600"
+      onClick={() => {
+        signIn(auth.loginUrl!);
+      }}
+    >
+      Sign in
+    </Button>
+  );
+}
 
 export default function Home() {
   useSignals();
@@ -47,6 +76,7 @@ export default function Home() {
           <span className="text-gray-500 text-sm md:hidden"> !alpha</span>
         </span>
         <span className="whitespace-nowrap bg-gray-800">
+          <SignInLink />
           <Time />
           <Button
             className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
