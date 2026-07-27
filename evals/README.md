@@ -125,6 +125,15 @@ model from a great one — they establish a floor, and the floor is where models
 fail when they fail this game. Scenarios that discriminate at the top would need
 to be harder, and it isn't yet clear what "harder" should mean here.
 
+They also caught a defect in the harness itself, which was definitely not the
+plan. Every number before 2026-07-27 was measured with the cli backend running
+in this repo, so the model playing the game had read the source — including the
+CLAUDE.md explaining the tag protocol. Sandboxing it into an empty directory
+moved Haiku from 25/26 to 26/26 with the prompt fingerprint unchanged, so the
+prompts were identical and the backend was the only variable. The contamination
+was making scores slightly _worse_, not better: the assistant wrapper emitted
+stray meta-commentary that counted as dropped tags.
+
 They do already catch prompt regressions, which was not the plan. The first
 wording of the `<taskList>` instructions got tasks created and made both tiers
 sloppier elsewhere — `movement` started dropping a hallucinated `<set>` on a
