@@ -6,7 +6,7 @@
 import LlmLog, { clearLogs } from "@/components/llmlog";
 import { A, Button, CheckButton } from "@/components/input";
 import { Clock } from "@/components/digitalnumerals";
-import { Map, Mysteries, Todos, ViewObjects } from "./panels";
+import { Map, Todos, ViewObjects } from "./panels";
 import { activeTab, revealMap, showInternals } from "./uistate";
 import { model } from "./model";
 import { twMerge } from "tailwind-merge";
@@ -18,7 +18,6 @@ export function HeadsUpDisplay() {
   const inactiveClass = "cursor-pointer";
   const showLogs = true; // Could be based on showInternals or something, but I don't want it to be
   const _ = model.updates.value;
-  const hasMystery = model.world.unveiledMysteries().length > 0;
   const openTodos = model.world.todos.filter((todo) => !todo.done).length;
   return (
     <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
@@ -91,20 +90,6 @@ export function HeadsUpDisplay() {
             </span>{" "}
           </>
         )}
-        {hasMystery && (
-          <>
-            <span
-              onClick={() => {
-                activeTab.value = "mysteries";
-              }}
-              className={
-                activeTab.value === "mysteries" ? activeClass : inactiveClass
-              }
-            >
-              myst
-            </span>{" "}
-          </>
-        )}
         {(showLogs || activeTab.value === "log") && (
           <span
             onClick={() => {
@@ -131,8 +116,11 @@ export function HeadsUpDisplay() {
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
         {activeTab.value === "map" && <Map />}
-        {activeTab.value === "todo" && <Todos />}
-        {activeTab.value === "mysteries" && <Mysteries />}
+        {/* "mysteries" is the retired tab; anyone whose stored tab is still
+            that gets the list it merged into. */}
+        {(activeTab.value === "todo" || activeTab.value === "mysteries") && (
+          <Todos />
+        )}
         {activeTab.value === "log" && <LlmLog />}
         {activeTab.value === "objs" && <ViewObjects />}
       </div>

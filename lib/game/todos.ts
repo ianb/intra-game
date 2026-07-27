@@ -79,11 +79,15 @@ export function applyTodoUpdates(
       if (update.title) {
         existing.title = update.title;
       }
+      if (update.from) {
+        existing.from = update.from;
+      }
     } else {
       result.push({
         id: update.id,
         title: update.title,
         done: update.done,
+        ...(update.from ? { from: update.from } : {}),
         by: storyEvent.id,
       });
     }

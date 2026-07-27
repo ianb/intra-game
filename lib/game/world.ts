@@ -376,6 +376,9 @@ function mysteryTodos(
       id: todoId(mystery.name),
       title: mystery.name,
       done: state === "solved",
+      // So the list can show how it concluded, which is what the separate
+      // mysteries panel used to be for.
+      from: entityId,
     });
   }
   return updates;

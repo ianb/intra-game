@@ -18,9 +18,9 @@ import type { StoryEventType } from "../lib/types";
  *
  * So this is built only from what the interface actually shows: the story
  * events (dialogue, descriptions, action outcomes), the room and its exits, who
- * is visibly present, the task list, and the *names* of revealed mysteries. A
- * mystery's name is the question ("Who is writing notes as 'Ink and Echo'?"),
- * never its hints. Nothing here reads a hint, a schedule, a character's
+ * is visibly present, and the list. Mysteries reach it through the list like
+ * everything else — as the question ("Who is writing notes as 'Ink and Echo'?"),
+ * never as their hints. Nothing here reads a hint, a schedule, a character's
  * instructions, or any prompt.
  *
  * test/playerview.doctest.md asserts that, by looking for the answer in the
@@ -34,7 +34,6 @@ export interface PlayerViewType {
   todos: string[];
   /** Finished ones, kept visible: a player needs to see what it achieved. */
   done: string[];
-  mysteries: string[];
   /** What happened since the player last looked. */
   transcript: string[];
 }
@@ -104,11 +103,6 @@ export function playerView(model: Model, since = 0): PlayerViewType {
     // already behind you. Showing only what's left made the player's view less
     // informative than the one a person gets.
     done: world.todos.filter((todo) => todo.done).map((todo) => todo.title),
-    // Names only. The name is the question; the hints are the answer.
-    mysteries: world
-      .unveiledMysteries()
-      .filter((mystery) => mystery.state !== "solved")
-      .map((mystery) => mystery.name),
     transcript: model.updates.value
       .slice(since)
       .flatMap((event) => renderEvent(model, event)),
@@ -139,9 +133,6 @@ export function renderPlayerView(view: PlayerViewType): string {
   }
   if (view.done.length) {
     status.push(`DONE      ${view.done.join(" / ")}`);
-  }
-  if (view.mysteries.length) {
-    status.push(`QUESTIONS ${view.mysteries.join(" / ")}`);
   }
   parts.push(status.join("\n"));
   return parts.join("\n\n");

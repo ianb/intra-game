@@ -36,6 +36,8 @@ export interface TodoUpdateType {
   id: string;
   title: string;
   done: boolean;
+  /** The entity this came from, when the engine derived it — e.g. a mystery. */
+  from?: EntityId;
 }
 
 /** A task on the player's list, as folded out of the log. */

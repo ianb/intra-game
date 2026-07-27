@@ -1,11 +1,12 @@
 /**
- * The tabbed side panels: the map, the mysteries, and the raw entity
+ * The tabbed side panels: the map, the player's list, and the raw entity
  * inspector behind the "internals" toggle.
  */
 
 import compare from "just-compare";
 import sortBy from "just-sort-by";
 import {
+  isMystery,
   isPerson,
   isStoryActionAttempt,
   isStoryDescription,
@@ -58,39 +59,18 @@ export function Map() {
   );
 }
 
-export function Mysteries() {
-  useSignals();
-  const mysteries = model.world.unveiledMysteries();
-  return (
-    <div className="flex-1 p-4 text-sm">
-      {mysteries.length === 0 && <div>No mysteries</div>}
-      <ol className="list-decimal ml-3">
-        {mysteries.map((mystery, i) => {
-          return (
-            <li key={mystery.id}>
-              <div className={mystery.state === "solved" ? "line-through" : ""}>
-                {mystery.name}
-              </div>
-              {mystery.resolution && (
-                <div className="text-xs text-gray-300">
-                  {mystery.resolution}
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </div>
-  );
-}
-
 /**
- * The player's task list.
+ * The player's list: errands and mysteries together.
  *
- * Finished tasks stay on the list, struck through, rather than disappearing:
- * half the value of a task list is seeing that you did something, and in a game
- * where an NPC can wander off mid-errand, "did that actually count?" is a real
- * question the player wants answered.
+ * Mysteries used to live in a tab of their own, which meant the game's biggest
+ * open questions sat in a list the player had to remember to go and look at.
+ * They are the same kind of thing as everything else here — something you are
+ * trying to do — so they are folded in (see mysteryTodos in world.ts), and the
+ * separate panel is gone.
+ *
+ * Finished entries stay, struck through, rather than disappearing: half the
+ * value of a list is seeing what you already did, and in a game where an NPC can
+ * wander off mid-errand, "did that actually count?" is a real question.
  */
 export function Todos() {
   useSignals();
@@ -104,16 +84,28 @@ export function Todos() {
         </div>
       )}
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id} className="mb-1">
-            <span className={todo.done ? "text-gray-500" : "text-gray-400"}>
-              {todo.done ? "☑ " : "☐ "}
-            </span>
-            <span className={todo.done ? "line-through text-gray-500" : ""}>
-              {todo.title}
-            </span>
-          </li>
-        ))}
+        {todos.map((todo) => {
+          // A solved mystery has a resolution worth reading; that is what the
+          // old mysteries panel was carrying that a bare title doesn't.
+          const source = todo.from
+            ? model.world.getEntity(todo.from)
+            : undefined;
+          const resolution =
+            source && isMystery(source) ? source.resolution : undefined;
+          return (
+            <li key={todo.id} className="mb-2">
+              <span className={todo.done ? "text-gray-500" : "text-gray-400"}>
+                {todo.done ? "☑ " : "☐ "}
+              </span>
+              <span className={todo.done ? "line-through text-gray-500" : ""}>
+                {todo.title}
+              </span>
+              {resolution && (
+                <div className="text-xs text-gray-300 ml-5">{resolution}</div>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -66,10 +66,11 @@ Nor the machinery: no prompts, no schedules, no entity ids where names belong.
 
 ## What it does see
 
-The question, not the answer:
+The question, not the answer — reaching it through the list, the same way a
+person sees it:
 
 ```ts
-view.mysteries.join(" | ");
+view.todos.join(" | ");
 => Who is writing notes as 'Ink and Echo'?
 ```
 
@@ -103,7 +104,6 @@ renderPlayerView({
   people: ["Marta"],
   todos: ["find the poet"],
   done: ["unlock the door"],
-  mysteries: [],
   transcript: [
     `[Marta to Ada Quill] "I don't know anything about that."`,
     `[failed] open the cabinet — it is locked`,
@@ -240,7 +240,7 @@ The rule is deliberately narrow, because a player addressing someone by name
 looks similar and must survive:
 
 ```ts
-const view = { room: "r", exits: [], people: [], todos: [], done: [], mysteries: [], transcript: [] };
+const view = { room: "r", exits: [], people: [], todos: [], done: [], transcript: [] };
 const replies = ["NEXT\nlocation: Archive Console", "NEXT\ngo to the archive lounge"];
 const player = llmPlayer(async () => replies.shift()!);
 const turn = await player(view);
