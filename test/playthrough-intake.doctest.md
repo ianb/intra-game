@@ -40,12 +40,17 @@ const player = model.world.entities.PLAYER;
 const ama = model.world.entities.Ama;
 ```
 
-Ama learned the player's name, and inferred pronouns from it:
+Ama learned the player's name, and recorded the pronouns they gave:
 
 ```ts
 [player.name, player.pronouns].join(" / ");
-=> Ada Quill / she/her
+=> Pat Quill / he/him
 ```
+
+She used to infer the pronouns from the name instead, and the name here was
+chosen to make that impossible. Guessing gender from a name misgenders the
+player in their own game; asking costs one line of dialogue from a character
+whose entire job is filling in forms.
 
 …and their profession:
 
