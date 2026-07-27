@@ -123,16 +123,20 @@ JSON.stringify(extractCommand("   \n  \n"));
 => ""
 ```
 
-## The notebook
+## Notes to the reader
 
-A model holds a plan for about as long as the plan is in its context, and a game
-is exactly where that fails: twenty turns of transcript push out what you were
-trying to do. The first recorded quest spent eleven turns bouncing between two
-rooms, having forgotten there were people it had never met.
+Each turn the player writes a short report and gets it back on the next one. It
+is addressed to whoever reads the run afterwards, which is true rather than a
+framing device: the notes are stored per turn and are the only window into what
+the player thought was going on.
 
-So the player writes notes each turn and gets them back on the next one — the
-scrap of paper a person uses without thinking about it. The notes are the
-player's own, so nothing leaks by keeping them.
+That does two jobs. It survives the history window, which a plan otherwise does
+not — the first recorded quest spent eleven turns re-interrogating two
+characters, having forgotten there were people it had never met. And it gives a
+player that is stuck because the game is unfair somewhere to say so, which is
+the most valuable thing a quest can produce and something it will only do if
+asked. Nothing leaks by keeping them: the notes are the player's own, not the
+game's.
 
 ```ts
 const reply = [

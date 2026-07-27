@@ -108,6 +108,21 @@ async function main() {
     console.log(`  ERROR ${result.error}`);
   }
 
+  // The player's closing report. It is written for whoever reads the run, so
+  // print it rather than burying it in the YAML — a stalled quest usually says
+  // why, in the player's own words, and that is the most useful line in the
+  // whole result.
+  const report = result.log.at(-1)?.notes;
+  if (report) {
+    console.log("\n--- the player's notes ---");
+    console.log(
+      report
+        .split("\n")
+        .map((line) => `  ${line}`)
+        .join("\n"),
+    );
+  }
+
   mkdirSync(RESULTS_DIR, { recursive: true });
   const date = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
   const path = join(RESULTS_DIR, `${quest.name}-${date}.yaml`);

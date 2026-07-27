@@ -229,6 +229,23 @@ tells you which step is too hard to find. Repeated commands and rooms visited
 are recorded too, since a player going in circles is a different failure from a
 player exploring and coming up empty.
 
+**The player writes notes to you, not to itself.** Each turn it produces a short
+report — what it has worked out, what it is trying next, who it hasn't met, and
+anything that seems broken, unfair or impossible to guess — and gets it back on
+the next turn. That framing is doing two jobs at once, and it is true rather
+than a trick: those notes really are the only window into what the player
+thought was happening, and they really are read afterwards.
+
+The first job is memory. A model holds a plan for as long as the plan is in its
+context, and twenty turns of transcript push it out. The first recorded quest
+spent eleven turns re-interrogating two characters, having forgotten there were
+people it had never met.
+
+The second is playtest feedback, and it is the more interesting one. A player
+stuck because the game is unfair, rather than because it played badly, is the
+most valuable thing a quest can produce — and it can only tell you so if it has
+been asked to. The runner prints the closing report for that reason.
+
 **What the player sees is the whole design.** The engine holds the answer in
 plain English — one hint begins "Marta is actually Ink and Echo" — so a view
 built from world state would produce a confident number that means nothing.

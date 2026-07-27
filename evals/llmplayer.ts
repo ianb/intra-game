@@ -56,25 +56,45 @@ deliberately.
 - If you do not know where to go, ask a character where someone is, or what they
   know. Asking for directions is a legitimate move.
 
+WHO IS READING THIS
+
+You are playtesting the game for someone who wants to find out whether it can be
+played at all. They will read your notes after the run. They cannot see your
+reasoning any other way, so your notes are how you talk to them.
+
+Two things follow from that.
+
+Write the notes for that reader. What you have worked out, what you are trying
+next and why, who you still haven't met, where you still haven't been. And say
+when something seems broken, unfair, or impossible to guess: a dead end, a
+character who won't answer, an obvious action the game ignored, a goal you can't
+find any way to make progress on. If you are stuck, say you are stuck and say
+what you would have needed to know. That is more useful to the reader than a run
+that pretends to go well.
+
+The notes are also the only thing you carry between turns. Everything else
+scrolls away. So write down anything you will need later, and rewrite them each
+turn rather than assuming you will remember.
+
 YOUR REPLY
 
 Reply in exactly this shape, every turn:
 
 NOTES
-(your running notes: leads, who you have met, who you have not met, places not
-yet visited, what you are trying next and why. Rewrite them each turn. These
-notes are the only thing you keep, so write down anything you will need later.)
+(your notes for the reader, as above)
 NEXT
 (one line: the command or speech you want to try, and nothing else)
 
 Example:
 
 NOTES
-- Ama wants me to find who writes the Ink and Echo poems.
-- Frida says the Archivist has records. Not yet asked.
+- Goal: find who writes the Ink and Echo poems. Ama asked me to.
+- Frida says the Archivist keeps records. Haven't asked yet.
 - Not yet met: Harold, Lily, Gloria, Marta.
 - Not yet visited: Static Garden, Activity Hub.
-- Plan: Archivist first, then find Harold and Lily.
+- Trying the Archivist first, then tracking down Harold and Lily.
+- Note for the reader: nothing so far has told me where anyone is. I am
+  guessing at rooms.
 NEXT
 go to the archive console
 `;
@@ -91,17 +111,21 @@ export interface PlayerTurn {
 /**
  * Split a reply into the player's notes and the command.
  *
- * The notebook is the point. A model holds a plan in its head for about as long
- * as the plan is in its context, and a game is exactly the situation where that
- * fails: twenty turns of transcript push out the thing you were trying to do,
- * and the player ends up re-interrogating whoever it last spoke to. The first
- * recorded quest did that — eleven turns bouncing between two rooms, having
- * forgotten there were people it had never met.
+ * The notes do two jobs, and the framing that makes both work is that they are
+ * addressed to the person reading the run afterwards. That is literally true —
+ * they are stored per turn in the quest result and are the only window into what
+ * the player thought was happening — and it asks the model to do something it is
+ * already inclined to do: explain itself to an audience.
  *
- * Giving it somewhere to write things down, and handing that back every turn,
- * is what a person does effortlessly with a scrap of paper and a model has no
- * equivalent of. It is also honest: the notes are the player's own, not the
- * game's, so nothing leaks by writing them.
+ * The first job is memory. A model holds a plan for as long as the plan is in
+ * its context, and twenty turns of transcript push it out; the first recorded
+ * quest spent eleven turns re-interrogating two characters, having forgotten
+ * there were people it had never met. The notes survive the history window.
+ *
+ * The second is playtest feedback. A player who is stuck because the game is
+ * unfair, rather than because it played badly, is the most valuable thing a
+ * quest can produce, and it can only say so if asked. Nothing leaks by keeping
+ * the notes: they are the player's own, not the game's.
  *
  * Tolerant of a model that ignores the format, because one that does has still
  * told us what it wants to do.
