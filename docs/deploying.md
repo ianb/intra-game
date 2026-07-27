@@ -11,8 +11,8 @@ tests; run `pnpm test` before pushing, or add a checks-only Actions workflow
 later.
 
 Everything below is done once. Steps 1–3 get you a deployed, playable URL;
-steps 4–5 are what make it _yours_ rather than open to the internet, and what
-lets the server hold the model key instead of your browser.
+steps 4–6 put it on your own domain, make it _yours_ rather than open to the
+internet, and let the server hold the model key instead of your browser.
 
 ---
 
@@ -24,6 +24,8 @@ lets the server hold the model key instead of your browser.
 | A Workers Build connection | The Worker → Settings → Build      | Deploys on push                                                                 |
 | An AI Gateway              | AI → AI Gateway                    | The model calls go through it; gives you billing limits and logs                |
 | An API token               | My Profile → API Tokens            | Lets the Worker call the gateway                                                |
+| A provider key             | The gateway → provider keys        | The gateway routes to Anthropic rather than being it                            |
+| A custom domain (optional) | The Worker → Domains & Routes      | Serves the game somewhere you chose                                             |
 | An Access application      | Zero Trust → Access → Applications | Makes the game yours alone, and gives the server a verified identity per player |
 
 ---
@@ -88,24 +90,8 @@ Worker → **Settings** → **Variables and Secrets** → add
 | `GATEWAY_MODEL`       | optional; defaults to `anthropic/claude-haiku-4-5` |
 | `GATEWAY_FLASH_MODEL` | optional; a cheaper model for mechanical prompts   |
 
-### The provider key
-
-The gateway routes to a provider; it isn't one. A model id of
-`anthropic/claude-haiku-4-5` means Anthropic still has to be paid, and
-`cf-aig-authorization` only gets a request as far as Cloudflare. Two ways to
-supply the rest, and the Worker handles both:
-
-- **BYOK** — store an Anthropic key in the gateway (your gateway → provider
-  keys, backed by Secrets Store). Requests then carry no provider header at all,
-  which is what the Worker sends by default.
-- **The player's own key** — passed through as `Authorization`, so a player pays
-  for their own play while the gateway still logs it against your account.
-
-With neither, calls fail at the provider rather than at Cloudflare, so the error
-names Anthropic and not the gateway.
-
-Both are in `provider/model` form. The game runs several prompts per turn and
-they aren't the same kind of work: a character deciding what to say is the game,
+The two model vars are in `provider/model` form. The game runs several prompts
+per turn and they aren't the same kind of work: a character deciding what to say is the game,
 while working out that "look at the statues" was an examine rather than speech
 is bookkeeping. A prompt declares which **tier** it needs and these two vars
 decide what fulfils it; leaving `GATEWAY_FLASH_MODEL` unset means one model does
@@ -122,6 +108,22 @@ character prompts reuse 86% of their text once the player is named, while
 Which prompts _should_ be on the small tier is a measurement, not a guess —
 `pnpm evals --model <big> --flash <small>` scores a pair. See
 [evals/README.md](../evals/README.md).
+
+### The provider key
+
+The gateway routes to a provider; it isn't one. A model id of
+`anthropic/claude-haiku-4-5` means Anthropic still has to be paid, and
+`cf-aig-authorization` only gets a request as far as Cloudflare. Two ways to
+supply the rest, and the Worker handles both:
+
+- **BYOK** — store an Anthropic key in the gateway (your gateway → provider
+  keys, backed by Secrets Store). Requests then carry no provider header at all,
+  which is what the Worker sends by default.
+- **The player's own key** — passed through as `Authorization`, so a player pays
+  for their own play while the gateway still logs it against your account.
+
+With neither, calls fail at the provider rather than at Cloudflare, so the error
+names Anthropic and not the gateway.
 
 ## 3. Create the API token
 
@@ -157,7 +159,31 @@ At this point `/api/*` still returns 404, because Access isn't configured. That
 is deliberate: the API fails closed rather than open. Step 4 is what turns it
 on.
 
-## 4. Put Cloudflare Access in front
+## 4. Point your domain at it (optional, but do it before Access)
+
+Skip this and the game lives at `intra-game.<subdomain>.workers.dev`, which
+works fine. If you want your own domain, do it **before** step 5: an Access
+application is bound to a hostname, so setting Access up first means redoing it.
+
+The domain has to be on Cloudflare — a Worker custom domain can only be added
+for a zone in the same account.
+
+1. **Websites** → **Add a site**, enter the domain, and change the nameservers
+   at your registrar to the two Cloudflare gives you. Activation is usually
+   minutes but can take longer.
+2. Worker → **Settings** → **Domains & Routes** → **Add** → **Custom domain**.
+   Add the apex and `www` if you want both; Cloudflare creates the DNS records
+   and the certificate.
+
+**The workers.dev URL keeps working**, which matters for step 5: an Access
+application covering only your domain leaves that hostname uncovered. The Worker
+itself still fails closed there — it verifies the Access JWT on every path once
+configured, so an uncovered hostname gets 401 rather than a free game — but a
+bare 401 is a worse door than a login page. Either add both hostnames to the one
+Access application, or turn the workers.dev route off under **Domains &
+Routes**.
+
+## 5. Put Cloudflare Access in front
 
 This does two jobs: it keeps the game private to you, and it gives the server a
 _verified_ email per request, which is what sessions are keyed by. Without it
@@ -224,7 +250,7 @@ from that email. Two things to weigh before doing it — Zero Trust bills by sea
 above its free allowance (check the current limit), and every server session
 runs on _your_ AI Gateway token unless the player supplies their own key.
 
-## 5. Play on the server
+## 6. Play on the server
 
 Reload the deployed URL. Open **Settings** and click **Play on the server** —
 the tab reloads, creates a session, and from then on the engine runs in a
