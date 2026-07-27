@@ -143,12 +143,25 @@ const reply = [
   "NOTES",
   "- Frida says the Archivist has records.",
   "- Not yet met: Harold, Lily.",
+  "SNAG",
+  "Nothing has told me where any of these people are.",
   "NEXT",
   "go to the archive console",
 ].join("\n");
 const parsed = parseReply(reply);
-[parsed.input, parsed.notes?.includes("Not yet met")].join(" | ");
-=> go to the archive console | true
+[parsed.input, parsed.notes?.includes("Not yet met"), parsed.snag].join(" | ");
+=> go to the archive console | true | Nothing has told me where any of these people are.
+```
+
+The snag is separate from the notes because it is the thing worth aggregating: a
+run that stalls usually says why, and collecting those across turns beats
+reverse-engineering it from a turn log. Most turns have nothing to report, and
+"none" is not a report:
+
+``` continue
+const quiet = parseReply("NOTES\n- looking around\nSNAG\nnone\nNEXT\ngo north");
+[quiet.snag, quiet.notes].map(String).join(" | ");
+=> undefined | - looking around
 ```
 
 A model that ignores the format has still said what it wants to do, so the

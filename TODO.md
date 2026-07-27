@@ -55,6 +55,12 @@ original write-up, plus whatever the last few sessions turned up.
   room. Nothing happened, and it spent its last five turns wandering. Options
   are for Marta to signal the precondition when accused in company ("not here"),
   or to relax it — both are content changes, so they want the author.
+- **Score evals on a backend without an assistant wrapper** `tooling` `S` — every
+  number recorded so far is from `--backend cli`, which appends the game's prompt
+  to Claude Code's own agent instructions. That is a coding assistant roleplaying,
+  not the model given the game's prompt, and it leaks: two quest runs produced
+  room descriptions addressing the operator. Re-running the scenarios through
+  OpenRouter would say how much of the difference is the wrapper.
 - **More quests, and a baseline** `tooling` `M` — `pnpm evals:play` now lets a
   model play Ink and Echo from the `briefed` checkpoint, scored on milestones.
   One quest and one run is an anecdote: it needs the other mysteries, and enough
@@ -240,11 +246,15 @@ rediscovers them from scratch.
 - **Parsing is ambiguous.** The tag protocol is permissive by design, which
   means some model output is silently interpreted as something other than what
   it meant.
-- **Breaking frame inside a well-formed tag is invisible.** A quest run produced
-  a room description reading "I need clarification: do you want me to write the
-  game scene description as originally instructed...". The markup was fine, so
+- **Breaking frame inside a well-formed tag is invisible.** Two quest runs
+  produced room descriptions that addressed the operator — one asking to "point
+  me to a file in the project where tags are defined". The markup was fine, so
   the protocol checks saw nothing, and the `in-character` scenario only reads
-  Ama's dialogue — not descriptions, and not other characters.
+  Ama's dialogue, not descriptions and not other characters. Both sightings were
+  on the cli backend, which appends the game prompt to Claude Code's own agent
+  prompt, so it is probably the assistant showing through rather than the game's
+  prompts failing — but nothing currently distinguishes the two, which is the
+  actual problem.
 - **Context bloat.** Every prompt carries more history than it needs, and the
   history is the same for every character.
 - **Event serialization is load-bearing.** The log is the save format, the

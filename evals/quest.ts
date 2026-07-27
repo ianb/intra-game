@@ -42,6 +42,8 @@ export interface QuestTurn {
   input: string;
   /** The player's notebook at this point — how it understood the game. */
   notes: string;
+  /** Something it thought was broken or unguessable; see llmplayer.ts. */
+  snag?: string;
   saw: string[];
   /** Milestones true after this turn that weren't before. */
   reached: string[];
@@ -63,6 +65,15 @@ export interface QuestResult {
   repeats: number;
   /** Turns where the first reply wasn't a command; see llmplayer.ts. */
   fumbles: number;
+  /**
+   * Every moment the player thought the game was broken or unguessable.
+   *
+   * The most valuable thing a quest produces, and the reason the player is
+   * asked to report rather than only to remember. A run that stalls usually
+   * says why here, in the player's own words, which beats reverse-engineering
+   * it from a turn log.
+   */
+  snags: { turn: number; text: string }[];
   dropped: string[];
   ms: number;
   log: QuestTurn[];
@@ -162,7 +173,7 @@ export async function runQuest({
       // Only what happened since the player last looked, so the transcript
       // isn't re-sent whole every turn.
       const view = playerView(model, cursor);
-      const { input, notes, fumbled } = await nextCommand(view);
+      const { input, notes, snag, fumbled } = await nextCommand(view);
       if (fumbled) {
         fumbles++;
       }
@@ -191,6 +202,7 @@ export async function runQuest({
         n,
         input,
         notes,
+        ...(snag ? { snag } : {}),
         saw: playerView(model, cursor).transcript,
         reached: justReached,
       };
@@ -221,6 +233,9 @@ export async function runQuest({
     roomsVisited: [...rooms],
     repeats,
     fumbles,
+    snags: log.flatMap((turn) =>
+      turn.snag ? [{ turn: turn.n, text: turn.snag }] : [],
+    ),
     dropped: [...new Set(classifyWarnings(captured.warnings).dropped)],
     ms: Date.now() - started,
     log,

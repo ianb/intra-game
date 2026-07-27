@@ -78,10 +78,15 @@ turn rather than assuming you will remember.
 
 YOUR REPLY
 
-Reply in exactly this shape, every turn:
+Reply in exactly this shape, every turn. All three parts, every time.
 
 NOTES
-(your notes for the reader, as above)
+(what you have worked out, what you are trying next, who you have not met, where
+you have not been)
+SNAG
+(anything this turn that seemed broken, unfair, or impossible to guess — a dead
+end, a character who would not answer, an obvious action the game ignored, text
+that looked like a mistake. Write "none" if there was nothing.)
 NEXT
 (one line: the command or speech you want to try, and nothing else)
 
@@ -93,8 +98,8 @@ NOTES
 - Not yet met: Harold, Lily, Gloria, Marta.
 - Not yet visited: Static Garden, Activity Hub.
 - Trying the Archivist first, then tracking down Harold and Lily.
-- Note for the reader: nothing so far has told me where anyone is. I am
-  guessing at rooms.
+SNAG
+Nothing has told me where any of these people are. I am guessing at rooms.
 NEXT
 go to the archive console
 `;
@@ -104,6 +109,8 @@ export interface PlayerTurn {
   raw: string;
   /** The player's notebook after this turn; see parseReply. */
   notes: string;
+  /** Something the player thought was broken or unguessable this turn. */
+  snag?: string;
   /** True when the first reply wasn't a command and had to be asked for again. */
   fumbled: boolean;
 }
@@ -130,22 +137,41 @@ export interface PlayerTurn {
  * Tolerant of a model that ignores the format, because one that does has still
  * told us what it wants to do.
  */
-export function parseReply(raw: string): { notes?: string; input: string } {
+export function parseReply(raw: string): {
+  notes?: string;
+  snag?: string;
+  input: string;
+} {
   const lines = raw.split("\n");
-  const nextAt = lines.findIndex((line) => /^\s*NEXT\s*:?\s*$/i.test(line));
+  // A section header: the word alone on a line, optionally with a colon.
+  const at = (word: string) =>
+    lines.findIndex(
+      (line) => line.trim().replace(/:$/, "").toUpperCase() === word,
+    );
+  const nextAt = at("NEXT");
   if (nextAt === -1) {
     return { input: extractCommand(raw) };
   }
-  const notesAt = lines.findIndex((line) => /^\s*NOTES\s*:?\s*$/i.test(line));
-  const notes =
-    notesAt !== -1 && notesAt < nextAt
-      ? lines
-          .slice(notesAt + 1, nextAt)
+  const notesAt = at("NOTES");
+  const snagAt = at("SNAG");
+  const between = (from: number, to: number) =>
+    from === -1 || from >= to
+      ? undefined
+      : lines
+          .slice(from + 1, to)
           .join("\n")
-          .trim()
+          .trim() || undefined;
+
+  const notes = between(notesAt, snagAt === -1 ? nextAt : snagAt);
+  const snagText = between(snagAt, nextAt);
+  // "none" is the overwhelmingly common answer and is not a report.
+  const snag =
+    snagText && !/^(none|n\/a|nothing)\b\.?$/i.test(snagText.trim())
+      ? snagText
       : undefined;
   return {
     ...(notes ? { notes } : {}),
+    ...(snag ? { snag } : {}),
     input: extractCommand(lines.slice(nextAt + 1).join("\n")),
   };
 }
@@ -231,6 +257,12 @@ export function llmPlayer(chat: ChatFn, options: { limit?: number } = {}) {
     if (parsed.notes) {
       notes = parsed.notes;
     }
-    return { input: parsed.input, raw, notes, fumbled };
+    return {
+      input: parsed.input,
+      raw,
+      notes,
+      ...(parsed.snag ? { snag: parsed.snag } : {}),
+      fumbled,
+    };
   };
 }

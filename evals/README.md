@@ -244,7 +244,14 @@ people it had never met.
 The second is playtest feedback, and it is the more interesting one. A player
 stuck because the game is unfair, rather than because it played badly, is the
 most valuable thing a quest can produce — and it can only tell you so if it has
-been asked to. The runner prints the closing report for that reason.
+been asked to. So each turn also carries a **SNAG**: anything that seemed
+broken, unfair or impossible to guess, or "none". Those are collected across the
+run and printed at the end, along with the closing notes.
+
+It works. The first run under this framing reported: _"Game keeps asking about
+'game tags' format — unclear what this means or if it's an error."_ It was
+right, and it was the cli backend leaking (see Backends below) — a real defect
+found by the player rather than by someone reading a turn log afterwards.
 
 **What the player sees is the whole design.** The engine holds the answer in
 plain English — one hint begins "Marta is actually Ink and Echo" — so a view
@@ -262,6 +269,19 @@ are run deliberately rather than as part of `pnpm evals`.
 ## Backends
 
 `--backend cli` (the default) shells out to `claude -p`, which needs no API key
-and is what recorded the playtest cassettes. `--backend openrouter` reads
+and is what recorded the playtest cassettes.
+
+**Caveat worth knowing before trusting a number.** `cliChat` passes the game's
+system prompt with `--append-system-prompt`, so the CLI's own agent instructions
+are still in front of it. The model is a coding assistant being asked to roleplay
+rather than a bare model given the game's prompt, and it occasionally shows: two
+quest runs produced room descriptions that broke frame to address the operator,
+one of them asking to "point me to a file in the project where tags are defined".
+That is the coding agent talking, not the game failing.
+
+The protocol checks do not catch it — the markup is well-formed — and the
+`in-character` scenario only reads Ama's dialogue, not descriptions. So the cli
+backend is right for cheap iteration and wrong for a number you want to publish;
+`--backend openrouter` gives the model without the assistant wrapper. `--backend openrouter` reads
 `OPENROUTER_API_KEY` from the environment and takes OpenRouter model ids, which
 is how to score models outside the Claude family.
