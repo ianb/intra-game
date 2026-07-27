@@ -18,8 +18,8 @@ import { effect, signal, useSignal } from "@preact/signals-react";
 import { model } from "./model";
 import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 import {
+  authState,
   deleteServerSession,
-  fetchAuth,
   listServerSessions,
   newServerSession,
   remoteSession,
@@ -133,12 +133,7 @@ export function Settings() {
  */
 function ServerPlay() {
   useSignals();
-  const auth = useSignal<AuthState | null>(null);
-  useEffect(() => {
-    void fetchAuth().then((state) => {
-      auth.value = state;
-    });
-  }, [auth]);
+  const auth = authState;
   const session = remoteSession.value;
 
   // Nothing to offer: this deployment has no server to play on.

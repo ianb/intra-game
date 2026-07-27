@@ -21,7 +21,7 @@ import { Help } from "./help";
 import { Input } from "./inputbox";
 import { Settings } from "./settings";
 import { ZoomOverlay } from "@/components/zoom";
-import { initSession, playTurn } from "./session";
+import { initSession, loadAuth, playTurn } from "./session";
 import { model } from "./model";
 import { openHelp, openSettings, seenHelp, soundOn } from "./uistate";
 import { twMerge } from "tailwind-merge";
@@ -30,6 +30,9 @@ import { useSignals } from "@preact/signals-react/runtime";
 export default function Home() {
   useSignals();
   useEffect(() => {
+    // Both at startup: the session decides what this tab plays, and the auth
+    // state decides what to offer when it can't play anything.
+    void loadAuth();
     void initSession();
   }, []);
   return (

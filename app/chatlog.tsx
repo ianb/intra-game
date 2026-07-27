@@ -25,6 +25,7 @@ import { ColorizedText } from "./colorizedtext";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { TimePeriod } from "./hud";
 import { model } from "./model";
+import { authState, signIn } from "./session";
 import { openSettings, showInternals } from "./uistate";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { renderStoryAction } from "./renderstoryaction";
@@ -53,23 +54,49 @@ export function ChatLog() {
           <pre className="text-sm whitespace-pre-wrap p-2">
             {lastLlmError.value}
           </pre>
-          {lastLlmErrorType.value === "openrouter" && (
-            <div className="flex justify-center">
-              <Button
-                onClick={() => {
-                  openSettings.value = true;
-                }}
-              >
-                ⚙ Open settings
-              </Button>
-            </div>
-          )}
+          {lastLlmErrorType.value === "openrouter" && <NoModelAccess />}
         </div>
       )}
       <StreamingLine />
       {model.runningSignal.value && !model.streaming.value && (
         <CalculatingThrobber />
       )}
+    </div>
+  );
+}
+
+/**
+ * What to do when the game can't reach a model.
+ *
+ * Local play needs the player's own OpenRouter key, and a first-time visitor
+ * doesn't have one — so on a deployment that can host games, this error is the
+ * first and only moment they have a reason to sign in. Offering it anywhere
+ * else (it used to be in Settings alone) means the dead end comes first and the
+ * way out is somewhere they had no reason to look.
+ */
+function NoModelAccess() {
+  useSignals();
+  const auth = authState.value;
+  const canSignIn = auth?.loginUrl && !auth.email;
+  return (
+    <div className="flex justify-center gap-2 pb-2">
+      {canSignIn && (
+        <Button
+          className="bg-blue-700"
+          onClick={() => {
+            signIn(auth.loginUrl!);
+          }}
+        >
+          Sign in with Google to play here
+        </Button>
+      )}
+      <Button
+        onClick={() => {
+          openSettings.value = true;
+        }}
+      >
+        ⚙ {canSignIn ? "Or use your own key" : "Open settings"}
+      </Button>
     </div>
   );
 }

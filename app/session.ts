@@ -1,6 +1,7 @@
 import type { StreamingTagState } from "@/lib/game/model";
 import { lastLlmError } from "@/lib/llm";
 import { persistentSignal } from "@/lib/persistentsignal";
+import { signal } from "@preact/signals-react";
 import { lastTurnInput, lastTurnLength } from "@/lib/game/rewind";
 import { checkpointFromUrl, loadCheckpoint } from "./checkpoints";
 import { model } from "./model";
@@ -108,6 +109,22 @@ export interface AuthState {
   email: string | null;
   /** Where to send the browser to sign in, when that's a thing here. */
   loginUrl: string | null;
+}
+
+/**
+ * Who the server says this is, once asked.
+ *
+ * A signal rather than a per-component fetch because more than one place needs
+ * it, and the interesting one isn't Settings: a first-time visitor with no
+ * model key of their own hits the "no OpenRouter key" error before they have
+ * any reason to open Settings, and that error is exactly where signing in is
+ * the answer.
+ */
+export const authState = signal<AuthState | null>(null);
+
+/** Ask once, at startup. Failure leaves it null, which shows nothing. */
+export async function loadAuth(): Promise<void> {
+  authState.value = await fetchAuth();
 }
 
 /**
