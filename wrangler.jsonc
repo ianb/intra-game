@@ -43,6 +43,11 @@
     "ACCESS_TEAM_DOMAIN": "",
     "ACCESS_AUD": "",
     "GOOGLE_CLIENT_ID": "369663211714-da9tf8klvfs450kea9ji0rtsk00it7hd.apps.googleusercontent.com",
+    // The gateway's name is part of its URL, so it is configuration rather
+    // than a label. The account id is an identifier that appears in those
+    // URLs; the token that actually authorises anything is a secret.
+    "CF_ACCOUNT_ID": "bb530e5839d03156b34799ccb702c28a",
+    "CF_GATEWAY_ID": "intra",
   },
   "assets": {
     "directory": "./dist",
