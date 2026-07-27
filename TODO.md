@@ -55,6 +55,29 @@ original write-up, plus whatever the last few sessions turned up.
   room. Nothing happened, and it spent its last five turns wandering. Options
   are for Marta to signal the precondition when accused in company ("not here"),
   or to relax it — both are content changes, so they want the author.
+- **A reserved style for real progress** `ui` `M` — the game knows when
+  something concrete happened: a mystery moved state, a restriction lifted, a
+  task got crossed off, an action attempt succeeded. The player is told none of
+  that distinctly. It arrives as more prose, in the same voice as everything
+  else, so "you worked it out" reads exactly like "a character said something
+  atmospheric".
+
+  The quest runs made this measurable. Sonnet accused Marta, got a reaction
+  indistinguishable from success, and stopped pushing; earlier it treated
+  evasiveness as confirmation because nothing else was available to confirm
+  against. A player that cannot tell progress from noise stops being able to
+  plan, which is most of what went wrong in every run so far.
+
+  Both kinds of player benefit. A human reading a wall of atmospheric prose has
+  the same problem and just complains about it less. The LLM player is useful
+  here as an instrument: what it visibly struggles with is what is
+  under-exposed for everyone.
+
+  The tension to design against is that a flashing "CORRECT!" would drain the
+  fiction, and Intra's whole register is that nothing is ever quite confirmed.
+  So it wants to be in the game's voice — Ama noticing, a task ticking over, the
+  interface marking it — rather than a scoreboard.
+
 - **Score evals on a backend without an assistant wrapper** `tooling` `S` — every
   number recorded so far is from `--backend cli`, which appends the game's prompt
   to Claude Code's own agent instructions. That is a coding assistant roleplaying,
