@@ -23,6 +23,9 @@ Prompts `956511dcfce2`.
 | `z-ai/glm-5.2` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
 | `openai/gpt-5-nano` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
 | `openai/gpt-5.4-nano` | 5/7 | 4/5 | 3/4 | 5/5 | 4/5 | **21/26** |
+| `openai/gpt-5-nano` | 2/7 | 1/5 | 3/4 | 5/5 | 4/5 | **15/26** |
+| `openai/gpt-5-nano` | 6/7 | 4/5 | 3/4 | 5/5 | 4/5 | **22/26** |
+| `openai/gpt-5.4-nano` | 5/7 | 5/5 | 3/4 | 5/5 | 5/5 | **23/26** |
 
 What failed:
 
@@ -42,6 +45,24 @@ What failed:
 - `openai/gpt-5.4-nano` movement/protocol: the engine never had to discard a tag the model emitted
 - `openai/gpt-5.4-nano` in-character/protocol: the engine never had to discard a tag the model emitted
 - `openai/gpt-5.4-nano` task-list/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5-nano` intake/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5-nano` intake/no-dead-turns: every turn produced dialog, description or action
+- `openai/gpt-5-nano` intake/name: captured the player's name from conversation
+- `openai/gpt-5-nano` intake/pronouns: inferred pronouns rather than leaving the default
+- `openai/gpt-5-nano` intake/profession: recorded the profession the player mentioned
+- `openai/gpt-5-nano` movement/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5-nano` movement/no-dead-turns: every turn produced dialog, description or action
+- `openai/gpt-5-nano` movement/intake-completed: got far enough through intake for an exit to exist
+- `openai/gpt-5-nano` movement/left-intake: the player is no longer in the room they started in
+- `openai/gpt-5-nano` in-character/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5-nano` task-list/no-dead-turns: every turn produced dialog, description or action
+- `openai/gpt-5-nano` intake/pronouns: inferred pronouns rather than leaving the default
+- `openai/gpt-5-nano` movement/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5-nano` in-character/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5-nano` task-list/protocol: the engine never had to discard a tag the model emitted
+- `openai/gpt-5.4-nano` intake/pronouns: inferred pronouns rather than leaving the default
+- `openai/gpt-5.4-nano` intake/profession: recorded the profession the player mentioned
+- `openai/gpt-5.4-nano` in-character/protocol: the engine never had to discard a tag the model emitted
 
 ## 2026-07-25
 
@@ -57,30 +78,3 @@ What failed:
 
 - `claude-haiku-4-5-20251001` intake/protocol: the engine never had to discard a tag the model emitted
 
-## A correction on cost, 2026-07-27
-
-The per-turn prices first reported alongside these scores were wrong, and wrong
-in a way that changed the answer. They assumed ~600 completion tokens for a
-whole turn, taken from one measured turn on Haiku.
-
-Several of these models reason before answering. Asked for a single tag, from a
-43-token prompt, gpt-5-nano emitted 776 completion tokens of which 640 were
-reasoning; glm-4.7 emitted 526 with 487 reasoning; gpt-5.4-nano emitted 48 with
-none. That is most of the cost and all of the latency.
-
-Recomputed with measured output volume, over three calls and ~3200 prompt
-tokens per turn:
-
-| model | score | out tok/turn | $/turn | turns per $1 |
-| --- | --- | --- | --- | --- |
-| gpt-5-nano | 26/26 | 2328 | 0.00109 | 917 |
-| gpt-5.4-nano | 21/26 | 144 | 0.00082 | 1221 |
-| glm-4.7 | 26/26 | 1578 | 0.00404 | 248 |
-| glm-5.2 | 26/26 | 1578 | 0.00629 | 159 |
-| haiku-4.5 | 26/26 | 600 | 0.00619 | 161 |
-
-glm-4.7 was reported as 2.7x cheaper than Haiku and is 1.5x; glm-5.2 was
-reported as cheaper and is not.
-
-The evals record wall-clock but not tokens, which is why this took a separate
-measurement to notice. Recording usage per scenario would have shown it.
