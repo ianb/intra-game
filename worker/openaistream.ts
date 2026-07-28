@@ -58,9 +58,10 @@ export interface StreamConfig {
    *
    * AI Gateway does work out what a call cost — it is in the gateway's logs and
    * analytics, computed from the same token counts — but it reports that to its
-   * dashboard, not to the caller. There is no documented response header
-   * carrying it, and `cf-aig-custom-cost` goes the other way: it tells the
-   * gateway what your negotiated rate is, for its own records.
+   * dashboard, not to the caller. Checked against a real gateway rather than
+   * inferred from the docs: a live request returns no `cf-aig-*` header at all.
+   * `cf-aig-custom-cost` goes the other way, telling the gateway your negotiated
+   * rate for its own records.
    *
    * The quota decision happens inline, before a turn starts, so it needs a
    * number now. Without one it would meter every turn at zero and never stop

@@ -380,6 +380,13 @@ policy covers the whole worker.
 
 ## What a player may spend
 
+> **Set `GATEWAY_PRICE_IN` and `GATEWAY_PRICE_OUT`** whenever you change
+> `GATEWAY_MODEL`, in dollars per million tokens. The quota is denominated in
+> dollars and AI Gateway does not return a cost to the caller — a live request
+> comes back with no `cf-aig-*` headers at all, so the figure it shows in
+> analytics is not reachable from the Worker. With the prices unset every turn
+> meters at zero and the limit never fires.
+
 The gateway's own cap bounds the bill but not who consumes it: one enthusiastic
 stranger can spend the month's allowance in an afternoon, and everyone else gets
 a dead site until it resets. A total cap turns an unbounded-money problem into a
