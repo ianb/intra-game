@@ -45,6 +45,23 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **Finish removing the browser-side engine** `ui` `M` — the frontend is a view
+  now: it folds the server's events into a world and renders them, and the one
+  Model it holds throws if anything asks it to call a provider. What is left is
+  the wreckage of the old mode. `lib/llm.ts` still carries a whole OpenRouter
+  client with `dangerouslyAllowBrowser`, `components/modelselector.tsx` and
+  `components/openrouter.tsx` and the `/openrouter` callback route still exist,
+  and `Model`'s constructor still defaults to that client — so a component can
+  still reach a provider by forgetting to pass a chat function. Deleting the
+  client is the change that makes the rule structural rather than a convention.
+
+- **A player's own key, on the server** `engine` `S` — the Worker can already
+  store a per-session credential and send it as the provider key, and the quota
+  exempts anyone who has one. No client ever sends it, so that exemption is
+  currently unreachable and the quota doctest describes a path nothing can take.
+  Either wire it up — which means holding people's API keys, and promising to
+  keep them safe — or take the exemption out.
+
 - **Ink and Echo can't be won when you get it right** `content` `M` — Marta
   confesses only if accused **and** alone with the player and Ama. Nothing tells
   the player that, and the failure mode is indistinguishable from the success

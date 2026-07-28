@@ -1,96 +1,67 @@
 # When the composer will take a turn
 
-Typing was always accepted and the failure came afterwards, as an error about an
-OpenRouter API key — which spends a first-time player's opening minute on a
-message about someone else's API. The composer now asks first, and says which of
-the two missing things it is.
+There used to be two engines. The browser could play a whole game on the
+player's own OpenRouter key, and the server could play one on its own — two sets
+of rules, and a key in the settings panel that meant something different
+depending on which mode the tab happened to be in.
 
-The rule has to fail in the *permissive* direction when it isn't sure. A wrong
-"you can't play" locks out someone who can, and they have no way to argue with
-it.
+There is one engine now, on the server, and the browser is a view of it. So the
+only question left is whether this tab has a game there.
 
 ```ts setup
 import { playable } from "../app/session.js";
 
-const google = { mode: "google", email: null, loginUrl: "/auth/login" };
+const signedOut = { mode: "google", email: null, loginUrl: "/auth/login" };
 const signedIn = { mode: "google", email: "player@example.com", loginUrl: "/auth/login" };
-const local = { mode: "none", email: null, loginUrl: null };
 const say = (r) => `${r.ok ? "yes" : "no"}${r.why ? ": " + r.why : ""}`;
 ```
 
-## Local play needs the player's own key
-
-A signed-out visitor no longer reaches the composer at all — signing in is the
-only way into a deployment that has a door, and this used to be where they
-learned that. It still matters for the case that remains: signed in, but the
-server game failed to start, so the tab fell back to local play.
+## Signed in, with a game
 
 ```ts
-say(playable({ auth: google, session: null, hasKey: false }));
-=> no: Sign in to play, or add your own model key in settings.
+say(playable({ auth: signedIn, session: "abc" }));
+=> yes
 ```
 
-With a key, it doesn't matter who you are — the turn runs here, on your account.
+## Signed out
 
-``` continue
-[
-  playable({ auth: google, session: null, hasKey: true }).ok,
-  playable({ auth: null, session: null, hasKey: true }).ok,
-].join(" ");
-=> true true
-```
-
-Where signing in isn't offered at all, saying so would be a dead end rather than
-an instruction:
-
-``` continue
-say(playable({ auth: local, session: null, hasKey: false }));
-=> no: Add your own model key in settings to play.
-```
-
-## Server play needs an identity
-
-The key stops mattering — the server has its own — and the question becomes who
-is spending it.
+The composer is not where anyone should learn this — a signed-out visitor gets
+the sign-in screen instead of the game — but it stays correct for the moment
+between a session expiring and the page noticing.
 
 ```ts
-[
-  say(playable({ auth: google, session: "abc", hasKey: true })),
-  say(playable({ auth: signedIn, session: "abc", hasKey: false })),
-].join(" | ");
-=> no: Sign in to play this game. | yes
+say(playable({ auth: signedOut, session: null }));
+=> no: Sign in to play.
 ```
 
-A deployment with no identity source, and the local development identity, both
-play without signing in — there is nobody to be:
+Signing in is offered where it would help, and not otherwise:
 
 ``` continue
 [
-  playable({ auth: local, session: "abc", hasKey: false }).ok,
-  playable({ auth: { mode: "dev", email: "dev@localhost", loginUrl: null }, session: "abc", hasKey: false }).ok,
-].join(" ");
-=> true true
+  playable({ auth: signedOut, session: null }).loginUrl,
+  playable({ auth: signedIn, session: null }).loginUrl,
+].map(String).join(" ");
+=> /auth/login null
+```
+
+## Signed in, no game
+
+Starting one is automatic, so this means it failed — which is worth saying
+rather than showing a composer that swallows what you type.
+
+```ts
+say(playable({ auth: signedIn, session: null }));
+=> no: No game on the server yet — try reloading.
 ```
 
 ## Before the answer arrives
 
-`/api/auth` is a fetch, so for the first moment of the page `auth` is null. That
-must not read as "signed out" and lock the composer, because it resolves to
-"signed in" a moment later and the player would have watched the game refuse
-them for no reason.
+`/api/auth` is a fetch, so `auth` is null for the first moment of the page. That
+must not read as "signed out": it resolves a beat later, and a composer that
+refuses and then changes its mind is worse than one that accepts a keystroke
+early.
 
 ```ts
-[
-  playable({ auth: null, session: "abc", hasKey: false }).ok,
-  playable({ auth: null, session: null, hasKey: true }).ok,
-].join(" ");
-=> true true
-```
-
-The one case still refused while unknown is local play with no key, and that is
-not a guess — no key is no key, whoever you turn out to be.
-
-``` continue
-playable({ auth: null, session: null, hasKey: false }).ok;
-=> false
+playable({ auth: null, session: null }).ok;
+=> true
 ```

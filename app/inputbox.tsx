@@ -5,7 +5,6 @@
 
 import React, { KeyboardEvent, useEffect, useRef } from "react";
 import { A, Button, CheckButton } from "@/components/input";
-import { customEndpoint } from "@/lib/llm";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import {
   authState,
@@ -18,7 +17,6 @@ import {
   undoTurn,
 } from "./session";
 import { model } from "./model";
-import { openrouterCode } from "@/components/openrouter";
 import { composer, openSettings } from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
@@ -47,7 +45,6 @@ export function Input() {
   const can = playable({
     auth: authState.value,
     session: remoteSession.value,
-    hasKey: Boolean(openrouterCode.value || customEndpoint.value),
   });
   async function onSubmit() {
     if (model.runningSignal.value || !can.ok) {

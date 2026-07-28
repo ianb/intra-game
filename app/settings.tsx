@@ -1,22 +1,18 @@
 /**
- * The settings overlay: model choice, the OpenRouter key, and the log.
+ * The settings overlay: your games on the server, what they have cost, and
+ * which build this is.
+ *
+ * It used to configure an LLM client that ran in this tab — a model, an
+ * OpenRouter key, a custom endpoint. The engine lives on the server, so those
+ * are the server's settings, and a view offering them was offering to configure
+ * something it does not own.
  */
 
 import { useEffect } from "react";
 import { Costs } from "./costs";
+import { A, Button } from "@/components/input";
+import { useSignal } from "@preact/signals-react";
 import { twMerge } from "tailwind-merge";
-import {
-  customEndpoint,
-  lastLlmError,
-  lastLlmErrorType,
-  openrouterModel,
-  openrouterSmallModel,
-} from "@/lib/llm";
-import { A, Button, CheckButton } from "@/components/input";
-import { ModelSelector } from "@/components/modelselector";
-import { effect, signal, useSignal } from "@preact/signals-react";
-import { model } from "./model";
-import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 import {
   authState,
   deleteServerSession,
@@ -41,83 +37,11 @@ export function Settings() {
           <Costs />
         </div>
 
-        {/* Everything below is optional. A signed-in player already has a game
-            and a model; this is for someone who would rather spend their own
-            OpenRouter credit than the deployment's, or point the game at
-            something else entirely. It is second because it is second. */}
-        <div className="mt-8 pt-4 border-t border-blue-700">
-          <div className="text-sm text-gray-300 mb-4">
-            Optional: play on your own model access instead of the server's.
-          </div>
-          <div className="mt-4">
-            {openrouterCode.value ? (
-              <>
-                You have a code from{" "}
-                <A href="https://openrouter.ai/keys" blank>
-                  OpenRouter.ai
-                </A>
-                : <br />
-                <code>
-                  {openrouterCode.value.slice(0, 12)}...
-                  {openrouterCode.value.slice(-3)}
-                </code>
-                <Button
-                  className="ml-4"
-                  onClick={() => {
-                    openrouterCode.value = null;
-                  }}
-                >
-                  Remove code
-                </Button>
-              </>
-            ) : (
-              <>
-                <div className="mb-4">
-                  To use your own model access, get a code from{" "}
-                  <A href="https://openrouter.ai/" blank>
-                    OpenRouter.ai
-                  </A>
-                </div>
-                <div>
-                  <OpenRouterConnect />
-                </div>
-              </>
-            )}
-          </div>
-          <div className="mt-4">
-            Choose a model:
-            <br />
-            <ModelSelector
-              signal={openrouterModel}
-              freeOnly={!openrouterCode.value}
-            />
-          </div>
-          <div className="mt-4">
-            A cheaper model for the mechanical prompts (optional):
-            <br />
-            <ModelSelector
-              signal={openrouterSmallModel}
-              freeOnly={!openrouterCode.value}
-            />
-            <div className="text-xs text-gray-300 mt-1">
-              Used for interpreting what you typed and resolving what you looked
-              at — not for anything a character says. Leave it unset to use one
-              model for everything.
-            </div>
-          </div>
-          <div className="mt-4">
-            Set a custom endpoint: <br />
-            <input
-              type="text"
-              className="bg-gray-800 text-white p-2 w-2/3"
-              value={customEndpoint.value || ""}
-              onInput={(e) => {
-                customEndpoint.value = (e.target as HTMLInputElement).value;
-              }}
-              placeholder="http://localhost:5001/v1"
-            />
-          </div>
-        </div>
+        {/* Choosing a model, supplying a key and pointing at an endpoint were
+            all here, and all of them configured an LLM client that ran in this
+            tab. The engine lives on the server now, so those are the server's
+            settings — a view offering them would be offering to configure
+            something it doesn't own. */}
       </div>
       <BuildVersion />
       <div className="flex justify-center">

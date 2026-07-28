@@ -277,12 +277,13 @@ export const remoteSession = persistentSignal<string | null>(
 );
 
 /**
- * Whether a turn can go anywhere, and what to do about it if not.
+ * Whether a turn can go anywhere, and what to say if not.
  *
- * Server play needs a signed-in identity; local play needs the player's own
- * model access. The composer used to accept typing in either case and fail
- * afterwards, which spends a player's first impression on an error about an API
- * key. Better to say up front which of the two things is missing.
+ * There used to be two answers, because there were two engines: the browser
+ * could play on the player's own key, or the server could play on its own. So
+ * this had to know which mode the tab was in and what each needed. There is one
+ * engine now, on the server, and the only question left is whether this tab has
+ * a game there.
  */
 export interface Playable {
   ok: boolean;
@@ -295,28 +296,31 @@ export interface Playable {
 export function playable({
   auth,
   session,
-  hasKey,
 }: {
   auth: AuthState | null;
   session: string | null;
-  hasKey: boolean;
 }): Playable {
-  const loginUrl = auth?.loginUrl && !auth.email ? auth.loginUrl : null;
-  if (session) {
-    return auth && !auth.email && auth.mode !== "none" && auth.mode !== "dev"
-      ? { ok: false, why: "Sign in to play this game.", loginUrl }
-      : { ok: true, why: "", loginUrl: null };
-  }
-  if (hasKey) {
+  // Before the answer arrives, assume yes. It resolves in a moment, and a
+  // composer that refuses and then changes its mind is worse than one that
+  // accepts a keystroke early.
+  if (!auth) {
     return { ok: true, why: "", loginUrl: null };
   }
-  return {
-    ok: false,
-    why: loginUrl
-      ? "Sign in to play, or add your own model key in settings."
-      : "Add your own model key in settings to play.",
-    loginUrl,
-  };
+  if (auth.loginUrl && !auth.email) {
+    return {
+      ok: false,
+      why: "Sign in to play.",
+      loginUrl: auth.loginUrl,
+    };
+  }
+  if (!session) {
+    return {
+      ok: false,
+      why: "No game on the server yet — try reloading.",
+      loginUrl: null,
+    };
+  }
+  return { ok: true, why: "", loginUrl: null };
 }
 
 /**
@@ -329,7 +333,8 @@ export function playable({
 export async function playTurn(text: string): Promise<string | undefined> {
   const session = remoteSession.value;
   if (!session) {
-    return model.sendText(text);
+    lastLlmError.value = "No game on the server yet — try reloading.";
+    return undefined;
   }
   try {
     await sendInput(session, text, {
@@ -365,7 +370,7 @@ export async function playTurn(text: string): Promise<string | undefined> {
 export async function undoTurn(): Promise<string> {
   const text = lastTurnInput(model.liveUpdates.value);
   if (!remoteSession.value) {
-    return model.undo();
+    return "";
   }
   if (!text && !lastTurnLength(model.liveUpdates.value)) {
     return "";
