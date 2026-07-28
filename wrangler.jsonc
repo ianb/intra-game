@@ -2,9 +2,9 @@
   // Cloudflare Workers deployment for the game.
   //
   // One Worker serves both halves: Cloudflare serves the client bundle from
-  // ./dist directly, and worker/index.ts handles /api/*. A player can use
-  // either — the engine still runs in the browser against their own OpenRouter
-  // key unless they switch to a server session in Settings.
+  // ./dist directly, and worker/index.ts handles /api/* and /auth/*. The bundle
+  // is only a view; the engine runs in a Durable Object, so every turn is a
+  // request to this Worker.
   //
   // Secrets are NOT here. CF_AIG_TOKEN is set with `wrangler secret put` (or in
   // the dashboard); CF_ACCOUNT_ID and GATEWAY_MODEL are plain vars that a

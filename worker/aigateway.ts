@@ -10,9 +10,14 @@ import type { UsageRecordType } from "../lib/usage";
  * `openai/gpt-5.2`, `workers-ai/@cf/...`) — the same shape OpenRouter uses, so
  * the model ids the game already stores carry over either way.
  *
- * This runs server-side because the gateway token is ours, not the player's. A
- * player may supply their own provider key instead, which is passed through as
- * `Authorization` while the gateway token still identifies the account.
+ * This runs server-side because the gateway token is ours, not the player's.
+ *
+ * No provider key is sent by default, and that is sufficient: with AI Gateway
+ * Unified Billing the account's prepaid credit pays the provider, so
+ * `cf-aig-authorization` both authenticates and settles the call. A gateway
+ * with a stored BYOK key behaves the same way from here. A player who brought
+ * their own key is the exception — it is passed through as `Authorization`, and
+ * the gateway token then only identifies the account.
  *
  * The streaming, the SSE parsing and the usage accounting are in
  * ./openaistream.ts, shared with the OpenRouter backend.

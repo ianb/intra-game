@@ -10,9 +10,10 @@ workflow to maintain. The trade-off is that Workers Builds does not gate on
 tests; run `pnpm test` before pushing, or add a checks-only Actions workflow
 later.
 
-Everything below is done once. Steps 1–3 get you a deployed, playable URL;
-steps 4–6 put it on your own domain, decide who is allowed to play, and let the
-server hold the model key instead of the browser.
+Everything below is done once. Steps 1–3 get the Worker deployed and able to
+call a model; steps 4–6 put it on your own domain and decide who is allowed to
+play. The engine only ever runs on the server, so a deployment is not playable
+until both the model and the sign-in are configured.
 
 ---
 
@@ -24,7 +25,7 @@ server hold the model key instead of the browser.
 | A Workers Build connection    | The Worker → Settings → Build      | Deploys on push                                                  |
 | An AI Gateway                 | AI → AI Gateway                    | The model calls go through it; gives you billing limits and logs |
 | An API token                  | My Profile → API Tokens            | Lets the Worker call the gateway                                 |
-| A provider key                | The gateway → provider keys        | The gateway routes to Anthropic rather than being it             |
+| Credit, or a provider key     | AI Gateway → Unified Billing       | The gateway routes to a provider rather than being one           |
 | A custom domain (optional)    | The Worker → Domains & Routes      | Serves the game somewhere you chose                              |
 | A way to know who a player is | Google OAuth, or Zero Trust Access | Server-side play is keyed to a verified email                    |
 
@@ -59,10 +60,10 @@ in a directory where those paths don't exist. (When callback-box is published,
 all of this can go back to a plain `pnpm install`.)
 
 The first build deploys to `https://intra-game.<your-subdomain>.workers.dev`.
-Open it: the game should load and be playable with your own OpenRouter key,
-because `/api/*` isn't configured yet and the client falls back to running the
-engine in the browser. That's a good checkpoint — stop here and confirm it works
-before adding the server side.
+Open it: the game should load and show a sign-in screen. It cannot be played
+yet, because the browser is only a view — the engine runs in a Durable Object
+and there is neither an identity nor a model configured. Loading without a
+console error is the checkpoint here; steps 2 and 5 are what make it playable.
 
 > **Durable Objects.** Server-side play needs the SQLite-backed Durable Object
 > this Worker declares — one per session, holding that session's event log and
@@ -109,21 +110,33 @@ Which prompts _should_ be on the small tier is a measurement, not a guess —
 `pnpm evals --model <big> --flash <small>` scores a pair. See
 [evals/README.md](../evals/README.md).
 
-### The provider key
+### Paying the provider
 
 The gateway routes to a provider; it isn't one. A model id of
-`anthropic/claude-haiku-4-5` means Anthropic still has to be paid, and
-`cf-aig-authorization` only gets a request as far as Cloudflare. Two ways to
-supply the rest, and the Worker handles both:
+`openai/gpt-5.4-nano` means OpenAI still has to be paid. Three ways to arrange
+that, and the Worker handles all three without a code change:
 
-- **BYOK** — store an Anthropic key in the gateway (your gateway → provider
-  keys, backed by Secrets Store). Requests then carry no provider header at all,
-  which is what the Worker sends by default.
+- **Unified Billing** — buy credit on the gateway (AI Gateway → **Unified
+  Billing**) and `cf-aig-authorization` pays for the call as well as
+  authenticating it. No provider key is stored anywhere and no `Authorization`
+  header is sent, which is exactly what the Worker does by default. Cloudflare
+  takes a 5% fee when you buy credit and no per-token markup on top of the
+  provider's list price. This is what this deployment uses.
+- **BYOK** — store a provider key in the gateway (your gateway → provider keys,
+  backed by Secrets Store). The request looks identical from the Worker's side;
+  the gateway attaches the key.
 - **The player's own key** — passed through as `Authorization`, so a player pays
-  for their own play while the gateway still logs it against your account.
+  for their own play while the gateway still logs it against your account. This
+  one also exempts them from the quota, since there is nothing of yours to meter.
 
-With neither, calls fail at the provider rather than at Cloudflare, so the error
-names Anthropic and not the gateway.
+Unified Billing covers OpenAI, Anthropic, Google AI Studio, Vertex, xAI and
+Groq. It does not cover Workers AI (`@cf/...`), which bills in Neurons on its own
+free tier.
+
+With none of the three, the call fails at the provider rather than at
+Cloudflare, so the error names OpenAI and not the gateway. The Worker passes the
+provider's response body through into the error it raises, so that text reaches
+the player rather than being swallowed.
 
 ## 3. Create the API token
 
@@ -202,9 +215,9 @@ resolving a misconfiguration by opening a gate is the wrong direction.
 
 ### 5a. Google sign-in (a public game)
 
-The game itself stays public: anyone can load it and play in their own browser
-on their own model key, no account needed. Signing in is what buys server-side
-play — games that outlive the browser, on your model budget.
+The page is public, but playing is not: the engine runs on the server, so a
+turn needs an identity to bill and quota. A signed-out visitor gets a sign-in
+screen and nothing else.
 
 In the Google Cloud console, **APIs & Services** → **Credentials** → **Create
 OAuth client ID** → **Web application**:
@@ -308,14 +321,13 @@ runs on _your_ AI Gateway token unless the player supplies their own key.
 
 ## 6. Play on the server
 
-Reload the deployed URL. Open **Settings** and click **Play on the server** —
-the tab reloads, creates a session, and from then on the engine runs in a
-Durable Object with the model key held server-side. The event log lives on the
-server, so it survives closing the tab, and it is the audit trail: everything
-the model produced, in order.
+Reload the deployed URL and sign in. A session is created on first load, and
+from then on the engine runs in a Durable Object with the model key held
+server-side. The event log lives on the server, so it survives closing the tab,
+and it is the audit trail: everything the model produced, in order.
 
-To go back to running the engine in your browser, the same settings panel has
-**Play in this tab instead**.
+**Settings** lists your games and what each has cost. There is no in-browser
+mode to fall back to.
 
 ---
 
