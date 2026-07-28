@@ -70,100 +70,147 @@ function SignInLink() {
   );
 }
 
+/**
+ * The door, for a deployment that has one.
+ *
+ * Letting a signed-out visitor into the game and then explaining that they need
+ * either an account or an OpenRouter key was two ways in and no clear one, and
+ * the first thing they met was a failure. Signing in is now the only way in, and
+ * bringing your own key is something you can do afterwards if you want to.
+ *
+ * A deployment with no identity source is unaffected: there is nothing to sign
+ * in to, and the game runs in the browser as it always has.
+ */
+function SignInGate({ children }: { children: React.ReactNode }) {
+  useSignals();
+  const auth = authState.value;
+  // Still asking. Deliberately blank rather than a spinner or the game: showing
+  // either would mean showing something that changes a moment later.
+  if (!auth) {
+    return null;
+  }
+  if (!auth.loginUrl || auth.email) {
+    return <>{children}</>;
+  }
+  return (
+    <div className="h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-8">
+      <div className="text-2xl mb-2">Intra</div>
+      <div className="text-gray-400 mb-8 text-center max-w-md">
+        A text adventure in a decaying complex, run by an AI who is very glad
+        you asked.
+      </div>
+      <Button
+        className="bg-blue-700 px-6 py-3"
+        onClick={() => {
+          signIn(auth.loginUrl!);
+        }}
+      >
+        Sign in with Google
+      </Button>
+      <div className="text-gray-500 text-sm mt-6 text-center max-w-md">
+        Games are kept on the server, so they survive closing the tab. Signing
+        in is what makes a game yours.
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   useSignals();
   useEffect(() => {
-    // Both at startup: the session decides what this tab plays, and the auth
-    // state decides what to offer when it can't play anything.
-    void loadAuth();
-    void initSession();
+    // Auth first: what this tab plays depends on whether anyone is signed in,
+    // so starting the session before the answer arrives would start the wrong
+    // one and then have to undo it.
+    void loadAuth().then(() => initSession());
   }, []);
   return (
-    <div className="h-screen flex flex-col">
-      <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
-        <span className="flex-shrink">
-          Intra
-          <span className="text-gray-500 text-sm hidden md:inline">
-            {" "}
-            !alpha: save games will break periodically
+    <SignInGate>
+      <div className="h-screen flex flex-col">
+        <div className="bg-gray-800 text-white p-2 fixed w-full top-0 flex justify-between">
+          <span className="flex-shrink">
+            Intra
+            <span className="text-gray-500 text-sm hidden md:inline">
+              {" "}
+              !alpha: save games will break periodically
+            </span>
+            <span className="text-gray-500 text-sm md:hidden"> !alpha</span>
           </span>
-          <span className="text-gray-500 text-sm md:hidden"> !alpha</span>
-        </span>
-        <span className="whitespace-nowrap bg-gray-800">
-          <SignInLink />
-          <Time />
-          <Button
-            className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
-            onClick={() => {
+          <span className="whitespace-nowrap bg-gray-800">
+            <SignInLink />
+            <Time />
+            <Button
+              className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
+              onClick={() => {
+                openHelp.value = false;
+                openSettings.value = !openSettings.value;
+              }}
+            >
+              ⚙
+            </Button>
+            <Button
+              className={twMerge(
+                "bg-inherit py-0 ml-4 px-1 hover:text-cyan-300",
+                soundOn.value ? "" : "opacity-25",
+              )}
+              onClick={() => {
+                soundOn.value = !soundOn.value;
+              }}
+            >
+              🔊
+            </Button>
+            <Button
+              className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
+              onClick={() => {
+                openSettings.value = false;
+                openHelp.value = !openHelp.value;
+              }}
+            >
+              ?
+            </Button>
+          </span>
+        </div>
+
+        {openHelp.value && (
+          <ZoomOverlay
+            className="w-3/4 h-3/4"
+            onDone={() => {
               openHelp.value = false;
-              openSettings.value = !openSettings.value;
+              seenHelp.value = true;
             }}
           >
-            ⚙
-          </Button>
-          <Button
-            className={twMerge(
-              "bg-inherit py-0 ml-4 px-1 hover:text-cyan-300",
-              soundOn.value ? "" : "opacity-25",
-            )}
-            onClick={() => {
-              soundOn.value = !soundOn.value;
-            }}
-          >
-            🔊
-          </Button>
-          <Button
-            className="bg-inherit border border-green-300 rounded-full py-0 px-3 ml-4 hover:bg-green-600"
-            onClick={() => {
+            <Help />
+          </ZoomOverlay>
+        )}
+
+        {openSettings.value && (
+          <ZoomOverlay
+            className="w-3/4 h-3/4"
+            onDone={() => {
               openSettings.value = false;
-              openHelp.value = !openHelp.value;
             }}
           >
-            ?
-          </Button>
-        </span>
-      </div>
+            <Settings />
+          </ZoomOverlay>
+        )}
 
-      {openHelp.value && (
-        <ZoomOverlay
-          className="w-3/4 h-3/4"
-          onDone={() => {
-            openHelp.value = false;
-            seenHelp.value = true;
-          }}
-        >
-          <Help />
-        </ZoomOverlay>
-      )}
-
-      {openSettings.value && (
-        <ZoomOverlay
-          className="w-3/4 h-3/4"
-          onDone={() => {
-            openSettings.value = false;
-          }}
-        >
-          <Settings />
-        </ZoomOverlay>
-      )}
-
-      <div className="flex flex-1 pt-12 md:overflow-hidden flex-col md:flex-row">
-        <div className="w-full md:w-2/3 flex flex-col p-4 bg-gray-900 text-white">
-          <ScrollOnUpdate
-            className="flex-1 overflow-y-auto p-2"
-            watch={model.updates.value}
-            watch2={lastLlmError.value}
-            watch3={model.runningSignal.value}
-          >
-            <ChatLog />
-          </ScrollOnUpdate>
-          <Input />
-        </div>
-        <div className="w-full md:w-1/3 flex flex-col bg-gray-800 text-white h-full">
-          <HeadsUpDisplay />
-          <Controls />
+        <div className="flex flex-1 pt-12 md:overflow-hidden flex-col md:flex-row">
+          <div className="w-full md:w-2/3 flex flex-col p-4 bg-gray-900 text-white">
+            <ScrollOnUpdate
+              className="flex-1 overflow-y-auto p-2"
+              watch={model.updates.value}
+              watch2={lastLlmError.value}
+              watch3={model.runningSignal.value}
+            >
+              <ChatLog />
+            </ScrollOnUpdate>
+            <Input />
+          </div>
+          <div className="w-full md:w-1/3 flex flex-col bg-gray-800 text-white h-full">
+            <HeadsUpDisplay />
+            <Controls />
+          </div>
         </div>
       </div>
-    </div>
+    </SignInGate>
   );
 }

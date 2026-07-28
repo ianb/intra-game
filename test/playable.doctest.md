@@ -20,8 +20,10 @@ const say = (r) => `${r.ok ? "yes" : "no"}${r.why ? ": " + r.why : ""}`;
 
 ## Local play needs the player's own key
 
-Nobody arrives with one, so this is what a stranger hits, and both ways out are
-offered: sign in, or bring a key.
+A signed-out visitor no longer reaches the composer at all — signing in is the
+only way into a deployment that has a door, and this used to be where they
+learned that. It still matters for the case that remains: signed in, but the
+server game failed to start, so the tab fell back to local play.
 
 ```ts
 say(playable({ auth: google, session: null, hasKey: false }));

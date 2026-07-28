@@ -37,76 +37,86 @@ export function Settings() {
       <div className="flex justify-center mb-4">Settings</div>
       <div className="flex-1 overflow-y-auto">
         <div>
-          Choose a model:
-          <br />
-          <ModelSelector
-            signal={openrouterModel}
-            freeOnly={!openrouterCode.value}
-          />
-        </div>
-        <div className="mt-4">
-          A cheaper model for the mechanical prompts (optional):
-          <br />
-          <ModelSelector
-            signal={openrouterSmallModel}
-            freeOnly={!openrouterCode.value}
-          />
-          <div className="text-xs text-gray-300 mt-1">
-            Used for interpreting what you typed and resolving what you looked
-            at — not for anything a character says. Leave it unset to use one
-            model for everything.
-          </div>
-        </div>
-        <div className="mt-4">
-          {openrouterCode.value ? (
-            <>
-              You have a code from{" "}
-              <A href="https://openrouter.ai/keys" blank>
-                OpenRouter.ai
-              </A>
-              : <br />
-              <code>
-                {openrouterCode.value.slice(0, 12)}...
-                {openrouterCode.value.slice(-3)}
-              </code>
-              <Button
-                className="ml-4"
-                onClick={() => {
-                  openrouterCode.value = null;
-                }}
-              >
-                Remove code
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="mb-4">
-                To have access to paid models you can get a code from{" "}
-                <A href="https://openrouter.ai/" blank>
-                  OpenRouter.ai
-                </A>
-              </div>
-              <div>
-                <OpenRouterConnect />
-              </div>
-            </>
-          )}
-        </div>
-        <div className="mt-4">
           <ServerPlay />
           <Costs />
         </div>
-        <div className="mt-4">
-          Set a custom endpoint: <br />
-          <input
-            type="text"
-            className="bg-gray-800 text-white p-2 w-2/3"
-            value={customEndpoint.value || ""}
-            onInput={(e) => {
-              customEndpoint.value = (e.target as HTMLInputElement).value;
-            }}
-            placeholder="http://localhost:5001/v1"
-          />
+
+        {/* Everything below is optional. A signed-in player already has a game
+            and a model; this is for someone who would rather spend their own
+            OpenRouter credit than the deployment's, or point the game at
+            something else entirely. It is second because it is second. */}
+        <div className="mt-8 pt-4 border-t border-blue-700">
+          <div className="text-sm text-gray-300 mb-4">
+            Optional: play on your own model access instead of the server's.
+          </div>
+          <div className="mt-4">
+            {openrouterCode.value ? (
+              <>
+                You have a code from{" "}
+                <A href="https://openrouter.ai/keys" blank>
+                  OpenRouter.ai
+                </A>
+                : <br />
+                <code>
+                  {openrouterCode.value.slice(0, 12)}...
+                  {openrouterCode.value.slice(-3)}
+                </code>
+                <Button
+                  className="ml-4"
+                  onClick={() => {
+                    openrouterCode.value = null;
+                  }}
+                >
+                  Remove code
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="mb-4">
+                  To use your own model access, get a code from{" "}
+                  <A href="https://openrouter.ai/" blank>
+                    OpenRouter.ai
+                  </A>
+                </div>
+                <div>
+                  <OpenRouterConnect />
+                </div>
+              </>
+            )}
+          </div>
+          <div className="mt-4">
+            Choose a model:
+            <br />
+            <ModelSelector
+              signal={openrouterModel}
+              freeOnly={!openrouterCode.value}
+            />
+          </div>
+          <div className="mt-4">
+            A cheaper model for the mechanical prompts (optional):
+            <br />
+            <ModelSelector
+              signal={openrouterSmallModel}
+              freeOnly={!openrouterCode.value}
+            />
+            <div className="text-xs text-gray-300 mt-1">
+              Used for interpreting what you typed and resolving what you looked
+              at — not for anything a character says. Leave it unset to use one
+              model for everything.
+            </div>
+          </div>
+          <div className="mt-4">
+            Set a custom endpoint: <br />
+            <input
+              type="text"
+              className="bg-gray-800 text-white p-2 w-2/3"
+              value={customEndpoint.value || ""}
+              onInput={(e) => {
+                customEndpoint.value = (e.target as HTMLInputElement).value;
+              }}
+              placeholder="http://localhost:5001/v1"
+            />
+          </div>
         </div>
       </div>
       <BuildVersion />

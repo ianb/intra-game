@@ -391,6 +391,23 @@ export async function redoTurn(): Promise<void> {
  * tab isn't paying for.
  */
 export async function initSession(): Promise<void> {
+  // Signed in and no game yet: start one on the server. Server play is what
+  // signing in is for, and the alternative — dropping a signed-in player into
+  // local play, where the first turn fails for want of an OpenRouter key — is
+  // the confusion this is meant to remove.
+  //
+  // Only when signing in is a thing here. A deployment with no identity source
+  // stays local, which is how it is run offline and in the tests.
+  const auth = authState.value;
+  if (!remoteSession.value && auth?.email && auth.loginUrl) {
+    try {
+      const created = await newServerSession();
+      remoteSession.value = created.id;
+    } catch (e) {
+      lastLlmError.value = `Could not start a game on the server: ${String(e)}`;
+    }
+  }
+
   const session = remoteSession.value;
   if (!session) {
     // ?checkpoint=briefed drops straight into a recorded state, so a link can
