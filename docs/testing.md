@@ -135,7 +135,8 @@ The server runs offline with no Cloudflare account, no login and no API key:
 
 ```bash
 pnpm build      # the client bundle the Worker serves
-pnpm preview    # wrangler dev
+pnpm dev        # the rig: client watch + Worker, one port
+pnpm preview    # wrangler dev alone, against the last build
 ```
 
 Two variables in `.dev.vars` (gitignored, never deployed) make that possible:

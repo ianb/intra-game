@@ -52,7 +52,7 @@ stops mattering when they are published.
 
 ```bash
 pnpm install        # or --prod, see above
-pnpm dev            # http://localhost:3000
+pnpm dev            # http://localhost:8787 — client and server together
 ```
 
 Open Settings (⚙) and connect to OpenRouter. The engine runs in your browser

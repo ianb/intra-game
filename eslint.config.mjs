@@ -92,7 +92,7 @@ export default [
     // cassettes and result files by path, and the build script walks the
     // checkpoint directory; flagging that as a filesystem risk isn't meaningful
     // for code that only ever runs on a developer's machine or the builder.
-    files: ["playtest/**", "evals/**", "build.ts"],
+    files: ["playtest/**", "evals/**", "build.ts", "dev.ts"],
     rules: { "security/detect-non-literal-fs-filename": "off" },
   },
 ];

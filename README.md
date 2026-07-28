@@ -35,7 +35,8 @@ The tech stack:
 ## Getting Started
 
 1. Run `pnpm install` to install dependencies
-2. Run `pnpm dev` to start the development server
+2. Run `pnpm dev` to start the development rig — esbuild watching the
+   client and the Worker serving it, together on http://localhost:8787
 3. Open [http://localhost:3000](http://localhost:3000) with your browser
 4. In the game, go to Settings (⚙) and connect to OpenRouter.ai to access LLM models
 

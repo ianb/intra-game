@@ -19,7 +19,8 @@ import { parse } from "yaml";
 // shell, static assets and the generated eval page are copied across.
 //
 //   pnpm build          one-shot production build
-//   pnpm dev            rebuild on change and serve locally
+//   pnpm dev            the whole rig: this in watch mode, plus the Worker
+//   pnpm dev:client     this alone, serving dist/ — a view with no engine
 
 const root = dirname(fileURLToPath(import.meta.url));
 const outdir = resolve(root, "dist");
