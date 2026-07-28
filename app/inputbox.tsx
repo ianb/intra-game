@@ -14,6 +14,7 @@ import {
   redoTurn,
   remoteSession,
   signIn,
+  turnRunning,
   undoTurn,
 } from "./session";
 import { model } from "./model";
@@ -28,11 +29,11 @@ export function Input() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   composer.ref = textareaRef;
   useEffect(() => {
-    if (textareaRef.current && !model.runningSignal.value) {
+    if (textareaRef.current && !turnRunning.value) {
       textareaRef.current.focus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [model.runningSignal.value]);
+  }, [turnRunning.value]);
   async function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return;
@@ -47,7 +48,7 @@ export function Input() {
     session: remoteSession.value,
   });
   async function onSubmit() {
-    if (model.runningSignal.value || !can.ok) {
+    if (turnRunning.value || !can.ok) {
       return;
     }
     if (!textareaRef.current) {
@@ -57,22 +58,30 @@ export function Input() {
     if (!text) {
       return;
     }
-    let newText = "";
+    // Cleared before the turn, not after it. This used to wait for the whole
+    // turn to finish, so pressing enter left the text sitting there and looked
+    // like nothing had happened for as long as the model took.
+    textareaRef.current.value = "";
     if (text === "/reset" || text === "/restart") {
       model.reset();
     } else {
-      const undoText = await playTurn(text);
-      if (typeof undoText === "string") {
-        newText = undoText;
+      try {
+        await playTurn(text);
+      } catch {
+        // A turn that never happened — a refusal, a provider error — shouldn't
+        // also cost the player what they typed. The error itself is already on
+        // screen; this just gives them their words back to send again.
+        if (textareaRef.current && !textareaRef.current.value) {
+          textareaRef.current.value = text;
+        }
       }
     }
-    textareaRef.current.value = newText;
     setTimeout(() => {
-      textareaRef.current!.focus();
+      textareaRef.current?.focus();
     }, 0);
   }
   async function onUndo(event: React.MouseEvent<HTMLButtonElement>) {
-    if (model.runningSignal.value) {
+    if (turnRunning.value) {
       return;
     }
     if (event.shiftKey) {
@@ -89,7 +98,7 @@ export function Input() {
   let placeholder = "Waiting...";
   if (!can.ok) {
     placeholder = can.why;
-  } else if (!model.runningSignal.value) {
+  } else if (!turnRunning.value) {
     placeholder =
       model.world.lastSuggestions || "ENTER COMMAND OR INSTRUCTIONS";
     if (model.updates.value.length < 7) {
@@ -127,10 +136,10 @@ export function Input() {
           rows={2}
           className={twMerge(
             "flex-1 resize-none bg-gray-800 text-white border-none p-2",
-            (model.runningSignal.value || blocked) && "opacity-50 bg-gray-600",
+            (turnRunning.value || blocked) && "opacity-50 bg-gray-600",
           )}
           placeholder={placeholder}
-          disabled={model.runningSignal.value || blocked}
+          disabled={turnRunning.value || blocked}
           onKeyDown={onKeyDown}
         />
         <div className="flex flex-col ml-2">

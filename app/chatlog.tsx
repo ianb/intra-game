@@ -25,7 +25,7 @@ import { ColorizedText } from "./colorizedtext";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { TimePeriod } from "./hud";
 import { model } from "./model";
-import { authState, signIn } from "./session";
+import { authState, pendingInput, signIn, turnRunning } from "./session";
 import { openSettings, showInternals } from "./uistate";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { renderStoryAction } from "./renderstoryaction";
@@ -57,10 +57,9 @@ export function ChatLog() {
           {lastLlmErrorType.value === "openrouter" && <NoModelAccess />}
         </div>
       )}
+      <PendingInput />
       <StreamingLine />
-      {model.runningSignal.value && !model.streaming.value && (
-        <CalculatingThrobber />
-      )}
+      {turnRunning.value && !model.streaming.value && <CalculatingThrobber />}
     </div>
   );
 }
@@ -97,6 +96,37 @@ function NoModelAccess() {
       >
         ⚙ {canSignIn ? "Or use your own key" : "Open settings"}
       </Button>
+    </div>
+  );
+}
+
+/**
+ * What the player just sent, before the server has said anything back.
+ *
+ * The player's line is part of the turn's result: the server appends it to the
+ * log along with everything it caused, and none of that arrives until the turn
+ * is over. So the transcript sat unchanged through the whole wait, and pressing
+ * enter read as having done nothing.
+ *
+ * Dimmed, like the streaming text, because it is provisional — the
+ * authoritative event replaces it when the turn lands.
+ */
+function PendingInput() {
+  useSignals();
+  const text = pendingInput.value;
+  if (!text) {
+    return null;
+  }
+  const player = model.world.getEntity("PLAYER");
+  return (
+    <div
+      className={twMerge(
+        player?.color,
+        "border-l-2 pl-2 border-emerald-300 opacity-70",
+      )}
+    >
+      {player?.name && <div className="font-bold">{player.name}</div>}
+      <pre className="pl-3 whitespace-pre-wrap -indent-2 mb-2">{text}</pre>
     </div>
   );
 }

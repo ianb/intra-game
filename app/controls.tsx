@@ -29,7 +29,7 @@ import {
 import { A, Button, CheckButton } from "@/components/input";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { effect, signal, useSignal } from "@preact/signals-react";
-import { initSession, playTurn } from "./session";
+import { initSession, playTurn, turnRunning } from "./session";
 import { model } from "./model";
 import { composer, showInternals } from "./uistate";
 import { twMerge } from "tailwind-merge";
@@ -184,7 +184,7 @@ function IntroList() {
 function ExitList({ room }: { room: Room }) {
   useSignals();
   async function onGoToRoom(room: Room, exit: Exit) {
-    if (model.runningSignal.value) {
+    if (turnRunning.value) {
       return;
     }
     await playTurn(`Go to ${room.name}`);
@@ -208,7 +208,7 @@ function ExitList({ room }: { room: Room }) {
                 onClick={() => {
                   return onGoToRoom(targetRoom, exit);
                 }}
-                disabled={model.runningSignal.value}
+                disabled={turnRunning.value}
               >
                 {exit.name || targetRoom.name}
                 {exit.restriction ? "*" : ""}

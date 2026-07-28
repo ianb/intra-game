@@ -21,7 +21,14 @@ import { Help } from "./help";
 import { Input } from "./inputbox";
 import { Settings } from "./settings";
 import { ZoomOverlay } from "@/components/zoom";
-import { authState, initSession, loadAuth, playTurn, signIn } from "./session";
+import {
+  authState,
+  initSession,
+  loadAuth,
+  playTurn,
+  signIn,
+  turnRunning,
+} from "./session";
 import { model } from "./model";
 import { openHelp, openSettings, seenHelp, soundOn } from "./uistate";
 import { twMerge } from "tailwind-merge";
@@ -199,7 +206,7 @@ export default function Home() {
               className="flex-1 overflow-y-auto p-2"
               watch={model.updates.value}
               watch2={lastLlmError.value}
-              watch3={model.runningSignal.value}
+              watch3={turnRunning.value}
             >
               <ChatLog />
             </ScrollOnUpdate>

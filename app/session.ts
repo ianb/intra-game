@@ -368,9 +368,37 @@ export async function playTurn(text: string): Promise<string | undefined> {
     lastLlmError.value = "No game on the server yet — try reloading.";
     return undefined;
   }
-  await intoModel((handlers) => sendInput(session, text, handlers));
+  // Commands are instructions to the game rather than things the player said,
+  // so they aren't echoed back as dialogue.
+  pendingInput.value = text.startsWith("/") ? null : text;
+  try {
+    await intoModel((handlers) => sendInput(session, text, handlers));
+  } finally {
+    pendingInput.value = null;
+  }
   return undefined;
 }
+
+/**
+ * Whether a turn is in flight on the server.
+ *
+ * The UI used to read `model.runningSignal`, which is the engine's promise
+ * queue — and the browser's engine hasn't run anything since the server took
+ * it over, so that signal has been permanently false. Everything hanging off it
+ * silently stopped: the composer never disabled, the throbber never appeared,
+ * the transcript never scrolled. Pressing enter looked like it had done
+ * nothing until the whole turn landed at once.
+ */
+export const turnRunning = signal(false);
+
+/**
+ * What the player just submitted, until the turn's real events arrive.
+ *
+ * The server appends the player's line to the log along with everything it
+ * caused, so nothing at all appears for as long as a turn takes. This is shown
+ * in its place and replaced by the authoritative event.
+ */
+export const pendingInput = signal<string | null>(null);
 
 /**
  * Run a server turn into this tab's world.
@@ -382,6 +410,7 @@ export async function playTurn(text: string): Promise<string | undefined> {
 async function intoModel(
   run: (handlers: TurnHandlers) => Promise<StoryEventType[]>,
 ): Promise<void> {
+  turnRunning.value = true;
   try {
     await run({
       onDelta: (state) => {
@@ -389,6 +418,8 @@ async function intoModel(
       },
       onEvents: (events) => {
         model.streaming.value = null;
+        // The real events are here, so the provisional echo has been superseded.
+        pendingInput.value = null;
         model.appendRemoteEvents(events);
       },
       onError: (message) => {
@@ -397,6 +428,7 @@ async function intoModel(
     });
   } finally {
     model.streaming.value = null;
+    turnRunning.value = false;
   }
 }
 
@@ -446,10 +478,13 @@ export async function initSession(): Promise<void> {
   // local play, where the first turn fails for want of an OpenRouter key — is
   // the confusion this is meant to remove.
   //
-  // Only when signing in is a thing here. A deployment with no identity source
-  // stays local, which is how it is run offline and in the tests.
+  // Keyed on having an identity, not on there being a sign-in button. Local
+  // development identifies the player from DEV_IDENTITY and so has no loginUrl,
+  // and requiring one meant `pnpm dev` came up with no game and a composer that
+  // said "No game on the server yet — try reloading", forever. A deployment with
+  // no identity source at all has no email either, so it still creates nothing.
   const auth = authState.value;
-  if (!remoteSession.value && auth?.email && auth.loginUrl) {
+  if (!remoteSession.value && auth?.email) {
     try {
       const created = await newServerSession();
       remoteSession.value = created.id;
