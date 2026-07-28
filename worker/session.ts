@@ -62,6 +62,14 @@ export interface SessionEnv {
   GATEWAY_MODEL?: string;
   /** minimal | low | medium | high, for models that take direction on it. */
   GATEWAY_REASONING?: string;
+  /**
+   * Dollars per million tokens for GATEWAY_MODEL.
+   *
+   * AI Gateway reports tokens but not price, and the quota is in dollars, so
+   * without these every turn meters at zero and the limit never fires.
+   */
+  GATEWAY_PRICE_IN?: string;
+  GATEWAY_PRICE_OUT?: string;
   /** Optional cheaper model for prompts that ask for the "flash" tier. */
   GATEWAY_FLASH_MODEL?: string;
   /**
@@ -389,6 +397,8 @@ export class GameSession {
       model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
       flashModel: this.env.GATEWAY_FLASH_MODEL,
       reasoningEffort: this.env.GATEWAY_REASONING,
+      priceIn: Number(this.env.GATEWAY_PRICE_IN) || undefined,
+      priceOut: Number(this.env.GATEWAY_PRICE_OUT) || undefined,
       providerKey: credential?.key,
       user,
       onUsage: (record) => {

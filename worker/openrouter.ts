@@ -48,6 +48,8 @@ export function openRouterChatStream(config: OpenRouterConfig): ChatStreamFn {
     flashModel: config.flashModel,
     reasoningEffort: config.reasoningEffort,
     label: "OpenRouter",
+    // OpenRouter reports what it charged when asked; nothing else does.
+    costFromProvider: true,
     onUsage: config.onUsage,
     user: config.user,
   });

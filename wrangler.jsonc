@@ -63,6 +63,12 @@
     // Not optional for this model: at its own default it scored 21/26, and at
     // "medium" 25/26. The difference is entirely how long it thinks.
     "GATEWAY_REASONING": "medium",
+    // Dollars per million tokens for the model above. AI Gateway reports token
+    // counts but no price, and the quota is denominated in dollars — without
+    // these every turn meters at zero and the limit never fires. Update them
+    // when GATEWAY_MODEL changes.
+    "GATEWAY_PRICE_IN": "0.20",
+    "GATEWAY_PRICE_OUT": "1.25",
     // Dollars per player per rolling 30 days of server play. A player using
     // their own key isn't metered; see worker/quota.ts. At this model's prices
     // a dollar is about 900 turns, against 160 on Haiku.

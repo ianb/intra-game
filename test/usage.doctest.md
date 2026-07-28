@@ -16,6 +16,7 @@ import {
   usageRecord,
 } from "../lib/usage.js";
 import type { UsageRecordType } from "../lib/usage.js";
+import { withCost } from "../worker/openaistream.js";
 
 const request = (title: string, extra = {}) => ({
   meta: { title, turn: 12, entity: "Ama", ...extra },
@@ -189,4 +190,43 @@ think, rather than thinking an unknown amount:
 ``` continue
 parseUsage({ prompt_tokens: 43, completion_tokens: 48 }).reasoningTokens;
 => 0
+```
+
+## A price, where the provider doesn't give one
+
+OpenRouter reports what it charged when asked. AI Gateway doesn't — it passes
+the OpenAI usage chunk through, so token counts arrive and money doesn't.
+
+That is not a cosmetic gap. The per-player quota is denominated in dollars, so a
+backend reporting no cost meters every turn at zero and the limit never fires: a
+limit that silently isn't one, which is worse than having none, because the
+dashboard says it is protected.
+
+So a deployment configures the price of the model it named, and the cost is
+worked out from the tokens. Reasoning tokens need no separate term — they are
+billed at the output rate and are already counted inside `completionTokens`.
+
+```ts
+const priced = withCost(
+  { promptTokens: 3195, completionTokens: 445, reasoningTokens: 400, cost: undefined },
+  { priceIn: 0.2, priceOut: 1.25 },
+);
+priced.cost;
+=> 0.001195
+```
+
+A provider that did report a price keeps it — a derived number must never
+overwrite a real one:
+
+``` continue
+withCost({ promptTokens: 100, completionTokens: 10, cost: 0.5 }, { priceIn: 99, priceOut: 99 }).cost;
+=> 0.5
+```
+
+And with no prices configured there is nothing to derive, which stays undefined
+rather than becoming a confident zero:
+
+``` continue
+String(withCost({ promptTokens: 100, completionTokens: 10 }, {}).cost);
+=> undefined
 ```

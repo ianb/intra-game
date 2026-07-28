@@ -44,6 +44,51 @@ export interface StreamConfig {
   onUsage?: (record: UsageRecordType) => void;
   /** Stamped onto usage records — the Access-verified caller. */
   user?: string;
+  /**
+   * Ask for what the call cost, using OpenRouter's extension.
+   *
+   * Off by default because it is an extension, not the OpenAI API: AI Gateway
+   * validates parameters strictly and answers an unknown one with
+   * `400 Unknown parameter: 'usage'`, which is a turn that doesn't happen. Only
+   * the OpenRouter backend sets it.
+   */
+  costFromProvider?: boolean;
+  /**
+   * Dollars per million tokens, for a backend that reports tokens but no price.
+   *
+   * AI Gateway is one: it passes the OpenAI usage chunk through, so token
+   * counts arrive, but nothing says what they cost. The per-player quota is
+   * denominated in dollars, so without this it would meter every turn at zero
+   * and never stop anyone — a limit that silently isn't one, which is worse
+   * than no limit at all.
+   *
+   * A configured price rather than a table of them: the deployment already
+   * names its model in one variable, and a price list here would go stale
+   * without anyone noticing.
+   */
+  priceIn?: number;
+  priceOut?: number;
+}
+
+/**
+ * Fill in what a call cost, when the provider didn't say and the prices are
+ * configured. Reasoning tokens are billed at the output rate and are already
+ * counted inside completionTokens, so they need no separate term.
+ */
+export function withCost<
+  T extends Pick<
+    UsageRecordType,
+    "promptTokens" | "completionTokens" | "cost"
+  >,
+>(record: T, config: Pick<StreamConfig, "priceIn" | "priceOut">): T {
+  if (record.cost !== undefined || !config.priceIn || !config.priceOut) {
+    return record;
+  }
+  const cost =
+    (record.promptTokens * config.priceIn +
+      record.completionTokens * config.priceOut) /
+    1e6;
+  return { ...record, cost: Math.round(cost * 1e6) / 1e6 };
 }
 
 /**
@@ -58,15 +103,16 @@ export function openAiCompatibleStream(config: StreamConfig): ChatStreamFn {
       flash: config.flashModel,
     });
     const record = (extra: { raw?: RawUsage; error?: string }) =>
-      config.onUsage?.(
-        usageRecord({
+      {
+        const built = usageRecord({
           request,
           model,
           ms: Date.now() - started,
           user: config.user,
           ...extra,
-        }),
-      );
+        });
+        config.onUsage?.(withCost(built, config));
+      };
 
     let response: Response;
     try {
@@ -80,8 +126,9 @@ export function openAiCompatibleStream(config: StreamConfig): ChatStreamFn {
           // A streamed call reports nothing about itself unless asked. The
           // first gets token counts in a final chunk; the second is
           // OpenRouter's extension that adds what it charged.
+          // Standard OpenAI, and where token counts come from on both backends.
           stream_options: { include_usage: true },
-          usage: { include: true },
+          ...(config.costFromProvider ? { usage: { include: true } } : {}),
           ...(config.reasoningEffort
             ? { reasoning: { effort: config.reasoningEffort } }
             : {}),

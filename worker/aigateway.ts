@@ -30,6 +30,9 @@ export interface GatewayConfig {
   model: string;
   flashModel?: string;
   reasoningEffort?: string;
+  /** Dollars per million tokens; the gateway reports tokens but no price. */
+  priceIn?: number;
+  priceOut?: number;
   /** A player's own provider key, when they brought one. */
   providerKey?: string;
   onUsage?: (record: UsageRecordType) => void;
@@ -70,6 +73,8 @@ export function gatewayChatStream(config: GatewayConfig): ChatStreamFn {
     model: config.model,
     flashModel: config.flashModel,
     reasoningEffort: config.reasoningEffort,
+    priceIn: config.priceIn,
+    priceOut: config.priceOut,
     label: "AI Gateway",
     onUsage: config.onUsage,
     user: config.user,
