@@ -133,6 +133,15 @@ original write-up, plus whatever the last few sessions turned up.
   twin); this one is not, which is why it stays scored as a protocol failure
   while the others no longer are.
 
+- **Check whether AI Gateway returns cost to the caller** `infra` `S` — it
+  computes one, and shows it in logs and analytics, but nothing in the docs
+  describes a response header carrying it and there was no gateway token here to
+  test with. The Worker currently derives cost from tokens and configured prices
+  (`GATEWAY_PRICE_IN`/`OUT`) so the per-player quota has a number to enforce
+  against. If a `cf-aig-*` header does carry it, using that would remove a pair
+  of variables that go stale the moment the model changes. One real call with
+  `curl -i` answers it.
+
 - **Characters send the player to rooms that don't exist** `content` `M` — in
   the run that solved Ink and Echo, the Archivist gave step-by-step directions
   to "Archive Sub-Level 4", said Marta was there, and named a first hop ("East

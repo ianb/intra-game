@@ -56,15 +56,20 @@ export interface StreamConfig {
   /**
    * Dollars per million tokens, for a backend that reports tokens but no price.
    *
-   * AI Gateway is one: it passes the OpenAI usage chunk through, so token
-   * counts arrive, but nothing says what they cost. The per-player quota is
-   * denominated in dollars, so without this it would meter every turn at zero
-   * and never stop anyone — a limit that silently isn't one, which is worse
-   * than no limit at all.
+   * AI Gateway does work out what a call cost — it is in the gateway's logs and
+   * analytics, computed from the same token counts — but it reports that to its
+   * dashboard, not to the caller. There is no documented response header
+   * carrying it, and `cf-aig-custom-cost` goes the other way: it tells the
+   * gateway what your negotiated rate is, for its own records.
    *
-   * A configured price rather than a table of them: the deployment already
-   * names its model in one variable, and a price list here would go stale
-   * without anyone noticing.
+   * The quota decision happens inline, before a turn starts, so it needs a
+   * number now. Without one it would meter every turn at zero and never stop
+   * anyone — a limit that silently isn't one, which is worse than no limit,
+   * because the configuration says it is protected.
+   *
+   * So this is for enforcement, and the gateway's own figures remain the
+   * record. Keep them in step: if these are wrong the quota is wrong, and the
+   * dashboard will not agree with it.
    */
   priceIn?: number;
   priceOut?: number;
@@ -76,10 +81,7 @@ export interface StreamConfig {
  * counted inside completionTokens, so they need no separate term.
  */
 export function withCost<
-  T extends Pick<
-    UsageRecordType,
-    "promptTokens" | "completionTokens" | "cost"
-  >,
+  T extends Pick<UsageRecordType, "promptTokens" | "completionTokens" | "cost">,
 >(record: T, config: Pick<StreamConfig, "priceIn" | "priceOut">): T {
   if (record.cost !== undefined || !config.priceIn || !config.priceOut) {
     return record;
@@ -102,17 +104,16 @@ export function openAiCompatibleStream(config: StreamConfig): ChatStreamFn {
       pro: config.model,
       flash: config.flashModel,
     });
-    const record = (extra: { raw?: RawUsage; error?: string }) =>
-      {
-        const built = usageRecord({
-          request,
-          model,
-          ms: Date.now() - started,
-          user: config.user,
-          ...extra,
-        });
-        config.onUsage?.(withCost(built, config));
-      };
+    const record = (extra: { raw?: RawUsage; error?: string }) => {
+      const built = usageRecord({
+        request,
+        model,
+        ms: Date.now() - started,
+        user: config.user,
+        ...extra,
+      });
+      config.onUsage?.(withCost(built, config));
+    };
 
     let response: Response;
     try {
