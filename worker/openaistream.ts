@@ -45,14 +45,21 @@ export interface StreamConfig {
   /** Stamped onto usage records — the Access-verified caller. */
   user?: string;
   /**
-   * Ask for what the call cost, using OpenRouter's extension.
+   * Which spelling of the optional parameters this endpoint accepts.
    *
-   * Off by default because it is an extension, not the OpenAI API: AI Gateway
-   * validates parameters strictly and answers an unknown one with
-   * `400 Unknown parameter: 'usage'`, which is a turn that doesn't happen. Only
-   * the OpenRouter backend sets it.
+   * "OpenAI-compatible" covers the messages, the model, the SSE framing and the
+   * usage chunk, and stops there. Anything beyond that is per-provider, and the
+   * two ends differ in how strict they are: OpenRouter accepts its own
+   * extensions and ignores what it doesn't know, while AI Gateway passes the
+   * body to OpenAI, which rejects an unknown parameter with a 400 and no turn.
+   *
+   * Two of those got shipped one at a time — `usage: {include: true}` and then
+   * `reasoning: {effort}`, both OpenRouter spellings, both 400s from the
+   * gateway, both found by a player rather than a test. They are one field now
+   * so that the third one is a case in `requestExtras` rather than another
+   * outage. Default is the strict dialect, so a new backend fails safe.
    */
-  costFromProvider?: boolean;
+  dialect?: "openai" | "openrouter";
   /**
    * Dollars per million tokens, for a backend that reports tokens but no price.
    *
@@ -74,6 +81,32 @@ export interface StreamConfig {
    */
   priceIn?: number;
   priceOut?: number;
+}
+
+/**
+ * The optional parameters, in the dialect the endpoint speaks.
+ *
+ * Exported so the spellings are assertable without a provider; see
+ * test/openaistream.doctest.md.
+ */
+export function requestExtras(
+  config: Pick<StreamConfig, "dialect" | "reasoningEffort">,
+): Record<string, unknown> {
+  const extras: Record<string, unknown> = {};
+  if (config.dialect === "openrouter") {
+    // OpenRouter reports what it charged when asked; nothing else does.
+    extras.usage = { include: true };
+    if (config.reasoningEffort) {
+      extras.reasoning = { effort: config.reasoningEffort };
+    }
+    return extras;
+  }
+  if (config.reasoningEffort) {
+    // OpenAI's Chat Completions spelling: a top-level string, not an object.
+    // `reasoning: {effort}` is the Responses API and OpenRouter.
+    extras.reasoning_effort = config.reasoningEffort;
+  }
+  return extras;
 }
 
 /**
@@ -125,15 +158,11 @@ export function openAiCompatibleStream(config: StreamConfig): ChatStreamFn {
           messages: request.messages,
           model,
           stream: true,
-          // A streamed call reports nothing about itself unless asked. The
-          // first gets token counts in a final chunk; the second is
-          // OpenRouter's extension that adds what it charged.
-          // Standard OpenAI, and where token counts come from on both backends.
+          // A streamed call reports nothing about itself unless asked. This is
+          // standard OpenAI and is where token counts come from on both
+          // backends; everything else optional is dialect-dependent.
           stream_options: { include_usage: true },
-          ...(config.costFromProvider ? { usage: { include: true } } : {}),
-          ...(config.reasoningEffort
-            ? { reasoning: { effort: config.reasoningEffort } }
-            : {}),
+          ...requestExtras(config),
         }),
       });
     } catch (e) {

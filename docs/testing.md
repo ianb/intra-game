@@ -198,13 +198,39 @@ See [.dev.vars.example](../.dev.vars.example) for all three tiers.
 The API lives under `/api/*` and is authenticated:
 
 ```bash
-curl -X POST 'localhost:8787/api/create?session=s1' -d '{"owner":{"email":"dev@localhost"}}'
+curl -X POST 'localhost:8787/api/create?session=s1' -d '{}'  # claim a session
+curl -N -X POST 'localhost:8787/api/launch?session=s1' -d '{}'  # start the game
 curl 'localhost:8787/api/events?session=s1'                  # log from a cursor
 curl -N -X POST 'localhost:8787/api/input?session=s1' -d '{"text":"hello"}'
 ```
 
-The last streams Server-Sent Events: `delta` while narrative text arrives, then
-`events` with the authoritative story events that were appended to the log.
+`launch` and `input` stream Server-Sent Events: `delta` while narrative text
+arrives, then `events` with the authoritative story events that were appended to
+the log. `launch` answers 409 on a session that has already started, so a
+reloading client cannot append a second opening.
+
+### One real call: `pnpm smoke`
+
+```bash
+pnpm smoke
+```
+
+Reads `.dev.vars`, builds a backend with `chooseBackend` — the same function the
+Durable Object uses — makes one short call, and prints the answer, the token
+counts and the cost. A failure prints the provider's own error.
+
+It exists because of a gap the rest of this page has: **every test here answers
+with a fake provider, and a fake accepts any request body.** So the endpoint, the
+headers, the model id and the parameters are all unverified by the suite, and two
+parameters shipped wrong on that account — `usage: {include: true}` and then
+`reasoning: {effort}`, both OpenRouter spellings, both `400 Unknown parameter`
+from OpenAI through the gateway, both found by a player. The request bodies are
+pinned in [test/dialect.doctest.md](../test/dialect.doctest.md) now; `pnpm smoke`
+is what checks the pin is on the right wall.
+
+It reports which backend it chose on the first line, because `DEV_FAKE_LLM` wins
+over everything and is on by default — a green run against the stand-in proves
+nothing.
 
 ## Prompt cache boundaries
 

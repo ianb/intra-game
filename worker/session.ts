@@ -4,9 +4,7 @@ import { Model } from "../lib/game/model";
 import { DEFAULT_FLASH_MODEL } from "../lib/models";
 import type { StoryEventType } from "../lib/types";
 import type { UsageRecordType } from "../lib/usage";
-import { gatewayChatStream } from "./aigateway";
-import { openRouterChatStream } from "./openrouter";
-import { devChatStream } from "./devllm";
+import { chooseBackend, NO_BACKEND, type BackendEnv } from "./backend";
 import { SessionLog } from "./eventlog";
 import type { QuotaVerdict } from "./quota";
 
@@ -54,37 +52,7 @@ export interface StoredCredential {
   key: string;
 }
 
-export interface SessionEnv {
-  CF_AIG_TOKEN?: string;
-  CF_ACCOUNT_ID?: string;
-  /** The gateway's name, which is part of its URL. Defaults to "default". */
-  CF_GATEWAY_ID?: string;
-  GATEWAY_MODEL?: string;
-  /** minimal | low | medium | high, for models that take direction on it. */
-  GATEWAY_REASONING?: string;
-  /**
-   * Dollars per million tokens for GATEWAY_MODEL.
-   *
-   * AI Gateway reports tokens but not price, and the quota is in dollars, so
-   * without these every turn meters at zero and the limit never fires.
-   */
-  GATEWAY_PRICE_IN?: string;
-  GATEWAY_PRICE_OUT?: string;
-  /** Optional cheaper model for prompts that ask for the "flash" tier. */
-  GATEWAY_FLASH_MODEL?: string;
-  /**
-   * Talk to OpenRouter directly instead of AI Gateway.
-   *
-   * The practical way to develop the server path: no Cloudflare account, no
-   * gateway, and the same key browser play already uses.
-   */
-  OPENROUTER_API_KEY?: string;
-  /** Point OpenRouter at a stand-in; see worker/openrouter.ts. */
-  OPENROUTER_BASE_URL?: string;
-  /** Local development: use the stand-in LLM instead of AI Gateway. */
-  DEV_FAKE_LLM?: string;
-  /** Dollars per fake call, so the quota can be exercised without spending. */
-  DEV_FAKE_COST?: string;
+export interface SessionEnv extends BackendEnv {
   /**
    * Per-player spending, enforced against the DO in PLAYER_SESSIONS.
    *
@@ -121,6 +89,8 @@ export class GameSession {
         return this.destroy();
       case "POST /input":
         return this.input(request);
+      case "POST /launch":
+        return this.launch();
       default:
         return json({ error: "not found" }, 404);
     }
@@ -275,6 +245,35 @@ export class GameSession {
     if (!text) {
       return json({ error: "missing text" }, 400);
     }
+    return this.runTurn(text);
+  }
+
+  /**
+   * Start the game: the waking-up description, and Ama's first words.
+   *
+   * This was happening nowhere. The engine starts a game in `checkLaunch`, which
+   * `replaceLog` calls, and the client's copy deliberately does not — the server
+   * owns the log, and a client that launched would duplicate the opening and
+   * spend on model calls that aren't its to make. But the server never launched
+   * either, so a new session's log stayed empty: the player got a text box with
+   * no game behind it, and whatever their browser still had cached from before
+   * flashed up and was replaced by nothing.
+   *
+   * It is a turn rather than part of `create` because it *is* a turn — Ama's
+   * opening is a model call, streamed like any other, and create answers
+   * immediately.
+   *
+   * Refuses a session that has already started, so a double-fired client (a
+   * reload mid-launch, two tabs) cannot append a second opening.
+   */
+  private async launch(): Promise<Response> {
+    if (await this.sessionLog.count()) {
+      return json({ error: "already started" }, 409);
+    }
+    return this.runTurn(null);
+  }
+
+  private async runTurn(text: string | null): Promise<Response> {
     const credential =
       await this.state.storage.get<StoredCredential>(CREDENTIAL_KEY);
     // Whose turn this is, recorded with what it cost. Read from stored
@@ -299,20 +298,17 @@ export class GameSession {
 
     const backend = this.chatBackend(credential, owner?.email);
     if (!backend) {
-      return json(
-        {
-          error:
-            "No model backend configured — set OPENROUTER_API_KEY, or " +
-            "CF_ACCOUNT_ID and CF_AIG_TOKEN, or DEV_FAKE_LLM",
-        },
-        503,
-      );
+      return json({ error: NO_BACKEND }, 503);
     }
     const model = new Model(entities, { chatStream: backend });
 
     const log = await this.sessionLog.read();
     model.replaceLog(log);
-    const before = model.updates.value.length;
+    // What is already stored, not what the model holds after replaceLog. Those
+    // differ on an unstarted session, because replaceLog starts it — and taking
+    // the model's count meant the opening was generated on every turn and
+    // appended on none of them.
+    const before = log.length;
 
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
@@ -331,7 +327,11 @@ export class GameSession {
     // waitUntil keeps the DO alive until the log is written.
     const turn = (async () => {
       try {
-        await model.sendText(text);
+        // A launch has no input: replaceLog above already queued the opening,
+        // and the drain below is what waits for it.
+        if (text !== null) {
+          await model.sendText(text);
+        }
         while (model.runningSignal.value) {
           await new Promise((r) => setTimeout(r, 10));
         }
@@ -361,44 +361,7 @@ export class GameSession {
   private chatBackend(credential: StoredCredential | undefined, user?: string) {
     // A player on their own key spends their own money, so it isn't metered.
     const metered = !credential?.key;
-    if (this.env.DEV_FAKE_LLM) {
-      return devChatStream({
-        user,
-        fakeCost: this.env.DEV_FAKE_COST,
-        onUsage: (record) => {
-          this.noteUsage(record, metered);
-        },
-      });
-    }
-    // OpenRouter before the gateway: a deployment sets gateway credentials and
-    // nothing else, so this branch is only reached when someone has explicitly
-    // asked for it — which is the dev case.
-    if (this.env.OPENROUTER_API_KEY) {
-      return openRouterChatStream({
-        apiKey: this.env.OPENROUTER_API_KEY,
-        endpoint: this.env.OPENROUTER_BASE_URL,
-        model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
-        flashModel: this.env.GATEWAY_FLASH_MODEL,
-        reasoningEffort: this.env.GATEWAY_REASONING,
-        providerKey: credential?.key,
-        user,
-        onUsage: (record) => {
-          this.noteUsage(record, metered);
-        },
-      });
-    }
-    if (!this.env.CF_ACCOUNT_ID || !this.env.CF_AIG_TOKEN) {
-      return null;
-    }
-    return gatewayChatStream({
-      accountId: this.env.CF_ACCOUNT_ID,
-      gatewayId: this.env.CF_GATEWAY_ID,
-      token: this.env.CF_AIG_TOKEN,
-      model: this.env.GATEWAY_MODEL ?? DEFAULT_FLASH_MODEL,
-      flashModel: this.env.GATEWAY_FLASH_MODEL,
-      reasoningEffort: this.env.GATEWAY_REASONING,
-      priceIn: Number(this.env.GATEWAY_PRICE_IN) || undefined,
-      priceOut: Number(this.env.GATEWAY_PRICE_OUT) || undefined,
+    return chooseBackend(this.env, {
       providerKey: credential?.key,
       user,
       onUsage: (record) => {

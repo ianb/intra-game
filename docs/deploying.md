@@ -168,6 +168,25 @@ under **Settings → Variables and Secrets → Add → Secret**.
 public. Secrets are a separate store and are write-only once set — the dashboard
 will show you the name, never the value.
 
+### Check the model call before you need it
+
+Put the same values in a local `.dev.vars` and run:
+
+```bash
+pnpm smoke
+```
+
+One real call to the configured backend, using the same `chooseBackend` the game
+does, printing the answer, the token counts and what it cost. A failure prints
+the provider's own words, so a rejected parameter or an unpaid provider names
+itself.
+
+Worth doing rather than opening the game, because nothing in `pnpm test` can
+find these: every test answers with a fake provider, and a fake accepts any
+request body. Two parameters shipped that way — `usage` and then `reasoning`,
+both OpenRouter spellings that OpenAI rejects with a 400 — and both were found
+by a player mid-turn.
+
 At this point `/api/*` still returns 404, because Access isn't configured. That
 is deliberate: the API fails closed rather than open. Step 4 is what turns it
 on.

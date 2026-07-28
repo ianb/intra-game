@@ -52,6 +52,17 @@ export interface ModelOptions {
    * narrative tags are surfaced on `streaming` as they arrive.
    */
   chatStream?: ChatStreamFn;
+  /**
+   * Keep the log in browser storage across reloads.
+   *
+   * Made optional when the browser stopped running the engine. A cached log was
+   * the game when the tab produced it; now the server owns it, and the cache is
+   * a stale copy of someone else's state that renders first and is replaced a
+   * moment later — the game visibly appearing and then vanishing on every load.
+   * It is also keyed once for the whole tab, so switching games showed the wrong
+   * one in between.
+   */
+  persistLog?: boolean;
 }
 
 interface ParsedInputType {
@@ -97,9 +108,9 @@ export class Model {
     this.promiseQueue = new TrackSettled();
     // Versioned: this is the game itself, and the one stored thing where
     // misreading an old shape would be worse than not reading it.
-    this.updates = persistentSignal<StoryEventType[]>("updates", [], {
-      versioned: true,
-    });
+    this.updates = opts.persistLog
+      ? persistentSignal<StoryEventType[]>("updates", [], { versioned: true })
+      : signal<StoryEventType[]>([]);
     this.liveUpdates = computed(() => applyRewinds(this.updates.value));
     this.updatesWithPositions = computed(() => this._eventsWithPositions());
     this.world = new World({

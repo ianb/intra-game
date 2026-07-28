@@ -44,9 +44,14 @@ DEV_FAKE_LLM=1
 # CF_GATEWAY_ID=the-gateway-name    # part of the URL; omit only if "default"
 # CF_AIG_TOKEN=your-ai-gateway-token
 #
-# The gateway routes to a provider rather than being one, so Anthropic still
-# needs paying: either store a key in the gateway (BYOK) or let the player
-# supply their own. Without either, the failure comes from Anthropic.
+# The gateway routes to a provider rather than being one, so the provider still
+# needs paying: buy credit on the gateway (Unified Billing, which the gateway
+# token then settles against), store a provider key in it (BYOK), or let the
+# player supply their own. Without any of the three the failure comes from the
+# provider, not from Cloudflare.
+#
+# `pnpm smoke` makes one real call with these values and prints what came back,
+# which is the cheapest way to find out whether they are right.
 # GATEWAY_MODEL=anthropic/claude-sonnet-5
 # GATEWAY_FLASH_MODEL=anthropic/claude-haiku-4-5
 
