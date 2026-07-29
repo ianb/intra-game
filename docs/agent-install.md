@@ -65,9 +65,11 @@ skipped, never thrown — one bad tag must not lose a turn. Those warnings are
 also how the evals score protocol compliance, so the engine's complaints are
 load-bearing.
 
-**Two places it can run.** In the browser against the player's own OpenRouter
-key, or on a Cloudflare Worker where a Durable Object owns the log and the tab
-is a renderer. The engine is the same code; only who calls the model differs.
+**One place it runs.** A Cloudflare Worker, where a Durable Object owns the log
+and the tab is a renderer. It used to also run in the browser on the player's
+own key; that mode is gone, along with the OpenRouter client it needed, so
+nothing in `app/` or `components/` can reach a provider. A `Model` given no
+backend refuses rather than falling back to one.
 
 ## 3. Where things are
 

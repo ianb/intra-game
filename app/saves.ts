@@ -2,6 +2,7 @@ import { model as gameModel } from "./model";
 import { migratePlayerId } from "@/lib/game/migrate";
 import type { Model } from "@/lib/game/model";
 import { listSaves, load, removeSave, save } from "./localsaves";
+import { importGame } from "./session";
 
 // Saved games in browser storage. This is a client concern — the engine must
 // stay free of browser APIs so it can run server-side, where a session's log is
@@ -21,8 +22,14 @@ export function saveGame(title: string, model: Model = gameModel): void {
   save(title, model.updates.value);
 }
 
-export function loadGame(slug: string, model: Model = gameModel): void {
-  model.replaceLog(migratePlayerId(load(slug)));
+/**
+ * Load a saved game into a new server session.
+ *
+ * This used to be `model.replaceLog`, which put the save into the browser's
+ * world only — so the tab showed one game and the server kept playing another.
+ */
+export async function loadGame(slug: string): Promise<void> {
+  await importGame(migratePlayerId(load(slug)));
 }
 
 export function listSavedGames(): SaveListType[] {

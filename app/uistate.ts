@@ -39,3 +39,13 @@ export const composer: { ref: React.RefObject<HTMLTextAreaElement> | null } = {
 };
 export const openSettings = signal(false);
 export const openHelp = signal(!seenHelp.value);
+
+/**
+ * The last thing that went wrong with a turn, shown above the composer.
+ *
+ * This lived in lib/llm.ts, next to the browser's OpenRouter client that set
+ * it. That client is gone — the engine runs on the server and a turn is a
+ * request — so the only thing left is the message, and it is view state like
+ * everything else here.
+ */
+export const lastLlmError = signal<string | null>(null);

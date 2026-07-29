@@ -15,7 +15,6 @@ import type {
   Person,
   StoryEventWithPositionsType,
 } from "../types";
-import { chat as defaultChat } from "../llm";
 import { historyTurnsOf } from "../usage";
 import type { ChatType } from "../types";
 import { World } from "./world";
@@ -45,7 +44,12 @@ export interface StreamingTagState {
 }
 
 export interface ModelOptions {
-  // The LLM backend. Defaults to the real OpenRouter chat(); tests inject a fake.
+  /**
+   * The LLM backend. There is no default: this used to fall back to the
+   * browser's OpenRouter client, so any code path that forgot to pass one
+   * quietly reached a provider on a key held in localStorage. Nothing here can
+   * reach a provider that its caller did not hand it.
+   */
   chat?: ChatFn;
   /**
    * Optional streaming backend. When present it is used instead of `chat`, and
@@ -114,7 +118,7 @@ export class Model {
       opts.chat ??
       (baseStream
         ? (request: ChatType) => baseStream(request, () => {})
-        : defaultChat);
+        : noBackend);
     this.chat = (request) => baseChat(this.stampMeta(request));
     this.chatStream = baseStream
       ? (request, onDelta) => baseStream(this.stampMeta(request), onDelta)
@@ -411,6 +415,7 @@ export class Model {
     return request;
   }
 
+
   checkLaunch() {
     if (!this.world.entities.PLAYER.launched) {
       const schedules = this.world.setupDailySchedules();
@@ -596,4 +601,20 @@ export class Model {
     }
     return Math.floor(Math.random() * sides) + 1;
   }
+}
+
+/**
+ * What a Model does when nobody gave it a way to talk to a model.
+ *
+ * Previously this was the browser's OpenRouter client, reached by omission —
+ * which is how the server ended up asking localStorage for an API key. Failing
+ * is the honest answer: the engine transports prompts, it does not decide where
+ * they go.
+ */
+function noBackend(): Promise<string> {
+  return Promise.reject(
+    new Error(
+      "This Model has no chat backend — pass `chat` or `chatStream` to the constructor.",
+    ),
+  );
 }

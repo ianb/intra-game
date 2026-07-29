@@ -3,7 +3,6 @@
  * it is, and what they're carrying.
  */
 
-import LlmLog, { clearLogs } from "@/components/llmlog";
 import { A, Button, CheckButton } from "@/components/input";
 import { Clock } from "@/components/digitalnumerals";
 import { Map, Todos, ViewObjects } from "./panels";
@@ -22,16 +21,6 @@ export function HeadsUpDisplay() {
   return (
     <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
       <div>
-        {activeTab.value === "log" && (
-          <span className="float-right z-50 pl-4 pr-1">
-            <Button
-              className="bg-red-800 text-xs p-1 opacity-50 hover:opacity-100"
-              onClick={clearLogs}
-            >
-              clear
-            </Button>
-          </span>
-        )}
         {activeTab.value === "map" && (
           <span className="float-right">
             <Button
@@ -90,16 +79,6 @@ export function HeadsUpDisplay() {
             </span>{" "}
           </>
         )}
-        {(showLogs || activeTab.value === "log") && (
-          <span
-            onClick={() => {
-              activeTab.value = "log";
-            }}
-            className={activeTab.value === "log" ? activeClass : inactiveClass}
-          >
-            log
-          </span>
-        )}{" "}
         {(showLogs || activeTab.value === "objs") && (
           <span
             onClick={() => {
@@ -116,12 +95,13 @@ export function HeadsUpDisplay() {
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
         {activeTab.value === "map" && <Map />}
-        {/* "mysteries" is the retired tab; anyone whose stored tab is still
-            that gets the list it merged into. */}
-        {(activeTab.value === "todo" || activeTab.value === "mysteries") && (
-          <Todos />
-        )}
-        {activeTab.value === "log" && <LlmLog />}
+        {/* "mysteries" and "log" are retired tabs; anyone whose stored tab is
+            still one of those gets something rather than a blank panel. The
+            prompt log went with the browser-side engine that wrote it — what
+            each turn sent is in the events now, under "show internals". */}
+        {(activeTab.value === "todo" ||
+          activeTab.value === "mysteries" ||
+          activeTab.value === "log") && <Todos />}
         {activeTab.value === "objs" && <ViewObjects />}
       </div>
     </div>

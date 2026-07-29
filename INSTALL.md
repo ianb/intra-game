@@ -55,18 +55,23 @@ pnpm install        # or --prod, see above
 pnpm dev            # http://localhost:8787 — client and server together
 ```
 
-Open Settings (⚙) and connect to OpenRouter. The engine runs in your browser
-against your own key; nothing is sent anywhere else. Games are saved in browser
-storage.
+`pnpm dev` runs the client and the Worker together, and the Worker is where the
+engine is — so it needs a model and an identity, both from `.dev.vars`. Copy
+`.dev.vars.example` to `.dev.vars` and it starts on the offline stand-in, which
+is enough to see the game work but not to read it. `OPENROUTER_API_KEY` in the
+same file is the usual way to play for real; `pnpm smoke` checks the call works
+before you open the page.
+
+Games live on the server, one per session, and outlive the tab.
 
 Two things worth knowing on the way in:
 
 - `?checkpoint=briefed` starts partway into the game instead of at the opening.
   `pnpm checkpoint --list` shows what's recorded. Your game in progress is saved
   first, so following one of these can't lose anything.
-- Settings also has an optional second model for the mechanical prompts
-  (interpreting what you typed, resolving what you looked at). Leave it unset to
-  use one model for everything.
+- `GATEWAY_FLASH_MODEL` in `.dev.vars` is an optional second, cheaper model for
+  the mechanical prompts (interpreting what you typed, resolving what you looked
+  at). Leave it unset to use one model for everything.
 
 ## 2. Develop it
 

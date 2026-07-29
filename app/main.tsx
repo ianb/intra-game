@@ -2,18 +2,9 @@
 // dist/styles.css, which index.html links directly.
 import { createRoot } from "react-dom/client";
 import Application from "./application";
-import OpenRouterCallback from "./openroutercallback";
 
-// Client entry point. The game is a single-page app with two routes, so routing
-// is just a path check — no router library, and no server involvement. The
-// Cloudflare static-asset config serves index.html for both paths.
-function Route() {
-  const path = window.location.pathname.replace(/\/+$/, "");
-  if (path === "/openrouter") {
-    return <OpenRouterCallback />;
-  }
-  return <Application />;
-}
+// Client entry point. One page: the /openrouter callback route went with the
+// browser-side engine, which is the only thing that had a key to receive.
 
 const container = document.getElementById("root");
 if (!container) {
@@ -21,4 +12,4 @@ if (!container) {
 }
 // Note: deliberately not StrictMode. The engine's signal effects are not
 // double-invocation safe, and this app never server-renders.
-createRoot(container).render(<Route />);
+createRoot(container).render(<Application />);

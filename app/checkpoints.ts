@@ -1,6 +1,7 @@
 import { model as gameModel } from "./model";
 import { migratePlayerId } from "@/lib/game/migrate";
 import { proposeSaveTitle, saveGame } from "./saves";
+import { importGame } from "./session";
 import type { Model } from "@/lib/game/model";
 import type { StoryEventType } from "@/lib/types";
 
@@ -17,7 +18,8 @@ import type { StoryEventType } from "@/lib/types";
  * which is how to hand someone a specific thing to look at, rather than a game
  * and a paragraph of instructions for reaching the interesting part.
  *
- * A checkpoint is an event log and loading one is `replaceLog`, exactly like
+ * A checkpoint is an event log and loading one hands it to a new server
+ * session, exactly like
  * loading a save — there is no separate "preview mode" for the state to be
  * wrong in.
  */
@@ -69,7 +71,7 @@ export async function loadCheckpoint(
   if (model.updates.value.length > 1) {
     saveGame(`${proposeSaveTitle(model)} (before ${name})`, model);
   }
-  model.replaceLog(migratePlayerId(checkpoint.events));
+  await importGame(migratePlayerId(checkpoint.events));
 }
 
 /** The checkpoint named in the URL, if the page was opened with one. */

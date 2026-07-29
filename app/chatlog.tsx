@@ -5,12 +5,6 @@
 
 import React, { KeyboardEvent, useEffect, useRef } from "react";
 import {
-  customEndpoint,
-  lastLlmError,
-  lastLlmErrorType,
-  openrouterModel,
-} from "@/lib/llm";
-import {
   isPerson,
   isStoryActionAttempt,
   isStoryDescription,
@@ -32,7 +26,7 @@ import {
   signIn,
   turnRunning,
 } from "./session";
-import { openSettings, showInternals } from "./uistate";
+import { lastLlmError, openSettings, showInternals } from "./uistate";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { renderStoryAction } from "./renderstoryaction";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
@@ -60,7 +54,6 @@ export function ChatLog() {
           <pre className="text-sm whitespace-pre-wrap p-2">
             {lastLlmError.value}
           </pre>
-          {lastLlmErrorType.value === "openrouter" && <NoModelAccess />}
         </div>
       )}
       <LoadingLine />

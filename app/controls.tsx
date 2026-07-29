@@ -29,7 +29,7 @@ import {
 import { A, Button, CheckButton } from "@/components/input";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { effect, signal, useSignal } from "@preact/signals-react";
-import { initSession, playTurn, turnRunning } from "./session";
+import { initSession, playTurn, startNewGame, turnRunning } from "./session";
 import { model } from "./model";
 import { composer, showInternals } from "./uistate";
 import { twMerge } from "tailwind-merge";
@@ -273,8 +273,8 @@ function LoadControls({ onDone }: { onDone: () => void }) {
           <Button
             className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
             onClick={async () => {
-              model.reset();
               onDone();
+              await startNewGame();
             }}
           >
             New Game
@@ -287,8 +287,8 @@ function LoadControls({ onDone }: { onDone: () => void }) {
               <Button
                 className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
                 onClick={async () => {
-                  loadGame(save.slug);
                   onDone();
+                  await loadGame(save.slug);
                 }}
               >
                 {save.title} ({save.date})
@@ -341,8 +341,8 @@ function Checkpoints({ onDone }: { onDone: () => void }) {
             className="text-sm mr-1 bg-gray-900 hover:bg-gray-700 text-white"
             title={`${checkpoint.describe} — recorded ${checkpoint.recorded}`}
             onClick={async () => {
-              await loadCheckpoint(checkpoint.name);
               onDone();
+              await loadCheckpoint(checkpoint.name);
             }}
           >
             {checkpoint.name}

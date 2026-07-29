@@ -45,15 +45,20 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
-- **Finish removing the browser-side engine** `ui` `M` — the frontend is a view
-  now: it folds the server's events into a world and renders them, and the one
-  Model it holds throws if anything asks it to call a provider. What is left is
-  the wreckage of the old mode. `lib/llm.ts` still carries a whole OpenRouter
-  client with `dangerouslyAllowBrowser`, `components/modelselector.tsx` and
-  `components/openrouter.tsx` and the `/openrouter` callback route still exist,
-  and `Model`'s constructor still defaults to that client — so a component can
-  still reach a provider by forgetting to pass a chat function. Deleting the
-  client is the change that makes the rule structural rather than a convention.
+- **`<system>` blocks and `<insert-system />` are dead prompt syntax** `engine`
+  `M` — the character prompt writes its output instructions as `<system>` blocks
+  in the user message and marks where they belong with `<insert-system />` in
+  the system message. The code that performed that move lived only in the
+  browser's OpenRouter client, so it has never run on the server, in the evals,
+  or when recording a cassette: every prompt goes out with a literal
+  `<insert-system />` and the instructions still wrapped in tags, which models
+  echo back (`Got unexpected tag: <system></system>` in
+  evals/results/2026-07-27.yaml). Restoring the move is the wrong fix — it
+  rewrites the system message every turn and so destroys the prefix cache. The
+  fix is to drop the syntax: no `<insert-system />`, and the instructions as
+  plain text where they already sit. That is still a prompt change, so it needs
+  re-recorded cassettes and a `pnpm evals` run against gpt-5.4-nano medium,
+  whose 25/26 was measured with the tags in place.
 
 - **A player's own key, on the server** `engine` `S` — the Worker can already
   store a per-session credential and send it as the provider key, and the quota

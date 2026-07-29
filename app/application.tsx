@@ -7,12 +7,6 @@
 
 import React, { KeyboardEvent, useEffect, useRef } from "react";
 import ScrollOnUpdate from "@/components/scrollonupdate";
-import {
-  customEndpoint,
-  lastLlmError,
-  lastLlmErrorType,
-  openrouterModel,
-} from "@/lib/llm";
 import { A, Button, CheckButton } from "@/components/input";
 import { ChatLog } from "./chatlog";
 import { Controls } from "./controls";
@@ -31,7 +25,13 @@ import {
   turnRunning,
 } from "./session";
 import { model } from "./model";
-import { openHelp, openSettings, seenHelp, soundOn } from "./uistate";
+import {
+  lastLlmError,
+  openHelp,
+  openSettings,
+  seenHelp,
+  soundOn,
+} from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
 

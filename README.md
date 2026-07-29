@@ -55,9 +55,9 @@ pnpm deploy     # wrangler deploy
 ```
 
 One Worker serves both halves: Cloudflare serves `dist/` directly (with a
-single-page-application fallback, so `/` and the `/openrouter` OAuth callback
-resolve to the same HTML shell), and [worker/](./worker/) handles `/api/*` —
-Cloudflare Access for identity, a Durable Object per session.
+single-page-application fallback), and [worker/](./worker/) handles `/api/*` and
+`/auth/*` — Google sign-in or Cloudflare Access for identity, a Durable Object
+per session. The engine runs there, not in the tab.
 
 `pnpm preview` needs no Cloudflare account: `.dev.vars` stands in for both the
 verified identity and the model backend.

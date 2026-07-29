@@ -9,7 +9,6 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/input";
-import { clearUsage, usageLog } from "@/lib/llm";
 import { byPromptType, toCsv, totals } from "@/lib/usage";
 import type { UsageRecordType } from "@/lib/usage";
 import { fetchServerUsage, remoteSession } from "./session";
@@ -51,7 +50,10 @@ export function Costs() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  const records = session ? (remote.value ?? []) : usageLog.value;
+  // Always the server's records. There used to be a browser-side log to fall
+  // back on, written by the browser's own model calls; there are no browser
+  // model calls.
+  const records = remote.value ?? [];
   const sum = totals(records);
   const perType = Object.entries(byPromptType(records)).sort(
     (a, b) => b[1].promptTokens - a[1].promptTokens,
@@ -116,11 +118,6 @@ export function Costs() {
             <Button className="text-sm mr-1" onClick={() => download(records)}>
               Download CSV
             </Button>
-            {!session && (
-              <Button className="text-sm" onClick={clearUsage}>
-                Clear
-              </Button>
-            )}
           </div>
         </>
       )}

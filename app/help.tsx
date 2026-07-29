@@ -2,14 +2,6 @@
  * The help overlay — the closest thing the game has to instructions.
  */
 
-import {
-  customEndpoint,
-  lastLlmError,
-  lastLlmErrorType,
-  openrouterModel,
-} from "@/lib/llm";
-import { openHelp, openSettings } from "./uistate";
-import { openrouterCode, OpenRouterConnect } from "@/components/openrouter";
 import { useSignals } from "@preact/signals-react/runtime";
 
 export function Help() {
@@ -91,19 +83,6 @@ export function Help() {
           DONE
         </button>
       </div>
-      {(!openrouterCode.value || !openrouterModel.value) && (
-        <div className="flex justify-center mt-4">
-          <button
-            className="done bg-green-800 hover:bg-green-600 cursor-pointer px-4"
-            onClick={() => {
-              openSettings.value = true;
-              openHelp.value = false;
-            }}
-          >
-            ⚙ Open settings to configure LLM access
-          </button>
-        </div>
-      )}
     </div>
   );
 }

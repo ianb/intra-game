@@ -90,7 +90,9 @@ export class GameSession {
       case "POST /input":
         return this.input(request);
       case "POST /launch":
-        return this.launch();
+        return this.launch(request);
+      case "POST /import":
+        return this.importLog(request);
       default:
         return json({ error: "not found" }, 404);
     }
@@ -266,11 +268,43 @@ export class GameSession {
    * Refuses a session that has already started, so a double-fired client (a
    * reload mid-launch, two tabs) cannot append a second opening.
    */
-  private async launch(): Promise<Response> {
+  private async launch(request: Request): Promise<Response> {
+    // Read the body and throw it away. Nothing here wants it, but the client
+    // sends one and workerd treats an unread request stream after the response
+    // has been sent as an uncaught error — which in `wrangler dev` takes the
+    // whole server down a moment after a perfectly successful launch.
+    await request.text().catch(() => "");
     if (await this.sessionLog.count()) {
       return json({ error: "already started" }, 409);
     }
     return this.runTurn(null);
+  }
+
+  /**
+   * Seed an empty session with a log produced elsewhere.
+   *
+   * Loading a saved game or a checkpoint used to be `replaceLog` on the
+   * browser's copy of the world. That made the tab show one game while the
+   * server went on believing in another, and the next turn snapped back to the
+   * server's. The client has no log of its own to replace any more, so loading
+   * one means giving it to a new session.
+   *
+   * Only into an empty session, and the events are appended through the same
+   * log the engine writes to, so "append-only" still holds: this creates
+   * history rather than rewriting it.
+   */
+  private async importLog(request: Request): Promise<Response> {
+    if (await this.sessionLog.count()) {
+      return json({ error: "already started" }, 409);
+    }
+    const { events } = (await request.json().catch(() => ({}))) as {
+      events?: StoryEventType[];
+    };
+    if (!Array.isArray(events) || !events.length) {
+      return json({ error: "missing events" }, 400);
+    }
+    await this.sessionLog.append(events);
+    return json({ events: await this.sessionLog.count() });
   }
 
   private async runTurn(text: string | null): Promise<Response> {

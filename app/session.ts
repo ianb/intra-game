@@ -1,5 +1,5 @@
 import type { StreamingTagState } from "@/lib/game/model";
-import { lastLlmError } from "@/lib/llm";
+import { lastLlmError } from "./uistate";
 import { persistentSignal } from "@/lib/persistentsignal";
 import { signal } from "@preact/signals-react";
 import { lastTurnInput, lastTurnLength } from "@/lib/game/rewind";
@@ -492,6 +492,61 @@ export async function redoTurn(): Promise<void> {
   const text = await undoTurn();
   if (text) {
     await playTurn(text);
+  }
+}
+
+/**
+ * Start a fresh game on the server and switch this tab to it.
+ *
+ * "New Game", `/reset` and `/restart` all used to call `model.reset()`, which
+ * empties the browser's copy of the world and re-launches the engine in the
+ * tab. There is no engine in the tab: it threw, the transcript was gone, and
+ * the server still held the game that was actually being played.
+ */
+export async function startNewGame(): Promise<void> {
+  sessionStatus.value = "Starting a new game...";
+  try {
+    const created = await newServerSession();
+    // Cleared before the switch so the old game doesn't sit there looking
+    // current while the new one is being made.
+    model.adoptRemoteLog([]);
+    remoteSession.value = created.id;
+  } catch (e) {
+    sessionStatus.value = null;
+    lastLlmError.value = `Could not start a game on the server: ${String(e)}`;
+    return;
+  }
+  await initSession();
+}
+
+/**
+ * Put an existing log — a saved game, a checkpoint — into a new server session.
+ *
+ * Loading one used to be `replaceLog` on the browser's world, from back when
+ * that world was the game. Now the server owns it, so the tab would show the
+ * loaded game while the server went on believing in the old one, and the next
+ * turn snapped back. Loading means handing the log to a new session.
+ */
+export async function importGame(events: StoryEventType[]): Promise<void> {
+  sessionStatus.value = "Loading that game...";
+  try {
+    const created = await newServerSession();
+    await createSession(created.id);
+    const response = await fetch(api("import", created.id), {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ events }),
+    });
+    if (!response.ok) {
+      throw new Error(`import failed: ${response.status}`);
+    }
+    model.adoptRemoteLog(events);
+    remoteSession.value = created.id;
+  } catch (e) {
+    lastLlmError.value = `Could not load that game: ${String(e)}`;
+  } finally {
+    sessionStatus.value = null;
   }
 }
 

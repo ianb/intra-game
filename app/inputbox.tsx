@@ -15,6 +15,7 @@ import {
   remoteSession,
   sessionStatus,
   signIn,
+  startNewGame,
   turnRunning,
   undoTurn,
 } from "./session";
@@ -65,7 +66,10 @@ export function Input() {
     // like nothing had happened for as long as the model took.
     textareaRef.current.value = "";
     if (text === "/reset" || text === "/restart") {
-      model.reset();
+      // Not model.reset(): that empties this tab's copy of the world and asks
+      // the engine to launch a game here, which is neither where the engine is
+      // nor where the game is.
+      await startNewGame();
     } else {
       try {
         await playTurn(text);
