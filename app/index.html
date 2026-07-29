@@ -9,7 +9,31 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="antialiased">
-    <div id="root"></div>
+    <!--
+      React replaces this on mount. Without it the page is blank for as long as
+      the bundle takes to load and parse, which on a cold visit is the first
+      thing anyone sees.
+
+      Inline styles rather than Tailwind classes: the Tailwind build only scans
+      .tsx, so a class used only here would not be in styles.css.
+    -->
+    <div id="root">
+      <div
+        style="
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          background: #111827;
+          color: #fff;
+        "
+      >
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem">Intra</div>
+        <div style="color: #9ca3af; font-size: 0.875rem">Loading...</div>
+      </div>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

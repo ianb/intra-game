@@ -167,8 +167,20 @@ export const authState = signal<AuthState | null>(null);
 
 /** Ask once, at startup. Failure leaves it null, which shows nothing. */
 export async function loadAuth(): Promise<void> {
+  sessionStatus.value = "Connecting...";
   authState.value = await fetchAuth();
 }
+
+/**
+ * What the client is waiting for, in words, or null when it isn't waiting.
+ *
+ * Loading used to be invisible because it was instant: the log came out of
+ * browser storage and the game was on screen before anything was fetched. Now
+ * it is three round trips and a model call — who you are, which game, its log,
+ * and for a new game the opening itself — and all of it happened behind a blank
+ * screen.
+ */
+export const sessionStatus = signal<string | null>("Loading...");
 
 /**
  * Ask the server who this is.
@@ -323,14 +335,24 @@ export interface Playable {
   why: string;
   /** Signing in would fix it, and here's where. */
   loginUrl: string | null;
+  /**
+   * Whether this is a wait rather than a problem.
+   *
+   * The composer refuses either way, but only one of them is worth offering
+   * buttons about.
+   */
+  waiting?: boolean;
 }
 
 export function playable({
   auth,
   session,
+  status,
 }: {
   auth: AuthState | null;
   session: string | null;
+  /** What the client is loading, if anything; see `sessionStatus`. */
+  status?: string | null;
 }): Playable {
   // Before the answer arrives, assume yes. It resolves in a moment, and a
   // composer that refuses and then changes its mind is worse than one that
@@ -344,6 +366,15 @@ export function playable({
       why: "Sign in to play.",
       loginUrl: auth.loginUrl,
     };
+  }
+  // Still loading, whatever stage of it. Ahead of the session check because a
+  // session id is in hand well before its log has been read — so the composer
+  // was live over an empty world, and a turn sent then would have been played
+  // against a game this tab had not seen. It also stops "try reloading" being
+  // shown during the ordinary case of loading, which was both wrong and the one
+  // action that would start the wait over.
+  if (status) {
+    return { ok: false, why: status, loginUrl: null, waiting: true };
   }
   if (!session) {
     return {
@@ -485,6 +516,7 @@ export async function initSession(): Promise<void> {
   // no identity source at all has no email either, so it still creates nothing.
   const auth = authState.value;
   if (!remoteSession.value && auth?.email) {
+    sessionStatus.value = "Starting a new game...";
     try {
       const created = await newServerSession();
       remoteSession.value = created.id;
@@ -495,6 +527,7 @@ export async function initSession(): Promise<void> {
 
   const session = remoteSession.value;
   if (!session) {
+    sessionStatus.value = null;
     // ?checkpoint=briefed drops straight into a recorded state, so a link can
     // point at a specific part of the game. Only in local play: in a server
     // session the log belongs to the server, and loading one here would put the
@@ -512,6 +545,7 @@ export async function initSession(): Promise<void> {
     return;
   }
   try {
+    sessionStatus.value = "Loading your game...";
     await createSession(session);
     const { events } = await fetchEvents(session);
     model.adoptRemoteLog(events);
@@ -519,9 +553,14 @@ export async function initSession(): Promise<void> {
     // and until it does there is nothing to read: the player sees a text box
     // and no game.
     if (!events.length) {
+      // The longest wait of the lot, because it is a model call rather than a
+      // fetch. It clears as soon as the first words arrive.
+      sessionStatus.value = "Starting the game...";
       await intoModel((handlers) => launchSession(session, handlers));
     }
   } catch (e) {
     lastLlmError.value = `Could not join session: ${String(e)}`;
+  } finally {
+    sessionStatus.value = null;
   }
 }

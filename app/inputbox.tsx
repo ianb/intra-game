@@ -13,6 +13,7 @@ import {
   playTurn,
   redoTurn,
   remoteSession,
+  sessionStatus,
   signIn,
   turnRunning,
   undoTurn,
@@ -46,6 +47,7 @@ export function Input() {
   const can = playable({
     auth: authState.value,
     session: remoteSession.value,
+    status: sessionStatus.value,
   });
   async function onSubmit() {
     if (turnRunning.value || !can.ok) {
@@ -107,9 +109,12 @@ export function Input() {
     }
   }
   const blocked = !can.ok;
+  // Buttons only for something the player can do something about. While the
+  // game is still loading there is nothing to offer, and "Open settings" beside
+  // "Loading your game..." reads as a problem rather than a wait.
   return (
     <div className="mt-4">
-      {blocked && (
+      {blocked && !can.waiting && (
         <div className="flex gap-2 mb-2">
           {can.loginUrl && (
             <Button

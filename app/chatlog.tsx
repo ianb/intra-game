@@ -25,7 +25,13 @@ import { ColorizedText } from "./colorizedtext";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { TimePeriod } from "./hud";
 import { model } from "./model";
-import { authState, pendingInput, signIn, turnRunning } from "./session";
+import {
+  authState,
+  pendingInput,
+  sessionStatus,
+  signIn,
+  turnRunning,
+} from "./session";
 import { openSettings, showInternals } from "./uistate";
 import { parseTags, serializeAttrs } from "@/lib/parsetags";
 import { renderStoryAction } from "./renderstoryaction";
@@ -57,6 +63,7 @@ export function ChatLog() {
           {lastLlmErrorType.value === "openrouter" && <NoModelAccess />}
         </div>
       )}
+      <LoadingLine />
       <PendingInput />
       <StreamingLine />
       {turnRunning.value && !model.streaming.value && <CalculatingThrobber />}
@@ -96,6 +103,29 @@ function NoModelAccess() {
       >
         ⚙ {canSignIn ? "Or use your own key" : "Open settings"}
       </Button>
+    </div>
+  );
+}
+
+/**
+ * What is being waited for, while there is no game on screen yet.
+ *
+ * Only shown when the transcript is empty, which is the one time there is
+ * nothing else to look at. Getting a game on screen is a round trip to find out
+ * who you are, one to find the game, one to read its log, and for a new game a
+ * model call to write the opening — several seconds, and all of it used to
+ * happen behind a blank page.
+ */
+function LoadingLine() {
+  useSignals();
+  const status = sessionStatus.value;
+  if (!status || model.updates.value.length || model.streaming.value) {
+    return null;
+  }
+  return (
+    <div className="text-gray-400 text-center py-8">
+      {status}
+      <span className="animate-pulse">▋</span>
     </div>
   );
 }

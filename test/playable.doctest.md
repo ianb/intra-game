@@ -54,6 +54,41 @@ say(playable({ auth: signedIn, session: null }));
 => no: No game on the server yet — try reloading.
 ```
 
+Unless it hasn't finished starting. Getting a game on screen is three requests
+and a model call, and the composer said "try reloading" for all of it — both
+wrong and the one action that would start the wait over.
+
+``` continue
+say(playable({ auth: signedIn, session: null, status: "Loading your game..." }));
+=> no: Loading your game...
+```
+
+Loading beats having a session, because the id arrives well before the log
+does. Otherwise the composer went live over an empty world, and a turn sent
+then would have been played against a game this tab had never seen.
+
+``` continue
+say(playable({ auth: signedIn, session: "abc", status: "Loading your game..." }));
+=> no: Loading your game...
+```
+
+A wait, not a problem, which is how the composer knows not to offer buttons:
+
+``` continue
+[
+  playable({ auth: signedIn, session: null, status: "Loading your game..." }).waiting,
+  playable({ auth: signedIn, session: null }).waiting,
+].map(String).join(" ");
+=> true undefined
+```
+
+Signing in still wins over it, since no amount of waiting fixes that:
+
+``` continue
+say(playable({ auth: signedOut, session: null, status: "Loading your game..." }));
+=> no: Sign in to play.
+```
+
 ## Before the answer arrives
 
 `/api/auth` is a fetch, so `auth` is null for the first moment of the page. That

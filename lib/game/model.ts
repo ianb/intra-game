@@ -98,9 +98,24 @@ export class Model {
     // without the context its usage record needs. Doing this at the six
     // assemble sites instead would mean the one that forgot produced records
     // that silently read as turn 0.
-    const baseChat = opts.chat ?? defaultChat;
-    this.chat = (request) => baseChat(this.stampMeta(request));
     const baseStream = opts.chatStream;
+    // A streaming backend answers the non-streaming calls too, by ignoring the
+    // deltas. Not a convenience: the server configures `chatStream` and nothing
+    // else, so `chat` fell through to the browser's OpenRouter client, which
+    // looks for a key in localStorage. In a Worker there isn't one, and there
+    // isn't a localStorage either.
+    //
+    // It stayed hidden because almost everything goes through executePrompt,
+    // which prefers the stream. The one caller that doesn't is
+    // formatPeopleDescription, so a whole game worked until the player walked
+    // into a room with somebody in it, and then failed with the browser's
+    // error — "No OpenRouter API key found" — from the server.
+    const baseChat =
+      opts.chat ??
+      (baseStream
+        ? (request: ChatType) => baseStream(request, () => {})
+        : defaultChat);
+    this.chat = (request) => baseChat(this.stampMeta(request));
     this.chatStream = baseStream
       ? (request, onDelta) => baseStream(this.stampMeta(request), onDelta)
       : undefined;

@@ -97,3 +97,50 @@ And the dialog really did land in the log:
 dialogOf(streamed).length > 0;
 => true
 ```
+
+## A streaming backend answers the non-streaming calls too
+
+Almost every prompt goes through `executePrompt`, which uses `chatStream` when
+there is one. One doesn't: `formatPeopleDescription` calls `model.chat`
+directly, because its answer is prose written into a room description rather
+than a turn to show arriving.
+
+That made `chat` reachable on a Model configured with only a stream — the
+server's configuration — where it fell through to the browser's OpenRouter
+client and asked localStorage for a key. A game played fine until the player
+walked into a room with somebody in it, and then the server reported "No
+OpenRouter API key found. Please connect to OpenRouter first."
+
+So a stream backs both, and the deltas are dropped:
+
+```ts
+const calls: string[] = [];
+const model = new Model(entities, {
+  chatStream: async (prompt) => {
+    calls.push(String(prompt.meta.title));
+    return "Two citizens ignore you with great dedication.";
+  },
+});
+await model.chat({ meta: { title: "describe people" }, messages: [] });
+calls.join(" ");
+=> describe people
+```
+
+It is still `chat`'s answer that comes back, whole:
+
+``` continue
+const answer = await model.chat({ meta: { title: "describe people" }, messages: [] });
+answer;
+=> Two citizens ignore you with great dedication.
+```
+
+An explicit `chat` still wins, so a test can drive the two separately:
+
+``` continue
+const both = new Model(entities, {
+  chat: async () => "from chat",
+  chatStream: async () => "from stream",
+});
+await both.chat({ meta: { title: "x" }, messages: [] });
+=> from chat
+```

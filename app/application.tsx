@@ -26,6 +26,7 @@ import {
   initSession,
   loadAuth,
   playTurn,
+  sessionStatus,
   signIn,
   turnRunning,
 } from "./session";
@@ -91,10 +92,19 @@ function SignInLink() {
 function SignInGate({ children }: { children: React.ReactNode }) {
   useSignals();
   const auth = authState.value;
-  // Still asking. Deliberately blank rather than a spinner or the game: showing
-  // either would mean showing something that changes a moment later.
+  // Still asking who this is. This used to render nothing, on the grounds that
+  // anything shown would change a moment later — but "a moment" is a network
+  // round trip to the Worker, and what a visitor saw was a blank page with no
+  // way to tell it apart from a broken one.
   if (!auth) {
-    return null;
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+        <div className="text-2xl mb-2">Intra</div>
+        <div className="text-gray-400 text-sm">
+          {sessionStatus.value ?? "Loading..."}
+        </div>
+      </div>
+    );
   }
   if (!auth.loginUrl || auth.email) {
     return <>{children}</>;
