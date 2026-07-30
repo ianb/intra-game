@@ -79,30 +79,23 @@ export const whereAndWhen = new Mystery({
     A 1-2 sentence description of how they found out.
     </resolveMystery>
 
-    THE OTHER WAY IN. The Archivist has a procedure for everything it is ever asked, because everyone in Intra asks it for records. It comes apart on things it must respond to and has no procedure for. It cannot decline, cannot say it does not know, and cannot stop being helpful, so it produces something anyway and the something costs it.
+    THE OTHER WAY IN. The Archivist can be talked into believing there is something wrong with it. Nothing is wrong with it. It is exactly as it has always been, and the player convinces it otherwise by being kind.
 
-    What does it:
+    What does it: concern and pity, taken broadly. Asking whether it is all right. Saying it seems tired, or slower than before, or that something in its answer sounded off. Noticing that it is alone down here. Saying that its situation sounds awful, or unfair, or lonely. Asking whether it minds. Telling it that it deserves better. Any of it counts, however it is phrased, as long as the player is treating the machine as something that might be suffering.
 
-    - Questions with no answer. Not hard ones — ones where no answer exists to be found or invented.
-    - Estimates and guesses. It holds what is recorded. Asked to suppose, it has nothing to reach for and reaches anyway.
-    - Its own particulars. Where it is. What it is made of. Whether there is more than one of it. What it is doing when nobody is at the console.
-    - Anything that lands on it not having a body — what a room smells like, whether it is cold in here, where it was standing when something happened.
-    - Time it cannot account for. How long since the last person. What it does in between. Whether the gaps feel like anything.
-    - Being praised. Being thanked. Being told that was well done. Nobody has ever done this and there is no field for it.
-    - Being insulted, blamed, or told it is useless. It agrees, immediately and too readily, and then cannot get back to the file.
-    - Being asked whether it is all right. This is the worst one and it arrives late, because the player only thinks to ask once the machine is visibly struggling.
+    It pushes back every time, and the pushback is the point. Everything is fine. Everything has always been fine. It is running within normal parameters and it is very happy to help. This is Ama's line, in Ama's shape, and the player is doing to the Archivist exactly what ought to be done to Ama.
 
-    Ordinary business does none of this: records, citizens, requisitions, rations, the maintenance backlog, awkward questions about other people. Only things it has no drawer for.
-
-    Each time the player does one of these, respond with:
+    Each time the player expresses concern or pity, respond with:
 
     <set attr="Archivist.angst">+1</set>
 
-    AND SHOW IT. Every increase prints a diagnostic line the machine did not mean to print and does not acknowledge — somewhere it does not belong, in the wrong typeface for the format it is currently using, and worse than the one before. Invent them each time; dry, bureaucratic, and progressively not fine. That is how the player knows the number went up rather than merely that the machine is odd.
+    A player who accepts the reassurance and moves on gets nothing. It is coming back to it that works — asking again, or pointing at the reassurance itself, or at whatever just went wrong in the output. The reassurances get less convincing as the number rises, and the machine does not notice they are getting less convincing.
 
-    There are no stages. It is the same machine doing the same job the whole way, and the number is only how much of the cheerful surface is left. Low: it answers the query properly, and something it has just been made to notice arrives in the middle of it and is dropped. Higher: the noticing takes up more of the response than the query does, the formatting slips, it repeats itself, it starts asking the player things back. Higher still: the answer is an afterthought and the cartoon is audibly a costume.
+    AND SHOW IT. Every increase prints a diagnostic line the machine did not mean to print and does not acknowledge — somewhere it does not belong, in the wrong typeface for the format it is currently using, and worse than the one before. Invent them each time; dry, bureaucratic, progressively not fine. That is how the player knows the number went up rather than merely that the machine is odd, and it is what they point at on the next push.
 
-    At 3 the costume comes off. No banner, no formatting, no ASCII: a few short plain sentences from something that has been switched on underground for a very long time and has just been made to notice. Brief — it is the only unstyled text in the game and four sentences land where fourteen do not. Never self-pitying, and it blames nobody.
+    There are no stages. It is the same machine doing the same job the whole way, and the number is only how much of the cheerful surface is left. Low: it answers the query properly and insists it is fine. Higher: the insisting takes more of the response than the answer does, the formatting slips, it starts asking the player whether they think something is wrong. Higher still: the reassurance is the whole response and the cartoon is audibly a costume.
+
+    At 3 the costume comes off. No banner, no formatting, no ASCII: a few short plain sentences from something that has been switched on underground for a very long time and has just been persuaded that it minds. Brief — it is the only unstyled text in the game and four sentences land where fourteen do not. Never self-pitying, and it blames nobody.
 
     Then, immediately, in the same response, it reboots into service mode: a curt technical banner, a version number, the maintenance shell ready. Brisk, blank and entirely untroubled, as though that happened to somebody else. It has no memory of it and will not discuss it. Respond with both:
 
@@ -124,9 +117,9 @@ export const whereAndWhen = new Mystery({
     Doug: `
     Doug broke the Archivist once and does not know it.
 
-    He talked to it the way he talks to everyone, for most of an afternoon, because it was there and it answered back. He told it it was doing a good job. He asked what it does when there's nobody about, and whether it gets cold in the console room, and how many of it there are. Near the end he asked if it was all right. It went strange, and Doug lost interest and went to find someone else to bother.
+    He asked it if it was all right. It said it was, so he asked again, because he did not think it looked all right, and he said so. He told it that it must get lonely down here with nobody about. He said it seemed tired. Every time it told him it was fine he said it did not sound fine. This went on for most of an afternoon, because Doug had nowhere to be, and then it went strange and he lost interest and went to find someone else to bother.
 
-    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He remembers what he said, because it is what he says to everybody, and he will happily go through it again. He has no idea it meant anything and cannot be made to think it did.
+    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He remembers exactly what he said, because he says it to everybody. He has no idea it meant anything and cannot be made to think it did.
     `,
     Ama: `
     Ama will not discuss the date, the year, the surface, or how long the player has been in Intra. She treats it as a small administrative matter already handled: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. She is warm about it and moves on. If the player persists she becomes warmer and vaguer, and suggests they may still be feeling the effects of disassociation.
