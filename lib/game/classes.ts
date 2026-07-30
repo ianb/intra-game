@@ -1028,6 +1028,17 @@ export class ArchivistClass extends Person {
    * wall panel to lie about being a wall panel.
    */
   serviceMode = false;
+  /**
+   * How badly the player has destabilised it, 0 upward.
+   *
+   * The second way in. A machine that cannot answer what year it is, or how
+   * long it has been running, or why it cannot say, and is made to notice that
+   * it cannot, comes apart — and a machine that has come apart stops minding
+   * which mode it is in. Counted rather than judged, because "sufficiently
+   * existentially troubled" is exactly the threshold a model fires on turn one
+   * or never.
+   */
+  angst = 0;
 }
 
 export class AmaClass extends Person<AmaParametersType> {

@@ -168,3 +168,27 @@ const [tag] = parseTags(`<set attr="PLAYER.intakeStep">done</set>`);
 applyTag(tag, event, { world, entityId: "Ama", roomId: "Intake" });
 => true
 ```
+
+## Counting up
+
+`<set>` on a number normally replaces it. `+N` adds instead, which is what a
+counter needs: the alternative is telling the model the current value and
+trusting it to add one, and when that goes wrong it goes wrong silently — a
+count that keeps being re-set to 1 never reaches whatever it was counting
+towards. The Archivist's `angst` is counted this way.
+
+```ts
+world.entities.Archivist.angst = 2;
+const { event } = apply(`<set attr="Archivist.angst">+1</set>`);
+String(event.changes.Archivist.after.angst);
+=> 3
+```
+
+A bare number still replaces, and `-2` stays a value rather than a subtraction —
+it is far likelier to mean "set this to minus two":
+
+``` continue
+world.entities.Archivist.angst = 2;
+String(apply(`<set attr="Archivist.angst">7</set>`).event.changes.Archivist.after.angst);
+=> 7
+```

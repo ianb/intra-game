@@ -193,7 +193,15 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
   if (typeof value === "boolean") {
     content = coerceBoolean(tag.content);
   } else if (typeof value === "number") {
-    content = coerceNumber(tag.content);
+    // "+1" adds; anything else replaces. A counter the model has to set
+    // absolutely means telling it the current value and trusting it to add one,
+    // which models get wrong — and the failure is silent, because a count that
+    // keeps being re-set to 1 never reaches whatever it was counting towards.
+    // Only "+N": a bare "-2" is far more likely to mean the value minus two.
+    const increment = /^\+\d+(?:\.\d+)?$/.exec(String(tag.content).trim());
+    content = increment
+      ? value + Number(increment[0])
+      : coerceNumber(tag.content);
   }
   if (!isValidPropertySet(key, content)) {
     console.warn(
