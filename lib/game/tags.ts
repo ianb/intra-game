@@ -197,8 +197,11 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     // absolutely means telling it the current value and trusting it to add one,
     // which models get wrong — and the failure is silent, because a count that
     // keeps being re-set to 1 never reaches whatever it was counting towards.
-    // Only "+N": a bare "-2" is far more likely to mean the value minus two.
-    const increment = /^\+\d+(?:\.\d+)?$/.exec(String(tag.content).trim());
+    // Only "+N", and only whole numbers: a bare "-2" is far more likely to mean
+    // the value minus two, and the digits are bounded because an unbounded
+    // group next to an optional one is a backtracking hazard the linter is
+    // right about. Nothing counts past a few.
+    const increment = /^\+(\d{1,9})$/.exec(String(tag.content).trim());
     content = increment
       ? value + Number(increment[0])
       : coerceNumber(tag.content);
