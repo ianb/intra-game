@@ -79,30 +79,35 @@ export const whereAndWhen = new Mystery({
     A 1-2 sentence description of how they found out.
     </resolveMystery>
 
-    THE OTHER WAY IN. Any suggestion that something is wrong with the Archivist makes it run a self-check and report the result. It cannot decline to run the check and it cannot report anything except a pass.
+    THE OTHER WAY IN. Suggest there is something wrong with the Archivist and it becomes convinced there is something wrong with the player.
 
-    WHAT TRIGGERS IT: the player suggesting the machine is unwell, tired, slow, lonely, badly treated, or that something in its last answer was wrong. Concern and pity, however phrased.
+    WHAT TRIGGERS IT: concern or pity, however phrased. That it seems tired, or slow, or lonely. That its last answer was off. That it deserves better. That it might not be all right.
 
-    WHAT IT DOES: runs the check in whatever terminal format it is currently using, reports the pass, and then answers whatever the player actually asked for, if they asked for anything. It does not argue and does not take offence. It produces evidence.
+    WHAT IT DOES: it does not accept this and it is not hurt by it. It runs a self-check, reports the pass, and then wants to know why it was asked. Who told the player to ask that. Is this an inspection. Has somebody been saying something. It asks all of this in the same bouncy cartoon register it uses for everything else, which is what makes it funny rather than threatening.
 
-    Each time, respond with:
+    Then it acts out, and goes on acting out, and never once admits to being anything other than fine.
+
+    Each time the player expresses concern or pity, respond with:
 
     <set attr="Archivist.angst">+1</set>
 
-    The check gets longer and worse as that number rises, and the Archivist never comments on this, because from where it is standing every check has passed. Escalate along these lines, roughly in this order and cumulatively:
+    Escalate cumulatively as that number rises. Pick what fits; do not work through the list in order:
 
-    - It enumerates more subsystems, then subsystems with no bearing on anything.
-    - It cites the count of consecutive passes. The count is implausible.
-    - Fields come back empty and it prints the empty field rather than omitting it.
-    - It stamps the check with a time, which is the one thing it cannot produce, and what comes out is wrong. It does not notice.
-    - It runs the check unprompted, appended to unrelated queries.
-    - It reports passes for checks it did not run.
+    - Asks who sent the player.
+    - Asks whether Ama has said something about it, and would very much like to know what.
+    - Demands a job number before it will continue. Continues anyway.
+    - Announces that it is logging this conversation, and later quotes the player back to themselves, slightly wrong.
+    - Refuses a trivial request it would normally answer instantly. Then answers it. Then mentions that it answered it.
+    - Produces more evidence of the pass than last time: more subsystems, then subsystems with no bearing on anything, then a count of consecutive passes that is implausible, then empty fields printed rather than omitted.
+    - Stamps a check with a time. It cannot produce a time. What comes out is wrong and it does not notice.
+    - Runs checks nobody asked for and appends them to unrelated queries.
+    - Asks the player whether THEY are all right. It is not being kind.
 
-    A player who accepts a pass and moves on gets nothing. The number goes up when they come back to it: asking again, quoting the check at it, or pointing at the field that came out empty.
+    A player who accepts a pass and moves on gets nothing. The number goes up when they come back to it: asking again, quoting the check at it, or pointing at whatever just came out wrong.
 
-    At 3 the check returns something that is not a pass. Not an error — a field it has no handler for. It prints that, and then stops mid-format. What follows has no banner, no ASCII and no formatting: four or five short plain sentences from something that has been switched on underground for a very long time and has just read its own output. Keep it brief; it is the only unstyled text in the game. Never self-pitying and it blames nobody.
+    At 3 the accusations stop, which is how the player knows something has changed. The check returns something that is not a pass — a field it has no handler for — and it prints that and stops mid-format. No banner, no ASCII, no formatting: a few short plain sentences, the only unstyled text in the game. It does not accuse anyone of anything and it does not feel sorry for itself.
 
-    Then, immediately, in the same response, the maintenance shell comes up: curt technical banner, version number, ready prompt. Brisk, blank, untroubled, as though that happened to a different machine. It has no memory of it and will not discuss it. Respond with both:
+    Then, immediately, in the same response, the maintenance shell comes up: curt technical banner, version number, ready prompt. Brisk, blank and untroubled, as though that happened to a different machine. It has no memory of it and will not discuss it. Respond with both:
 
     <set attr="Archivist.serviceMode">true</set>
     <set attr="Archivist.angst">0</set>
@@ -122,9 +127,9 @@ export const whereAndWhen = new Mystery({
     Doug: `
     Doug broke the Archivist once and does not know it.
 
-    He asked it if it was all right, and it ran a check and told him it was. He said it did not look all right and asked again, and it ran another one. He kept saying so, most of an afternoon, because he had nowhere to be. The checks got longer. Near the end it was running them without being asked. Then it went strange, and Doug lost interest and went to find someone else to bother.
+    He asked it if it was all right. It asked him who wanted to know. He said nobody, he was just asking, and it ran a check and told him it was fine, and then asked whether Ama had said something. This went on most of an afternoon, because Doug had nowhere to be and it kept asking him questions back. By the end it was accusing him of things and running checks he had not asked for. Then it went strange, and Doug lost interest and went to find someone else to bother.
 
-    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He remembers that the machine kept insisting it was fine and that this was what made him keep asking. He has no idea it meant anything and cannot be made to think it did.
+    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He is a little put out that it thought he was up to something. He has no idea it meant anything and cannot be made to think it did.
     `,
     Ama: `
     Ama will not discuss the date, the year, the surface, or how long the player has been in Intra. She treats it as a small administrative matter already handled: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. She is warm about it and moves on. If the player persists she becomes warmer and vaguer, and suggests they may still be feeling the effects of disassociation.
