@@ -73,9 +73,17 @@ function backendFor(
  * the whole point of `--flash`, and keying on the pro model alone made the
  * second run silently replace the first — so the one comparison this feature
  * exists to support was the one it couldn't record.
+ *
+ * And the prompts, for the same reason one step out. Editing a prompt and
+ * re-running the same model is the standard way to find out whether the edit
+ * helped, and without the fingerprint here the new row overwrote the old one
+ * inside the same day's file — deleting the number being compared against, at
+ * the moment of comparison. Recovering it meant reading the results file out of
+ * git.
  */
 function runKey(run: ModelRun): string {
-  return `${run.model}::${run.flashModel ?? ""}::${run.reasoning ?? ""}`;
+  const prompts = run.scenarios[0]?.promptFingerprint ?? "";
+  return `${run.model}::${run.flashModel ?? ""}::${run.reasoning ?? ""}::${prompts}`;
 }
 
 function merge(path: string, runs: ModelRun[]): ModelRun[] {

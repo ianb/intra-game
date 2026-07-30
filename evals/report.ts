@@ -74,6 +74,9 @@ export function writeReports() {
   for (const data of files) {
     lines.push(`## ${data.date}`, "");
     lines.push(fingerprintNote(data), "");
+    const mixed =
+      new Set(data.runs.map((r) => r.scenarios[0]?.promptFingerprint ?? ""))
+        .size > 1;
     lines.push(
       `| model | ${scenarioNames.join(" | ")} | total | time | thinking | $ |`,
     );
@@ -101,8 +104,16 @@ export function writeReports() {
         `\`${run.model}\`` +
         (run.flashModel ? ` + \`${run.flashModel}\`` : "") +
         (run.reasoning ? ` \`${run.reasoning}\`` : "");
+      // Which prompts this row was measured against, when a day holds more
+      // than one. Editing a prompt and re-running is the normal way to check
+      // the edit, so a day with two is the interesting case rather than the
+      // odd one, and a note above the table saying they "aren't directly
+      // comparable" doesn't say which row is which.
+      const prompts = mixed
+        ? ` \`${run.scenarios[0]?.promptFingerprint ?? "?"}\``
+        : "";
       lines.push(
-        `| ${name} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | $${cost.toFixed(4)} |`,
+        `| ${name}${prompts} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | $${cost.toFixed(4)} |`,
       );
     }
     lines.push("");
