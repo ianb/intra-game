@@ -749,8 +749,6 @@ export class Person<
           [[${todoPrompt(this.world.todos)}]]
 
           ${this.volatileSystemInstructions(parameters)}
-
-          <insert-system />
           `,
         },
         ...this.historyForEntity({ limit: 10 }),
@@ -773,11 +771,9 @@ export class Person<
           7. ${this.name}'s intention in this response
           </context>
 
-          <system>
+          <responseFormat>
           Begin your response with <context>...</context>
-          </system>
 
-          <system>
           To generate speech add this response:
 
           <dialog character="${this.name}">1-3 sentences of dialog written as ${this.name}</dialog>
@@ -786,24 +782,20 @@ export class Person<
 
           <dialog character="${this.name}" to="${lastTo || "Jim"}">Dialog written as ${this.name} to ${lastTo || "Jim"}</dialog>
           [[${this.name} last spoke directly to ${lastTo}, so it's very likely ${this.heshe} is still speaking to them.]]
-          </system>
 
-          <system>
           If the character ${this.name} is performing an action, add this response (optionally with a rough estimate of the time it will take in minutes):
 
           <description minutes="5">Describe the action</description>
-          </system>
 
-          [[${IF(willLeave)}
-          <system>${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow></system>]]
+          [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow>]]
 
-          <system>
           At the end of your response you may offer a concrete and specific suggestion for what the player might do next, as two 2-3 word commands (one per line):
+
           <suggestion>
           say hello
           open door
           </suggestion>
-          </system>
+          </responseFormat>
 
           ${this.additionalPromptInstructions(parameters)}
           `,
