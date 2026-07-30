@@ -24,6 +24,7 @@ import {
 import { historyForEntity as computeHistoryForEntity } from "./history";
 import { coerceBoolean, coerceNumber, fixupText } from "./coerce";
 import type { Model } from "./model";
+import { mysteryTriggers } from "./mysteries";
 import { pathTo } from "./pathto";
 import { pronounsForGender } from "./pronouns";
 import {
@@ -1195,29 +1196,11 @@ export class AmaClass extends Person<AmaParametersType> {
         }
       }
     }
-    if (
-      storyEvent.changes.PLAYER?.after?.inside === "Hollow_Atrium" &&
-      this.world.entities.Hollow_Atrium.visits === 0
-    ) {
-      // First visit outside Intake, so give the player their first mystery
-      const m = this.world.entities.Ink_And_Echo;
-      result.push({
-        id: this.id,
-        totalTime: 0,
-        roomId: "Hollow_Atrium",
-        changes: m.changes({
-          state: "revealed",
-        }),
-        actions: [
-          {
-            type: "dialog",
-            id: this.id,
-            toId: "PLAYER",
-            text: m.introduction,
-          },
-        ],
-      });
-    }
+    // Which mystery, and on what, is declared by the mystery itself; see
+    // lib/game/mysteries.ts. This used to be an `if` here naming Ink and Echo
+    // and the Hollow Atrium, so the mystery's own file said nothing about when
+    // it arrives and Ama's code did.
+    result.push(...mysteryTriggers(this.world, storyEvent));
     if (!result.find((x) => isPromptRequest(x))) {
       result.push(...(super.onStoryEvent(storyEvent) || []));
     }
@@ -2043,6 +2026,34 @@ export const MYSTERY_STATES: MysteryState[] = [
   "solved",
 ];
 
+/**
+ * What has to happen for a mystery to move to its next state.
+ *
+ * A closed set on purpose. Ink and Echo was revealed by an `if` inside Ama's
+ * onStoryEvent checking a room and a visit count, which meant the second
+ * mystery would have been a second `if` and the tenth would have been ten. But
+ * a trigger that could express anything would be a scripting language living in
+ * content, which is worse. These four cover what the dossier's mysteries
+ * actually wait on.
+ */
+export interface MysteryTrigger {
+  /** The player walked into this room for the first time. */
+  enteredRoom?: EntityId;
+  /** Another mystery reached "solved". */
+  solved?: EntityId;
+  /** The player has spoken to this character. */
+  talkedTo?: EntityId;
+  /** At least this many turns have been played. */
+  turnsPlayed?: number;
+  /** The state to move to. Only ever forwards; see `advance`. */
+  becomes: MysteryState;
+  /**
+   * Who announces it, if anyone. Their `introduction` is spoken when the
+   * mystery arrives, which is how Ama hands out an errand.
+   */
+  announcedBy?: EntityId;
+}
+
 export class Mystery extends Entity {
   type = "mystery";
   state: MysteryState = "veiled";
@@ -2054,6 +2065,7 @@ export class Mystery extends Entity {
   availableHints: Record<EntityId, string> = {};
   revealedHints: Record<EntityId, string> = {};
   solvedHints: Record<EntityId, string> = {};
+  triggers: MysteryTrigger[] = [];
 
   constructor({
     state,
@@ -2061,6 +2073,7 @@ export class Mystery extends Entity {
     availableHints,
     revealedHints,
     solvedHints,
+    triggers,
     ...props
   }: {
     state?: MysteryState;
@@ -2068,6 +2081,7 @@ export class Mystery extends Entity {
     availableHints?: Record<EntityId, string>;
     revealedHints?: Record<EntityId, string>;
     solvedHints?: Record<EntityId, string>;
+    triggers?: MysteryTrigger[];
   } & EntityInitType) {
     super(props);
     if (state) {
@@ -2084,6 +2098,9 @@ export class Mystery extends Entity {
     }
     if (solvedHints) {
       this.solvedHints = solvedHints;
+    }
+    if (triggers) {
+      this.triggers = triggers;
     }
   }
 }

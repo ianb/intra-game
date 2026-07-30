@@ -1,23 +1,14 @@
-import { Mystery } from "../classes";
-
-/**
- * The things the player can work out. A mystery holds the hints that become
- * available as it is investigated, and the state that says it is solved.
- */
-
-export const yourAge = new Mystery({
-  id: "yourAge",
-  name: "What does she mean you are 350?",
-});
-
-export const intraLocation = new Mystery({
-  id: "intraLocation",
-  name: "Where is Intra?",
-});
+import { Mystery } from "../../../classes";
 
 export const Ink_And_Echo = new Mystery({
   id: "Ink_And_Echo",
   name: "Who is writing notes as 'Ink and Echo'?",
+  // The first room the player reaches after intake. Ama reads the introduction
+  // below as they walk in, which is why this is an errand rather than something
+  // they discover.
+  triggers: [
+    { enteredRoom: "Hollow_Atrium", becomes: "revealed", announcedBy: "Ama" },
+  ],
   introduction: `
   Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
 

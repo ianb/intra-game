@@ -6,5 +6,13 @@
     "moduleResolution": "bundler",
     "noEmit": true
   },
-  "include": ["**/*.ts", "../lib/**/*.ts"]
+  "include": ["**/*.ts", "../lib/**/*.ts"],
+  // A mystery's eval scenario lives next to the mystery it tests, inside lib/,
+  // so that everything about it is in one directory. It is the one thing there
+  // that the server must never reach: it imports the eval harness, which
+  // imports the checkpoint loader, which is Node. Excluding it here is what
+  // makes that a rule rather than an intention — the runtime import graph is
+  // already clean (a --dry-run bundle contains no harness code), and this keeps
+  // the typecheck honest about why.
+  "exclude": ["../lib/**/eval.ts"]
 }

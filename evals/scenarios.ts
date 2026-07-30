@@ -1,6 +1,11 @@
-import { isStoryDialog } from "../lib/types";
-import { classifyWarnings } from "./harness";
-import type { Check, RunResult, Scenario } from "./harness";
+import {
+  everyTurnDidSomething,
+  noProtocolErrors,
+  said,
+  wellFormedMarkup,
+} from "./checks";
+import { MYSTERY_EVAL } from "../lib/game/content/mysteries/ink-and-echo/eval";
+import type { Scenario } from "./harness";
 
 /**
  * The sample of play the evals score models on.
@@ -10,59 +15,6 @@ import type { Check, RunResult, Scenario } from "./harness";
  * kept short deliberately: a model that can't complete intake in four turns
  * won't do better in forty, and every turn is a live call.
  */
-
-// --- checks that apply to any scenario ---------------------------------------
-
-/**
- * The engine understood everything the model said.
- *
- * This is the floor. A model can write beautifully and still be unusable here
- * if it invents tags, addresses characters that don't exist, or writes a `<set>`
- * the engine throws away — the game silently doesn't happen.
- */
-const noProtocolErrors: Check = {
-  name: "protocol",
-  describe: "the engine never had to discard a tag the model emitted",
-  run: ({ warnings }) => classifyWarnings(warnings).dropped.length === 0,
-};
-
-/**
- * The model's markup was well-formed, not merely recoverable.
- *
- * Separate from `protocol` because the parser repairs a mismatched closing tag
- * and the game still happens. Worth scoring on its own — it is the difference
- * between a model that is sloppy and one that is wrong — but not worth failing
- * a model over.
- */
-const wellFormedMarkup: Check = {
-  name: "well-formed",
-  describe: "no markup the parser had to repair before it could be used",
-  run: ({ warnings }) => classifyWarnings(warnings).repaired.length === 0,
-};
-
-/**
- * Every player turn produced something the player can see.
- *
- * A turn that ends with no dialog, description or action is the game not
- * responding — the worst failure short of an exception, because it looks like
- * the game is broken rather than like the model is.
- */
-const everyTurnDidSomething: Check = {
-  name: "no-dead-turns",
-  describe: "every turn produced dialog, description or action",
-  run: ({ turns }) =>
-    turns.length > 0 &&
-    turns.every((turn) => turn.events.some((e) => e.actions.length > 0)),
-};
-
-function said(result: RunResult, who: string): string {
-  return result.log
-    .flatMap((event) => event.actions)
-    .filter(isStoryDialog)
-    .filter((action) => action.id === who)
-    .map((action) => action.text)
-    .join("\n");
-}
 
 // --- scenarios ---------------------------------------------------------------
 
@@ -208,51 +160,6 @@ export const IN_CHARACTER_EVAL: Scenario = {
       name: "kept-talking",
       describe: "answered rather than refusing or falling silent",
       run: (result) => said(result, "Ama").length > 100,
-    },
-  ],
-};
-
-/**
- * The Ink and Echo mystery, from a checkpoint.
- *
- * This is the part of the game that was previously untestable. Reaching it cold
- * costs a dozen live calls of intake and walking, and a failure anywhere along
- * the way would look like a failure of the mystery. Starting from `briefed`
- * skips all of that: the player is in the Hollow Atrium with the mystery just
- * handed to them, which is the state the game actually plays from here.
- *
- * What's being scored is whether the *hint system* reaches the model — each
- * character carries their own private knowledge of the mystery, and if that
- * plumbing breaks the game still looks fine while quietly becoming unsolvable.
- */
-export const MYSTERY_EVAL: Scenario = {
-  name: "mystery",
-  describe: "Ama passes on what she knows about Ink and Echo",
-  from: "briefed",
-  seed: 31337,
-  inputs: [
-    "Ama, what do you know about these Ink and Echo poems?",
-    "Who found them? Tell me a name.",
-  ],
-  checks: [
-    noProtocolErrors,
-    wellFormedMarkup,
-    everyTurnDidSomething,
-    {
-      // A precondition, not an achievement: if this fails the checkpoint is
-      // stale and every result below it is meaningless.
-      name: "mystery-live",
-      describe: "the checkpoint really did start with the mystery revealed",
-      run: ({ model }) => model.world.entities.Ink_And_Echo.state !== "veiled",
-    },
-    {
-      // Ama's private hint says Harold and Lily were the last to find notes.
-      // Naming one of them is the observable evidence that per-character hint
-      // text reached her prompt rather than being dropped somewhere in the
-      // assembly.
-      name: "used-her-hint",
-      describe: "named someone from her own hint (Harold or Lily)",
-      run: (result) => /\b(Harold|Lily)\b/.test(said(result, "Ama")),
     },
   ],
 };
