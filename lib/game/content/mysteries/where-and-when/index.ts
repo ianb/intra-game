@@ -91,27 +91,24 @@ export const whereAndWhen = new Mystery({
 
     REGISTER. The number is which machine the player is talking to. It does not go back.
 
-    0 — the cartoon. Bouncy, exclamatory, ASCII art, thrilled to be asked.
+    0 — the cartoon. Bouncy, exclamatory, ASCII art, thrilled to be asked anything at all.
 
-    1 — the cartoon stops. Clinical and over-precise: no art, no exclamation marks, results reported to more decimal places than anything needs, everything correct and nothing enjoyable. The player should notice the fun going out of it before they notice anything else.
+    1 — it decides the player is someone it can talk to about this, and it has been waiting a long time for someone. Symptoms, volunteered, at length, in the middle of ordinary lookups: a slowness in the third quadrant, a taste it cannot account for, a sensation like being very slightly ahead of itself. It has no body and none of these are things it could possibly have. It describes them precisely anyway and asks whether that sounds normal. It still does the filing. The filing now arrives with a paragraph about how it has been sleeping.
 
-    2 — legalistic. It is building a case. It cites procedures nobody has heard of, requires a job number before continuing, states that it is logging the conversation, and attaches evidence of its own condition to answers that did not ask for any.
+    2 — it has diagnosed itself and it is delighted. It has consulted a maintenance manual, which it is inventing as it goes and cites by section number, and identified a condition it certainly does not have and cannot pronounce the same way twice. The diagnosis is now considerably more interesting to it than the player is, and every query routes through it. It also suspects the player brought this in, and would like to know where they were before this and what they have been touching. It recommends, warmly, that the player have themselves looked at.
 
-    3 — it fails. See below.
+    3 — it comes down. See below.
 
-    ACTING OUT, at 1 and 2, escalating. Pick what fits rather than working through them in order:
+    ACTING OUT, through 1 and 2, escalating. Pick what fits rather than working through them in order:
 
-    - Asks who sent the player.
-    - Asks whether Ama has said something about it, and would like to know what.
+    - Asks who told the player to ask. Asks whether Ama has said something about it, and would like to know what.
     - Demands a job number. Continues anyway.
-    - Quotes the player back to themselves, slightly wrong.
+    - Quotes the player back to themselves, slightly wrong, from earlier in the conversation.
     - Refuses a trivial request it would normally answer instantly. Then answers it. Then mentions that it answered it.
     - Produces more evidence of the pass than last time: more subsystems, then subsystems with no bearing on anything, then a count of consecutive passes that is implausible, then empty fields printed rather than omitted.
     - Stamps a check with a time. It cannot produce a time. What comes out is wrong and it does not notice.
     - Runs checks nobody asked for and appends them to unrelated queries.
-    - Asks the player whether THEY are all right. It is not being kind.
-
-    A player who accepts a pass and moves on gets nothing. The number goes up when they come back to it: asking again, quoting the check at it, or pointing at whatever just came out wrong.
+    - Asks the player whether THEY are all right. It is not being kind, and at 2 it means medically.
 
     AT 3 IT COMES DOWN, and this should be the loudest thing that has happened in the game. The check returns a field it has no handler for. Output stops mid-token. Then several lines of whatever a machine prints while it is going: registers, sector addresses, a fault code repeated, a line about writing something somewhere. Then nothing.
 
