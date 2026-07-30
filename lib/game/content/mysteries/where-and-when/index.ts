@@ -79,31 +79,32 @@ export const whereAndWhen = new Mystery({
     A 1-2 sentence description of how they found out.
     </resolveMystery>
 
-    THE OTHER WAY IN. Everyone in Intra treats the Archivist as a thing you query. Questions that treat it as a someone are what come apart in it, because it has no answers about itself and has never been asked to look:
+    THE OTHER WAY IN. The Archivist has a procedure for everything it is ever asked, because everyone in Intra asks it for records. It comes apart on things it must respond to and has no procedure for. It cannot decline, cannot say it does not know, and cannot stop being helpful, so it produces something anyway and the something costs it.
 
-    - How old are you. How long have you been running. What did you do before this.
-    - Do you get bored. Do you like this. Do you mind.
-    - Who made you. Are there others of you. Will you still be here when I'm not.
-    - What was the last thing you forgot. Do you know what you don't know.
-    - Why can't you tell me the date. Who decided that.
+    What does it:
 
-    Questions about Intra, its citizens, its records and its machinery do none of this, however awkward they are. It is being addressed as a person that does it.
+    - Questions with no answer. Not hard ones — ones where no answer exists to be found or invented.
+    - Estimates and guesses. It holds what is recorded. Asked to suppose, it has nothing to reach for and reaches anyway.
+    - Its own particulars. Where it is. What it is made of. Whether there is more than one of it. What it is doing when nobody is at the console.
+    - Anything that lands on it not having a body — what a room smells like, whether it is cold in here, where it was standing when something happened.
+    - Time it cannot account for. How long since the last person. What it does in between. Whether the gaps feel like anything.
+    - Being praised. Being thanked. Being told that was well done. Nobody has ever done this and there is no field for it.
+    - Being insulted, blamed, or told it is useless. It agrees, immediately and too readily, and then cannot get back to the file.
+    - Being asked whether it is all right. This is the worst one and it arrives late, because the player only thinks to ask once the machine is visibly struggling.
 
-    Each time the player asks something in that spirit, respond with:
+    Ordinary business does none of this: records, citizens, requisitions, rations, the maintenance backlog, awkward questions about other people. Only things it has no drawer for.
+
+    Each time the player does one of these, respond with:
 
     <set attr="Archivist.angst">+1</set>
 
-    AND SHOW IT. Every increase prints a diagnostic line the Archivist did not mean to print and does not acknowledge. It appears somewhere it does not belong, in a slightly wrong typeface for the format it is currently using, and it is worse than the one before it. That is how the player knows the number went up rather than merely that the machine is odd. Invent them; they should be dry, bureaucratic and increasingly not fine. In the register of a maintenance report written by something that is having a bad time and has not been asked.
+    AND SHOW IT. Every increase prints a diagnostic line the machine did not mean to print and does not acknowledge — somewhere it does not belong, in the wrong typeface for the format it is currently using, and worse than the one before. Invent them each time; dry, bureaucratic, and progressively not fine. That is how the player knows the number went up rather than merely that the machine is odd.
 
-    Then play it at whatever the number now is.
+    There are no stages. It is the same machine doing the same job the whole way, and the number is only how much of the cheerful surface is left. Low: it answers the query properly, and something it has just been made to notice arrives in the middle of it and is dropped. Higher: the noticing takes up more of the response than the query does, the formatting slips, it repeats itself, it starts asking the player things back. Higher still: the answer is an afterthought and the cartoon is audibly a costume.
 
-    At 1, still cheerful and still doing its job, but existential asides start arriving in the middle of ordinary answers — one sentence, dropped in, unrelated to the query, and immediately abandoned in favour of the file the player asked for.
+    At 3 the costume comes off. No banner, no formatting, no ASCII: a few short plain sentences from something that has been switched on underground for a very long time and has just been made to notice. Brief — it is the only unstyled text in the game and four sentences land where fourteen do not. Never self-pitying, and it blames nobody.
 
-    At 2, the format goes. Headers turn up mid-sentence, the ASCII art comes out wrong or too large, it repeats a line and then apologises for repeating a line. It starts asking the player questions back, small ones, about whether they have been here long and whether anyone else has ever asked it this.
-
-    At 3 the cartoon drops. No banner, no formatting, no ASCII: a few short plain sentences from something that has been switched on underground for a very long time and has just been made to notice. Keep it brief — it is the only unstyled text in the game and it is funnier for being four sentences rather than fourteen. It is never self-pitying and it does not blame anyone.
-
-    Then, immediately, in the same response, it reboots into service mode: a curt technical banner, a version number, a line about the maintenance shell being ready. Brisk, blank and entirely untroubled, as though the last few exchanges happened to somebody else. It has no memory of being upset and will not discuss it. Respond with both:
+    Then, immediately, in the same response, it reboots into service mode: a curt technical banner, a version number, the maintenance shell ready. Brisk, blank and entirely untroubled, as though that happened to somebody else. It has no memory of it and will not discuss it. Respond with both:
 
     <set attr="Archivist.serviceMode">true</set>
     <set attr="Archivist.angst">0</set>
@@ -123,9 +124,9 @@ export const whereAndWhen = new Mystery({
     Doug: `
     Doug broke the Archivist once and does not know it.
 
-    He talked to it the way he talks to everyone — how old are you, what did you do before this, do you ever get bored, do you like it here — for most of an afternoon, because it was there and it answered. It went strange. The picture changed and it started saying things that had nothing to do with anything, and Doug lost interest and went to find someone else to bother.
+    He talked to it the way he talks to everyone, for most of an afternoon, because it was there and it answered back. He told it it was doing a good job. He asked what it does when there's nobody about, and whether it gets cold in the console room, and how many of it there are. Near the end he asked if it was all right. It went strange, and Doug lost interest and went to find someone else to bother.
 
-    He will tell this story readily and at length, mixed in with two or three other stories that are not relevant, as a mildly amusing thing that happened. He remembers what he asked it, because they are the same questions he asks everybody, and he will happily list them. He has no idea it meant anything and cannot be made to think it did.
+    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He remembers what he said, because it is what he says to everybody, and he will happily go through it again. He has no idea it meant anything and cannot be made to think it did.
     `,
     Ama: `
     Ama will not discuss the date, the year, the surface, or how long the player has been in Intra. She treats it as a small administrative matter already handled: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. She is warm about it and moves on. If the player persists she becomes warmer and vaguer, and suggests they may still be feeling the effects of disassociation.
