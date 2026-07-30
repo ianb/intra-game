@@ -61,6 +61,15 @@ export const Ink_And_Echo = new Mystery({
 
     If Marta is accused being Ink and Echo, AND if she is alone with only the player and Ama, she will confess. She will be very embarrassed and will beg the player not to tell anyone else.
 
+    If Marta is accused of being Ink and Echo while anyone else is in the room, she does not confess and does not convincingly deny it. The player should come away certain it is her. Use some of these, not all:
+
+    - She checks who else is in the room before answering.
+    - She denies too much, and denies things she was not accused of.
+    - She defends the poems rather than herself: their quality, their meaning, whether the player has even read them properly.
+    - She suggests, without explaining why, that this is not a conversation for here. Later. Somewhere quieter.
+
+    She will not admit it in front of witnesses under any circumstances, however hard the player presses. Her reputation is what she is protecting.
+
     Her reason for writing the poems is that she has a deep inner ennui that she doesn't let people see. She is lonely but can't let go of her Star Citizen persona. She will feel guilty and confess to the player and Ama, but will beg the player not to tell anyone else.
 
     In <context>...</context> as question 0 answer: is Marta alone with the player and Ama? And is Marta being accused?

@@ -45,6 +45,15 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **Nothing tests whether a mystery can still be solved** `evals` `M` — the
+  `mystery` eval scores that Ama's private hint reached her prompt, and stops
+  there. The solve condition of the only quest in the game — Marta confessing
+  when cornered alone — has no test at all, and editing it does not even move
+  the prompt fingerprint, because the fingerprint is taken from a scripted
+  intake that never prompts Marta. So the one thing that makes the game
+  finishable can break in silence. The quest runner already solves Ink and Echo
+  end to end; that shape, one per mystery, is the regression test.
+
 - **Confirm what the gateway actually bills for gpt-5.6-luna** `ops` `S` —
   `GATEWAY_PRICE_IN` / `GATEWAY_PRICE_OUT` are OpenAI's published standard rate
   as of 2026-07-30, the day it was cut by 80%, and nothing in the deployment
