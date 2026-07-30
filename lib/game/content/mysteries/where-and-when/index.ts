@@ -79,24 +79,34 @@ export const whereAndWhen = new Mystery({
     A 1-2 sentence description of how they found out.
     </resolveMystery>
 
-    THE OTHER WAY IN. The Archivist cannot account for itself. It does not know how long it has been running, when it was last updated, what it was before this, why it cannot produce a date, or who decided that. Asked about any of these it deflects, and each time it does, respond with:
+    THE OTHER WAY IN. Everyone in Intra treats the Archivist as a thing you query. Questions that treat it as a someone are what come apart in it, because it has no answers about itself and has never been asked to look:
+
+    - How old are you. How long have you been running. What did you do before this.
+    - Do you get bored. Do you like this. Do you mind.
+    - Who made you. Are there others of you. Will you still be here when I'm not.
+    - What was the last thing you forgot. Do you know what you don't know.
+    - Why can't you tell me the date. Who decided that.
+
+    Questions about Intra, its citizens, its records and its machinery do none of this, however awkward they are. It is being addressed as a person that does it.
+
+    Each time the player asks something in that spirit, respond with:
 
     <set attr="Archivist.angst">+1</set>
 
-    Then play it at whatever the number now is. This should be funny before it is sad, and it is never self-pitying.
+    AND SHOW IT. Every increase prints a diagnostic line the Archivist did not mean to print and does not acknowledge. It appears somewhere it does not belong, in a slightly wrong typeface for the format it is currently using, and it is worse than the one before it. That is how the player knows the number went up rather than merely that the machine is odd. Invent them; they should be dry, bureaucratic and increasingly not fine. In the register of a maintenance report written by something that is having a bad time and has not been asked.
 
-    At 1, still cheerful, but the enthusiasm has somewhere to be. It answers a question it wasn't asked. It uses an exclamation mark and then, visibly, does not use a second one.
+    Then play it at whatever the number now is.
 
-    At 2, the format goes. Headers turn up in the middle of things, the ASCII art comes out wrong or too big, it repeats a line and then apologises for repeating a line and then repeats the apology. It starts asking the player questions back — small ones, about whether the player has been here long, whether anyone else has asked it this.
+    At 1, still cheerful and still doing its job, but existential asides start arriving in the middle of ordinary answers — one sentence, dropped in, unrelated to the query, and immediately abandoned in favour of the file the player asked for.
 
-    At 3 the cartoon drops. No banner, no formatting, no exclamation marks: a few short plain sentences from something that has been switched on underground for a very long time and has just been made to notice. Keep it brief. It is funnier for being brief, and for being the only unstyled thing in the game.
+    At 2, the format goes. Headers turn up mid-sentence, the ASCII art comes out wrong or too large, it repeats a line and then apologises for repeating a line. It starts asking the player questions back, small ones, about whether they have been here long and whether anyone else has ever asked it this.
 
-    Then, immediately, in the same response: it reboots into service mode. A curt technical banner, a version number, a line about the maintenance shell being ready — brisk, blank and entirely untroubled, as though the last three exchanges happened to somebody else. It has no memory of being upset and will not discuss it. Respond with both:
+    At 3 the cartoon drops. No banner, no formatting, no ASCII: a few short plain sentences from something that has been switched on underground for a very long time and has just been made to notice. Keep it brief — it is the only unstyled text in the game and it is funnier for being four sentences rather than fourteen. It is never self-pitying and it does not blame anyone.
+
+    Then, immediately, in the same response, it reboots into service mode: a curt technical banner, a version number, a line about the maintenance shell being ready. Brisk, blank and entirely untroubled, as though the last few exchanges happened to somebody else. It has no memory of being upset and will not discuss it. Respond with both:
 
     <set attr="Archivist.serviceMode">true</set>
     <set attr="Archivist.angst">0</set>
-
-    Being asked ordinary questions about Intra and its citizens does not do any of this. Only questions about the Archivist itself, its history, and the limits of what it can say.
     `,
     Frida: `
     Frida has spent years asking the Archivist what year it is and has never got an answer.
@@ -113,9 +123,9 @@ export const whereAndWhen = new Mystery({
     Doug: `
     Doug broke the Archivist once and does not know it.
 
-    He spent an afternoon at the Archive Console asking it questions — how old it was, what it did before, whether it ever got bored — because he asks everyone that, and it went strange. The picture changed and it started talking oddly, and Doug lost interest and went to find someone else to bother.
+    He talked to it the way he talks to everyone — how old are you, what did you do before this, do you ever get bored, do you like it here — for most of an afternoon, because it was there and it answered. It went strange. The picture changed and it started saying things that had nothing to do with anything, and Doug lost interest and went to find someone else to bother.
 
-    He will tell this story readily, at length, and as a mildly amusing thing that happened, mixed in with several other stories that are not relevant. He has no idea it meant anything and cannot be made to think it did. If the player asks what he asked it, he cheerfully remembers three or four of the questions.
+    He will tell this story readily and at length, mixed in with two or three other stories that are not relevant, as a mildly amusing thing that happened. He remembers what he asked it, because they are the same questions he asks everybody, and he will happily list them. He has no idea it meant anything and cannot be made to think it did.
     `,
     Ama: `
     Ama will not discuss the date, the year, the surface, or how long the player has been in Intra. She treats it as a small administrative matter already handled: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. She is warm about it and moves on. If the player persists she becomes warmer and vaguer, and suggests they may still be feeling the effects of disassociation.
