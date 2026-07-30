@@ -18,6 +18,7 @@ import { CalculatingThrobber } from "@/components/throbber";
 import { ColorizedText } from "./colorizedtext";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { TimePeriod } from "./hud";
+import { imageForEntity } from "./images";
 import { model } from "./model";
 import {
   authState,
@@ -428,10 +429,33 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
       )}
     >
       {entity?.id !== "entity:narrator" && (
-        <div className={twMerge("font-bold")}>{entity?.name}</div>
+        <div className={twMerge("font-bold flex items-center gap-2")}>
+          {entity && <EntityAvatar id={entity.id} />}
+          <span>{entity?.name}</span>
+        </div>
       )}
       {children}
     </div>
+  );
+}
+
+/**
+ * A speaker's square face avatar, shown next to their name. Renders nothing for
+ * entities without a generated image (the player, the narrator, anyone not yet
+ * imaged), so it is safe next to every name.
+ */
+function EntityAvatar({ id }: { id: string }) {
+  const url = imageForEntity(id);
+  if (!url) {
+    return null;
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      className="w-6 h-6 rounded object-cover border border-gray-600"
+      style={{ imageRendering: "pixelated" }}
+    />
   );
 }
 

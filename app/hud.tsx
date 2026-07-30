@@ -5,7 +5,7 @@
 
 import { A, Button, CheckButton } from "@/components/input";
 import { Clock } from "@/components/digitalnumerals";
-import { Map, Todos, ViewObjects } from "./panels";
+import { Map, RoomImage, Todos, ViewObjects } from "./panels";
 import { activeTab, revealMap, showInternals } from "./uistate";
 import { model } from "./model";
 import { twMerge } from "tailwind-merge";
@@ -20,6 +20,7 @@ export function HeadsUpDisplay() {
   const openTodos = model.world.todos.filter((todo) => !todo.done).length;
   return (
     <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
+      <RoomImage />
       <div>
         {activeTab.value === "map" && (
           <span className="float-right">

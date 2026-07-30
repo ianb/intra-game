@@ -20,6 +20,7 @@ import { ZoomOverlay } from "@/components/zoom";
 import { asGraphviz } from "./map";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import { entitiesById, fieldsOf } from "@/lib/game/dynamic";
+import { imageForEntity } from "./images";
 import { model } from "./model";
 import { revealMap } from "./uistate";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
@@ -51,6 +52,51 @@ export function Map() {
         className="rounded cursor-zoom-in"
         src={url}
         alt="Map"
+        onClick={() => {
+          zoomed.value = !zoomed.value;
+        }}
+      />
+    </div>
+  );
+}
+
+/**
+ * The current room's image, shown above the HUD tabs as a scene viewport.
+ *
+ * Driven by the current room the same way soundtrack.ts drives audio: it reads
+ * PLAYER.inside and re-renders on every story update. Rooms without a generated
+ * image render nothing, so this is safe to mount before every room is imaged.
+ */
+export function RoomImage() {
+  useSignals();
+  const _updates = model.updates.value;
+  const zoomed = useSignal(false);
+  const room = model.world.getRoom(model.world.entities.PLAYER.inside);
+  const url = room ? imageForEntity(room.id) : undefined;
+  if (!url || !room) {
+    return null;
+  }
+  return (
+    <div className="mb-3">
+      {zoomed.value && (
+        <ZoomOverlay
+          onDone={() => {
+            zoomed.value = false;
+          }}
+        >
+          <img
+            className="rounded max-h-screen border-2 border-gray-400"
+            style={{ imageRendering: "pixelated" }}
+            src={url}
+            alt={room.name}
+          />
+        </ZoomOverlay>
+      )}
+      <img
+        className="rounded w-full cursor-zoom-in border border-gray-700"
+        style={{ imageRendering: "pixelated" }}
+        src={url}
+        alt={room.name}
         onClick={() => {
           zoomed.value = !zoomed.value;
         }}
