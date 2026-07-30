@@ -1,7 +1,7 @@
 import { dedent } from "../../template";
 import { AmaClass, NarratorClass, PlayerClass } from "../classes";
 import { fieldsOf } from "../dynamic";
-import { yourAge, intraLocation, Ink_And_Echo } from "./mysteries";
+import { Ink_And_Echo, whereAndWhen } from "./mysteries";
 import {
   Marta,
   Frida,
@@ -126,9 +126,8 @@ export const entities = {
   Void,
 
   // Mysteries (./mysteries.ts):
-  yourAge,
-  intraLocation,
   Ink_And_Echo,
+  whereAndWhen,
 };
 
 // Content is written as indented template literals for readability; strip that

@@ -54,6 +54,20 @@ function fired(
       return false;
     }
   }
+  if (trigger.attrSet !== undefined) {
+    const [entityId, attr] = trigger.attrSet.split(".");
+    const change = entityId ? event.changes[entityId] : undefined;
+    if (
+      !attr ||
+      !change?.after?.[attr] ||
+      // Only the transition. Ama's flags stay true for the rest of the game, so
+      // a trigger reading the current value would fire on every later event
+      // that happened to mention her.
+      change.before?.[attr]
+    ) {
+      return false;
+    }
+  }
   if (trigger.turnsPlayed !== undefined) {
     if (world.model.liveUpdates.value.length < trigger.turnsPlayed) {
       return false;
@@ -106,15 +120,24 @@ export function mysteryTriggers(
         // Silent unless someone announces it. A mystery becoming *available* is
         // usually meant to be invisible — it is the difference between the game
         // being ready to answer a question and the game asking it for you.
+        // The narrator narrates; anyone else is a character talking to the
+        // player. Ama handing out an errand and the game telling you that you
+        // have just noticed something are different acts, and rendering both as
+        // dialog would put the second one in quotation marks.
         actions:
           announcer && entity.introduction
             ? [
-                {
-                  type: "dialog",
-                  id: announcer,
-                  toId: "PLAYER",
-                  text: entity.introduction,
-                },
+                announcer === "narrator"
+                  ? {
+                      type: "description",
+                      text: entity.introduction,
+                    }
+                  : {
+                      type: "dialog",
+                      id: announcer,
+                      toId: "PLAYER",
+                      text: entity.introduction,
+                    },
               ]
             : [],
       });

@@ -1,6 +1,5 @@
 export { Ink_And_Echo } from "./ink-and-echo";
-export { yourAge } from "./your-age";
-export { intraLocation } from "./intra-location";
+export { whereAndWhen } from "./where-and-when";
 
 /**
  * One directory per mystery. See ./README.md for what belongs in one.

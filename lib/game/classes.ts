@@ -1083,7 +1083,9 @@ export class AmaClass extends Person<AmaParametersType> {
           {
             type: "description",
             text: tmpl`
-              What did Ama just say about your age? You're mind feels so fuzzy but you get a flash... was it from just last night?
+              What did Ama just say about your age?
+
+              Your mind feels so fuzzy. And then it doesn't. You are somewhere else, and it is last night, and you are remembering it the way you remember a room you are standing in.
 
               The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
 
@@ -1094,6 +1096,8 @@ export class AmaClass extends Person<AmaParametersType> {
               Their hands shift, restless.
               Static pulses—
               "...record-breaking heat across the East Coast... devastating wildfires in California..."
+
+              And then you are in the small medical room again, and it was not last night.
               `,
           },
         ],
@@ -2045,6 +2049,15 @@ export interface MysteryTrigger {
   talkedTo?: EntityId;
   /** At least this many turns have been played. */
   turnsPlayed?: number;
+  /**
+   * An attribute just became true, as `"Entity.attr"`.
+   *
+   * For hanging a mystery off a story beat rather than a place. The where-and-
+   * when mystery starts the moment Ama tells the player their age, because that
+   * is when the flashback fires and the player acquires the question — and
+   * "Ama.sharedPlayerAge" is the only thing in the world that marks it.
+   */
+  attrSet?: string;
   /** The state to move to. Only ever forwards; see `advance`. */
   becomes: MysteryState;
   /**
