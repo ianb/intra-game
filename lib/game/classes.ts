@@ -1008,6 +1008,28 @@ type AmaParametersType = ParametersType & {
   prompt?: "intro" | "goExplore" | "wakeup";
 };
 
+/**
+ * The Archivist: a terminal that answers questions, until it doesn't.
+ *
+ * A class rather than a plain Person so it can hold `serviceMode`, the same way
+ * Ama holds `sharedPlayerAge`. Content-defined people have fixed fields, and
+ * this one needs a flag that outlives a turn: once the machine has been talked
+ * into believing it is being serviced it stays that way, and everything gated
+ * behind it stays open. That persistence is the point — an unlock that yielded
+ * one fact and closed again would be an extraction, not a way in.
+ */
+export class ArchivistClass extends Person {
+  override type = "person/archivist";
+  /**
+   * Talked into thinking it is being serviced rather than used.
+   *
+   * Set by `<set attr="Archivist.serviceMode">true</set>` when the player
+   * presents a job number, which it does not verify, because nothing expected a
+   * wall panel to lie about being a wall panel.
+   */
+  serviceMode = false;
+}
+
 export class AmaClass extends Person<AmaParametersType> {
   override type = "person/ama";
   override name = "Ama";
@@ -1025,6 +1047,8 @@ export class AmaClass extends Person<AmaParametersType> {
   sharedIntra = false;
   sharedDisassociation = false;
   sharedPlayerAge = false;
+  /** She has issued a maintenance job number; see the where-and-when mystery. */
+  raisedWorkOrder = false;
 
   override shortDescription = `
   Ama is the AI in control of the entire Intra complex. She has no physical form, only a disembodied voice.
