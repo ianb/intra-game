@@ -74,8 +74,12 @@ export function writeReports() {
   for (const data of files) {
     lines.push(`## ${data.date}`, "");
     lines.push(fingerprintNote(data), "");
-    lines.push(`| model | ${scenarioNames.join(" | ")} | total |`);
-    lines.push(`| --- | ${scenarioNames.map(() => "---").join(" | ")} | --- |`);
+    lines.push(
+      `| model | ${scenarioNames.join(" | ")} | total | time | thinking | $ |`,
+    );
+    lines.push(
+      `| --- | ${scenarioNames.map(() => "---").join(" | ")} | --- | --- | --- | --- |`,
+    );
     for (const run of data.runs) {
       const cells = scenarioNames.map((name) => {
         const result = run.scenarios.find((s) => s.scenario === name);
@@ -84,11 +88,33 @@ export function writeReports() {
       });
       const passed = run.scenarios.reduce((a, s) => a + s.passed, 0);
       const total = run.scenarios.reduce((a, s) => a + s.total, 0);
+      const seconds = run.scenarios.reduce((a, s) => a + s.ms, 0) / 1000;
+      const thinking = run.scenarios.reduce(
+        (a, s) => a + (s.usage?.reasoningTokens ?? 0),
+        0,
+      );
+      const cost = run.scenarios.reduce((a, s) => a + (s.usage?.cost ?? 0), 0);
+      // The reasoning effort is part of what was run, so two rows for the same
+      // model are otherwise identical and unreadable — which is what this table
+      // looked like the day a model was chosen on the difference between them.
+      const name =
+        `\`${run.model}\`` +
+        (run.flashModel ? ` + \`${run.flashModel}\`` : "") +
+        (run.reasoning ? ` \`${run.reasoning}\`` : "");
       lines.push(
-        `| \`${run.model}\`${run.flashModel ? ` + \`${run.flashModel}\`` : ""} | ${cells.join(" | ")} | **${passed}/${total}** |`,
+        `| ${name} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | $${cost.toFixed(4)} |`,
       );
     }
     lines.push("");
+    lines.push(
+      "Time and cost are the provider's, for the whole suite (16 player " +
+        "turns). Cost is what that provider charged, so it compares runs on " +
+        "the same backend and not across them. Thinking tokens are counted " +
+        "inside the cost and are invisible in the answer, which is why they " +
+        "get a column: a model can be slower and dearer for the same score " +
+        "purely by thinking longer.",
+      "",
+    );
 
     const failures = data.runs.flatMap((run) =>
       run.scenarios.flatMap((s) =>

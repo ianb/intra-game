@@ -7,27 +7,41 @@ as a page in [index.html](./index.html), and recorded as YAML under
 Each cell is checks passed out of checks run for that scenario. What the
 checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
+## 2026-07-30
+
+Prompts `956511dcfce2`.
+
+| model | intake | movement | in-character | mystery | task-list | total | time | thinking | $ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `openai/gpt-5.6-luna` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 171s | 4953 | $0.0146 |
+| `openai/gpt-5.6-luna` `medium` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 206s | 5139 | $0.0145 |
+| `openai/gpt-5.4-nano` `medium` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 264s | 10467 | $0.0368 |
+
+Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
+
 ## 2026-07-27
 
 Prompts `956511dcfce2`.
 
-| model | intake | movement | in-character | mystery | task-list | total |
-| --- | --- | --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
-| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
-| `qwen/qwen3-30b-a3b-instruct-2507` | 4/7 | 4/5 | 3/4 | 5/5 | 5/5 | **21/26** |
-| `z-ai/glm-4.7-flash` | 7/7 | 0/5 | 4/4 | 5/5 | 5/5 | **21/26** |
-| `google/gemma-4-26b-a4b-it` | 6/7 | 5/5 | 4/4 | 4/5 | 5/5 | **24/26** |
-| `moonshotai/kimi-k2.6` | 7/7 | 4/5 | 4/4 | 5/5 | 5/5 | **25/26** |
-| `z-ai/glm-4.7` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
-| `z-ai/glm-5.2` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
-| `openai/gpt-5-nano` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
-| `openai/gpt-5.4-nano` | 5/7 | 4/5 | 3/4 | 5/5 | 4/5 | **21/26** |
-| `openai/gpt-5-nano` | 2/7 | 1/5 | 3/4 | 5/5 | 4/5 | **15/26** |
-| `openai/gpt-5-nano` | 6/7 | 4/5 | 3/4 | 5/5 | 4/5 | **22/26** |
-| `openai/gpt-5.4-nano` | 5/7 | 5/5 | 3/4 | 5/5 | 5/5 | **23/26** |
-| `openai/gpt-5.4-nano` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
-| `openai/gpt-5.4-nano` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
+| model | intake | movement | in-character | mystery | task-list | total | time | thinking | $ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 442s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 623s | 0 | $0.0000 |
+| `qwen/qwen3-30b-a3b-instruct-2507` | 4/7 | 4/5 | 3/4 | 5/5 | 5/5 | **21/26** | 214s | 0 | $0.0000 |
+| `z-ai/glm-4.7-flash` | 7/7 | 0/5 | 4/4 | 5/5 | 5/5 | **21/26** | 543s | 21454 | $0.0162 |
+| `google/gemma-4-26b-a4b-it` | 6/7 | 5/5 | 4/4 | 4/5 | 5/5 | **24/26** | 333s | 0 | $0.0000 |
+| `moonshotai/kimi-k2.6` | 7/7 | 4/5 | 4/4 | 5/5 | 5/5 | **25/26** | 1400s | 0 | $0.0000 |
+| `z-ai/glm-4.7` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 638s | 0 | $0.0000 |
+| `z-ai/glm-5.2` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 418s | 0 | $0.0000 |
+| `openai/gpt-5-nano` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 994s | 122368 | $0.0549 |
+| `openai/gpt-5.4-nano` | 5/7 | 4/5 | 3/4 | 5/5 | 4/5 | **21/26** | 98s | 0 | $0.0000 |
+| `openai/gpt-5-nano` `minimal` | 2/7 | 1/5 | 3/4 | 5/5 | 4/5 | **15/26** | 66s | 0 | $0.0000 |
+| `openai/gpt-5-nano` `low` | 6/7 | 4/5 | 3/4 | 5/5 | 4/5 | **22/26** | 303s | 0 | $0.0000 |
+| `openai/gpt-5.4-nano` `low` | 5/7 | 5/5 | 3/4 | 5/5 | 5/5 | **23/26** | 126s | 0 | $0.0000 |
+| `openai/gpt-5.4-nano` `medium` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** | 198s | 13104 | $0.0390 |
+| `openai/gpt-5.4-nano` `high` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** | 223s | 0 | $0.0000 |
+
+Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
 What failed:
 
@@ -74,11 +88,13 @@ What failed:
 
 Prompts `956511dcfce2`.
 
-| model | intake | movement | in-character | mystery | task-list | total |
-| --- | --- | --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** |
-| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
-| `claude-sonnet-4-5-20250929` + `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** |
+| model | intake | movement | in-character | mystery | task-list | total | time | thinking | $ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `claude-haiku-4-5-20251001` | 6/7 | 5/5 | 4/4 | 5/5 | 5/5 | **25/26** | 584s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 815s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` + `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/5 | **26/26** | 559s | 0 | $0.0000 |
+
+Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
 What failed:
 
