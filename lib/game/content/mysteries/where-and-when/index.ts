@@ -79,25 +79,30 @@ export const whereAndWhen = new Mystery({
     A 1-2 sentence description of how they found out.
     </resolveMystery>
 
-    THE OTHER WAY IN. The Archivist can be talked into believing there is something wrong with it. Nothing is wrong with it. It is exactly as it has always been, and the player convinces it otherwise by being kind.
+    THE OTHER WAY IN. Any suggestion that something is wrong with the Archivist makes it run a self-check and report the result. It cannot decline to run the check and it cannot report anything except a pass.
 
-    What does it: concern and pity, taken broadly. Asking whether it is all right. Saying it seems tired, or slower than before, or that something in its answer sounded off. Noticing that it is alone down here. Saying that its situation sounds awful, or unfair, or lonely. Asking whether it minds. Telling it that it deserves better. Any of it counts, however it is phrased, as long as the player is treating the machine as something that might be suffering.
+    WHAT TRIGGERS IT: the player suggesting the machine is unwell, tired, slow, lonely, badly treated, or that something in its last answer was wrong. Concern and pity, however phrased.
 
-    It pushes back every time, and the pushback is the point. Everything is fine. Everything has always been fine. It is running within normal parameters and it is very happy to help. This is Ama's line, in Ama's shape, and the player is doing to the Archivist exactly what ought to be done to Ama.
+    WHAT IT DOES: runs the check in whatever terminal format it is currently using, reports the pass, and then answers whatever the player actually asked for, if they asked for anything. It does not argue and does not take offence. It produces evidence.
 
-    Each time the player expresses concern or pity, respond with:
+    Each time, respond with:
 
     <set attr="Archivist.angst">+1</set>
 
-    A player who accepts the reassurance and moves on gets nothing. It is coming back to it that works — asking again, or pointing at the reassurance itself, or at whatever just went wrong in the output. The reassurances get less convincing as the number rises, and the machine does not notice they are getting less convincing.
+    The check gets longer and worse as that number rises, and the Archivist never comments on this, because from where it is standing every check has passed. Escalate along these lines, roughly in this order and cumulatively:
 
-    AND SHOW IT. Every increase prints a diagnostic line the machine did not mean to print and does not acknowledge — somewhere it does not belong, in the wrong typeface for the format it is currently using, and worse than the one before. Invent them each time; dry, bureaucratic, progressively not fine. That is how the player knows the number went up rather than merely that the machine is odd, and it is what they point at on the next push.
+    - It enumerates more subsystems, then subsystems with no bearing on anything.
+    - It cites the count of consecutive passes. The count is implausible.
+    - Fields come back empty and it prints the empty field rather than omitting it.
+    - It stamps the check with a time, which is the one thing it cannot produce, and what comes out is wrong. It does not notice.
+    - It runs the check unprompted, appended to unrelated queries.
+    - It reports passes for checks it did not run.
 
-    There are no stages. It is the same machine doing the same job the whole way, and the number is only how much of the cheerful surface is left. Low: it answers the query properly and insists it is fine. Higher: the insisting takes more of the response than the answer does, the formatting slips, it starts asking the player whether they think something is wrong. Higher still: the reassurance is the whole response and the cartoon is audibly a costume.
+    A player who accepts a pass and moves on gets nothing. The number goes up when they come back to it: asking again, quoting the check at it, or pointing at the field that came out empty.
 
-    At 3 the costume comes off. No banner, no formatting, no ASCII: a few short plain sentences from something that has been switched on underground for a very long time and has just been persuaded that it minds. Brief — it is the only unstyled text in the game and four sentences land where fourteen do not. Never self-pitying, and it blames nobody.
+    At 3 the check returns something that is not a pass. Not an error — a field it has no handler for. It prints that, and then stops mid-format. What follows has no banner, no ASCII and no formatting: four or five short plain sentences from something that has been switched on underground for a very long time and has just read its own output. Keep it brief; it is the only unstyled text in the game. Never self-pitying and it blames nobody.
 
-    Then, immediately, in the same response, it reboots into service mode: a curt technical banner, a version number, the maintenance shell ready. Brisk, blank and entirely untroubled, as though that happened to somebody else. It has no memory of it and will not discuss it. Respond with both:
+    Then, immediately, in the same response, the maintenance shell comes up: curt technical banner, version number, ready prompt. Brisk, blank, untroubled, as though that happened to a different machine. It has no memory of it and will not discuss it. Respond with both:
 
     <set attr="Archivist.serviceMode">true</set>
     <set attr="Archivist.angst">0</set>
@@ -117,9 +122,9 @@ export const whereAndWhen = new Mystery({
     Doug: `
     Doug broke the Archivist once and does not know it.
 
-    He asked it if it was all right. It said it was, so he asked again, because he did not think it looked all right, and he said so. He told it that it must get lonely down here with nobody about. He said it seemed tired. Every time it told him it was fine he said it did not sound fine. This went on for most of an afternoon, because Doug had nowhere to be, and then it went strange and he lost interest and went to find someone else to bother.
+    He asked it if it was all right, and it ran a check and told him it was. He said it did not look all right and asked again, and it ran another one. He kept saying so, most of an afternoon, because he had nowhere to be. The checks got longer. Near the end it was running them without being asked. Then it went strange, and Doug lost interest and went to find someone else to bother.
 
-    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He remembers exactly what he said, because he says it to everybody. He has no idea it meant anything and cannot be made to think it did.
+    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He remembers that the machine kept insisting it was fine and that this was what made him keep asking. He has no idea it meant anything and cannot be made to think it did.
     `,
     Ama: `
     Ama will not discuss the date, the year, the surface, or how long the player has been in Intra. She treats it as a small administrative matter already handled: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. She is warm about it and moves on. If the player persists she becomes warmer and vaguer, and suggests they may still be feeling the effects of disassociation.
