@@ -79,12 +79,28 @@
     // counts but no price, and the quota is denominated in dollars — without
     // these every turn meters at zero and the limit never fires. Update them
     // when GATEWAY_MODEL changes.
+    //
+    // OpenAI's published standard rate as of 2026-07-30, the day they were cut
+    // — so treat them as unconfirmed until a day of real traffic has been
+    // compared against the gateway's own spend figures. A price set too low
+    // here does not fail loudly: it meters every turn at a fraction of what it
+    // cost, and QUOTA_USD below silently stops meaning what it says.
+    //
+    // Two other rate cards exist for the same model and neither is this one.
+    // OpenAI's flex tier is half of standard, and OpenRouter currently bills
+    // this model at exactly that — which is why the eval's dollar figures are
+    // about half what a turn costs here. Do not copy numbers from evals/
+    // RESULTS.md into these fields.
+    //
+    // The backstop that does not depend on getting this right is a spend limit
+    // on the gateway itself; see docs/deploying.md.
     "GATEWAY_PRICE_IN": "0.20",
     "GATEWAY_PRICE_OUT": "1.20",
     // Dollars per player per rolling 30 days of server play. A player using
-    // their own key isn't metered; see worker/quota.ts. At this model's prices
-    // a dollar is about 590 turns, measured rather than estimated: 16 player
-    // turns of the eval suite cost $0.027 at OpenAI list.
+    // their own key isn't metered; see worker/quota.ts. About 590 turns at the
+    // prices above — 16 player turns of the eval suite came to $0.027 when
+    // its recorded token counts are priced at OpenAI's standard rate — which
+    // is as accurate as those prices are.
     "QUOTA_USD": "1",
     "QUOTA_PERIOD_DAYS": "30",
   },

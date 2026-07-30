@@ -428,7 +428,33 @@ denial-of-service problem, so there is a per-player limit as well.
 | `QUOTA_USD`         | `1`     | dollars per player per period                   |
 | `QUOTA_PERIOD_DAYS` | `30`    | a rolling window, starting when they first play |
 
-At roughly $0.007 a turn on Haiku, a dollar is about 140 turns.
+At roughly $0.0017 a turn on gpt-5.6-luna, a dollar is about 590 turns.
+
+**The quota is only as right as `GATEWAY_PRICE_IN` / `GATEWAY_PRICE_OUT`.** The
+gateway reports how many tokens a call used and not what it cost, so those two
+vars are what turns tokens into dollars. Set them too low and nothing fails:
+every turn meters at a fraction of its cost and `QUOTA_USD` quietly stops
+meaning what it says. Three things make that easy to get wrong —
+
+- A model can be sold on more than one rate card. OpenAI's flex tier is half of
+  standard, and a proxy may bill either. Numbers in
+  [evals/RESULTS.md](../evals/README.md) are whatever OpenRouter charged, which
+  is currently the flex rate for this model — about half what the gateway
+  charges. They are for comparing runs, not for filling in these fields.
+- Prices change without the model id changing. `gpt-5.6-luna` cost five times
+  more on 2026-07-29 than on 2026-07-30.
+- Reasoning tokens are billed at the output rate and never appear in the
+  answer, so a model can cost double another for the same visible output.
+
+So set a **spend limit on the gateway itself** — AI Gateway → your gateway →
+Limits. It meters what Cloudflare actually bills rather than what this repo
+believes, so it holds even when the vars above are wrong, and it is the only
+one of the two that can stop a runaway bill rather than merely account for it.
+Treat `QUOTA_USD` as fairness between players and the gateway limit as the
+budget.
+
+To check the vars: play a dozen turns, then compare the gateway's reported spend
+against `/api/usage` for that session. If they disagree, these two are why.
 
 The window rolls per player rather than per calendar month, so budgets don't all
 refill at midnight on the 1st and take the site down on the same day each month.

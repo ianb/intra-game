@@ -45,6 +45,17 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **Confirm what the gateway actually bills for gpt-5.6-luna** `ops` `S` —
+  `GATEWAY_PRICE_IN` / `GATEWAY_PRICE_OUT` are OpenAI's published standard rate
+  as of 2026-07-30, the day it was cut by 80%, and nothing in the deployment
+  verifies them: the gateway reports tokens and not dollars, so a price set too
+  low meters every turn at a fraction of its cost and `QUOTA_USD` silently stops
+  meaning what it says. The same model is sold on at least two rate cards —
+  OpenRouter currently bills it at OpenAI's flex tier, half of standard — so
+  guessing from any one source is how this goes wrong. Play a dozen turns, then
+  compare the gateway's own spend figure against `/api/usage` for that session.
+  Until then the load-bearing limit is the spend cap on the gateway, not this.
+
 - **`<system>` blocks and `<insert-system />` are dead prompt syntax** `engine`
   `M` — the character prompt writes its output instructions as `<system>` blocks
   in the user message and marks where they belong with `<insert-system />` in
