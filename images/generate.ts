@@ -46,8 +46,8 @@ const KIND_DIR: Record<ImageKind, string> = {
 // retro resolution, upscaled crisply at display time (image-rendering:
 // pixelated). Rooms are landscape, characters are square avatars.
 const KIND_DIMS: Record<ImageKind, { width: number; height: number }> = {
-  room: { width: 320, height: 180 },
-  character: { width: 128, height: 128 },
+  room: { width: 384, height: 216 },
+  character: { width: 160, height: 160 },
 };
 
 interface Target {
@@ -72,9 +72,17 @@ function kb(buffer: Buffer): string {
   return `${Math.round(buffer.length / 1024)}KB`;
 }
 
+// The special characters are classes, not descriptions: the player has no
+// fixed face, and the narrator and Ama (the facility's disembodied AI) have no
+// body to draw. Skip them so a bare `description` doesn't mint an odd portrait.
+const SKIP_IDS = new Set(["PLAYER", "Ama", "narrator"]);
+
 function collectTargets(): Target[] {
   const targets: Target[] = [];
   for (const entity of Object.values(entities)) {
+    if (SKIP_IDS.has(entity.id)) {
+      continue;
+    }
     if (isRoom(entity) && entity.description) {
       targets.push({
         id: entity.id,
@@ -156,6 +164,7 @@ async function main(): Promise<void> {
 
   const key = apiKey();
   let spent = 0;
+  const failed: string[] = [];
   for (const target of targets) {
     const hash = shortHash(`${MODEL}\n${target.prompt}`);
     const file = `${KIND_DIR[target.kind]}/${target.id}.webp`;
@@ -167,28 +176,38 @@ async function main(): Promise<void> {
     }
 
     process.stdout.write(`gen ${target.id} (${target.kind})... `);
-    const { png, costUsd } = await generateImage({
-      prompt: target.prompt,
-      apiKey: key,
-      model: MODEL,
-      references: await reference(target.kind),
-    });
-    const dims = KIND_DIMS[target.kind];
-    const webp = await pngToWebp(png, dims.width, dims.height, QUALITY);
-    write(outPath, webp);
-    manifest.entries[target.id] = {
-      kind: target.kind,
-      file,
-      promptHash: hash,
-      model: MODEL,
-      generated: new Date().toISOString(),
-    };
-    // Save after each image so an interrupted run keeps its progress.
-    saveManifest(MANIFEST_FILE, manifest);
-    spent += costUsd;
-    console.log(`saved ${kb(webp)} ($${costUsd.toFixed(4)})`);
+    try {
+      const { png, costUsd } = await generateImage({
+        prompt: target.prompt,
+        apiKey: key,
+        model: MODEL,
+        references: await reference(target.kind),
+      });
+      const dims = KIND_DIMS[target.kind];
+      const webp = await pngToWebp(png, dims.width, dims.height, QUALITY);
+      write(outPath, webp);
+      manifest.entries[target.id] = {
+        kind: target.kind,
+        file,
+        promptHash: hash,
+        model: MODEL,
+        generated: new Date().toISOString(),
+      };
+      // Save after each image so an interrupted run keeps its progress.
+      saveManifest(MANIFEST_FILE, manifest);
+      spent += costUsd;
+      console.log(`saved ${kb(webp)} ($${costUsd.toFixed(4)})`);
+    } catch (error) {
+      // One flaky entity should not abort the batch; note it and move on.
+      console.log(`FAILED: ${error instanceof Error ? error.message : error}`);
+      failed.push(target.id);
+    }
   }
-  console.log(`done ($${spent.toFixed(4)})`);
+  const note = failed.length ? `, failed: ${failed.join(", ")}` : "";
+  console.log(`done ($${spent.toFixed(4)})${note}`);
+  if (failed.length) {
+    process.exitCode = 1;
+  }
 }
 
 main().catch((error: unknown) => {

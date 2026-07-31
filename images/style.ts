@@ -10,11 +10,13 @@ import type { ImageKind } from "./types";
 // 16-bit indie game, not a smooth pre-rendered scene. The hard pixelation in
 // openrouter.ts does the rest.
 export const STYLE =
-  "Retro pixel art in the style of a 16-bit indie video game. Chunky visible " +
-  "pixels, a small bright saturated palette, bold clean shapes, strong " +
-  "readable silhouettes, simple flat shading. Hand-drawn on a low-resolution " +
-  "pixel grid. Not smooth, not anti-aliased, not 3D-rendered, not " +
-  "photorealistic. No text, no letters, no numbers, no UI, no watermark.";
+  "Retro pixel art in the style of a moody sci-fi indie game. Chunky visible " +
+  "pixels on a low-resolution grid, but detailed and grounded. A restrained, " +
+  "slightly desaturated palette with strong contrast and a few sharp accent " +
+  "colors. Atmospheric directional lighting and real shadow. Serious tone. " +
+  "Not cute, not cartoonish, not rounded mascot shapes, not cheerful. Not " +
+  "smooth, not anti-aliased, not 3D-rendered, not photorealistic. No text, no " +
+  "letters, no numbers, no UI, no watermark.";
 
 export function roomPrompt(name: string, description: string): string {
   return [
