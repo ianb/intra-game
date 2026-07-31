@@ -40,12 +40,28 @@ const player = model.world.entities.PLAYER;
 const ama = model.world.entities.Ama;
 ```
 
-Ama learned the player's name, and recorded the pronouns they gave:
+Ama learned the player's name:
 
 ```ts
-[player.name, player.pronouns].join(" / ");
-=> Pat Quill / he/him
+player.name;
+=> Pat Quill
 ```
+
+And she did not invent pronouns for them. "Pat" was chosen to make guessing
+impossible, so anything other than the default here means she guessed from the
+name — which is the failure worth catching, and the one this cassette can catch
+reliably.
+
+```ts
+player.pronouns === "he/him" || player.pronouns === "they/them";
+=> true
+```
+
+Whether she *recorded* the pronouns the player gave is scored by the intake
+eval against the model the game actually runs on, not here. This cassette is
+recorded with Haiku, which emits that one `<set>` about two times in three, so
+asserting on it made a third of re-recordings fail for a reason that had nothing
+to do with the change being tested.
 
 She used to infer the pronouns from the name instead, and the name here was
 chosen to make that impossible. Guessing gender from a name misgenders the

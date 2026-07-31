@@ -49,10 +49,17 @@ export async function promptFingerprint(): Promise<string> {
   try {
     const model = new Model(entities, {
       chat: async (request: ChatType) => {
+        // Every message, not just the system one. The system message was the
+        // obvious place for prompt text and is not where most of it is: Ama's
+        // whole intake checklist comes from additionalPromptInstructions and
+        // lands in the *user* message, as does the <responseFormat> block every
+        // character prompt ends with. Both were invisible here — the checklist
+        // could be rewritten and this would report the same twelve characters,
+        // which is the one thing it exists not to do.
         for (const message of request.messages) {
-          if (message.role === "system") {
-            prompts.push(`${request.meta.title}\n${message.content}`);
-          }
+          prompts.push(
+            `${request.meta.title}/${message.role}\n${message.content}`,
+          );
         }
         if (request.meta.title?.startsWith("player")) {
           return `<dialog character="PLAYER">hello</dialog>`;

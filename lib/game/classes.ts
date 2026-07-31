@@ -1351,7 +1351,7 @@ export class AmaClass extends Person<AmaParametersType> {
       Ama's priority is to complete intake. Here are the important steps that you should go through in order:
 
       [[${IF(!this.knowsPlayerName)}* Ask the player's name, and if the player gives their name add the response <set attr="PLAYER.name">...</set>]]
-      [[${IF(!this.knowsPlayerPronouns)}* You may ask the player's pronouns once, but do not guess them from the name and do not wait for an answer before moving on. If the player gives their pronouns add the response <set attr="PLAYER.pronouns">...</set>]]
+      [[${IF(!this.knowsPlayerPronouns)}* Ask the player's pronouns once, and carry on with intake whatever they say. When the player states their pronouns, whether asked or not, add exactly one of these responses, chosen from what the player said about themselves: <set attr="PLAYER.pronouns">he/him</set> or <set attr="PLAYER.pronouns">she/her</set> or <set attr="PLAYER.pronouns">they/them</set>]]
       [[${IF(!this.sharedSelf)}* Introduce Ama to the player. Once Ama has introduced herself add the response <set attr="Ama.sharedSelf">true</set>]]
       [[${IF(!this.sharedIntra)}* Introduce Intra to the player. Once Ama has introduced Intra add the response <set attr="Ama.sharedIntra">true</set>]]
       [[${IF(askDisassociation)}* Introduce disassociation to the player. Once Ama has explained disassociation add the response <set attr="Ama.sharedDisassociation">true</set>]]
