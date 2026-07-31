@@ -46,8 +46,8 @@ const KIND_DIR: Record<ImageKind, string> = {
 // retro resolution, upscaled crisply at display time (image-rendering:
 // pixelated). Rooms are landscape, characters are square avatars.
 const KIND_DIMS: Record<ImageKind, { width: number; height: number }> = {
-  room: { width: 384, height: 216 },
-  character: { width: 160, height: 160 },
+  room: { width: 320, height: 180 },
+  character: { width: 128, height: 128 },
 };
 
 interface Target {
