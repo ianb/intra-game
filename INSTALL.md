@@ -48,6 +48,14 @@ checkout failed the install outright — including on the Cloudflare builder,
 which would have failed the first deploy. Tracked in [TODO.md](./TODO.md); it
 stops mattering when they are published.
 
+**Claude Code on the web** clones both repos as siblings (e.g.
+`/home/user/intra-game` and `/home/user/callback-box`), so the `file:` path
+above points nowhere. A SessionStart hook
+(`.claude/hooks/session-start.sh`) handles it: on web sessions it symlinks the
+location the `file:` path expects to the sibling `callback-box` checkout, then
+runs `pnpm install`. Local checkouts are untouched. If you edit the `file:`
+paths in `package.json` to your own layout, update that hook too.
+
 ## 1. Play it
 
 ```bash
