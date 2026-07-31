@@ -9,8 +9,8 @@ import React, { KeyboardEvent, useEffect, useRef } from "react";
 import ScrollOnUpdate from "@/components/scrollonupdate";
 import { A, Button, CheckButton } from "@/components/input";
 import { ChatLog } from "./chatlog";
-import { Controls } from "./controls";
-import { HeadsUpDisplay, Time } from "./hud";
+import { RoomImage } from "./panels";
+import { SidePanel, Time } from "./hud";
 import { Help } from "./help";
 import { Input } from "./inputbox";
 import { Settings } from "./settings";
@@ -222,9 +222,9 @@ export default function Home() {
             </ScrollOnUpdate>
             <Input />
           </div>
-          <div className="w-full md:w-1/3 flex flex-col bg-gray-800 text-white h-full">
-            <HeadsUpDisplay />
-            <Controls />
+          <div className="w-full md:w-1/3 flex flex-col bg-gray-800 text-white h-full overflow-hidden">
+            <RoomImage />
+            <SidePanel />
           </div>
         </div>
       </div>

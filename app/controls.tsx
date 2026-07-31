@@ -31,61 +31,40 @@ import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import { initSession, playTurn, startNewGame, turnRunning } from "./session";
 import { model } from "./model";
-import { composer, showInternals } from "./uistate";
+import { composer } from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
 
-export function Controls() {
+export function SaveLoad() {
   useSignals();
   const showSave = useSignal(false);
   const showLoad = useSignal(false);
   return (
-    <div className="h-1/3 p-4 overflow-y-auto">
-      <div className="float-right text-xs">
+    <div>
+      <div className="mb-2 flex gap-2 text-xs">
         {!showLoad.value && (
-          <CheckButton
-            signal={showSave}
-            on="Cancel"
-            off="💾"
-            className="mr-1"
-          />
+          <CheckButton signal={showSave} on="Cancel" off="💾 Save" />
         )}
         {!showSave.value && (
-          <CheckButton
-            signal={showLoad}
-            on="Cancel"
-            off="📂"
-            className="mr-1"
-          />
-        )}
-        {!showSave.value && !showLoad.value && (
-          <CheckButton
-            signal={showInternals}
-            on="Internals (Spoilers)"
-            off="Normal Mode"
-          />
+          <CheckButton signal={showLoad} on="Cancel" off="📂 Load" />
         )}
       </div>
-      {!showSave.value && !showLoad.value && <NormalControls />}
+      {!showSave.value && !showLoad.value && (
+        <div className="text-sm text-gray-400">
+          Save this game, load a save, or start from a checkpoint.
+        </div>
+      )}
       {showSave.value && (
-        <SaveControls
-          onDone={() => {
-            showSave.value = false;
-          }}
-        />
+        <SaveControls onDone={() => (showSave.value = false)} />
       )}
       {showLoad.value && (
-        <LoadControls
-          onDone={() => {
-            showLoad.value = false;
-          }}
-        />
+        <LoadControls onDone={() => (showLoad.value = false)} />
       )}
     </div>
   );
 }
 
-function NormalControls() {
+export function NormalControls() {
   useSignals();
   const room = model.world.entityRoom("PLAYER")!;
   // FIXME: actually collect the people:
@@ -109,7 +88,6 @@ function NormalControls() {
   }
   return (
     <>
-      <div className="mb-2">Controls</div>
       <div className="border-b border-gray-400">
         Location:{" "}
         <strong className={room?.color}>{room?.name || "In the void"}</strong>

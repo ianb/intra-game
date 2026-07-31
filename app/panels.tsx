@@ -40,12 +40,13 @@ export function RoomImage() {
     return null;
   }
   return (
-    <div className="mb-3">
-      <ZoomableImage
-        src={url}
-        alt={room.name}
-        className="rounded w-full border border-gray-700"
-      />
+    <div className="relative shrink-0 border-b border-gray-700">
+      <ZoomableImage src={url} alt={room.name} className="w-full" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-2 pb-2">
+        <span className="pixel-title text-center text-[12px] leading-[1.5]">
+          {room.name}
+        </span>
+      </div>
     </div>
   );
 }

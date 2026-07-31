@@ -1,149 +1,114 @@
 /**
- * The status strip above the transcript — where the player is, what time
- * it is, and what they're carrying.
+ * The tabbed side panel under the sticky room image: where you are, the map,
+ * quests, the object inspector, and save/load.
  */
 
-import { A, Button, CheckButton } from "@/components/input";
+import type { ReactNode } from "react";
+import { Button, CheckButton } from "@/components/input";
 import { Clock } from "@/components/digitalnumerals";
-import { RoomImage, Todos, ViewObjects } from "./panels";
+import { NormalControls, SaveLoad } from "./controls";
 import { RoomMap } from "./mapview";
+import { Todos, ViewObjects } from "./panels";
 import { activeTab, revealMap, showInternals } from "./uistate";
 import { model } from "./model";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
 
-export function HeadsUpDisplay() {
-  useSignals();
-  const activeClass = "text-black bg-gray-100 cursor-pointer";
-  const inactiveClass = "cursor-pointer";
-  const showLogs = true; // Could be based on showInternals or something, but I don't want it to be
-  const _ = model.updates.value;
-  const openTodos = model.world.todos.filter((todo) => !todo.done).length;
+type TabKey = "here" | "map" | "quests" | "objs" | "save";
+
+// Old stored tab names ("inv", "todo", "log", ...) map onto the current set so
+// a returning player doesn't land on a blank panel.
+function normalizeTab(value: string): TabKey {
+  if (value === "map" || value === "objs" || value === "save") {
+    return value;
+  }
+  if (value === "todo" || value === "quests" || value === "mysteries") {
+    return "quests";
+  }
+  return "here";
+}
+
+function TabButton({
+  tab,
+  current,
+  onClick,
+  children,
+}: {
+  tab: TabKey;
+  current: TabKey;
+  onClick: () => void;
+  children: ReactNode;
+}) {
   return (
-    <div className="h-2/3 p-4 border-b border-gray-700 overflow-y-auto">
-      <RoomImage />
-      <div>
-        {activeTab.value === "map" && (
-          <span className="float-right">
+    <span
+      onClick={onClick}
+      className={twMerge(
+        "cursor-pointer",
+        tab === current && "bg-gray-100 px-1 text-black",
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+export function SidePanel() {
+  useSignals();
+  void model.updates.value;
+  let tab = normalizeTab(activeTab.value);
+  if (tab === "objs" && !showInternals.value) {
+    tab = "here";
+  }
+  const openTodos = model.world.todos.filter((todo) => !todo.done).length;
+  const select = (target: TabKey) => () => {
+    activeTab.value = target;
+  };
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-gray-700 px-3 py-2 text-sm">
+        <TabButton tab="here" current={tab} onClick={select("here")}>
+          here
+        </TabButton>
+        <TabButton tab="map" current={tab} onClick={select("map")}>
+          map
+        </TabButton>
+        <TabButton tab="quests" current={tab} onClick={select("quests")}>
+          quests{openTodos > 0 ? ` (${openTodos})` : ""}
+        </TabButton>
+        {showInternals.value && (
+          <TabButton tab="objs" current={tab} onClick={select("objs")}>
+            objs
+          </TabButton>
+        )}
+        <TabButton tab="save" current={tab} onClick={select("save")}>
+          save/load
+        </TabButton>
+        <span className="ml-auto flex items-center gap-2">
+          {tab === "map" && (
             <Button
-              className="bg-teal-800 text-xs p-1 opacity-50 hover:opacity-100"
+              className="bg-teal-800 p-1 text-xs opacity-50 hover:opacity-100"
               onClick={() => {
                 revealMap.value = !revealMap.value;
               }}
             >
               {revealMap.value ? "revealed" : "normal"}
             </Button>
-          </span>
-        )}
-        <span
-          onClick={() => {
-            activeTab.value = "inv";
-          }}
-          className={activeTab.value === "inv" ? activeClass : inactiveClass}
-        >
-          inv
-        </span>{" "}
-        {/* <span
-          onClick={() => {
-            activeTab.value = "access";
-          }}
-          className={activeTab.value === "access" ? activeClass : inactiveClass}
-        >
-          (a)ccess
-        </span>{" "}
-        <span
-          onClick={() => {
-            activeTab.value = "blips";
-          }}
-          className={activeTab.value === "blips" ? activeClass : inactiveClass}
-        >
-          (b)lips
-        </span>{" "} */}
-        <span
-          onClick={() => {
-            activeTab.value = "map";
-          }}
-          className={activeTab.value === "map" ? activeClass : inactiveClass}
-        >
-          map
-        </span>{" "}
-        {model.world.todos.length > 0 && (
-          <>
-            <span
-              onClick={() => {
-                activeTab.value = "todo";
-              }}
-              className={
-                activeTab.value === "todo" ? activeClass : inactiveClass
-              }
-            >
-              todo{openTodos > 0 ? ` (${openTodos})` : ""}
-            </span>{" "}
-          </>
-        )}
-        {(showLogs || activeTab.value === "objs") && (
-          <span
-            onClick={() => {
-              activeTab.value = "objs";
-            }}
-            className={activeTab.value === "objs" ? activeClass : inactiveClass}
-          >
-            objs
-          </span>
-        )}
+          )}
+          <CheckButton
+            signal={showInternals}
+            on="Internals"
+            off="Normal"
+            className="text-xs"
+          />
+        </span>
       </div>
-      <div>
-        {activeTab.value === "inv" && <Inventory />}
-        {activeTab.value === "access" && <AccessControl />}
-        {activeTab.value === "blips" && <Blips />}
-        {activeTab.value === "map" && <RoomMap />}
-        {/* "mysteries" and "log" are retired tabs; anyone whose stored tab is
-            still one of those gets something rather than a blank panel. The
-            prompt log went with the browser-side engine that wrote it — what
-            each turn sent is in the events now, under "show internals". */}
-        {(activeTab.value === "todo" ||
-          activeTab.value === "mysteries" ||
-          activeTab.value === "log") && <Todos />}
-        {activeTab.value === "objs" && <ViewObjects />}
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+        {tab === "here" && <NormalControls />}
+        {tab === "map" && <RoomMap />}
+        {tab === "quests" && <Todos />}
+        {tab === "objs" && <ViewObjects />}
+        {tab === "save" && <SaveLoad />}
       </div>
-    </div>
-  );
-}
-
-function Inventory() {
-  useSignals();
-  // This is *based* on updates, so I'm using this to keep it updated:
-  const _updates = model.updates.value;
-  const _player = model.world.entities.PLAYER;
-  return (
-    <div className="flex-1 p-4">
-      <div className="mb-2">Inventory</div>
-      (no inventory implemented)
-      <div>- Key card</div>
-    </div>
-  );
-}
-
-function AccessControl() {
-  useSignals();
-  const _updates = model.updates.value;
-  const _player = model.world.entities.PLAYER;
-  return (
-    <div className="flex-1 p-4">
-      <div className="mb-2">Access Control</div>
-      (no access control implemented)
-    </div>
-  );
-}
-
-function Blips() {
-  useSignals();
-  const _updates = model.updates.value;
-  const _player = model.world.entities.PLAYER;
-  return (
-    <div className="flex-1 p-4">
-      <div className="mb-2">Blips</div>
-      (no blips implemented)
     </div>
   );
 }
