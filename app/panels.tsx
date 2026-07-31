@@ -16,50 +16,13 @@ import {
   StoryEventWithPositionsType,
 } from "@/lib/types";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
-import { ZoomOverlay } from "@/components/zoom";
 import { ZoomableImage } from "@/components/zoomableimage";
-import { asGraphviz } from "./map";
-import { effect, signal, useSignal } from "@preact/signals-react";
+import { useSignal } from "@preact/signals-react";
 import { entitiesById, fieldsOf } from "@/lib/game/dynamic";
 import { imageForEntity } from "./images";
 import { model } from "./model";
-import { revealMap } from "./uistate";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import { useSignals } from "@preact/signals-react/runtime";
-
-export function Map() {
-  useSignals();
-  const zoomed = useSignal(false);
-  const g = asGraphviz(model.world, revealMap.value);
-  const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
-  return (
-    <div className="flex justify-center mt-1">
-      {zoomed.value && (
-        <ZoomOverlay
-          onDone={() => {
-            zoomed.value = false;
-          }}
-        >
-          <a href={url} target="_blank" rel="noopener">
-            <img
-              className="rounded h-full max-h-screen border-2 border-gray-400"
-              src={url}
-              alt="Map"
-            />
-          </a>
-        </ZoomOverlay>
-      )}
-      <img
-        className="rounded cursor-zoom-in"
-        src={url}
-        alt="Map"
-        onClick={() => {
-          zoomed.value = !zoomed.value;
-        }}
-      />
-    </div>
-  );
-}
 
 /**
  * The current room's image, shown above the HUD tabs as a scene viewport.

@@ -5,7 +5,8 @@
 
 import { A, Button, CheckButton } from "@/components/input";
 import { Clock } from "@/components/digitalnumerals";
-import { Map, RoomImage, Todos, ViewObjects } from "./panels";
+import { RoomImage, Todos, ViewObjects } from "./panels";
+import { RoomMap } from "./mapview";
 import { activeTab, revealMap, showInternals } from "./uistate";
 import { model } from "./model";
 import { twMerge } from "tailwind-merge";
@@ -95,7 +96,7 @@ export function HeadsUpDisplay() {
         {activeTab.value === "inv" && <Inventory />}
         {activeTab.value === "access" && <AccessControl />}
         {activeTab.value === "blips" && <Blips />}
-        {activeTab.value === "map" && <Map />}
+        {activeTab.value === "map" && <RoomMap />}
         {/* "mysteries" and "log" are retired tabs; anyone whose stored tab is
             still one of those gets something rather than a blank panel. The
             prompt log went with the browser-side engine that wrote it — what
