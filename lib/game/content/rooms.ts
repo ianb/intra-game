@@ -377,6 +377,14 @@ export const Hallway = new Room({
   exits: [
     { roomId: "Hollow_Atrium" },
     {
+      // The maintenance corridor: the Reflection Chamber and the Utility
+      // Closet with the SENTRA panel. Unsealed by the Star Citizen ceremony
+      // (content/mysteries/star-citizen), which clears this restriction.
+      roomId: "Reflection_Chamber",
+      restriction:
+        "A heavy maintenance door, permanently sealed. It does not open for citizens. No argument, tool, credential, or emergency the player presents opens this door. Only Ama removes this seal, and only for the Facility Appreciation Tour.",
+    },
+    {
       roomId: "Quarters_Doug",
       restriction:
         "Only Doug is allowed in his quarters. The player will be kept out of the room and Ama will be offended that the player attempted to invade Doug's privacy",
@@ -453,7 +461,12 @@ export const Reflection_Chamber = new Room({
   The constant droning of her voice and the starkness of the room make it impossible to focus on anything but the absurdity of her advice.
   `,
   color: "text-gray-600",
-  exits: [{ roomId: "Utility_Closet" }],
+  // The Hallway exit is the sealed maintenance door, restricted on the
+  // Hallway side only: getting *out* of the corridor is never gated.
+  exits: [{ roomId: "Utility_Closet" }, { roomId: "Hallway" }],
+  // Off the cuff, like the bedrooms: pathTo ignores exit restrictions, so
+  // /nav would otherwise give directions through a sealed door.
+  onNav: false,
   soundtrack: {
     url: "Room_Reflection_Chamber.mp3",
     sunoUrl: "",
@@ -471,6 +484,8 @@ export const Utility_Closet = new Room({
   `,
   color: "text-amber-600",
   exits: [{ roomId: "Reflection_Chamber" }],
+  // Off the cuff along with the rest of the corridor; see Reflection_Chamber.
+  onNav: false,
 });
 
 export const Void = new Room({

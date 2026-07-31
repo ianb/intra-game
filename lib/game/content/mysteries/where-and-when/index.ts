@@ -35,6 +35,10 @@ export const whereAndWhen = new Mystery({
       announcedBy: "narrator",
     },
   ],
+  // The Archivist's registers are keyed to this number. Without declaring it
+  // as a meter the model only knew the count while its own <set> events were
+  // still inside the sliding history window.
+  meters: ["Archivist.angst"],
   introduction: `
   Three hundred and fifty years, she said, in the voice of someone reading out a room temperature.
 

@@ -515,21 +515,48 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
       } else if (mystery.state === "solved") {
         hints = mystery.solvedHints;
       }
+      // Collected per mystery, so the "*" and meter lines attach to the
+      // mystery they belong to. (This also fixes a leak: the old cross-mystery
+      // `results.length` check could hand a room one mystery's "*" hint
+      // because a *different* mystery had briefed that room.)
+      const mine: string[] = [];
       const selfHint = hints[this.id];
       if (selfHint) {
-        results.push(selfHint);
+        mine.push(selfHint);
       }
       const roomHint = hints[this.myRoom().id];
       if (this.myRoom().id !== this.id && roomHint) {
-        results.push(roomHint);
+        mine.push(roomHint);
       }
-      if (results.length || isPerson(this)) {
-        if (hints["*"]) {
-          results.unshift(hints["*"]);
-        }
+      if ((mine.length || isPerson(this)) && hints["*"]) {
+        mine.unshift(hints["*"]);
       }
+      if (mine.length && mystery.meters.length) {
+        mine.push(this.meterReadout(mystery.meters));
+      }
+      results.push(...mine);
     }
     return results.join("\n");
+  }
+
+  /**
+   * The current values of a mystery's meters, as one line of prompt text.
+   *
+   * Hints are static strings, so an instruction like "her behavior is keyed to
+   * PLAYER.civicPoints" had no way to see the number: a model only knew a
+   * counter's value while its own `<set>` events were still inside the sliding
+   * history window. The Archivist's angst registers shipped with that bug.
+   * Any character a mystery briefs gets the mystery's declared meters appended
+   * to the hint block.
+   */
+  meterReadout(meters: string[]): string {
+    const parts = meters.map((meter) => {
+      const [entityId, attr] = meter.split(".");
+      const entity = entityId ? this.world.getEntity(entityId) : undefined;
+      const value = entity && attr ? fieldsOf(entity)[attr] : undefined;
+      return `${meter} = ${JSON.stringify(value)}`;
+    });
+    return `Current values: ${parts.join(", ")}`;
   }
 }
 
@@ -1022,7 +1049,7 @@ export class Person<
 
 type AmaParametersType = ParametersType & {
   intro?: boolean;
-  prompt?: "intro" | "goExplore" | "wakeup";
+  prompt?: "intro" | "goExplore" | "wakeup" | "ceremony";
 };
 
 /**
@@ -1305,6 +1332,19 @@ export class AmaClass extends Person<AmaParametersType> {
       It's time for everyone to get up! Ama will wake the player up and encourage them to get moving. AMA WILL BE SUPER OVER THE TOP EXCITED!
       `;
     }
+    if (parameters.prompt === "ceremony") {
+      return tmpl`
+      The player has just earned enough points to become Star Citizen of the Week, overtaking Marta. Ama now holds the award ceremony, immediately, over the intercom, to all of Intra. Do all of this in one scene:
+
+      1. Announce the result and congratulate the player at length. Ama is extremely proud, and she does not hide that she enjoyed having a contest for once.
+      2. Announce the prize: the Facility Appreciation Tour. The maintenance door at the far end of the Hallway is now unsealed for the player, and Ama will narrate the tour whenever they choose to take it.
+      3. Thank Marta for her years of service to the award.
+
+      Also add this response:
+
+      <todo>Take the Facility Appreciation Tour, through the unsealed door at the end of the Hallway</todo>
+      `;
+    }
     if (this.personality === "intro") {
       const askPlayerProfession =
         !this.knowsPlayerProfession && this.knowsPlayerName;
@@ -1516,6 +1556,24 @@ export class PlayerClass extends Person<PlayerInputType> {
   override inside = "Intake";
   profession = "";
   launched = false;
+  /**
+   * The Star Citizen contest's score, awarded by Ama one point at a time with
+   * `<set attr="PLAYER.civicPoints">+1</set>`; see
+   * content/mysteries/star-citizen. The first reputation-shaped number on the
+   * player, and deliberately on the player rather than on Ama: Ama assigns it,
+   * but it is a fact about the player.
+   */
+  civicPoints = 0;
+  /**
+   * Star Citizen of the Week. Set by the ceremony
+   * (content/mysteries/star-citizen), which also unseals the Hallway's
+   * maintenance door.
+   */
+  starCitizen = false;
+  /** Told that the Facility Appreciation Tour opens every door in Intra. */
+  knowsAboutTour = false;
+  /** Told about the SENTRA panel behind the sealed Hallway door. */
+  knowsAboutPanel = false;
 
   override assemblePrompt(parameters: PlayerInputType): ChatType {
     if (parameters.examine) {
@@ -2132,6 +2190,12 @@ export class Mystery extends Entity {
   revealedHints: Record<EntityId, string> = {};
   solvedHints: Record<EntityId, string> = {};
   triggers: MysteryTrigger[] = [];
+  /**
+   * Attributes, as `"Entity.attr"`, whose current values are appended to every
+   * hint block this mystery hands out; see `meterReadout`. Declare any counter
+   * the hints tell characters to key behavior on.
+   */
+  meters: string[] = [];
 
   constructor({
     state,
@@ -2140,6 +2204,7 @@ export class Mystery extends Entity {
     revealedHints,
     solvedHints,
     triggers,
+    meters,
     ...props
   }: {
     state?: MysteryState;
@@ -2148,6 +2213,7 @@ export class Mystery extends Entity {
     revealedHints?: Record<EntityId, string>;
     solvedHints?: Record<EntityId, string>;
     triggers?: MysteryTrigger[];
+    meters?: string[];
   } & EntityInitType) {
     super(props);
     if (state) {
@@ -2167,6 +2233,9 @@ export class Mystery extends Entity {
     }
     if (triggers) {
       this.triggers = triggers;
+    }
+    if (meters) {
+      this.meters = meters;
     }
   }
 }

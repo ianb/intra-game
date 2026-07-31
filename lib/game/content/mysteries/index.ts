@@ -1,5 +1,7 @@
 export { Ink_And_Echo } from "./ink-and-echo";
 export { whereAndWhen } from "./where-and-when";
+export { Star_Citizen, CIVIC_POINTS_TO_WIN } from "./star-citizen";
+export { Sealed_Door } from "./sealed-door";
 
 /**
  * One directory per mystery. See ./README.md for what belongs in one.

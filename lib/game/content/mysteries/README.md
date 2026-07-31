@@ -29,8 +29,17 @@ and believed.
   `<resolveMystery id="...">`. Without one the mystery is scenery.
 - **An eval.** `eval.ts`, registered in `evals/scenarios.ts`.
 
-`your-age/` and `intra-location/` have none of this. They are names, and the
-directories are empty enough to show it.
+A mystery can also carry engine behaviour of its own: `star-citizen/` defines
+a `Mystery` subclass whose `onStoryEvent` runs the award ceremony when the
+score crosses the threshold. Every entity receives story events, so a
+mystery's deterministic moments (a door unsealing, a title changing hands)
+belong in its own directory rather than in whichever character announces them.
+
+Two other fields worth knowing: `meters` lists attributes (as
+`"Entity.attr"`) whose live values are appended to every hint block the
+mystery hands out, for hints that key behaviour to a counter; and a mystery
+whose initial `state` is `"available"` skips the veil entirely, for facts the
+world will answer about from turn one.
 
 ## The four states
 

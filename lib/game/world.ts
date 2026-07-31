@@ -369,7 +369,12 @@ function mysteryTodos(
     if (!mystery || !isMystery(mystery)) {
       continue;
     }
-    if (state === "veiled") {
+    // Only revealed and solved reach the list. `available` means the game
+    // will answer if asked but has not raised the subject — putting it on the
+    // task list would be the game raising the subject. No mystery entered
+    // `available` during play until the sealed door, so this was checked as
+    // `!== "veiled"` and never mattered.
+    if (state !== "revealed" && state !== "solved") {
       continue;
     }
     updates.push({
