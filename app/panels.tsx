@@ -17,6 +17,7 @@ import {
 } from "@/lib/types";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { ZoomOverlay } from "@/components/zoom";
+import { ZoomableImage } from "@/components/zoomableimage";
 import { asGraphviz } from "./map";
 import { effect, signal, useSignal } from "@preact/signals-react";
 import { entitiesById, fieldsOf } from "@/lib/game/dynamic";
@@ -70,7 +71,6 @@ export function Map() {
 export function RoomImage() {
   useSignals();
   const _updates = model.updates.value;
-  const zoomed = useSignal(false);
   const room = model.world.getRoom(model.world.entities.PLAYER.inside);
   const url = room ? imageForEntity(room.id) : undefined;
   if (!url || !room) {
@@ -78,28 +78,10 @@ export function RoomImage() {
   }
   return (
     <div className="mb-3">
-      {zoomed.value && (
-        <ZoomOverlay
-          onDone={() => {
-            zoomed.value = false;
-          }}
-        >
-          <img
-            className="rounded max-h-screen border-2 border-gray-400"
-            style={{ imageRendering: "pixelated" }}
-            src={url}
-            alt={room.name}
-          />
-        </ZoomOverlay>
-      )}
-      <img
-        className="rounded w-full cursor-zoom-in border border-gray-700"
-        style={{ imageRendering: "pixelated" }}
+      <ZoomableImage
         src={url}
         alt={room.name}
-        onClick={() => {
-          zoomed.value = !zoomed.value;
-        }}
+        className="rounded w-full border border-gray-700"
       />
     </div>
   );

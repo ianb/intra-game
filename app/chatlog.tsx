@@ -17,6 +17,7 @@ import { A, Button, CheckButton } from "@/components/input";
 import { CalculatingThrobber } from "@/components/throbber";
 import { ColorizedText } from "./colorizedtext";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
+import { ZoomableImage } from "@/components/zoomableimage";
 import { TimePeriod } from "./hud";
 import { imageForEntity } from "./images";
 import { model } from "./model";
@@ -424,15 +425,16 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
   return (
     <div
       className={twMerge(
+        // flow-root so the floated avatar is contained in this speaker's block
+        // and doesn't spill into the next one.
+        "[display:flow-root]",
         entity?.color,
         entity?.id === "PLAYER" && "border-l-2 pl-2 border-emerald-300",
       )}
     >
+      {entity && <EntityAvatar id={entity.id} />}
       {entity?.id !== "entity:narrator" && (
-        <div className={twMerge("font-bold flex items-center gap-2")}>
-          {entity && <EntityAvatar id={entity.id} />}
-          <span>{entity?.name}</span>
-        </div>
+        <div className="font-bold">{entity?.name}</div>
       )}
       {children}
     </div>
@@ -440,9 +442,10 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
 }
 
 /**
- * A speaker's square face avatar, shown next to their name. Renders nothing for
- * entities without a generated image (the player, the narrator, anyone not yet
- * imaged), so it is safe next to every name.
+ * A speaker's square face avatar, floated to the right of their dialog so the
+ * text wraps around it. Click to zoom. Renders nothing for entities without a
+ * generated image (the player, the narrator, anyone not yet imaged), so it is
+ * safe on every block.
  */
 function EntityAvatar({ id }: { id: string }) {
   const url = imageForEntity(id);
@@ -450,11 +453,10 @@ function EntityAvatar({ id }: { id: string }) {
     return null;
   }
   return (
-    <img
+    <ZoomableImage
       src={url}
       alt=""
-      className="w-6 h-6 rounded object-cover border border-gray-600"
-      style={{ imageRendering: "pixelated" }}
+      className="float-right ml-3 mb-1 h-20 w-20 rounded border border-gray-600 object-cover"
     />
   );
 }
