@@ -72,7 +72,7 @@ person sees it:
 
 ```ts
 view.todos.join(" | ");
-=> Who is writing notes as 'Ink and Echo'?
+=> Who is writing notes as 'Ink and Echo'? | When is this, and where are you?
 ```
 
 Where it is, and where it can go — by name, as the interface shows them:
@@ -162,7 +162,7 @@ asked of the model.
 const fresh = new Model(entities, { chat: async () => "" });
 fresh.replaceLog(parse(readFileSync("playtest/checkpoints/briefed.yaml", "utf8")).events);
 fresh.world.todos.map((t) => `${t.done ? "x" : " "} ${t.title}`).join(" | ");
-=>   Who is writing notes as 'Ink and Echo'?
+=>   Who is writing notes as 'Ink and Echo'? |   When is this, and where are you?
 ```
 
 Solving it crosses that same task off, rather than adding a second one — the
@@ -175,7 +175,7 @@ const solve = {
 };
 fresh.world.applyStoryEvent(solve);
 fresh.world.todos.map((t) => `${t.done ? "x" : " "} ${t.title}`).join(" | ");
-=> x Who is writing notes as 'Ink and Echo'?
+=> x Who is writing notes as 'Ink and Echo'? |   When is this, and where are you?
 ```
 
 ## The harness must not talk over the player

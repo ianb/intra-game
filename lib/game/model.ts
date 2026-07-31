@@ -20,6 +20,7 @@ import type { ChatType } from "../types";
 import { World } from "./world";
 import type { AllEntitiesType } from "./content";
 import { scheduleForTime } from "./scheduler";
+import { catchUpMysteries } from "./mysteries";
 import { pathTo } from "./pathto";
 import { applyRewinds, lastTurnInput, lastTurnLength } from "./rewind";
 import type { PartialTag } from "./tagstream";
@@ -591,6 +592,29 @@ export class Model {
       model: this,
     });
     this.checkLaunch();
+    this.catchUpMysteries();
+  }
+
+  /**
+   * Bring mysteries up to date with a log that predates them.
+   *
+   * Triggers fire during play and append events, so replaying a log never
+   * re-runs them: a mystery added after a checkpoint was recorded stays veiled
+   * in it forever, and an eval forked from that checkpoint scores a mystery
+   * whose hints were never in a prompt.
+   *
+   * Appended directly rather than through addStoryEvent, which would fire
+   * onStoryEvent and have characters react to a change nobody witnessed.
+   */
+  catchUpMysteries() {
+    const owed = catchUpMysteries(this.world);
+    if (!owed.length) {
+      return;
+    }
+    this.updates.value = [...this.updates.value, ...owed];
+    for (const event of owed) {
+      this.world.applyStoryEvent(event);
+    }
   }
 
   roll(sides = 20) {

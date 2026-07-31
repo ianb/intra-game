@@ -5,6 +5,7 @@ import {
   wellFormedMarkup,
 } from "./checks";
 import { MYSTERY_EVAL } from "../lib/game/content/mysteries/ink-and-echo/eval";
+import { WHERE_AND_WHEN_EVAL } from "../lib/game/content/mysteries/where-and-when/eval";
 import type { Scenario } from "./harness";
 
 /**
@@ -210,5 +211,6 @@ export const EVAL_SCENARIOS: Scenario[] = [
   MOVEMENT_EVAL,
   IN_CHARACTER_EVAL,
   MYSTERY_EVAL,
+  WHERE_AND_WHEN_EVAL,
   TASK_LIST_EVAL,
 ];
