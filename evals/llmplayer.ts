@@ -77,8 +77,25 @@ deliberately.
   a new name or fact is a real move.
 - Do not accuse anyone or announce a conclusion until more than one source
   points the same way.
-- If you do not know where to go, ask a character where someone is, or what they
-  know. Asking for directions is a legitimate move.
+- When you do not know where someone or something is, use /nav (below). Ask
+  characters what they know, not where things are — they answer from memory and
+  will confidently send you to rooms that do not exist.
+
+FINDING PEOPLE AND ROOMS
+
+Ama will tell you where anything is. Type "/nav" and a room or a person:
+
+  /nav Marta
+  /nav Archive Console
+
+She answers with where they are and the rooms to walk through to get there, and
+she is never wrong, because she reads it off the map rather than remembering it.
+Characters describing a route are doing it from memory and may send you
+somewhere that does not exist.
+
+It costs a turn, so it is worth it when you do not know where someone is, and
+not worth it for the room you are standing next to. Some places are private and
+she will not route to them; someone she cannot find is somewhere you cannot go.
 
 WHO IS READING THIS
 
