@@ -13,7 +13,7 @@ Prompts `28e8596d2f13`.
 
 | model | intake | movement | in-character | mystery | where-and-when | task-list | total | time | thinking | $ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `openai/gpt-5.6-luna` | 7/7 | – | – | – | 6/6 | – | **13/13** | 68s | 1816 | $0.0059 |
+| `openai/gpt-5.6-luna` | 7/7 | – | – | – | 6/6 | – | **13/13** | 61s | 2477 | $0.0066 |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 

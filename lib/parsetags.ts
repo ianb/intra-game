@@ -10,8 +10,27 @@ export interface TagType {
   subTags?: TagType[];
 }
 
+/**
+ * Inline emphasis, which is text and not protocol.
+ *
+ * A model told to mention "/nav" in dialogue writes `<b>/nav Marta</b>`,
+ * because that is what emphasising a command looks like — and the parser saw an
+ * unknown tag, warned, and discarded it along with the words inside. Emphasis
+ * cost a turn and scored as a protocol failure, which is a strange thing to
+ * fail a model for.
+ *
+ * Unwrapped to their contents before parsing, so the text survives and nothing
+ * downstream has to know these exist.
+ */
+// The name must end at the `>` or at a space, or `<i` would swallow the start
+// of `<img ...>`. Attributes are bounded rather than `[^>]*`, since an
+// unbounded run next to an optional group is a backtracking hazard and no
+// emphasis tag carries forty characters of them.
+const INLINE_MARKUP = /<\/?(?:b|i|u|em|strong)(?:>| [^>]{0,40}>)/gi;
+
 export function parseTags(s: string, allowTags?: string[]): TagType[] {
   s = s.trim().replace(/^`+/, "").replace(/`+$/, "").trim();
+  s = s.replace(INLINE_MARKUP, "");
   const root: TagType = { type: "root", attrs: {}, content: "" };
   const stack: { tag: TagType; startPos: number; contentStart: number }[] = [];
   let pos = 0;

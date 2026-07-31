@@ -290,3 +290,24 @@ const tidy = parseTags(`<description>A room.<set attr="x">1</set></description>`
 tidy[0].content.split("<set").length - 1;
 => 1
 ```
+
+## Emphasis is text, not protocol
+
+A model told to mention `/nav` in dialogue writes `<b>/nav Marta</b>`, because
+that is what emphasising a command looks like. The parser saw an unknown tag,
+warned, and threw away the words inside — so emphasis cost a turn and scored as
+a protocol failure, which is a strange thing to fail a model for. Caught by the
+intake eval dropping to 6/7 the moment Ama was told to mention the command.
+
+```ts
+parseTags(`<dialog character="Ama">Just type <b>/nav Marta</b> and I'll help.</dialog>`)[0].content;
+=> Just type /nav Marta and I'll help.
+```
+
+Only emphasis. Anything that might carry meaning is still a tag, and an unknown
+one is still worth complaining about:
+
+``` continue
+parseTags("<div><span>Hello</span> world</div>")[0].content;
+=> <span>Hello</span> world
+```
