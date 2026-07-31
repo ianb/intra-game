@@ -14,8 +14,8 @@ Prompts `28e8596d2f13`, `996586de48c6` — rows here were measured against diffe
 | model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `openai/gpt-5.6-luna` `28e8596d2f13` | 7/7 | – | – | – | 6/6 | – | – | – | **13/13** | 61s | 2477 | $0.0066 |
-| `claude-haiku-4-5-20251001` `996586de48c6` | – | – | – | – | – | 5/5 | 5/5 | – | **10/10** | 97s | 0 | $0.0000 |
-| `claude-sonnet-4-5-20250929` `996586de48c6` | – | – | – | – | – | 5/5 | 5/5 | – | **10/10** | 132s | 0 | $0.0000 |
+| `claude-haiku-4-5-20251001` `996586de48c6` | – | – | – | – | – | 5/5 | 5/5 | – | **10/10** | 88s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` `996586de48c6` | – | – | – | – | – | 5/5 | 5/5 | – | **10/10** | 124s | 0 | $0.0000 |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
