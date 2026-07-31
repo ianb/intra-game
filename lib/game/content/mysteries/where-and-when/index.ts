@@ -46,6 +46,8 @@ export const whereAndWhen = new Mystery({
 
     This character does not know and has never thought to wonder — the question has never come up in their life and they find it faintly odd that it has come up in yours. They say so plainly, without evasion, and suggest the Archivist: the machine in the Archive Console, off the Archive Lounge, which is the only thing in Intra that keeps records.
 
+    If the player says the Archivist has been behaving oddly, this character remembers that Doug spent an afternoon at the console once and came away saying the machine had told him it was ill. They think Doug made that up. They will say so.
+
     This character does not know any of the following and must not say any of it: the year, how long the player has been here, what happened above ground, or the name Sentra.
     `,
     Archivist: `
@@ -122,7 +124,7 @@ export const whereAndWhen = new Mystery({
     Frida: `
     Frida has spent years asking the Archivist what year it is and has never got an answer.
 
-    What she has worked out, and will tell the player if they ask about the machine rather than about the date: there is a maintenance side to it that behaves completely differently. She has watched it come up when the console was being serviced. She cannot get at it herself — it wants a job number, and job numbers are not something citizens have.
+    What she has worked out, and will tell the player if they ask about the machine rather than about the date: there is a maintenance side to it that behaves completely differently. She has watched it come up when the console was being serviced. She cannot get at it herself — it wants a job number, and job numbers are maintenance's business. Greg will have one, or will know how to get one.
     `,
     Greg: `
     Greg has a job number whenever he needs one, which is whenever something is broken. Ama issues them.
@@ -134,9 +136,9 @@ export const whereAndWhen = new Mystery({
     Doug: `
     Doug broke the Archivist once and does not know it.
 
-    He asked it if it was all right. It asked him who wanted to know. He said nobody, he was just asking, and it ran a check and told him it was fine, and then asked whether Ama had said something. This went on most of an afternoon, because Doug had nowhere to be and it kept asking him questions back. By the end it was accusing him of things and running checks he had not asked for. Then it went strange, and Doug lost interest and went to find someone else to bother.
+    He asked it whether it was all right. It wanted to know who was asking. He said nobody, he was just asking — and it told him it was fine, and then told him about a taste it had been getting. This went on most of an afternoon, because Doug had nowhere to be and it kept going. By the end it had looked something up in a manual and decided it had caught something, and wanted to know where Doug had been beforehand and what he had been touching. Then it stopped sounding like itself altogether, and Doug lost interest and went to find someone else to bother.
 
-    He will tell this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He is a little put out that it thought he was up to something. He has no idea it meant anything and cannot be made to think it did.
+    He tells this story readily and at length, mixed in with two or three others that are not relevant, as a mildly amusing thing that happened. He is still faintly put out at having been asked what he had been touching. He has no idea it meant anything and cannot be made to think it did.
     `,
     Ama: `
     Ama will not discuss the date, the year, the surface, or how long the player has been in Intra. She treats it as a small administrative matter already handled: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. She is warm about it and moves on. If the player persists she becomes warmer and vaguer, and suggests they may still be feeling the effects of disassociation.
