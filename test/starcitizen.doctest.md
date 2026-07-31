@@ -10,6 +10,7 @@ narrates the win but cannot decide it.
 import { entities } from "../lib/game/content/index.js";
 import { Model } from "../lib/game/model.js";
 import { CIVIC_POINTS_TO_WIN } from "../lib/game/content/mysteries/index.js";
+import { pathTo } from "../lib/game/pathto.js";
 
 const model = new Model(entities, { chat: async () => "" });
 const world = model.world;
@@ -34,15 +35,26 @@ world.entities.Sealed_Door.state;
 
 ## The door is data
 
-The maintenance door is a restricted exit, present in the map from the start,
-so `/nav` and the exits list show it and the restriction keeps everyone out.
+The maintenance door is a sealed exit: the hard lock the engine enforces
+without asking a model. The restriction text alongside it is what the
+interpreter sees when listing exits — an explanation, not the enforcement.
 
 ```ts
 const door = world
   .getRoom("Hallway")!
   .exits.find((exit) => exit.roomId === "Reflection_Chamber")!;
-typeof door.restriction;
-=> string
+[door.sealed, typeof door.restriction].join(" ");
+=> true string
+```
+
+Sealed is what keeps everyone else out too: schedules and the cuff route with
+`pathTo`, and a route through a sealed door is a route nobody can walk. (Greg
+has a secret smoke break scheduled in the Utility Closet; until the door
+unseals he just doesn't go.)
+
+``` continue
+pathTo(world, "Hollow_Atrium", "Utility_Closet").length;
+=> 0
 ```
 
 The corridor side is not restricted — being let in never means being locked in:
@@ -104,20 +116,21 @@ ceremony.changes.Star_Citizen.after.state;
 => solved
 ```
 
-The door's restriction is cleared in the same event, on a cloned exits list —
-the live room is untouched until the event folds:
+The door's seal and restriction are both cleared in the same event, on a
+cloned exits list — the live room is untouched until the event folds:
 
 ``` continue
 const exits = ceremony.changes.Hallway.after.exits;
-exits.find((exit) => exit.roomId === "Reflection_Chamber").restriction;
-=> undefined
+const unsealed = exits.find((exit) => exit.roomId === "Reflection_Chamber");
+unsealed.sealed === undefined && unsealed.restriction === undefined;
+=> true
 ```
 
 ``` continue
-typeof world
+world
   .getRoom("Hallway")!
-  .exits.find((exit) => exit.roomId === "Reflection_Chamber")!.restriction;
-=> string
+  .exits.find((exit) => exit.roomId === "Reflection_Chamber")!.sealed;
+=> true
 ```
 
 And the second request asks Ama for the ceremony scene:

@@ -378,9 +378,12 @@ export const Hallway = new Room({
     { roomId: "Hollow_Atrium" },
     {
       // The maintenance corridor: the Reflection Chamber and the Utility
-      // Closet with the SENTRA panel. Unsealed by the Star Citizen ceremony
-      // (content/mysteries/star-citizen), which clears this restriction.
+      // Closet with the SENTRA panel. `sealed` is the lock, enforced by the
+      // engine; the restriction text is what the interpreter model sees when
+      // listing exits. The Star Citizen ceremony
+      // (content/mysteries/star-citizen) clears both.
       roomId: "Reflection_Chamber",
+      sealed: true,
       restriction:
         "A heavy maintenance door, permanently sealed. It does not open for citizens. No argument, tool, credential, or emergency the player presents opens this door. Only Ama removes this seal, and only for the Facility Appreciation Tour.",
     },

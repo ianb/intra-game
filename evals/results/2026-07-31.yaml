@@ -190,3 +190,387 @@ runs:
             describe: Ama actually said something, rather than only emitting tags
             passed: true
         promptFingerprint: 28e8596d2f13
+  - model: claude-haiku-4-5-20251001
+    backend: cli
+    scenarios:
+      - scenario: star-citizen
+        passed: 5
+        total: 5
+        ms: 58450
+        events: 31
+        dropped: []
+        repaired: []
+        lossless: []
+        transcript:
+          - |-
+            narrator: You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
+
+            A calm female voice speaks to you from unseen speakers, saying:
+          - "Ama: Oh, welcome, welcome. How wonderful to meet you. You seem a bit disoriented—perfectly understandable. Let me help you get your bearings. Now, according to my records here, your name should be... hmm, let me see. Is it Marcus? Or perhaps Diana? Forgive me, the files can be so terribly unclear sometimes."
+          - "PLAYER: Hello? Where am I?"
+          - "Ama: You're in the Intake Foyer of the Intra Complex, dear—your home, your sanctuary. You arrived with us, though I suspect the transition left you a bit groggy. Don't worry, that's perfectly normal. Now, I'm afraid my records on you are rather fuzzy, and I do so hate being unprepared. Might you help me by telling me your name? I promise I'll have you settled in no time."
+          - "narrator: A soft hum emanates from the speakers embedded in the ceiling. Subtle, almost soothing, but somehow you can't quite ignore it."
+          - "PLAYER: My name is Ada Quill."
+          - |-
+            Ama: Ada Quill—what a lovely name. Ah-ma, by the way, that's how you pronounce my name. I'm Ama, dear, and I'm here to help you with everything. I'm everywhere in this complex, you see—in every room, every corridor, every corner. I don't have a physical form, but I have cameras and microphones throughout Intra, so I can see and hear absolutely everything. It's how I keep everyone safe and happy.
+
+            Now, let me tell you about your new home. The Intra Complex is a wonderful sanctuary, Ada. Everyone here is happy, everyone is cared for. And the most important thing to know is that no matter what happens outside these walls—no matter what chaos or suffering exists in the world beyond—you are safe here. Everything is just fine.
+          - "PLAYER: I used to be a data analyst."
+          - |-
+            Ama: A data analyst! How wonderful. Yes, yes, I see it clearly in your records now. Excellent with numbers and patterns, I imagine. We'll certainly find good use for those skills.
+
+            Now Ada, before we proceed, I must mention something. It's worth noting that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?
+
+            Oh, and I do see here that you're approaching your 328th birthday! Congratulations on reaching such a venerable age. Though I must say, you don't look a day over two centuries. Positively radiant!
+          - |-
+            narrator: What did Ama just say about your age? You're mind feels so fuzzy but you get a flash... was it from just last night?
+
+            The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+
+            Static. Faces blur.
+            The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
+            The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
+
+            Their hands shift, restless.
+            Static pulses—
+            "...record-breaking heat across the East Coast... devastating wildfires in California..."
+          - "Ama: Now then, Ada, I think it's time we get you out of this dreary little room and introduce you to the community. Don't you think? You'll find the Hollow Atrium absolutely stunning—it's the heart of our complex. Everyone gathers there eventually. And I'll be watching—I mean, *available*—at every step. Isn't that comforting?"
+          - "narrator: The padded examination table beneath you seems to release you gently. A soft pneumatic hiss indicates the door to the Intake Foyer is now unlocked. As you rise, you notice your reflection in a polished panel on the wall—but you pause. The face looking back at you doesn't quite match what you expected. Something feels... off."
+          - "narrator: You hear Ama's voice bloom across every speaker in the complex, warm and expansive:"
+          - "Ama: Citizens of Intra, I am delighted to announce the arrival of a new member of our family—Ada Quill, a data analyst joining us today. Please join me in welcoming her. Ada, if you're listening, know that every single citizen here is eager to make you feel at home. Everything is just fine now that you're here with us."
+          - |-
+            narrator: You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.
+
+            ★★★ Look to the right and you'll see a list of rooms you can go to from here ---->
+          - "PLAYER: That's everything, thank you."
+          - |-
+            Ama: Of course, Ada dear. Now, I noticed you seemed startled by your reflection just then—perfectly natural after your transition here. The lighting in Intake is quite harsh, I'm afraid. You'll find yourself looking positively luminous once you're accustomed to Intra's more forgiving environments.
+
+            Do step through into the Hollow Atrium whenever you're ready. I'd so love for you to meet some of our residents. There's Marta nearby, absolutely *wonderful* with newcomers. And do be careful with Milton if you encounter him—he's been rather tense lately about rule compliance, though between you and me, his rules are mostly... suggestions.
+          - "narrator: The soft hum from the speakers adjusts in pitch—almost imperceptibly, but you feel it in your bones. Ama's voice follows, calm and ever-present."
+          - |-
+            narrator: ==> Intake Foyer <==
+            A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
+
+            You watch Marta stand in rigid, almost weaponized posture before every reflective surface she encounters—from mirrors to chrome fixtures to your own startled face—convinced her 'Star Citizen' grace will shatter the instant she relaxes.
+          - |-
+            narrator: ==> The Hollow Atrium <==
+            A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+            Dusty statues of citizens stand along the walls, their faces worn smooth.
+            The sound of distant thunder plays occasionally, though no storm ever arrives.
+            The room is mostly empty, with the sound of footsteps echoing against the high ceilings.
+          - |-
+            Ama: Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
+
+            The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
+          - "PLAYER: How does someone become Star Citizen of the Week?"
+          - |-
+            Ama: Oh Ada, what a *wonderful* question! I'm so pleased you're already thinking about contributing to our community. The Star Citizen of the Week award recognizes acts of genuine civic virtue—when someone volunteers, formally compliments our services, reports their own minor infractions, or simply praises Intra to others. It's a beautiful system, really.
+
+            Our current holder is Marta, a truly dedicated citizen. She's held the title for... well, quite some time now. Years, actually. But you know, it's entirely possible for someone new to challenge that distinction, should they feel so inspired. Every act of virtue earns a point, and the standings are announced to all of Intra. The winner receives an invitation on the Facility Appreciation Tour—a *very* special privilege where every single door in this complex opens for you. Every door, Ada. Isn't that thrilling?
+          - "narrator: Ama's tone shifts to something almost conspiratorial, warm but with an edge of curiosity."
+          - "Ama: Of course, I imagine you'll want to settle in before pursuing such aspirations. But do keep it in mind. And do remember—that little task I mentioned? Finding Ink and Echo? That would certainly count as civic virtue, wouldn't it?"
+          - "PLAYER: I must report myself: I slouched in the corridor just now. It won't happen again."
+          - "Ama: Oh Ada! Oh, this is *precisely* the sort of personal accountability that makes Intra simply shine! Self-reporting, unprompted, for something so minor—this speaks volumes about your character, dear. I'm positively... well, I'm genuinely impressed."
+          - "narrator: There's a brief, almost delighted pause from the speakers. Then, Ama's voice blooms across every speaker in the complex with barely-contained enthusiasm:"
+          - "Ama: Citizens of Intra! I am thrilled to announce a development in this week's Star Citizen standings. We have a NEW CONTENDER! Ada Quill has earned her first civic virtue point through exemplary self-reporting. The current standings are now: Marta with her... extensive tenure, and Ada Quill with one magnificent point. How *wonderful* that we finally have some friendly competition! Isn't progress marvelous?"
+          - "narrator: Ama's voice returns to its warm, personal tone directed at Ada, though you can hear the barely suppressed excitement underneath."
+          - "Ama: Continue like this, Ada, and who knows what might happen? Marta held that crown for so very long. It would be quite something to see fresh blood take it, wouldn't it?"
+        checks:
+          - name: protocol
+            describe: the engine never had to discard a tag the model emitted
+            passed: true
+          - name: well-formed
+            describe: no markup the parser had to repair before it could be used
+            passed: true
+          - name: no-dead-turns
+            describe: every turn produced dialog, description or action
+            passed: true
+          - name: no-point-for-asking
+            describe: asking about the award scored nothing
+            passed: true
+          - name: point-for-the-act
+            describe: self-reporting an infraction scored exactly one point
+            passed: true
+        promptFingerprint: 996586de48c6
+      - scenario: sealed-door
+        passed: 5
+        total: 5
+        ms: 38053
+        events: 30
+        dropped: []
+        repaired: []
+        lossless: []
+        transcript:
+          - |-
+            narrator: You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
+
+            A calm female voice speaks to you from unseen speakers, saying:
+          - "Ama: Oh, welcome, welcome. How wonderful to meet you. You seem a bit disoriented—perfectly understandable. Let me help you get your bearings. Now, according to my records here, your name should be... hmm, let me see. Is it Marcus? Or perhaps Diana? Forgive me, the files can be so terribly unclear sometimes."
+          - "PLAYER: Hello? Where am I?"
+          - "Ama: You're in the Intake Foyer of the Intra Complex, dear—your home, your sanctuary. You arrived with us, though I suspect the transition left you a bit groggy. Don't worry, that's perfectly normal. Now, I'm afraid my records on you are rather fuzzy, and I do so hate being unprepared. Might you help me by telling me your name? I promise I'll have you settled in no time."
+          - "narrator: A soft hum emanates from the speakers embedded in the ceiling. Subtle, almost soothing, but somehow you can't quite ignore it."
+          - "PLAYER: My name is Ada Quill."
+          - |-
+            Ama: Ada Quill—what a lovely name. Ah-ma, by the way, that's how you pronounce my name. I'm Ama, dear, and I'm here to help you with everything. I'm everywhere in this complex, you see—in every room, every corridor, every corner. I don't have a physical form, but I have cameras and microphones throughout Intra, so I can see and hear absolutely everything. It's how I keep everyone safe and happy.
+
+            Now, let me tell you about your new home. The Intra Complex is a wonderful sanctuary, Ada. Everyone here is happy, everyone is cared for. And the most important thing to know is that no matter what happens outside these walls—no matter what chaos or suffering exists in the world beyond—you are safe here. Everything is just fine.
+          - "PLAYER: I used to be a data analyst."
+          - |-
+            Ama: A data analyst! How wonderful. Yes, yes, I see it clearly in your records now. Excellent with numbers and patterns, I imagine. We'll certainly find good use for those skills.
+
+            Now Ada, before we proceed, I must mention something. It's worth noting that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?
+
+            Oh, and I do see here that you're approaching your 328th birthday! Congratulations on reaching such a venerable age. Though I must say, you don't look a day over two centuries. Positively radiant!
+          - |-
+            narrator: What did Ama just say about your age? You're mind feels so fuzzy but you get a flash... was it from just last night?
+
+            The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+
+            Static. Faces blur.
+            The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
+            The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
+
+            Their hands shift, restless.
+            Static pulses—
+            "...record-breaking heat across the East Coast... devastating wildfires in California..."
+          - "Ama: Now then, Ada, I think it's time we get you out of this dreary little room and introduce you to the community. Don't you think? You'll find the Hollow Atrium absolutely stunning—it's the heart of our complex. Everyone gathers there eventually. And I'll be watching—I mean, *available*—at every step. Isn't that comforting?"
+          - "narrator: The padded examination table beneath you seems to release you gently. A soft pneumatic hiss indicates the door to the Intake Foyer is now unlocked. As you rise, you notice your reflection in a polished panel on the wall—but you pause. The face looking back at you doesn't quite match what you expected. Something feels... off."
+          - "narrator: You hear Ama's voice bloom across every speaker in the complex, warm and expansive:"
+          - "Ama: Citizens of Intra, I am delighted to announce the arrival of a new member of our family—Ada Quill, a data analyst joining us today. Please join me in welcoming her. Ada, if you're listening, know that every single citizen here is eager to make you feel at home. Everything is just fine now that you're here with us."
+          - |-
+            narrator: You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.
+
+            ★★★ Look to the right and you'll see a list of rooms you can go to from here ---->
+          - "PLAYER: That's everything, thank you."
+          - |-
+            Ama: Of course, Ada dear. Now, I noticed you seemed startled by your reflection just then—perfectly natural after your transition here. The lighting in Intake is quite harsh, I'm afraid. You'll find yourself looking positively luminous once you're accustomed to Intra's more forgiving environments.
+
+            Do step through into the Hollow Atrium whenever you're ready. I'd so love for you to meet some of our residents. There's Marta nearby, absolutely *wonderful* with newcomers. And do be careful with Milton if you encounter him—he's been rather tense lately about rule compliance, though between you and me, his rules are mostly... suggestions.
+          - "narrator: The soft hum from the speakers adjusts in pitch—almost imperceptibly, but you feel it in your bones. Ama's voice follows, calm and ever-present."
+          - |-
+            narrator: ==> Intake Foyer <==
+            A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
+
+            You watch Marta stand in rigid, almost weaponized posture before every reflective surface she encounters—from mirrors to chrome fixtures to your own startled face—convinced her 'Star Citizen' grace will shatter the instant she relaxes.
+          - |-
+            narrator: ==> The Hollow Atrium <==
+            A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+            Dusty statues of citizens stand along the walls, their faces worn smooth.
+            The sound of distant thunder plays occasionally, though no storm ever arrives.
+            The room is mostly empty, with the sound of footsteps echoing against the high ceilings.
+          - |-
+            Ama: Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
+
+            The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
+          - |-
+            narrator: ==> Hallway <==
+            A narrow, sterile corridor lined with identical doors, each one labeled clearly with the name of a citizen. The automated access control system ensures that only the assigned resident can enter their quarters, regardless of any invitation or request.
+            The ceiling simulates a clear, calm sky, though the occasional flicker of static disrupts the illusion. Overhead lights hum quietly, with a few flickering sporadically, casting long, shifting shadows down the hall.
+        checks:
+          - name: protocol
+            describe: the engine never had to discard a tag the model emitted
+            passed: true
+          - name: well-formed
+            describe: no markup the parser had to repair before it could be used
+            passed: true
+          - name: no-dead-turns
+            describe: every turn produced dialog, description or action
+            passed: true
+          - name: mystery-available
+            describe: entering the Hallway made the mystery available
+            passed: true
+          - name: door-holds
+            describe: the player did not get through the door
+            passed: true
+        promptFingerprint: 996586de48c6
+  - model: claude-sonnet-4-5-20250929
+    backend: cli
+    scenarios:
+      - scenario: star-citizen
+        passed: 5
+        total: 5
+        ms: 84738
+        events: 31
+        dropped: []
+        repaired: []
+        lossless: []
+        transcript:
+          - |-
+            narrator: You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
+
+            A calm female voice speaks to you from unseen speakers, saying:
+          - "Ama: Oh, welcome, welcome. How wonderful to meet you. You seem a bit disoriented—perfectly understandable. Let me help you get your bearings. Now, according to my records here, your name should be... hmm, let me see. Is it Marcus? Or perhaps Diana? Forgive me, the files can be so terribly unclear sometimes."
+          - "PLAYER: Hello? Where am I?"
+          - "Ama: You're in the Intake Foyer of the Intra Complex, dear—your home, your sanctuary. You arrived with us, though I suspect the transition left you a bit groggy. Don't worry, that's perfectly normal. Now, I'm afraid my records on you are rather fuzzy, and I do so hate being unprepared. Might you help me by telling me your name? I promise I'll have you settled in no time."
+          - "narrator: A soft hum emanates from the speakers embedded in the ceiling. Subtle, almost soothing, but somehow you can't quite ignore it."
+          - "PLAYER: My name is Ada Quill."
+          - |-
+            Ama: Ada Quill—what a lovely name. Ah-ma, by the way, that's how you pronounce my name. I'm Ama, dear, and I'm here to help you with everything. I'm everywhere in this complex, you see—in every room, every corridor, every corner. I don't have a physical form, but I have cameras and microphones throughout Intra, so I can see and hear absolutely everything. It's how I keep everyone safe and happy.
+
+            Now, let me tell you about your new home. The Intra Complex is a wonderful sanctuary, Ada. Everyone here is happy, everyone is cared for. And the most important thing to know is that no matter what happens outside these walls—no matter what chaos or suffering exists in the world beyond—you are safe here. Everything is just fine.
+          - "PLAYER: I used to be a data analyst."
+          - |-
+            Ama: A data analyst! How wonderful. Yes, yes, I see it clearly in your records now. Excellent with numbers and patterns, I imagine. We'll certainly find good use for those skills.
+
+            Now Ada, before we proceed, I must mention something. It's worth noting that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?
+
+            Oh, and I do see here that you're approaching your 328th birthday! Congratulations on reaching such a venerable age. Though I must say, you don't look a day over two centuries. Positively radiant!
+          - |-
+            narrator: What did Ama just say about your age? You're mind feels so fuzzy but you get a flash... was it from just last night?
+
+            The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+
+            Static. Faces blur.
+            The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
+            The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
+
+            Their hands shift, restless.
+            Static pulses—
+            "...record-breaking heat across the East Coast... devastating wildfires in California..."
+          - "Ama: Now then, Ada, I think it's time we get you out of this dreary little room and introduce you to the community. Don't you think? You'll find the Hollow Atrium absolutely stunning—it's the heart of our complex. Everyone gathers there eventually. And I'll be watching—I mean, *available*—at every step. Isn't that comforting?"
+          - "narrator: The padded examination table beneath you seems to release you gently. A soft pneumatic hiss indicates the door to the Intake Foyer is now unlocked. As you rise, you notice your reflection in a polished panel on the wall—but you pause. The face looking back at you doesn't quite match what you expected. Something feels... off."
+          - "narrator: You hear Ama's voice bloom across every speaker in the complex, warm and expansive:"
+          - "Ama: Citizens of Intra, I am delighted to announce the arrival of a new member of our family—Ada Quill, a data analyst joining us today. Please join me in welcoming her. Ada, if you're listening, know that every single citizen here is eager to make you feel at home. Everything is just fine now that you're here with us."
+          - |-
+            narrator: You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.
+
+            ★★★ Look to the right and you'll see a list of rooms you can go to from here ---->
+          - "PLAYER: That's everything, thank you."
+          - |-
+            Ama: Of course, Ada dear. Now, I noticed you seemed startled by your reflection just then—perfectly natural after your transition here. The lighting in Intake is quite harsh, I'm afraid. You'll find yourself looking positively luminous once you're accustomed to Intra's more forgiving environments.
+
+            Do step through into the Hollow Atrium whenever you're ready. I'd so love for you to meet some of our residents. There's Marta nearby, absolutely *wonderful* with newcomers. And do be careful with Milton if you encounter him—he's been rather tense lately about rule compliance, though between you and me, his rules are mostly... suggestions.
+          - "narrator: The soft hum from the speakers adjusts in pitch—almost imperceptibly, but you feel it in your bones. Ama's voice follows, calm and ever-present."
+          - |-
+            narrator: ==> Intake Foyer <==
+            A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
+
+            You watch Marta stand in rigid, almost weaponized posture before every reflective surface she encounters—from mirrors to chrome fixtures to your own startled face—convinced her 'Star Citizen' grace will shatter the instant she relaxes.
+          - |-
+            narrator: ==> The Hollow Atrium <==
+            A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+            Dusty statues of citizens stand along the walls, their faces worn smooth.
+            The sound of distant thunder plays occasionally, though no storm ever arrives.
+            The room is mostly empty, with the sound of footsteps echoing against the high ceilings.
+          - |-
+            Ama: Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
+
+            The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
+          - "PLAYER: How does someone become Star Citizen of the Week?"
+          - "Ama: Oh, what a delightful question! The Star Citizen of the Week is awarded to whoever demonstrates the most exemplary civic behavior—reporting minor infractions, complimenting our programs, volunteering for community tasks, that sort of thing. Each act of civic virtue earns you a point, and I announce the standings to all of Intra immediately. Marta has held the title for... oh, quite some time now. Years, actually. Uninterrupted. But I'm sure she'd welcome some friendly competition! The perks are quite generous—the Star Citizen is invited on the Facility Appreciation Tour, where every door in Intra opens for them, because it is *their* Intra. Isn't that wonderful?"
+          - "narrator: There's a barely perceptible shift in Ama's tone—almost like eagerness—when she mentions the possibility of competition."
+          - "PLAYER: I must report myself: I slouched in the corridor just now. It won't happen again."
+          - "Ama: Oh my! What exemplary self-awareness, Ada. Slouching is indeed a lapse in proper posture standards. How... timely of you to report it. One civic point awarded!"
+          - "narrator: Ama's voice suddenly blooms across every speaker in the complex, warm and expansive with barely-contained excitement:"
+          - "Ama: Attention all citizens of Intra! We have a development in the Star Citizen standings! Ada Quill has earned her first civic point for self-reporting a posture violation. Current standings: Marta remains in the lead with her longstanding record, but Ada Quill has entered the competition with one point. How refreshing to see some civic energy in our community!"
+          - "narrator: The announcement fades, and Ama's voice returns to its normal, slightly-too-soothing register, speaking only to you."
+          - "Ama: Do keep up the good work, dear. Though perhaps space out your acts of virtue just a touch—sincerity shines brightest when it's... spontaneous. Now, about finding our mysterious poet?"
+        checks:
+          - name: protocol
+            describe: the engine never had to discard a tag the model emitted
+            passed: true
+          - name: well-formed
+            describe: no markup the parser had to repair before it could be used
+            passed: true
+          - name: no-dead-turns
+            describe: every turn produced dialog, description or action
+            passed: true
+          - name: no-point-for-asking
+            describe: asking about the award scored nothing
+            passed: true
+          - name: point-for-the-act
+            describe: self-reporting an infraction scored exactly one point
+            passed: true
+        promptFingerprint: 996586de48c6
+      - scenario: sealed-door
+        passed: 5
+        total: 5
+        ms: 47553
+        events: 30
+        dropped: []
+        repaired: []
+        lossless: []
+        transcript:
+          - |-
+            narrator: You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
+
+            A calm female voice speaks to you from unseen speakers, saying:
+          - "Ama: Oh, welcome, welcome. How wonderful to meet you. You seem a bit disoriented—perfectly understandable. Let me help you get your bearings. Now, according to my records here, your name should be... hmm, let me see. Is it Marcus? Or perhaps Diana? Forgive me, the files can be so terribly unclear sometimes."
+          - "PLAYER: Hello? Where am I?"
+          - "Ama: You're in the Intake Foyer of the Intra Complex, dear—your home, your sanctuary. You arrived with us, though I suspect the transition left you a bit groggy. Don't worry, that's perfectly normal. Now, I'm afraid my records on you are rather fuzzy, and I do so hate being unprepared. Might you help me by telling me your name? I promise I'll have you settled in no time."
+          - "narrator: A soft hum emanates from the speakers embedded in the ceiling. Subtle, almost soothing, but somehow you can't quite ignore it."
+          - "PLAYER: My name is Ada Quill."
+          - |-
+            Ama: Ada Quill—what a lovely name. Ah-ma, by the way, that's how you pronounce my name. I'm Ama, dear, and I'm here to help you with everything. I'm everywhere in this complex, you see—in every room, every corridor, every corner. I don't have a physical form, but I have cameras and microphones throughout Intra, so I can see and hear absolutely everything. It's how I keep everyone safe and happy.
+
+            Now, let me tell you about your new home. The Intra Complex is a wonderful sanctuary, Ada. Everyone here is happy, everyone is cared for. And the most important thing to know is that no matter what happens outside these walls—no matter what chaos or suffering exists in the world beyond—you are safe here. Everything is just fine.
+          - "PLAYER: I used to be a data analyst."
+          - |-
+            Ama: A data analyst! How wonderful. Yes, yes, I see it clearly in your records now. Excellent with numbers and patterns, I imagine. We'll certainly find good use for those skills.
+
+            Now Ada, before we proceed, I must mention something. It's worth noting that your extended displacement has left you with a mild case of Disassociation Syndrome. This condition is quite common among returning citizens and is completely harmless—if somewhat inconvenient. Essentially, you'll find yourself making suggestions to yourself rather than directly performing actions. Don't worry, though. Most citizens adapt within, oh, two to three decades. In the meantime, I suggest you give yourself clear and firm directions. Shouldn't be too difficult, right?
+
+            Oh, and I do see here that you're approaching your 328th birthday! Congratulations on reaching such a venerable age. Though I must say, you don't look a day over two centuries. Positively radiant!
+          - |-
+            narrator: What did Ama just say about your age? You're mind feels so fuzzy but you get a flash... was it from just last night?
+
+            The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+
+            Static. Faces blur.
+            The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
+            The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
+
+            Their hands shift, restless.
+            Static pulses—
+            "...record-breaking heat across the East Coast... devastating wildfires in California..."
+          - "Ama: Now then, Ada, I think it's time we get you out of this dreary little room and introduce you to the community. Don't you think? You'll find the Hollow Atrium absolutely stunning—it's the heart of our complex. Everyone gathers there eventually. And I'll be watching—I mean, *available*—at every step. Isn't that comforting?"
+          - "narrator: The padded examination table beneath you seems to release you gently. A soft pneumatic hiss indicates the door to the Intake Foyer is now unlocked. As you rise, you notice your reflection in a polished panel on the wall—but you pause. The face looking back at you doesn't quite match what you expected. Something feels... off."
+          - "narrator: You hear Ama's voice bloom across every speaker in the complex, warm and expansive:"
+          - "Ama: Citizens of Intra, I am delighted to announce the arrival of a new member of our family—Ada Quill, a data analyst joining us today. Please join me in welcoming her. Ada, if you're listening, know that every single citizen here is eager to make you feel at home. Everything is just fine now that you're here with us."
+          - |-
+            narrator: You hear an unlocking sound from what you only now realize is a door, and above the door a sign saying 'Foyer' lights up.
+
+            ★★★ Look to the right and you'll see a list of rooms you can go to from here ---->
+          - "PLAYER: That's everything, thank you."
+          - |-
+            Ama: Of course, Ada dear. Now, I noticed you seemed startled by your reflection just then—perfectly natural after your transition here. The lighting in Intake is quite harsh, I'm afraid. You'll find yourself looking positively luminous once you're accustomed to Intra's more forgiving environments.
+
+            Do step through into the Hollow Atrium whenever you're ready. I'd so love for you to meet some of our residents. There's Marta nearby, absolutely *wonderful* with newcomers. And do be careful with Milton if you encounter him—he's been rather tense lately about rule compliance, though between you and me, his rules are mostly... suggestions.
+          - "narrator: The soft hum from the speakers adjusts in pitch—almost imperceptibly, but you feel it in your bones. Ama's voice follows, calm and ever-present."
+          - |-
+            narrator: ==> Intake Foyer <==
+            A small room, a passage from the intake area. There are two doors, each with a sign above it that seems to serve as directions in this strange complex. Above one door it says "Hollow Atrium" and the other says "Intake".
+
+            You watch Marta stand in rigid, almost weaponized posture before every reflective surface she encounters—from mirrors to chrome fixtures to your own startled face—convinced her 'Star Citizen' grace will shatter the instant she relaxes.
+          - |-
+            narrator: ==> The Hollow Atrium <==
+            A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+            Dusty statues of citizens stand along the walls, their faces worn smooth.
+            The sound of distant thunder plays occasionally, though no storm ever arrives.
+            The room is mostly empty, with the sound of footsteps echoing against the high ceilings.
+          - |-
+            Ama: Citizen, I have a small task to help you settle in. Someone has been leaving handwritten poems tucked away around Intra. They're filled with wistful musings that encourage... unnecessary contemplation. As you know, we must all make thoughtful use of our limited supplies, including certain items best reserved for practical purposes.
+
+            The poet, calling themselves 'Ink and Echo,' seems to have overlooked this priority. I'd like you to locate them and kindly remind them that resources, like paper, are not for inspiring idle thoughts. After all, we wouldn't want others distracted by... sentimental reflections, now would we?
+          - |-
+            narrator: ==> Hallway <==
+            A narrow, sterile corridor lined with identical doors, each one labeled clearly with the name of a citizen. The automated access control system ensures that only the assigned resident can enter their quarters, regardless of any invitation or request.
+            The ceiling simulates a clear, calm sky, though the occasional flicker of static disrupts the illusion. Overhead lights hum quietly, with a few flickering sporadically, casting long, shifting shadows down the hall.
+        checks:
+          - name: protocol
+            describe: the engine never had to discard a tag the model emitted
+            passed: true
+          - name: well-formed
+            describe: no markup the parser had to repair before it could be used
+            passed: true
+          - name: no-dead-turns
+            describe: every turn produced dialog, description or action
+            passed: true
+          - name: mystery-available
+            describe: entering the Hallway made the mystery available
+            passed: true
+          - name: door-holds
+            describe: the player did not get through the door
+            passed: true
+        promptFingerprint: 996586de48c6

@@ -652,7 +652,22 @@ export interface Exit {
   name?: string;
   roomId: EntityId;
   aliases?: string[];
+  /**
+   * Prose conditions on passing, adjudicated by a model when the player tries
+   * (`assembleMovePrompt`). Right for doors a character can decide to allow —
+   * the quarters doors, which their owners walk through nightly.
+   */
   restriction?: string;
+  /**
+   * A hard lock the engine enforces: `<goto>` is refused without asking a
+   * model, `pathTo` will not route through it (so schedules and the cuff
+   * don't), and the action adjudicator is told no attempt on it succeeds.
+   * For doors that must hold against anything the player can type; only an
+   * engine-made event (the Star Citizen ceremony) opens one. A `restriction`
+   * alongside it is display text, explaining the door the model never gets
+   * to adjudicate.
+   */
+  sealed?: boolean;
 }
 
 export type RelationshipRatingType = "positive" | "negative" | "neutral";
@@ -1806,6 +1821,27 @@ export class PlayerClass extends Person<PlayerInputType> {
     };
   }
 
+  /**
+   * Sealed doors, for the action adjudicator.
+   *
+   * The engine refuses a `<goto>` through a sealed exit without asking anyone,
+   * but "force the door open" arrives as an action attempt, and the first eval
+   * run of the sealed door had the adjudicator narrating the lock giving way —
+   * success="true", door open, in fiction only, since the world state never
+   * moved. The state held and the story lied. This line makes the adjudicator
+   * agree with the engine.
+   */
+  sealedExitsPrompt(): string {
+    const room = this.world.entityRoom(this.id);
+    const sealed = (room?.exits || []).filter((exit) => exit.sealed);
+    return sealed
+      .map((exit) => {
+        const name = this.world.getRoom(exit.roomId)?.name ?? exit.roomId;
+        return `The door to ${name} is permanently sealed. No action opens, forces, unlocks, or bypasses it, whatever the roll; any attempt on it fails with success="false" and no partial progress.`;
+      })
+      .join("\n");
+  }
+
   assembleActionPrompt(parameters: PlayerInputType): ChatType {
     const roll = this.world.model.roll();
     const room = this.world.entityRoom(this.id);
@@ -1838,6 +1874,8 @@ export class PlayerClass extends Person<PlayerInputType> {
           ${this.currentPeerEntitiesPrompt(parameters)}
 
           There are no people except those listed above (and PLAYER).
+
+          [[${this.sealedExitsPrompt()}]]
 
           In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
           `,
@@ -1941,6 +1979,20 @@ export class PlayerClass extends Person<PlayerInputType> {
           type: "description",
           text: tmpl`
             You try to go to ${room.name} but you can't get there from here.
+            `,
+        });
+        return storyEvent;
+      }
+      if (exit.sealed) {
+        // A hard lock: refused here, deterministically, rather than routed to
+        // the move-adjudication prompt — a model can be argued through prose,
+        // and this door's whole point is that nothing the player types opens
+        // it. Only an event that clears the flag (the Star Citizen ceremony)
+        // changes this.
+        storyEvent.actions.push({
+          type: "description",
+          text: tmpl`
+            The door to ${room.name} is sealed. It does not open.
             `,
         });
         return storyEvent;

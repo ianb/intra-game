@@ -97,6 +97,7 @@ export class StarCitizenMystery extends Mystery {
     const exits = clone(hallway.exits);
     const door = exits.find((exit) => exit.roomId === "Reflection_Chamber");
     if (door) {
+      door.sealed = undefined;
       door.restriction = undefined;
     }
     return [

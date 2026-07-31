@@ -24,6 +24,12 @@ export function pathTo(
       continue;
     }
     for (const exit of room.exits) {
+      // Sealed exits are engine-enforced locks (see Exit in classes.ts); a
+      // route through one is a route nobody can walk. Restrictions are prose
+      // and stay routable: people path through their own quarters doors.
+      if (exit.sealed) {
+        continue;
+      }
       const neighbor = exit.roomId;
       queue.push([...path, neighbor]);
     }
