@@ -20,6 +20,7 @@ import {
   undoTurn,
 } from "./session";
 import { model } from "./model";
+import { teleport } from "./teleport";
 import { composer, openSettings } from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
@@ -70,6 +71,9 @@ export function Input() {
       // the engine to launch a game here, which is neither where the engine is
       // nor where the game is.
       await startNewGame();
+    } else if (text === "/teleport" || text.startsWith("/teleport ")) {
+      // Dev command for previewing rooms and character art; see app/teleport.ts.
+      teleport(text.slice("/teleport".length));
     } else {
       try {
         await playTurn(text);
