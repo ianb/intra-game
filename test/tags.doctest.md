@@ -192,3 +192,34 @@ world.entities.Archivist.angst = 2;
 String(apply(`<set attr="Archivist.angst">7</set>`).event.changes.Archivist.after.angst);
 => 7
 ```
+
+## Pronouns, however they were written
+
+Only three pronoun sets work downstream, so `<set attr="PLAYER.pronouns">` was
+validated against exactly `he/him`, `she/her` and `they/them`. A model asked to
+record what a player just said writes what the player said, which is often
+`he/him/his`, or just `he`. Those were rejected, so a player who answered the
+question perfectly well stayed `they/them`, and the model got a complaint about
+a tag it had every reason to think was right.
+
+```ts
+const { event } = apply(`<set attr="PLAYER.pronouns">He/Him/His</set>`);
+String(event.changes.PLAYER.after.pronouns);
+=> he/him
+```
+
+``` continue
+["he", "She / Her", "they/them/theirs", "them"]
+  .map((p) => apply(`<set attr="PLAYER.pronouns">${p}</set>`))
+  .map((r) => String(r.event.changes.PLAYER?.after?.pronouns))
+  .join(" ");
+=> he/him she/her they/them they/them
+```
+
+Something that isn't a pronoun set is still refused rather than guessed at:
+
+``` continue
+const bad = apply(`<set attr="PLAYER.pronouns">whatever you like</set>`);
+String(bad.event.changes.PLAYER?.after?.pronouns);
+=> undefined
+```

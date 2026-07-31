@@ -1,7 +1,12 @@
 import clone from "just-clone";
 import type { TagType } from "../parsetags";
 import type { EntityId, StoryEventType } from "../types";
-import { coerceBoolean, coerceNumber, isValidPropertySet } from "./coerce";
+import {
+  coerceBoolean,
+  coerceNumber,
+  coercePronouns,
+  isValidPropertySet,
+} from "./coerce";
 import { fieldsOf } from "./dynamic";
 import { applyTodoTag } from "./todos";
 import type { World } from "./world";
@@ -190,6 +195,9 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     );
   }
   let content: string | number | boolean = tag.content;
+  if (key === "pronouns") {
+    content = coercePronouns(tag.content) ?? tag.content;
+  }
   if (typeof value === "boolean") {
     content = coerceBoolean(tag.content);
   } else if (typeof value === "number") {

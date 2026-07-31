@@ -57,6 +57,46 @@ const NON_NAMES = new Set([
 ]);
 
 /**
+ * Every spelling of the three pronoun sets the game supports.
+ *
+ * Only "he/him", "she/her" and "they/them" work downstream, and a model asked
+ * to record what a player just said writes what the player said — "he", "he/him/his",
+ * "He / Him". Those were all rejected, so a player who answered the question
+ * correctly could end up recorded as they/them anyway, and the model got a
+ * complaint about a tag it had every reason to think was right.
+ *
+ * Relaxing here rather than in the prompt: the mapping is unambiguous, and a
+ * prompt long enough to enumerate the accepted spellings costs every turn of
+ * the game to fix one moment of it.
+ */
+const PRONOUN_FORMS: Record<string, string> = {
+  he: "he/him",
+  him: "he/him",
+  his: "he/him",
+  "he/him": "he/him",
+  "he/his": "he/him",
+  "he/him/his": "he/him",
+  she: "she/her",
+  her: "she/her",
+  hers: "she/her",
+  "she/her": "she/her",
+  "she/hers": "she/her",
+  "she/her/hers": "she/her",
+  they: "they/them",
+  them: "they/them",
+  their: "they/them",
+  theirs: "they/them",
+  "they/them": "they/them",
+  "they/their": "they/them",
+  "they/them/theirs": "they/them",
+};
+
+/** The canonical form of what the model wrote, or null if it isn't pronouns. */
+export function coercePronouns(value: string): string | null {
+  return PRONOUN_FORMS[value.trim().toLowerCase().replace(/\s+/g, "")] ?? null;
+}
+
+/**
  * Should a `<set attr="...">` from the model be allowed to land?
  *
  * Guards the few properties where the model likes to write a non-answer instead
