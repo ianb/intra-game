@@ -7,6 +7,8 @@ import { Room } from "../classes";
 
 export const Quarters_Doug = new Room({
   id: "Quarters_Doug",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Doug",
   excludeFromMap: true,
   shortDescription: `
@@ -21,6 +23,8 @@ export const Quarters_Doug = new Room({
 
 export const Quarters_Marta = new Room({
   id: "Quarters_Marta",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Marta",
   excludeFromMap: true,
   shortDescription: `
@@ -35,6 +39,8 @@ export const Quarters_Marta = new Room({
 
 export const Quarters_Frida = new Room({
   id: "Quarters_Frida",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Frida",
   excludeFromMap: true,
   shortDescription: `
@@ -49,6 +55,8 @@ export const Quarters_Frida = new Room({
 
 export const Quarters_June = new Room({
   id: "Quarters_June",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: June",
   excludeFromMap: true,
   shortDescription: `
@@ -63,6 +71,8 @@ export const Quarters_June = new Room({
 
 export const Quarters_Lana = new Room({
   id: "Quarters_Lana",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Lana",
   excludeFromMap: true,
   shortDescription: `
@@ -77,6 +87,8 @@ export const Quarters_Lana = new Room({
 
 export const Quarters_Harold = new Room({
   id: "Quarters_Harold",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Harold",
   excludeFromMap: true,
   shortDescription: `
@@ -91,6 +103,8 @@ export const Quarters_Harold = new Room({
 
 export const Quarters_Greg = new Room({
   id: "Quarters_Greg",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Greg",
   excludeFromMap: true,
   shortDescription: `
@@ -105,6 +119,8 @@ export const Quarters_Greg = new Room({
 
 export const Quarters_Milton = new Room({
   id: "Quarters_Milton",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Milton",
   excludeFromMap: true,
   shortDescription: `
@@ -119,6 +135,8 @@ export const Quarters_Milton = new Room({
 
 export const Quarters_Gloria = new Room({
   id: "Quarters_Gloria",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Gloria",
   excludeFromMap: true,
   shortDescription: `
@@ -133,6 +151,8 @@ export const Quarters_Gloria = new Room({
 
 export const Quarters_Lily = new Room({
   id: "Quarters_Lily",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Lily",
   excludeFromMap: true,
   shortDescription: `
@@ -147,6 +167,8 @@ export const Quarters_Lily = new Room({
 
 export const Quarters_Henry = new Room({
   id: "Quarters_Henry",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Henry",
   excludeFromMap: true,
   shortDescription: `
@@ -161,6 +183,8 @@ export const Quarters_Henry = new Room({
 
 export const Quarters_Yours = new Room({
   id: "Quarters_Yours",
+  // A bedroom: off /nav, and anyone in one is not findable.
+  onNav: false,
   name: "Quarters: Yours",
   shortDescription: `
     Your personal quarters, currently bare and empty.

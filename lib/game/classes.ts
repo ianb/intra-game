@@ -544,6 +544,18 @@ export class Room extends Entity {
   userInputInstructions = "";
   visits: number = 0;
   excludeFromMap = false;
+  /**
+   * Whether Ama will name this room or route to it for `/nav`.
+   *
+   * Bedrooms are off it: somewhere private is somewhere she does not send
+   * people, and anyone in a room that is off it is not findable either. That is
+   * the seam for anything later that should hide a person — being unfindable is
+   * a property of where you are rather than a special case in the lookup.
+   *
+   * Separate from `excludeFromMap`, which is about drawing: a room can be
+   * absent from the map and still be somewhere you can be directed to.
+   */
+  onNav = true;
   soundtrack?: SoundTrackType;
   actionPrompt = "";
 
@@ -552,6 +564,7 @@ export class Room extends Entity {
     userInputInstructions,
     visits,
     excludeFromMap,
+    onNav,
     soundtrack,
     actionPrompt,
     promptForPerson,
@@ -561,6 +574,7 @@ export class Room extends Entity {
     userInputInstructions?: string;
     visits?: number;
     excludeFromMap?: boolean;
+    onNav?: boolean;
     soundtrack?: SoundTrackType;
     actionPrompt?: string;
     promptForPerson?: (this: Room, person: Person) => string;
@@ -577,6 +591,9 @@ export class Room extends Entity {
     }
     if (excludeFromMap !== undefined) {
       this.excludeFromMap = excludeFromMap;
+    }
+    if (onNav !== undefined) {
+      this.onNav = onNav;
     }
     if (soundtrack) {
       this.soundtrack = soundtrack;

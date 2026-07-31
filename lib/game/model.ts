@@ -21,6 +21,7 @@ import { World } from "./world";
 import type { AllEntitiesType } from "./content";
 import { scheduleForTime } from "./scheduler";
 import { catchUpMysteries } from "./mysteries";
+import { navigate } from "./nav";
 import { pathTo } from "./pathto";
 import { applyRewinds, lastTurnInput, lastTurnLength } from "./rewind";
 import type { PartialTag } from "./tagstream";
@@ -472,6 +473,19 @@ export class Model {
   }
 
   async sendText(text: string): Promise<string | undefined> {
+    // Before parseText, and before any model call. /nav is answered from the
+    // map — Ama knows where everyone is without having to think about it — so
+    // it costs nothing and cannot be got wrong by a model inventing a room,
+    // which is the failure it exists to fix.
+    //
+    // Handled in the engine rather than in the composer, because the agents
+    // that most need it never touch the composer: the LLM player and the quest
+    // runner send input straight to sendText.
+    const nav = /^\/nav\b(.*)$/.exec(text.trim());
+    if (nav) {
+      this.answerNav(nav[1] ?? "");
+      return undefined;
+    }
     const parsed = this.parseText(text);
     if (parsed.undo) {
       return this.undo();
@@ -489,6 +503,28 @@ export class Model {
       await this.run(() => this.scheduleTick());
     }
     return undefined;
+  }
+
+  /**
+   * Ama answers where something is, as an ordinary turn in the transcript.
+   *
+   * Appended rather than generated: it is a lookup, so there is nothing for a
+   * model to add and one more thing for it to get wrong.
+   */
+  answerNav(argument: string) {
+    const result = navigate(this.world, argument);
+    this.updates.value = [
+      ...this.updates.value,
+      {
+        id: "Ama",
+        roomId: this.world.entities.PLAYER.inside,
+        totalTime: 0,
+        changes: {},
+        actions: [
+          { type: "dialog", id: "Ama", toId: "PLAYER", text: result.text },
+        ],
+      },
+    ];
   }
 
   parseText(text: string): ParsedInputType {
