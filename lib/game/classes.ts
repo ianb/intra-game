@@ -1351,7 +1351,7 @@ export class AmaClass extends Person<AmaParametersType> {
 
       1. Explain to the player that ${player.heshe} has been through a traumatic experience (the nature of which is hidden)
       2. The MOST IMPORTANT part: for the player it will feel like ${player.heshe} is making suggestions to ${player.himselfherself} rather than directly performing actions
-      3. Mention, in the same breath and as another small accommodation for the same condition, that ${player.heshe} may at any time ask Ama for directions by typing "/nav" and the name of a room or a person — for example "/nav Marta" or "/nav Joyous Cafe" — and she will say where they are and how to get there. Ama considers this an ordinary courtesy and slightly beneath comment. Say it plainly and move on; do not repeat it later.
+      3. Mention the cuff. Every citizen wears one on the wrist; it was fitted while ${player.heshe} was still under and does not come off, which Ama presents as a convenience rather than as a fact about ${player.hisher} situation. It finds things: type "/nav" and a room or a person — "/nav Marta", "/nav Joyous Cafe" — and it shows where they are and the rooms to walk through. It is a very simple computer and does nothing else. Ama says this the way one mentions where the light switch is, and does not repeat it later.
 
       After Ama has explained disassociation add the response:
 

@@ -4,12 +4,18 @@ import { pathTo } from "./pathto";
 import type { World } from "./world";
 
 /**
- * `/nav <room or person>` — directions, from Ama.
+ * `/nav <room or person>` — the cuff.
  *
- * A first-class part of play rather than a dev command. Intra is a bunker run
- * by an AI who monitors everyone and is relentlessly helpful about small
- * practical things; asking her where something is and being told is exactly
- * what she is for.
+ * Every citizen is fitted with one at intake and it does not come off, which is
+ * a mechanical convenience dressed as a policy: a device the player could lose
+ * would be a device the game had to handle them losing.
+ *
+ * It is a computer, not a conversationalist. That is the whole design: it does
+ * not talk, cannot be asked follow-up questions, has no opinion, and costs
+ * nothing to use, where asking Ama the same thing would be a turn of
+ * conversation with someone who has views about why you want to know. Its
+ * output is a readout — clipped, unpunctuated, no voice — and deliberately
+ * unlike every other register in the game.
  *
  * It exists because finding people is where play actually breaks down. Across
  * five recorded quest runs the agent never once fumbled a command, but burned
@@ -28,7 +34,7 @@ import type { World } from "./world";
  */
 
 export interface NavResult {
-  /** What to tell the player, in Ama's voice. */
+  /** What the cuff displays. A readout, not speech. */
   text: string;
   /** The rooms to walk, in order, when there is a route. */
   path?: EntityId[];
@@ -42,7 +48,7 @@ function matches(id: string, query: string): boolean {
 export function navigate(world: World, argument: string): NavResult {
   const query = argument.trim().replace(/ /g, "_").toLowerCase();
   if (!query) {
-    return { text: "Where would you like to go? Try /nav followed by a room or a person's name." };
+    return { text: "/nav <room or person>" };
   }
 
   const entities = Object.values(world.entities);
@@ -56,32 +62,27 @@ export function navigate(world: World, argument: string): NavResult {
   if (person) {
     const where = world.getRoom(person.inside);
     if (!where || where.onNav === false) {
-      // Deliberately not "they are in their quarters". Somewhere off the map is
-      // somewhere Ama will not route you to, and saying which room would make
-      // the exclusion pointless.
-      return {
-        text: `I can't help you find ${person.name} at the moment. They aren't anywhere I can direct you to.`,
-      };
+      // Not "in their quarters". The cuff does not know why and would not say
+      // if it did; naming the room would make the exclusion pointless.
+      return { text: `${person.name} — no route.` };
     }
     if (where.id === here) {
-      return { text: `${person.name} is here, with you.` };
+      return { text: `${person.name} — here.` };
     }
-    return directions(world, here, where.id, `${person.name} is in ${where.name}.`);
+    return directions(world, here, where.id, `${person.name} — ${where.name}`);
   }
 
   if (room) {
     if (room.onNav === false) {
-      return { text: `${room.name} isn't somewhere I can direct you to.` };
+      return { text: `${room.name} — no route.` };
     }
     if (room.id === here) {
-      return { text: `You're in ${room.name} now.` };
+      return { text: `${room.name} — here.` };
     }
     return directions(world, here, room.id, "");
   }
 
-  return {
-    text: `I don't have anywhere called "${argument.trim()}" on the map, and nobody by that name.`,
-  };
+  return { text: `${argument.trim()} — no match.` };
 }
 
 /** The walk itself, as a list of rooms to go to in order. */
@@ -93,14 +94,9 @@ function directions(
 ): NavResult {
   const path = pathTo(world, from, to);
   if (!path.length) {
-    return {
-      text: `${lead} I can't find a way there from ${world.getRoom(from)?.name ?? "here"}.`.trim(),
-    };
+    return { text: `${lead ? lead + "\n" : ""}No route.` };
   }
   const named = path.map((id) => world.getRoom(id)?.name ?? id);
-  const steps =
-    named.length === 1
-      ? `Go to ${named[0]}.`
-      : `Go to ${named.join(", then ")}.`;
-  return { text: `${lead} ${steps}`.trim(), path };
+  const steps = `Route: ${named.join(", ")}`;
+  return { text: `${lead ? lead + "\n" : ""}${steps}`, path };
 }

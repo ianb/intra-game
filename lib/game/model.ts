@@ -417,7 +417,6 @@ export class Model {
     return request;
   }
 
-
   checkLaunch() {
     if (!this.world.entities.PLAYER.launched) {
       const schedules = this.world.setupDailySchedules();
@@ -506,7 +505,13 @@ export class Model {
   }
 
   /**
-   * Ama answers where something is, as an ordinary turn in the transcript.
+   * The cuff answers, as a readout in the transcript.
+   *
+   * A description rather than dialog, because the cuff is a computer and not a
+   * character: dialog would render it in quotation marks as something that
+   * spoke. It is also why using it costs nothing — asking Ama the same question
+   * would be a turn of conversation with someone who has views about why you
+   * want to know.
    *
    * Appended rather than generated: it is a lookup, so there is nothing for a
    * model to add and one more thing for it to get wrong.
@@ -516,13 +521,11 @@ export class Model {
     this.updates.value = [
       ...this.updates.value,
       {
-        id: "Ama",
+        id: "narrator",
         roomId: this.world.entities.PLAYER.inside,
         totalTime: 0,
         changes: {},
-        actions: [
-          { type: "dialog", id: "Ama", toId: "PLAYER", text: result.text },
-        ],
+        actions: [{ type: "description", text: result.text }],
       },
     ];
   }

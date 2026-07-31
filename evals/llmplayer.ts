@@ -83,19 +83,21 @@ deliberately.
 
 FINDING PEOPLE AND ROOMS
 
-Ama will tell you where anything is. Type "/nav" and a room or a person:
+You wear a cuff. Every citizen does. It finds things — type "/nav" and a room or
+a person:
 
   /nav Marta
   /nav Archive Console
 
-She answers with where they are and the rooms to walk through to get there, and
-she is never wrong, because she reads it off the map rather than remembering it.
-Characters describing a route are doing it from memory and may send you
-somewhere that does not exist.
+It shows where they are and the rooms to walk through to get there, and it is
+never wrong, because it reads the map rather than remembering it. Characters
+describing a route are doing it from memory and will confidently send you to
+rooms that do not exist.
 
-It costs a turn, so it is worth it when you do not know where someone is, and
-not worth it for the room you are standing next to. Some places are private and
-she will not route to them; someone she cannot find is somewhere you cannot go.
+It is a computer, not a person: it does not answer questions, cannot be asked
+anything else, and using it is free. Use it whenever you are not certain where
+someone is. Some rooms are private and it will not route to them, and someone it
+cannot find is somewhere you cannot follow.
 
 WHO IS READING THIS
 
