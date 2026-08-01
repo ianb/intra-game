@@ -20,7 +20,7 @@ import {
   undoTurn,
 } from "./session";
 import { model } from "./model";
-import { teleport } from "./teleport";
+import { nav, teleport, unknownCommand } from "./commands";
 import { composer, openSettings } from "./uistate";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
@@ -72,8 +72,14 @@ export function Input() {
       // nor where the game is.
       await startNewGame();
     } else if (text === "/teleport" || text.startsWith("/teleport ")) {
-      // Dev command for previewing rooms and character art; see app/teleport.ts.
+      // Utility commands act on the display, not the game; see app/commands.ts.
       teleport(text.slice("/teleport".length));
+    } else if (text === "/nav" || text.startsWith("/nav ")) {
+      nav(text.slice("/nav".length));
+    } else if (text.startsWith("/")) {
+      // An unrecognized slash command. Don't send it to the game as an
+      // instruction (it would be read as one, e.g. "/nav lily" moving you).
+      unknownCommand(text);
     } else {
       try {
         await playTurn(text);
