@@ -72,10 +72,11 @@ function kb(buffer: Buffer): string {
   return `${Math.round(buffer.length / 1024)}KB`;
 }
 
-// The special characters are classes, not descriptions: the player has no
-// fixed face, and the narrator and Ama (the facility's disembodied AI) have no
-// body to draw. Skip them so a bare `description` doesn't mint an odd portrait.
-const SKIP_IDS = new Set(["PLAYER", "Ama", "narrator"]);
+// Entities that shouldn't get an image. The player has no fixed face; the
+// narrator and Ama (the facility's disembodied AI) have no body; the Archivist
+// is a terminal, not a person to portrait; the Void is a holding area, not a
+// place. Skip them so a bare `description` doesn't mint an odd image.
+const SKIP_IDS = new Set(["PLAYER", "Ama", "narrator", "Archivist", "Void"]);
 
 function collectTargets(): Target[] {
   const targets: Target[] = [];
