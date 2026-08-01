@@ -201,8 +201,9 @@ export function RoomMap() {
       {zoomed.value && (
         <ZoomOverlay onDone={() => (zoomed.value = false)}>
           <div
-            className="max-h-[88vh] overflow-auto rounded bg-gray-900 p-3"
+            className="max-h-[88vh] cursor-zoom-out overflow-auto rounded bg-gray-900 p-3"
             style={{ width: "80vw" }}
+            onClick={() => (zoomed.value = false)}
           >
             <MapSvg world={model.world} reveal={reveal} />
           </div>

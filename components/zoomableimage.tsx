@@ -25,16 +25,19 @@ export function ZoomableImage({
         <ZoomOverlay onDone={() => (zoomed.value = false)}>
           {/* Sized in the viewport with object-contain so a small pixel-art
               image scales up to fill the shadowbox (keeping its aspect) rather
-              than sitting tiny at its native size. */}
+              than sitting tiny at its native size. The image element covers most
+              of the screen, so clicking it also closes — otherwise only the thin
+              margins outside it would, since the overlay stops content clicks. */}
           <img
             src={src}
             alt={alt}
-            className="object-contain"
+            className="cursor-zoom-out object-contain"
             style={{
               imageRendering: "pixelated",
               width: "92vw",
               height: "88vh",
             }}
+            onClick={() => (zoomed.value = false)}
           />
         </ZoomOverlay>
       )}
