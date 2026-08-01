@@ -4,6 +4,7 @@ import { useSignals } from "@preact/signals-react/runtime";
 import { ZoomOverlay } from "@/components/zoom";
 import { MAP_LAYOUT, type MapCell } from "./maplayout";
 import { model } from "./model";
+import { playTurn, turnRunning } from "./session";
 import { revealMap } from "./uistate";
 import type { World } from "@/lib/game/world";
 
@@ -115,6 +116,17 @@ function MapSvg({ world, reveal }: { world: World; reveal: boolean }) {
   }
   const edges = edgesOf(world, placed);
 
+  // Rooms reachable in one step from where the player is: clicking one walks
+  // there (the game still enforces locked doors and the like). Includes the
+  // dashed stubs, which is how you step into somewhere new.
+  const here = world.entityRoom("PLAYER");
+  const neighbors = new Set((here.exits ?? []).map((exit) => exit.roomId));
+  const goTo = (name: string) => {
+    if (!turnRunning.value) {
+      void playTurn(`Go to ${name}`);
+    }
+  };
+
   const minX = Math.min(...placed.map((p) => p.cell.x));
   const minY = Math.min(...placed.map((p) => p.cell.y));
   const maxX = Math.max(...placed.map((p) => p.cell.x + (p.cell.w ?? 1)));
@@ -152,8 +164,21 @@ function MapSvg({ world, reveal }: { world: World; reveal: boolean }) {
         const h = (p.cell.h ?? 1) * CELL - GAP;
         const x = p.cell.x * CELL + GAP / 2;
         const y = p.cell.y * CELL + GAP / 2;
+        const canGo = neighbors.has(p.id);
         return (
-          <g key={p.id}>
+          <g
+            key={p.id}
+            className={canGo ? "cursor-pointer" : undefined}
+            onClick={
+              canGo
+                ? (event) => {
+                    event.stopPropagation(); // don't also open the zoom
+                    goTo(p.name);
+                  }
+                : undefined
+            }
+          >
+            {canGo && <title>Go to {p.name}</title>}
             <rect
               x={x}
               y={y}
@@ -167,10 +192,13 @@ function MapSvg({ world, reveal }: { world: World; reveal: boolean }) {
               strokeOpacity={p.stub ? 0.5 : 1}
             />
             <foreignObject x={x} y={y} width={w} height={h}>
-              <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden px-1 text-center leading-tight">
+              {/* Name pinned at the top so a crowded room can't push it off the
+                  top edge; extra occupants clip at the bottom instead. */}
+              <div className="flex h-full w-full flex-col items-center justify-start overflow-hidden px-1 pt-1 text-center leading-tight">
                 <div
-                  className="text-[13px] font-bold"
+                  className="font-bold"
                   style={{
+                    fontSize: "13px",
                     color: p.isPlayer ? "#ffffff" : p.color,
                     opacity: p.stub ? 0.55 : 1,
                   }}
