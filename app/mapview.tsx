@@ -77,6 +77,14 @@ function placeRooms(world: World, reveal: boolean): Placed[] {
         ? []
         : world
             .entitiesInRoom(room)
+            // The player and Ama are implied by "you are here", and just take
+            // up room in the cell; hidden entities aren't shown either.
+            .filter(
+              (entity) =>
+                entity.id !== "PLAYER" &&
+                entity.id !== "Ama" &&
+                !entity.invisible,
+            )
             .map((entity) => entity.name)
             .filter(Boolean),
       isPlayer: id === player.id,
