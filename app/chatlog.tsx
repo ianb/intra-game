@@ -289,8 +289,24 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
   const children: React.ReactNode[] = [];
   if (showInternals.value && update.llmResponse) {
     const tags = parseTags(update.llmResponse);
+    // The d20 the adjudicator saw, which is upstream of the llmResponse and
+    // so isn't in any tag. Shown above the actionResolution so a "the
+    // recorder erases itself" can be told apart from a critical failure.
+    const rolled = update.actions
+      .filter(isStoryActionAttempt)
+      .find((action) => action.roll !== undefined);
     children.push(
       <div key="states">
+        {rolled && (
+          <pre className="whitespace-pre-wrap text-xs pl-2 text-amber-400">
+            {`d20: ${rolled.roll}` +
+              (rolled.roll === 1
+                ? " (critical failure)"
+                : rolled.roll === 20
+                  ? " (critical success)"
+                  : "")}
+          </pre>
+        )}
         {tags.map((tag, i) => (
           <div key={i}>
             <pre className="whitespace-pre-wrap text-xs pl-2">

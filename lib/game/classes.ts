@@ -1842,8 +1842,18 @@ export class PlayerClass extends Person<PlayerInputType> {
       .join("\n");
   }
 
+  /**
+   * The d20 shown to the adjudicator in the most recent action prompt.
+   *
+   * The roll is generated while assembling the prompt and the event is built
+   * from the response, so this carries it across the round trip. One player
+   * action resolves at a time, which is what makes a single field safe.
+   */
+  private lastActionRoll?: number;
+
   assembleActionPrompt(parameters: PlayerInputType): ChatType {
     const roll = this.world.model.roll();
+    this.lastActionRoll = roll;
     const room = this.world.entityRoom(this.id);
     let rollDescription = "";
     if (roll === 1) {
@@ -2113,7 +2123,9 @@ export class PlayerClass extends Person<PlayerInputType> {
         success: coerceBoolean(tag.attrs.success, true),
         minutes: coerceNumber(tag.attrs.minutes),
         resolution: tag.content,
+        roll: this.lastActionRoll,
       });
+      this.lastActionRoll = undefined;
     }
     return storyEvent;
   }

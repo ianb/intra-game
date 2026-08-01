@@ -80,6 +80,13 @@ export interface StoryActionAttemptType {
   success: boolean;
   minutes: number;
   resolution: string;
+  /**
+   * The d20 the adjudicator was shown, recorded so a resolution can be read
+   * back later: the model is told it may use the roll or overrule it on plot
+   * grounds, and without the number in the log there is no way to tell a
+   * critical failure from a model deciding to destroy your evidence.
+   */
+  roll?: number;
 }
 
 export function isStoryActionAttempt(
