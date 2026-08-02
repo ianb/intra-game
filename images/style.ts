@@ -35,6 +35,15 @@ export function characterPrompt(
     STYLE,
     "Draw a square character avatar: one face, head and shoulders, facing " +
       "forward, centered, filling the frame, on a simple flat background.",
+    // The uniform is worldbuilding: one suit for every citizen, in the
+    // retro-futurist bunker tradition without copying any existing game's.
+    // Pinned to specific colors so the cast reads as wearing the same issue
+    // rather than coincidentally similar clothes.
+    "Clothing: a standard-issue utility jumpsuit, the same for every " +
+      "citizen: mustard-yellow, with a dark teal collar and shoulder yoke " +
+      "and a sturdy front zip, mid-century atomic-age bunker wear. The " +
+      "collar and shoulders are visible in the crop. The appearance below " +
+      "describes how this character wears and keeps their suit.",
     `Name: ${name}. Pronouns: ${pronouns}.`,
     `Appearance: ${description}`,
   ].join("\n\n");
