@@ -847,6 +847,12 @@ export class Person<
 
           <description minutes="5">Describe the action</description>
 
+          You may record ${this.name}'s private state of mind:
+
+          <mind>About one sentence of what ${this.name} is feeling or intending right now.</mind>
+
+          Only ${this.name} ever sees this, in this turn and later ones. It is not speech and no one can react to it. Add it when this moment changed ${this.name}'s mood or plans; omit it when nothing changed. Earlier <mind> notes appear in the history: stay consistent with them, or show what changed the mood.
+
           [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow>]]
 
           At the end of your response you may offer a concrete and specific suggestion for what the player might do next, as two 2-3 word commands (one per line):

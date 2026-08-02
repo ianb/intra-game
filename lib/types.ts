@@ -28,7 +28,10 @@ export interface StoryEventType {
   rewind?: number;
 }
 export type StoryActionType =
-  StoryDialogType | StoryDescriptionType | StoryActionAttemptType;
+  | StoryDialogType
+  | StoryDescriptionType
+  | StoryActionAttemptType
+  | StoryMindType;
 
 /** One edit to the player's task list; see lib/game/todos.ts. */
 export interface TodoUpdateType {
@@ -93,6 +96,25 @@ export function isStoryActionAttempt(
   actionRequest: StoryActionType,
 ): actionRequest is StoryActionAttemptType {
   return actionRequest.type === "actionAttempt";
+}
+
+/**
+ * A character's private state of mind, emitted as `<mind>` and persisted in
+ * the log like any other action. Only the character who had it ever sees it
+ * again — it reaches their own history and no one else's, which is what lets a
+ * mood survive past the turn that caused it. Named mind rather than thought
+ * because "thinking" already means the model's own reasoning.
+ */
+export interface StoryMindType {
+  type: "mind";
+  id: EntityId;
+  text: string;
+}
+
+export function isStoryMind(
+  actionRequest: StoryActionType,
+): actionRequest is StoryMindType {
+  return actionRequest.type === "mind";
 }
 
 export type ChangesType = Record<EntityId, ChangeType>;

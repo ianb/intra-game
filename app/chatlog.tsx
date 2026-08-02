@@ -9,6 +9,7 @@ import {
   isStoryActionAttempt,
   isStoryDescription,
   isStoryDialog,
+  isStoryMind,
   PersonScheduledEventType,
   StoryEventType,
   StoryEventWithPositionsType,
@@ -430,6 +431,10 @@ function ChatLogEntityInteraction({ update }: { update: StoryEventType }) {
               </div>
             </React.Fragment>
           );
+        } else if (isStoryMind(action)) {
+          // Private to the character. The internals view shows it anyway,
+          // because there it renders the raw llmResponse tags.
+          return null;
         } else {
           throw new Error("Unknown action");
         }

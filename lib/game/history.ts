@@ -5,6 +5,7 @@ import {
   isStoryActionAttempt,
   isStoryDescription,
   isStoryDialog,
+  isStoryMind,
   MessageType,
   StoryEventType,
   StoryEventWithPositionsType,
@@ -171,6 +172,12 @@ export function updateToHistory(
       Result: ${action.resolution}
       </action>
       `);
+    } else if (isStoryMind(action)) {
+      // Private to the character who had it: their own history shows it back
+      // to them, and it is silently absent from everyone else's.
+      if (action.id === viewer.id) {
+        parts.push(`<mind>${action.text.trim()}</mind>`);
+      }
     } else {
       console.warn("Unknown action type", action);
     }

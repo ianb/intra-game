@@ -111,6 +111,19 @@ export function applyTag(
       // Planning output, not action — nothing to apply.
       return true;
 
+    case "mind": {
+      // A private note of the character's state of mind. Unlike <context> it
+      // persists: it lands in the log, and history rendering shows it back to
+      // this character (and only this character) on later turns. Always
+      // attributed to the entity acting — a character cannot put a thought in
+      // someone else's head, so any character= attribute is ignored.
+      const text = tag.content.trim();
+      if (text) {
+        event.actions.push({ type: "mind", id: ctx.entityId, text });
+      }
+      return true;
+    }
+
     case "removeRestriction": {
       const exitLocation = world.makeId(tag.content);
       const exits = world.getRoom(roomId)!.exits;
