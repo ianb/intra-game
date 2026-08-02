@@ -7,6 +7,22 @@ as a page in [index.html](./index.html), and recorded as YAML under
 Each cell is checks passed out of checks run for that scenario. What the
 checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
+## 2026-08-02
+
+Prompts `738467195165`.
+
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 795s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 863s | 0 | $0.0000 |
+
+Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
+
+What failed:
+
+- `claude-sonnet-4-5-20250929` movement/intake-completed: got far enough through intake for an exit to exist
+- `claude-sonnet-4-5-20250929` movement/left-intake: the player is no longer in the room they started in
+
 ## 2026-07-31
 
 Prompts `28e8596d2f13`, `996586de48c6` — rows here were measured against different prompts and aren't directly comparable.
