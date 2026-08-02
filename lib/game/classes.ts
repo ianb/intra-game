@@ -864,6 +864,7 @@ export class Person<
           5. How can this response be fun or surprising?
           6. ${this.name}'s reaction to any recent speech or events
           7. ${this.name}'s intention in this response
+          8. Did this turn change how ${this.name} feels about a specific person? Name the person and the change, or write "no"
           </context>
 
           <responseFormat>
@@ -888,11 +889,11 @@ export class Person<
 
           Only ${this.name} ever sees this, in this turn and later ones. It is not speech and no one can react to it. Add it when this moment changed ${this.name}'s mood or plans; omit it when nothing changed. Earlier <mind> notes appear in the history: stay consistent with them, or show what changed the mood.
 
-          When events change how ${this.name} feels about a specific person, record the new feeling:
+          If context item 8 named a person and a change, record the new feeling:
 
           <attitude toward="PLAYER">One short phrase of how ${this.name} now feels about this person, and why.</attitude>
 
-          Only ${this.name} sees this. It replaces what ${this.name} felt before about that person and lasts until replaced. Most turns change no feelings; write one only when something genuinely shifts. Having no particular feeling about someone is normal and is recorded by writing nothing. A feeling that has faded is cleared with empty content: <attitude toward="PLAYER"></attitude>
+          If item 8 said "no", do not write an <attitude>. Only ${this.name} sees this. It replaces what ${this.name} felt before about that person and lasts until replaced. Most turns change no feelings. Having no particular feeling about someone is normal and is recorded by writing nothing. A feeling that has faded is cleared with empty content: <attitude toward="PLAYER"></attitude>
 
           [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow>]]
 
