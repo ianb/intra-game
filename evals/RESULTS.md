@@ -9,12 +9,14 @@ checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
 ## 2026-08-02
 
-Prompts `738467195165`.
+Prompts `738467195165`, `f595cbfeef91` — rows here were measured against different prompts and aren't directly comparable.
 
 | model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 795s | 0 | $0.0000 |
-| `claude-sonnet-4-5-20250929` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 863s | 0 | $0.0000 |
+| `claude-haiku-4-5-20251001` `738467195165` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 795s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` `738467195165` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 863s | 0 | $0.0000 |
+| `claude-haiku-4-5-20251001` `f595cbfeef91` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 830s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` `f595cbfeef91` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 866s | 0 | $0.0000 |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
