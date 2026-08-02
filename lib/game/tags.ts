@@ -1,5 +1,6 @@
 import clone from "just-clone";
 import type { TagType } from "../parsetags";
+import { isPerson } from "../types";
 import type { EntityId, StoryEventType } from "../types";
 import {
   coerceBoolean,
@@ -110,6 +111,44 @@ export function applyTag(
     case "context":
       // Planning output, not action — nothing to apply.
       return true;
+
+    case "attitude": {
+      // How the acting character now feels about one person, replacing what
+      // they felt before. Empty content clears the feeling: faded is blank,
+      // not "neutral". Attribution is forced to the actor, like <mind> — you
+      // can change your own feelings, not anyone else's.
+      const self = world.getEntity(ctx.entityId);
+      const targetId = world.makeId(tag.attrs.toward || "");
+      const target = targetId ? world.getEntity(targetId) : undefined;
+      if (!self || !isPerson(self)) {
+        console.warn("Non-person emitted <attitude>", ctx.entityId);
+        return true;
+      }
+      if (!target || !isPerson(target)) {
+        ctx.complaints?.push(
+          `<attitude toward="${tag.attrs.toward ?? ""}"> — toward must name a person by id, like toward="PLAYER".`,
+        );
+        return true;
+      }
+      const text = tag.content.trim();
+      if (!text && self.attitudes[target.id] === undefined) {
+        // Clearing a feeling that was never there is a no-op, not an event.
+        return true;
+      }
+      if (!event.changes[ctx.entityId]) {
+        event.changes[ctx.entityId] = { before: {}, after: {} };
+      }
+      const change = event.changes[ctx.entityId]!;
+      change.before.attitudes = {
+        ...change.before.attitudes,
+        [target.id]: self.attitudes[target.id] ?? null,
+      };
+      change.after.attitudes = {
+        ...change.after.attitudes,
+        [target.id]: text || null,
+      };
+      return true;
+    }
 
     case "mind": {
       // A private note of the character's state of mind. Unlike <context> it

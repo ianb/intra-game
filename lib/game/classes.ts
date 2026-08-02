@@ -155,17 +155,17 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         }
         continue;
       }
-      if (key === "relationships") {
+      if (key === "attitudes") {
         if (!isPerson(this)) {
-          throw new Error("Tried to update relationships on a non-person");
+          throw new Error("Tried to update attitudes on a non-person");
         }
         for (const [id, relationship] of Object.entries(value)) {
           if (relationship === null) {
-            delete (fieldsOf(this).relationships as Record<string, unknown>)[
+            delete (fieldsOf(this).attitudes as Record<string, unknown>)[
               id
             ];
           } else {
-            (fieldsOf(this).relationships as Record<string, unknown>)[id] =
+            (fieldsOf(this).attitudes as Record<string, unknown>)[id] =
               relationship;
           }
         }
@@ -504,6 +504,31 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
     return event;
   }
 
+  /**
+   * The character's current feelings about people, for their own prompt only.
+   *
+   * Empty string when there are none, which is the usual case — the [[...]]
+   * template wrapper then drops the section entirely, so a character with no
+   * particular feelings carries no text about feelings at all.
+   */
+  attitudesPrompt(): string {
+    if (!isPerson(this)) {
+      return "";
+    }
+    const entries = Object.entries(this.attitudes);
+    if (!entries.length) {
+      return "";
+    }
+    const lines = entries.map(([id, feeling]) => {
+      const who = this.world.getEntity(id);
+      return `- ${who?.name ?? id} (${id}): ${feeling}`;
+    });
+    return tmpl`
+    ${this.name}'s current private feelings, which only ${this.name} knows and which color how ${this.name} behaves:
+    ${lines.join("\n")}
+    `;
+  }
+
   myMysteryHints(): string {
     const results: string[] = [];
     for (const mystery of this.world.unveiledMysteries()) {
@@ -687,7 +712,15 @@ export class Person<
   pronouns: string = "they/them";
   roleplayInstructions: string = "";
   declare inside: EntityId;
-  relationships: Record<EntityId, string> = {};
+  /**
+   * How this character currently feels about specific people, keyed by entity
+   * id, written and updated by the character itself via `<attitude toward=...>`.
+   * Sparse on purpose: no key means no particular feeling, and that absence is
+   * the default state — there is no "neutral" entry. The fold merges these
+   * per key (see applyChanges), so one feeling changing doesn't clobber the
+   * rest, and a `null` in a change deletes a feeling that has faded.
+   */
+  attitudes: Record<EntityId, string> = {};
   scheduleTemplate: PersonScheduleTemplateType[] = [];
   todaysSchedule: PersonScheduledEventType[] = [];
   runningScheduleId: ScheduleId | null = null;
@@ -695,13 +728,13 @@ export class Person<
   constructor({
     pronouns,
     roleplayInstructions,
-    relationships,
+    attitudes,
     scheduleTemplate,
     ...props
   }: EntityInitType & {
     pronouns?: string;
     roleplayInstructions?: string;
-    relationships?: Record<EntityId, string>;
+    attitudes?: Record<EntityId, string>;
     scheduleTemplate?: PersonScheduleTemplateType[];
   }) {
     super(props);
@@ -714,8 +747,8 @@ export class Person<
     if (!fieldsOf(this).inside) {
       this.inside = "Void";
     }
-    if (relationships) {
-      this.relationships = relationships;
+    if (attitudes) {
+      this.attitudes = attitudes;
     }
     if (scheduleTemplate) {
       this.scheduleTemplate = scheduleTemplate;
@@ -801,6 +834,8 @@ export class Person<
           The other people in the room ${this.myRoom().name} are:
           ${this.currentPeoplePrompt(parameters)}
 
+          [[${this.attitudesPrompt()}]]
+
           [[This character has some knowledge of some mysteries; follow these additional instructions:
           """
           ${mysteryHints}
@@ -852,6 +887,12 @@ export class Person<
           <mind>About one sentence of what ${this.name} is feeling or intending right now.</mind>
 
           Only ${this.name} ever sees this, in this turn and later ones. It is not speech and no one can react to it. Add it when this moment changed ${this.name}'s mood or plans; omit it when nothing changed. Earlier <mind> notes appear in the history: stay consistent with them, or show what changed the mood.
+
+          When events change how ${this.name} feels about a specific person, record the new feeling:
+
+          <attitude toward="PLAYER">One short phrase of how ${this.name} now feels about this person, and why.</attitude>
+
+          Only ${this.name} sees this. It replaces what ${this.name} felt before about that person and lasts until replaced. Most turns change no feelings; write one only when something genuinely shifts. Having no particular feeling about someone is normal and is recorded by writing nothing. A feeling that has faded is cleared with empty content: <attitude toward="PLAYER"></attitude>
 
           [[${IF(willLeave)}${this.name} is about to leave the room to go to ${schedule?.inside[0]} (so they can: ${schedule?.activity}). If ${this.name} decides to stay a little longer then add the response <deferSchedule></deferSchedule> or to definitely leave now add the response <leaveNow></leaveNow>]]
 
