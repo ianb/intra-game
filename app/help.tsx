@@ -52,14 +52,17 @@ export function Help() {
       <div className="mb-4">
         <span
           title={
-            "And one secret command:\n  /roll 10\ncauses a roll of 10 on your next attempt"
+            "And one secret command:\n  kick the machine /roll 20\nforces the d20 for that attempt. On a line by itself,\n  /roll 20\narms it for your next action. Only actions roll dice."
           }
         >
           You can use these special commands:{" "}
         </span>
         <code className="text-cyan-300">/undo</code> and{" "}
         <code className="text-cyan-300">/redo</code> and{" "}
-        <code className="text-cyan-300">/restart</code>
+        <code className="text-cyan-300">/restart</code> and{" "}
+        <code className="text-cyan-300">/nav</code> (your cuff: {""}
+        <code className="text-cyan-300">/nav Marta</code> shows where someone
+        is and how to walk there)
       </div>
       <div className="mb-4">
         When someone asks you to do something it lands on your{" "}
