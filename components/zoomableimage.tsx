@@ -1,5 +1,6 @@
 import { useSignal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
+import type React from "react";
 import { twMerge } from "tailwind-merge";
 import { ZoomOverlay } from "./zoom";
 
@@ -12,10 +13,16 @@ export function ZoomableImage({
   src,
   alt,
   className,
+  caption,
 }: {
   src: string;
   alt: string;
   className?: string;
+  /**
+   * Rendered under the zoomed image, inside the shadowbox — the character
+   * card with its meters. Clicks on it don't close the overlay.
+   */
+  caption?: React.ReactNode;
 }) {
   useSignals();
   const zoomed = useSignal(false);
@@ -28,17 +35,20 @@ export function ZoomableImage({
               than sitting tiny at its native size. The image element covers most
               of the screen, so clicking it also closes — otherwise only the thin
               margins outside it would, since the overlay stops content clicks. */}
-          <img
-            src={src}
-            alt={alt}
-            className="cursor-zoom-out object-contain"
-            style={{
-              imageRendering: "pixelated",
-              width: "92vw",
-              height: "88vh",
-            }}
-            onClick={() => (zoomed.value = false)}
-          />
+          <div className="flex flex-col items-center gap-3">
+            <img
+              src={src}
+              alt={alt}
+              className="cursor-zoom-out object-contain"
+              style={{
+                imageRendering: "pixelated",
+                width: "92vw",
+                height: caption ? "72vh" : "88vh",
+              }}
+              onClick={() => (zoomed.value = false)}
+            />
+            {caption}
+          </div>
         </ZoomOverlay>
       )}
       <img

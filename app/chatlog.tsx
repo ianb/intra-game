@@ -20,6 +20,7 @@ import { ColorizedText } from "./colorizedtext";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { ZoomableImage } from "@/components/zoomableimage";
 import { TimePeriod } from "./hud";
+import { fieldsOf } from "@/lib/game/dynamic";
 import { imageForEntity } from "./images";
 import { meterMoves } from "./metermoves";
 import { model } from "./model";
@@ -506,7 +507,46 @@ function EntityAvatar({ id }: { id: string }) {
       src={url}
       alt=""
       className="float-right ml-3 mb-1 h-20 w-20 rounded border border-gray-600 object-cover"
+      caption={<CharacterCard id={id} />}
     />
+  );
+}
+
+/**
+ * The character's accumulated numbers, under their zoomed avatar.
+ *
+ * Meters show for everyone — checking how a citizen is doing is a pull the
+ * player chooses, unlike the transcript, which only marks changes. Attitudes
+ * are private color and stay behind the internals toggle.
+ */
+function CharacterCard({ id }: { id: string }) {
+  useSignals();
+  const person = model.world.getEntity(id);
+  if (!person || !isPerson(person)) {
+    return null;
+  }
+  const meters = Object.entries(person.statSpecs);
+  const attitudes = showInternals.value ? Object.entries(person.attitudes) : [];
+  if (!meters.length && !attitudes.length) {
+    return null;
+  }
+  return (
+    <div className="bg-gray-900 bg-opacity-90 rounded p-3 text-sm max-w-md">
+      <div className={twMerge("font-bold", person.color)}>{person.name}</div>
+      {meters.map(([name, spec]) => (
+        <div key={name}>
+          {name}: {String(fieldsOf(person)[name])}{" "}
+          <span className="text-gray-400">
+            ({spec.min ?? 0} to {spec.max ?? 10})
+          </span>
+        </div>
+      ))}
+      {attitudes.map(([toId, feeling]) => (
+        <div key={toId} className="text-xs text-gray-300">
+          about {model.world.getEntity(toId)?.name ?? toId}: {feeling}
+        </div>
+      ))}
+    </div>
   );
 }
 
