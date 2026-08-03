@@ -18,6 +18,7 @@ import { Model } from "../lib/game/model.js";
 import { Mystery, Person } from "../lib/game/classes.js";
 import { applyTag } from "../lib/game/tags.js";
 import { entitiesById } from "../lib/game/dynamic.js";
+import { meterMoves } from "../app/metermoves.js";
 import { mysteryTriggers } from "../lib/game/mysteries.js";
 import { parseTags } from "../lib/parsetags.js";
 
@@ -179,5 +180,44 @@ const still = {
   changes: { Milton: { before: { annoyance: 6 }, after: { annoyance: 6 } } },
 };
 mysteryTriggers(world, still).length;
+=> 0
+```
+
+## The transcript marks the move
+
+The player-facing indicator is mechanical, because the in-fiction beat
+saturates on exactly the characters that carry meters: an annoyed Milton and
+a baseline Milton both complain. `meterMoves` finds declared-meter changes in
+an event; the chat log renders them as "Milton annoyance ▲" — direction, not
+value.
+
+```ts
+const bump = {
+  id: "Milton",
+  totalTime: 0,
+  roomId: "Feedback_Booth",
+  changes: {
+    Milton: { before: { annoyance: 1 }, after: { annoyance: 2 } },
+  },
+  actions: [],
+};
+const moves = meterMoves(bump, world);
+[moves[0]!.name, moves[0]!.meter, moves[0]!.delta].join(" ");
+=> Milton annoyance 1
+```
+
+Undeclared numbers are not the player's business — `civicPoints` has Ama's
+intercom announcements, and internal counters stay internal:
+
+``` continue
+meterMoves(
+  {
+    ...bump,
+    changes: {
+      PLAYER: { before: { civicPoints: 1 }, after: { civicPoints: 2 } },
+    },
+  },
+  world,
+).length;
 => 0
 ```

@@ -21,6 +21,7 @@ import { Entity, Exit, Person, Room } from "@/lib/game/classes";
 import { ZoomableImage } from "@/components/zoomableimage";
 import { TimePeriod } from "./hud";
 import { imageForEntity } from "./images";
+import { meterMoves } from "./metermoves";
 import { model } from "./model";
 import {
   authState,
@@ -206,6 +207,7 @@ function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
         <ChatLogEntityInteraction update={update} />
       )}
       <ChatLogTodos update={update} />
+      <ChatLogMeters update={update} />
       <ChatLogMovement eventPos={eventPos} />
       {update.llmError && (
         <pre className="whitespace-pre-wrap text-red-400">
@@ -220,6 +222,32 @@ function ChatLogItem({ eventPos }: { eventPos: StoryEventWithPositionsType }) {
         </pre>
       )}
     </>
+  );
+}
+
+/**
+ * "Milton annoyance ▲" where it happened, in the story.
+ *
+ * A declared meter moving is a real scored change, and the fiction alone
+ * can't mark it: an annoyed Milton and a baseline Milton both complain, so
+ * the behavioral beat drowns in the character's normal register. Direction
+ * only, no number — the player should know something real happened, not
+ * where the dial sits.
+ */
+function ChatLogMeters({ update }: { update: StoryEventType }) {
+  const moves = meterMoves(update, model.world);
+  if (!moves.length) {
+    return null;
+  }
+  return (
+    <div className="text-xs text-amber-300 my-1">
+      {moves.map((move, i) => (
+        <div key={i}>
+          <span className={move.color}>{move.name}</span> {move.meter}{" "}
+          {move.delta > 0 ? "▲" : "▼"}
+        </div>
+      ))}
+    </div>
   );
 }
 
