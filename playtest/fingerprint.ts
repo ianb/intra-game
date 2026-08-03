@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { entities } from "../lib/game/content";
 import { Model } from "../lib/game/model";
+import { isPerson } from "../lib/types";
 import type { ChatType } from "../lib/types";
 import { installSeededRandom } from "./seed";
 
@@ -73,6 +74,28 @@ export async function promptFingerprint(): Promise<string> {
       await model.sendText(input);
       await settle(model);
     }
+    // The drive above only reaches the prompts intake happens to produce,
+    // which is how two edits moved nothing: the action-adjudication prompt
+    // changed and a run recorded under the same fingerprint as its
+    // predecessor, silently replacing it (same runKey), and Milton's meter
+    // block never reached any hashed prompt at all. Sweep the rest
+    // statically: every character's assembled prompt, and each of the
+    // player's prompt shapes.
+    const world = model.world;
+    for (const person of Object.values(world.entities).filter(isPerson)) {
+      if (person.id === "PLAYER") {
+        continue;
+      }
+      collect(prompts, person.assemblePrompt({}));
+    }
+    const player = world.entities.PLAYER;
+    collect(prompts, player.assemblePrompt({}));
+    collect(prompts, player.assemblePrompt({ examine: "look around" }));
+    collect(prompts, player.assemblePrompt({ actionAttempt: "inspect the table" }));
+    // The move prompt needs a restricted exit to assemble; the sealed
+    // maintenance door is the one whose restriction text matters.
+    player.inside = "Hallway";
+    collect(prompts, player.assemblePrompt({ attemptMoveTo: "Reflection_Chamber" }));
   } finally {
     restore();
   }
@@ -80,4 +103,10 @@ export async function promptFingerprint(): Promise<string> {
     .update(prompts.join("\n---\n"))
     .digest("hex")
     .slice(0, 12);
+}
+
+function collect(prompts: string[], chat: ChatType): void {
+  for (const message of chat.messages) {
+    prompts.push(`${chat.meta.title}/${message.role}\n${message.content}`);
+  }
 }

@@ -13,10 +13,15 @@ Prompts `e6abf40d1b5f`.
 
 | model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 883s | 0 | $0.0000 |
-| `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 957s | 0 | $0.0000 |
+| `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 922s | 0 | $0.0000 |
+| `claude-sonnet-4-5-20250929` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 1012s | 0 | $0.0000 |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
+
+What failed:
+
+- `claude-sonnet-4-5-20250929` movement/intake-completed: got far enough through intake for an exit to exist
+- `claude-sonnet-4-5-20250929` movement/left-intake: the player is no longer in the room they started in
 
 ## 2026-08-02
 

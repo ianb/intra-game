@@ -45,6 +45,16 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **Sonnet stalls intake by re-asking pronouns** `prompts` `S` — twice in four
+  full eval runs, Sonnet's movement scenario failed the same way: intake never
+  completes because Ama circles back to pronouns against the "do not hold up
+  intake" instruction (once with a `<mind>` note rationalizing the loop:
+  "can't have citizens wandering off half-processed"). Haiku and the recorded
+  cassettes don't show it. Not blocking (Luna is production, Haiku the target
+  tier), but if the intake checklist gets touched again, re-test this
+  specifically; the fix is likely a firmer pronoun step, measured with
+  `pnpm evals --scenario movement`.
+
 - **Nothing tests whether a mystery can still be solved** `evals` `M` — the
   `mystery` eval scores that Ama's private hint reached her prompt, and stops
   there. The solve condition of the only quest in the game — Marta confessing
