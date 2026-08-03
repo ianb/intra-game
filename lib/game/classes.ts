@@ -50,6 +50,16 @@ export interface EntityInitType {
 
 export interface ParametersType {
   trigger?: string;
+  /**
+   * Set on a Person's reaction to a player event, and how much claim they
+   * have on one of the turn's limited response slots; see lib/game/crowd.ts.
+   * 3 = in the conversation (spoken to directly, or the player's current
+   * interlocutor) and guaranteed a turn, never capped. 2 = named in a
+   * description or action, 1 = overheard undirected speech, 0 = merely
+   * attentive; these compete for the remaining slots. Absent on scripted
+   * requests (triggers, ceremonies, wakeups), which are never capped.
+   */
+  reactionPriority?: number;
 }
 
 export abstract class Entity<ParametersT extends ParametersType = object> {
@@ -1031,9 +1041,13 @@ export class Person<
       // This is probably an examination or something, not a "real" event
       return undefined;
     }
-    const hasDialog = storyEvent.actions
+    const addressed = storyEvent.actions
       .filter(isStoryDialog)
-      .some((x) => x.toId === this.id || !x.toId);
+      .some((x) => x.toId === this.id);
+    const overheard = storyEvent.actions
+      .filter(isStoryDialog)
+      .some((x) => !x.toId);
+    const hasDialog = addressed || overheard;
     const hasDescription = storyEvent.actions
       .filter(isStoryDescription)
       .some((x) => x.text.includes(this.id) || x.text.includes(this.name));
@@ -1076,7 +1090,24 @@ export class Person<
         return undefined;
       }
     }
-    return [this.makePromptRequest({ trigger: triggerText } as ParametersT)];
+    if (triggerText !== undefined) {
+      // Explicitly triggered by the scene: scripted, never capped.
+      return [this.makePromptRequest({ trigger: triggerText } as ParametersT)];
+    }
+    // How much claim this reaction has on the turn's limited response slots;
+    // see lib/game/crowd.ts. Being in the conversation guarantees a turn:
+    // spoken to directly, or being the player's current interlocutor when the
+    // player says something undirected mid-conversation.
+    const inConversation =
+      addressed || (hasDialog && this.lastSpokeTo()?.id === "PLAYER");
+    const reactionPriority = inConversation
+      ? 3
+      : hasDescription || hasAction
+        ? 2
+        : overheard
+          ? 1
+          : 0;
+    return [this.makePromptRequest({ reactionPriority } as ParametersT)];
   }
 
   lastSpokeTo(): Person | undefined {

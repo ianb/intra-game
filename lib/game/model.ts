@@ -8,6 +8,7 @@ import {
   isStoryEvent,
 } from "../types";
 import { StoryEventType } from "../types";
+import { capReactions } from "./crowd";
 import type {
   ChangeType,
   ChangesType,
@@ -282,7 +283,12 @@ export class Model {
       }
     }
     this.world.applyStoryEvent(storyEvent);
-    await this.run(() => this.applyActions(actions));
+    // The crowd control point: every entity has had its say about whether it
+    // wants to react; this is the one place that sees all the requests at
+    // once and can hold the response count down. See lib/game/crowd.ts.
+    await this.run(() =>
+      this.applyActions(capReactions(actions, this.liveUpdates.value)),
+    );
   }
 
   recentReferencedEntities(): EntityId[] {
