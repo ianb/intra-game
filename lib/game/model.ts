@@ -499,6 +499,22 @@ export class Model {
       await this.redo();
       return;
     }
+    if (parsed.roll && !parsed.text) {
+      // "/roll 20" on its own used to arm the override silently, which reads
+      // as the command doing nothing. Guided error instead.
+      this.usageHint(
+        `/roll goes at the end of an action, like: kick the machine /roll 20 — only actions roll dice.`,
+      );
+      return undefined;
+    }
+    if (/\/roll\b/.test(parsed.text ?? "")) {
+      // A "/roll" the parser didn't extract: bare, or not at the end. Sending
+      // it through would hand the interpreter a command as prose.
+      this.usageHint(
+        `/roll needs a number and goes at the end of an action, like: kick the machine /roll 20`,
+      );
+      return undefined;
+    }
     if (parsed.roll) {
       this.nextRollOverride = parsed.roll;
     }
@@ -522,6 +538,26 @@ export class Model {
    * Appended rather than generated: it is a lookup, so there is nothing for a
    * model to add and one more thing for it to get wrong.
    */
+  /**
+   * A message from the interface about how to use a command. In the
+   * transcript, and nowhere else: the event is uiOnly, so it never enters any
+   * character's history (see updatesSeenBy) — meta-text about slash commands
+   * is not something Ama gets to overhear.
+   */
+  usageHint(text: string) {
+    this.updates.value = [
+      ...this.updates.value,
+      {
+        id: "narrator",
+        roomId: this.world.entities.PLAYER.inside,
+        totalTime: 0,
+        changes: {},
+        actions: [{ type: "description", text }],
+        uiOnly: true,
+      },
+    ];
+  }
+
   answerNav(argument: string) {
     const result = navigate(this.world, argument);
     this.updates.value = [

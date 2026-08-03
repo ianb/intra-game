@@ -41,6 +41,11 @@ export interface HistoryViewer {
 export function updatesSeenBy(viewer: HistoryViewer): StoryEventType[] {
   const results: StoryEventType[] = [];
   for (const eventPos of viewer.world.model.updatesWithPositions.value) {
+    if (eventPos.event.uiOnly) {
+      // Interface messages (command usage hints); in the transcript, never
+      // in a prompt.
+      continue;
+    }
     if (eventPos.event.id === "narrator" && eventPos.event.roomId === "Void") {
       results.push(
         ...movementUpdatesForPosition(

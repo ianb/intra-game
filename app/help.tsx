@@ -52,7 +52,7 @@ export function Help() {
       <div className="mb-4">
         <span
           title={
-            "And one secret command:\n  kick the machine /roll 20\nforces the d20 for that attempt. On a line by itself,\n  /roll 20\narms it for your next action. Only actions roll dice."
+            "And one secret command:\n  kick the machine /roll 20\nforces the d20 for that attempt. Only actions roll dice."
           }
         >
           You can use these special commands:{" "}

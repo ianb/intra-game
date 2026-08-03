@@ -8,6 +8,12 @@ export interface StoryEventWithPositionsType {
 }
 
 export interface StoryEventType {
+  /**
+   * Shown in the transcript but invisible to characters: usage hints and
+   * other messages from the interface itself. History rendering skips these
+   * (see updatesSeenBy), so meta-text about commands never reaches a prompt.
+   */
+  uiOnly?: boolean;
   id: EntityId;
   roomId: EntityId;
   changes: ChangesType;
