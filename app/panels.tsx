@@ -16,49 +16,13 @@ import {
   StoryEventWithPositionsType,
 } from "@/lib/types";
 import { Entity, Exit, Person, Room } from "@/lib/game/classes";
-import { ZoomOverlay } from "@/components/zoom";
-import { asGraphviz } from "./map";
-import { effect, signal, useSignal } from "@preact/signals-react";
+import { ZoomableImage } from "@/components/zoomableimage";
+import { useSignal } from "@preact/signals-react";
 import { entitiesById, fieldsOf } from "@/lib/game/dynamic";
 import { imageForEntity } from "./images";
 import { model } from "./model";
-import { revealMap } from "./uistate";
 import { scheduleForTime, timeAsString } from "@/lib/game/scheduler";
 import { useSignals } from "@preact/signals-react/runtime";
-
-export function Map() {
-  useSignals();
-  const zoomed = useSignal(false);
-  const g = asGraphviz(model.world, revealMap.value);
-  const url = `https://quickchart.io/graphviz?graph=${encodeURIComponent(g)}`;
-  return (
-    <div className="flex justify-center mt-1">
-      {zoomed.value && (
-        <ZoomOverlay
-          onDone={() => {
-            zoomed.value = false;
-          }}
-        >
-          <a href={url} target="_blank" rel="noopener">
-            <img
-              className="rounded h-full max-h-screen border-2 border-gray-400"
-              src={url}
-              alt="Map"
-            />
-          </a>
-        </ZoomOverlay>
-      )}
-      <img
-        className="rounded cursor-zoom-in"
-        src={url}
-        alt="Map"
-        onClick={() => {
-          zoomed.value = !zoomed.value;
-        }}
-      />
-    </div>
-  );
-}
 
 /**
  * The current room's image, shown above the HUD tabs as a scene viewport.
@@ -70,37 +34,19 @@ export function Map() {
 export function RoomImage() {
   useSignals();
   const _updates = model.updates.value;
-  const zoomed = useSignal(false);
   const room = model.world.getRoom(model.world.entities.PLAYER.inside);
   const url = room ? imageForEntity(room.id) : undefined;
   if (!url || !room) {
     return null;
   }
   return (
-    <div className="mb-3">
-      {zoomed.value && (
-        <ZoomOverlay
-          onDone={() => {
-            zoomed.value = false;
-          }}
-        >
-          <img
-            className="rounded max-h-screen border-2 border-gray-400"
-            style={{ imageRendering: "pixelated" }}
-            src={url}
-            alt={room.name}
-          />
-        </ZoomOverlay>
-      )}
-      <img
-        className="rounded w-full cursor-zoom-in border border-gray-700"
-        style={{ imageRendering: "pixelated" }}
-        src={url}
-        alt={room.name}
-        onClick={() => {
-          zoomed.value = !zoomed.value;
-        }}
-      />
+    <div className="relative shrink-0 border-b border-gray-700">
+      <ZoomableImage src={url} alt={room.name} className="w-full" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-2 pb-2">
+        <span className="pixel-title text-center text-[12px] leading-[1.5]">
+          {room.name}
+        </span>
+      </div>
     </div>
   );
 }

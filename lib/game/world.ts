@@ -184,6 +184,7 @@ export class World {
       }
       if (isRoom(obj)) {
         this.rooms.push(obj.id);
+        regexParts.push(obj.name);
         for (const exit of obj.exits) {
           if (!entitiesById(this.original)[exit.roomId]) {
             throw new Error(
@@ -230,6 +231,9 @@ export class World {
         }
       }
     }
+    // Longest first, so a name that contains a shorter one (e.g. "Intake
+    // Foyer" and "Intake") matches the longer whole rather than its prefix.
+    regexParts.sort((a, b) => b.length - a.length);
     // the fixed set of entity names defined in content/, not from user input.
     // eslint-disable-next-line security/detect-non-literal-regexp -- built from
     this.nameRegex = new RegExp(

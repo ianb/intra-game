@@ -23,7 +23,14 @@ export function ColorizedText({ text }: { text: string }) {
       parts.push(text.substring(lastIndex, matchIndex));
     }
 
-    const ent = model.world.getEntity(matchedWord);
+    // People match by id (their name is their id); rooms match by name, which
+    // is not their id ("The Static Garden" vs "Static_Garden"), so fall back to
+    // a name lookup to find the colour.
+    const ent =
+      model.world.getEntity(matchedWord) ??
+      Object.values(model.world.entities).find(
+        (entity) => entity.name === matchedWord,
+      );
     parts.push(
       <span className={ent?.color} key={matchIndex}>
         {matchedWord}

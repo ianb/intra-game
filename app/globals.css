@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Bundled locally (OFL) so the app stays self-contained; used for pixel-art
+   overlays like the room title. */
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/PressStart2P.woff2") format("woff2");
+}
+
+/* A crisp pixel outline around text so it reads over any background. */
+.pixel-title {
+  font-family: "Press Start 2P", ui-monospace, monospace;
+  color: #fff;
+  text-shadow:
+    -2px -2px 0 #000, 0 -2px 0 #000, 2px -2px 0 #000, 2px 0 0 #000,
+    2px 2px 0 #000, 0 2px 0 #000, -2px 2px 0 #000, -2px 0 0 #000;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
