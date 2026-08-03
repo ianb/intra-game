@@ -79,21 +79,22 @@ function kb(buffer: Buffer): string {
 const SKIP_IDS = new Set(["PLAYER", "Ama", "narrator", "Void"]);
 
 // Entities whose avatar isn't the standard head-and-shoulders portrait. The
-// Archivist has a body; the body is a computer terminal, so it gets the
-// terminal drawn instead of a face in a jumpsuit. The description still
-// passes through unchanged.
-const CUSTOM_CHARACTER_PROMPTS: Record<string, (d: string) => string> =
+// Archivist has a body; the body is a computer terminal. Its description is
+// deliberately not passed through: it describes a grinning cartoon figure,
+// and the screen should show a glyph smiley, not a figure.
+const CUSTOM_CHARACTER_PROMPTS: Record<string, (description: string) => string> =
   {
-    Archivist: (description) =>
+    Archivist: () =>
       [
         STYLE,
         "Draw a square character avatar: one old computer terminal, " +
           "front-on, centered, filling the frame, on a simple flat " +
           "background. A bulky CRT monitor in a beige-and-teal casing, " +
-          "ventilation slots, a few chunky buttons. The screen shows the " +
-          "character's face. No human body and no clothing: the terminal " +
-          "is the body.",
-        `Appearance: ${description}`,
+          "ventilation slots, a few chunky buttons. On the dark screen: " +
+          "only a minimal smiley face of glowing pixels, two simple eyes " +
+          "and a wide upturned smile, like characters on a text terminal. " +
+          "No human face, no head, no hair, no skin, no body. Nothing " +
+          "else on the screen.",
       ].join("\n\n"),
   };
 
