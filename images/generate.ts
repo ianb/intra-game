@@ -73,15 +73,43 @@ function kb(buffer: Buffer): string {
 }
 
 // Entities that shouldn't get an image. The player has no fixed face; the
-// narrator and Ama (the facility's disembodied AI) have no body; the Archivist
-// is a terminal, not a person to portrait; the Void is a holding area, not a
-// place. Skip them so a bare `description` doesn't mint an odd image.
-const SKIP_IDS = new Set(["PLAYER", "Ama", "narrator", "Archivist", "Void"]);
+// narrator and Ama (the facility's disembodied AI) have no body; the Void is a
+// holding area, not a place. Skip them so a bare `description` doesn't mint an
+// odd image.
+const SKIP_IDS = new Set(["PLAYER", "Ama", "narrator", "Void"]);
+
+// Entities whose avatar isn't the standard head-and-shoulders portrait. The
+// Archivist has a body; the body is a computer terminal, so it gets the
+// terminal drawn instead of a face in a jumpsuit. The description still
+// passes through unchanged.
+const CUSTOM_CHARACTER_PROMPTS: Record<string, (d: string) => string> =
+  {
+    Archivist: (description) =>
+      [
+        STYLE,
+        "Draw a square character avatar: one old computer terminal, " +
+          "front-on, centered, filling the frame, on a simple flat " +
+          "background. A bulky CRT monitor in a beige-and-teal casing, " +
+          "ventilation slots, a few chunky buttons. The screen shows the " +
+          "character's face. No human body and no clothing: the terminal " +
+          "is the body.",
+        `Appearance: ${description}`,
+      ].join("\n\n"),
+  };
 
 function collectTargets(): Target[] {
   const targets: Target[] = [];
   for (const entity of Object.values(entities)) {
     if (SKIP_IDS.has(entity.id)) {
+      continue;
+    }
+    const custom = CUSTOM_CHARACTER_PROMPTS[entity.id];
+    if (custom && isPerson(entity) && entity.description) {
+      targets.push({
+        id: entity.id,
+        kind: "character",
+        prompt: custom(entity.description),
+      });
       continue;
     }
     if (isRoom(entity) && entity.description) {
