@@ -535,15 +535,37 @@ function CharacterCard({ id }: { id: string }) {
         {person.name}
       </span>
       {(meters.length > 0 || attitudes.length > 0) && (
-        <div className="bg-gray-900 bg-opacity-90 rounded p-3 text-sm max-w-md">
-          {meters.map(([name, spec]) => (
-            <div key={name}>
-              {name}: {String(fieldsOf(person)[name])}{" "}
-              <span className="text-gray-400">
-                ({spec.min ?? 0} to {spec.max ?? 10})
-              </span>
-            </div>
-          ))}
+        <div className="bg-gray-900 bg-opacity-90 rounded p-3 text-sm max-w-md max-h-[40vh] overflow-y-auto">
+          {meters.map(([name, spec]) => {
+            const value = Number(fieldsOf(person)[name]);
+            const levels = Object.entries(spec.levels ?? {}).sort(
+              (a, b) => Number(a[0]) - Number(b[0]),
+            );
+            // The character plays the highest register at or below the value.
+            const active = levels.filter(([at]) => Number(at) <= value).at(-1);
+            return (
+              <div key={name}>
+                {name}: {value}{" "}
+                <span className="text-gray-400">
+                  ({spec.min ?? 0} to {spec.max ?? 10})
+                </span>
+                {showInternals.value &&
+                  levels.map(([at, means]) => (
+                    <div
+                      key={at}
+                      className={twMerge(
+                        "text-xs pl-2",
+                        active?.[0] === at
+                          ? "text-amber-300"
+                          : "text-gray-400",
+                      )}
+                    >
+                      {at}: {means}
+                    </div>
+                  ))}
+              </div>
+            );
+          })}
           {attitudes.map(([toId, feeling]) => (
             <div key={toId} className="text-xs text-gray-300">
               about {model.world.getEntity(toId)?.name ?? toId}: {feeling}

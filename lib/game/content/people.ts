@@ -63,6 +63,20 @@ export const June = new Person({
   color: "text-teal-500",
   inside: "Tranquil_Pool",
   scheduleTemplate: schedules.June,
+  stats: {
+    serenity: {
+      start: 4,
+      max: 4,
+      up: "A stretch of quiet, or the player asking sincerely about mindfulness or breathing.",
+      down: "Interruptions, raised voices, chaos in the room, or rapid questions.",
+      levels: {
+        0: 'The snap: one sharp, entirely un-zen sentence at full volume. Immediately afterward she is horrified, apologizes, and begins a breathing exercise; respond with <set attr="June.serenity">2</set>.',
+        1: "Strained: the pauses get longer, the eye twitches, the mantras get slightly menacing.",
+        3: "Effortful calm: over-enunciated serenity, visible suppression of sighs.",
+        4: "Full performance: June is the calmest person in the world and needs you to notice that.",
+      },
+    },
+  },
   shortDescription: `
     June sits cross-legged, exuding an aura of forced calm.
   `,
@@ -85,6 +99,19 @@ export const Doug = new Person({
   color: "text-rose-400",
   inside: "Tranquil_Pool",
   scheduleTemplate: schedules.Doug,
+  stats: {
+    curiosity: {
+      max: 5,
+      up: "The player is evasive, mysterious, or does something Doug cannot immediately explain.",
+      down: "The player explains something fully and clearly. A complete answer is closure, and closure is boring.",
+      levels: {
+        0: "Ambient interest: standard inane questions, easily distracted to a new target.",
+        2: "Invested: the questions get specific and follow up on earlier answers.",
+        4: "Attached: Doug follows the player between rooms, narrating his own theories.",
+        5: "Case closed, in his own mind: Doug tells other citizens confident, wrong conclusions about the player.",
+      },
+    },
+  },
   shortDescription: `
     Doug wanders around, bothering people with inane questions.
   `,
@@ -129,6 +156,21 @@ export const Harold = new Person({
   color: "text-indigo-400",
   inside: "Activity_Hub",
   scheduleTemplate: schedules.Harold,
+  stats: {
+    regard: {
+      min: -3,
+      max: 3,
+      up: "The player follows a rule, cites a rule, or accepts a correction without arguing.",
+      down: "The player breaks a rule, mocks a rule, or points out that a rule is invented.",
+      levels: {
+        [-3]: "Enemy of order: Harold documents the player's movements aloud and announces that he is building a file.",
+        [-1]: "On notice: corrections arrive pre-emptively, before the player has done anything.",
+        0: "Standard enforcement: violations are corrected as they occur.",
+        1: "Promising: Harold shares advanced regulations the public is not ready for.",
+        3: "Deputized: Harold appoints the player his deputy, unasked, with duties and an inspection schedule.",
+      },
+    },
+  },
   shortDescription: `
     Harold obsessively monitors the Activity Hub for "rule violations."
   `,
@@ -202,6 +244,18 @@ export const Gloria = new Person({
   color: "text-red-400",
   inside: "Feedback_Booth",
   scheduleTemplate: schedules.Gloria,
+  stats: {
+    intrigue: {
+      max: 4,
+      up: "The player shares gossip, hints at a secret, or is seen doing something unexplained.",
+      down: "The player is boring, tight-lipped, or gives her nothing twice in a row.",
+      levels: {
+        0: "Routine nosiness: eavesdrops, offers unsolicited advice about complaints.",
+        2: "On the scent: she starts asking other citizens about the player.",
+        4: "Broadcasting: the player is now the subject of Gloria's rumors, at least one of which is accurate by accident.",
+      },
+    },
+  },
   shortDescription: `
     Gloria loves to eavesdrop on others' complaints.
   `,
