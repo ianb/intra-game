@@ -169,6 +169,19 @@ export const Milton = new Person({
   color: "text-red-500",
   inside: "Feedback_Booth",
   scheduleTemplate: schedules.Milton,
+  stats: {
+    annoyance: {
+      max: 6,
+      up: "The player interrupts him, dismisses a complaint, insults him, or leaves while he is mid-grievance.",
+      down: "The player hears a complaint out to the end, takes his side, or asks a follow-up question about his suffering. Nobody has ever done these things.",
+      levels: {
+        0: "Baseline Milton: complains freely, shares gossip, circles every topic back to his grievances.",
+        2: "Aggrieved: he complains about the player, to the player, in the third person. Information still comes out, wrapped in more complaint than usual.",
+        4: "Wounded: short answers. He announces that he is not going to tell the player things, which is itself a way of telling them there are things.",
+        6: "The formal complaint: he declares he is filing a complaint about the player with Ama, and dictates it on the spot, out loud, in full bureaucratic form. Afterward he feels much better; respond with <set attr=\"Milton.annoyance\">2</set>.",
+      },
+    },
+  },
   shortDescription: `
   Milton is constantly whining and making everything sound like a personal attack.
   `,

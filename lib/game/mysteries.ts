@@ -51,7 +51,12 @@ function satisfied(trigger: MysteryTrigger, world: World): boolean {
   if (trigger.attrSet !== undefined) {
     const [entityId, attr] = trigger.attrSet.split(".");
     const entity = entityId ? world.getEntity(entityId) : undefined;
-    if (!attr || !entity || !fieldsOf(entity)[attr]) {
+    const value = attr && entity ? fieldsOf(entity)[attr] : undefined;
+    if (trigger.reaches !== undefined) {
+      if (Number(value ?? 0) < trigger.reaches) {
+        return false;
+      }
+    } else if (!value) {
       return false;
     }
   }
@@ -139,14 +144,22 @@ function fired(
   if (trigger.attrSet !== undefined) {
     const [entityId, attr] = trigger.attrSet.split(".");
     const change = entityId ? event.changes[entityId] : undefined;
-    if (
-      !attr ||
-      !change?.after?.[attr] ||
-      // Only the transition. Ama's flags stay true for the rest of the game, so
-      // a trigger reading the current value would fire on every later event
-      // that happened to mention her.
-      change.before?.[attr]
-    ) {
+    if (!attr || change?.after?.[attr] === undefined) {
+      return false;
+    }
+    if (trigger.reaches !== undefined) {
+      // The crossing, from below, so a meter sitting at the threshold doesn't
+      // re-fire on every later event that mentions it.
+      if (
+        Number(change.after[attr]) < trigger.reaches ||
+        Number(change.before?.[attr] ?? 0) >= trigger.reaches
+      ) {
+        return false;
+      }
+    } else if (!change.after[attr] || change.before?.[attr]) {
+      // Only the transition. Ama's flags stay true for the rest of the game,
+      // so a trigger reading the current value would fire on every later
+      // event that happened to mention her.
       return false;
     }
   }

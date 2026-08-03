@@ -159,16 +159,20 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
         if (!isPerson(this)) {
           throw new Error("Tried to update attitudes on a non-person");
         }
-        for (const [id, relationship] of Object.entries(value)) {
-          if (relationship === null) {
-            delete (fieldsOf(this).attitudes as Record<string, unknown>)[
-              id
-            ];
+        // Copy-on-write: clone() copies the record by reference, so mutating
+        // it in place would write folded state into the pristine `original`
+        // entities that undo and reload re-fold from.
+        const merged = {
+          ...(fieldsOf(this).attitudes as Record<string, unknown>),
+        };
+        for (const [id, attitude] of Object.entries(value)) {
+          if (attitude === null) {
+            delete merged[id];
           } else {
-            (fieldsOf(this).attitudes as Record<string, unknown>)[id] =
-              relationship;
+            merged[id] = attitude;
           }
         }
+        fieldsOf(this).attitudes = merged;
         continue;
       }
       if (fieldsOf(this)[key] === undefined) {
@@ -705,6 +709,39 @@ export interface RelationshipType {
   trustworthy?: RelationshipRatingType;
 }
 
+/**
+ * One emotional meter, declared on the character it belongs to.
+ *
+ * The value is a plain numeric field on the person (so `<set>` increments,
+ * complaints validation, `Mystery.meters` and `attrSet`/`reaches` triggers all
+ * work on it unchanged); this spec is everything else — the range, what moves
+ * it, and what each level means. The model only ever judges the moment ("did
+ * this turn annoy him? +1"); the level is engine arithmetic and the register
+ * text tells the model how to play the number it is at. Counted rather than
+ * judged, for the same reason as Archivist.angst: "sufficiently annoyed" is a
+ * threshold a model fires on turn one or never.
+ *
+ * Keep it to one, two, at most three meters per character, in small ranges:
+ * the player has to be able to comprehend the dial from behavior alone.
+ */
+export interface StatSpecType {
+  /** Initial value. Defaults to 0. */
+  start?: number;
+  /** Defaults to 0. Negative minimums are fine (a like/dislike axis). */
+  min?: number;
+  /** Defaults to 10, but declare it; small ranges read better. */
+  max?: number;
+  /** What raises it, one flat line, shown to the model as the +1 criteria. */
+  up?: string;
+  /** What lowers it, the -1 criteria. */
+  down?: string;
+  /**
+   * What the number means, keyed by the value each register starts at: the
+   * character plays the highest register at or below the current value.
+   */
+  levels?: Record<number, string>;
+}
+
 export class Person<
   ParametersT extends ParametersType = ParametersType,
 > extends Entity<ParametersT> {
@@ -721,6 +758,11 @@ export class Person<
    * rest, and a `null` in a change deletes a feeling that has faded.
    */
   attitudes: Record<EntityId, string> = {};
+  /**
+   * The character's declared emotional meters; see StatSpecType. The values
+   * live as plain numeric fields on the instance, named by these keys.
+   */
+  statSpecs: Record<string, StatSpecType> = {};
   scheduleTemplate: PersonScheduleTemplateType[] = [];
   todaysSchedule: PersonScheduledEventType[] = [];
   runningScheduleId: ScheduleId | null = null;
@@ -729,15 +771,28 @@ export class Person<
     pronouns,
     roleplayInstructions,
     attitudes,
+    stats,
     scheduleTemplate,
     ...props
   }: EntityInitType & {
     pronouns?: string;
     roleplayInstructions?: string;
     attitudes?: Record<EntityId, string>;
+    stats?: Record<string, StatSpecType>;
     scheduleTemplate?: PersonScheduleTemplateType[];
   }) {
     super(props);
+    if (stats) {
+      for (const [name, spec] of Object.entries(stats)) {
+        if (name in this) {
+          throw new Error(
+            `Stat "${name}" on ${this.id} collides with an existing field`,
+          );
+        }
+        fieldsOf(this)[name] = spec.start ?? 0;
+      }
+      this.statSpecs = stats;
+    }
     if (pronouns) {
       this.pronouns = pronouns;
     }
@@ -753,6 +808,53 @@ export class Person<
     if (scheduleTemplate) {
       this.scheduleTemplate = scheduleTemplate;
     }
+  }
+
+  /**
+   * The character's declared meters, rendered for their own prompt only:
+   * current value, range, the +1/-1 criteria, and the register text for each
+   * level. Empty string for the (usual) character with no meters, so the
+   * [[...]] wrapper drops the section and no prompt grows for them.
+   */
+  metersPrompt(): string {
+    const entries = Object.entries(this.statSpecs);
+    if (!entries.length) {
+      return "";
+    }
+    const parts = entries.map(([name, spec]) => {
+      const lines = [
+        `${name} = ${fieldsOf(this)[name]} (range ${spec.min ?? 0} to ${spec.max ?? 10})`,
+      ];
+      if (spec.up) {
+        lines.push(`Raise it (+1) when: ${spec.up}`);
+      }
+      if (spec.down) {
+        lines.push(`Lower it (-1) when: ${spec.down}`);
+      }
+      const levels = Object.entries(spec.levels ?? {}).sort(
+        (a, b) => Number(a[0]) - Number(b[0]),
+      );
+      if (levels.length) {
+        lines.push(
+          `What the number means; play the highest register at or below the current value:`,
+        );
+        for (const [at, means] of levels) {
+          lines.push(`${at}: ${means}`);
+        }
+      }
+      return lines.join("\n");
+    });
+    return tmpl`
+    ${this.name}'s meters, private to ${this.name}. The number sets the register ${this.name} plays in:
+
+    ${parts.join("\n\n")}
+
+    When this turn genuinely moves a meter, adjust it one step:
+
+    <set attr="${this.id}.${entries[0]![0]}">+1</set>
+
+    Use -1 for a step down. At most one step per meter per turn; most turns move nothing.
+    `;
   }
 
   override assemblePrompt(parameters: ParametersT): ChatType {
@@ -835,6 +937,8 @@ export class Person<
           ${this.currentPeoplePrompt(parameters)}
 
           [[${this.attitudesPrompt()}]]
+
+          [[${this.metersPrompt()}]]
 
           [[This character has some knowledge of some mysteries; follow these additional instructions:
           """
@@ -2281,6 +2385,12 @@ export interface MysteryTrigger {
    * "Ama.sharedPlayerAge" is the only thing in the world that marks it.
    */
   attrSet?: string;
+  /**
+   * With `attrSet` naming a numeric attribute: fire when the value crosses
+   * this threshold from below, rather than when it becomes truthy. For
+   * hanging a mystery off a meter — "when his annoyance reaches 6".
+   */
+  reaches?: number;
   /** The state to move to. Only ever forwards; see `advance`. */
   becomes: MysteryState;
   /**

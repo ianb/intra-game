@@ -253,18 +253,25 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
   if (typeof value === "boolean") {
     content = coerceBoolean(tag.content);
   } else if (typeof value === "number") {
-    // "+1" adds; anything else replaces. A counter the model has to set
-    // absolutely means telling it the current value and trusting it to add one,
-    // which models get wrong — and the failure is silent, because a count that
-    // keeps being re-set to 1 never reaches whatever it was counting towards.
-    // Only "+N", and only whole numbers: a bare "-2" is far more likely to mean
-    // the value minus two, and the digits are bounded because an unbounded
-    // group next to an optional one is a backtracking hazard the linter is
-    // right about. Nothing counts past a few.
-    const increment = /^\+(\d{1,9})$/.exec(String(tag.content).trim());
-    content = increment
-      ? value + Number(increment[0])
+    // "+1" adds, "-1" subtracts; anything else replaces. A counter the model
+    // has to set absolutely means telling it the current value and trusting it
+    // to add one, which models get wrong — and the failure is silent, because
+    // a count that keeps being re-set to 1 never reaches whatever it was
+    // counting towards. Deltas must carry an explicit sign, and the digits are
+    // bounded because an unbounded group next to an optional one is a
+    // backtracking hazard the linter is right about. Nothing counts past a
+    // few.
+    const delta = /^([+-])(\d{1,9})$/.exec(String(tag.content).trim());
+    content = delta
+      ? value + Number(delta[0])
       : coerceNumber(tag.content);
+    // A declared meter is clamped to its range, on deltas and absolute sets
+    // alike, so "annoyance 6 plus one more insult" stays 6 rather than
+    // counting past the top register.
+    const spec = isPerson(entity) ? entity.statSpecs[key] : undefined;
+    if (spec && typeof content === "number" && !Number.isNaN(content)) {
+      content = Math.min(spec.max ?? 10, Math.max(spec.min ?? 0, content));
+    }
   }
   if (!isValidPropertySet(key, content)) {
     console.warn(
