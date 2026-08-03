@@ -1037,6 +1037,16 @@ export class Person<
     const hasDescription = storyEvent.actions
       .filter(isStoryDescription)
       .some((x) => x.text.includes(this.id) || x.text.includes(this.name));
+    // A resolved player action that names this character is done *to* them —
+    // a handshake, a shove, a gift. Without this, an action could never be
+    // reacted to by its target, and the resolution model filled the silence
+    // by roleplaying the target itself.
+    const hasAction = storyEvent.actions
+      .filter(isStoryActionAttempt)
+      .some((x) =>
+        `${x.attempt}\n${x.resolution}`.includes(this.name) ||
+        `${x.attempt}\n${x.resolution}`.includes(this.id),
+      );
     const schedule = scheduleForTime(this, this.world.timestampMinutes);
     const isAttentive = !!schedule?.attentive;
     if (storyEvent.id !== "PLAYER") {
@@ -1046,6 +1056,7 @@ export class Person<
       triggerText === undefined &&
       !hasDialog &&
       !hasDescription &&
+      !hasAction &&
       !isAttentive
     ) {
       return undefined;
@@ -2040,6 +2051,8 @@ export class PlayerClass extends Person<PlayerInputType> {
           [[${this.sealedExitsPrompt()}]]
 
           In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
+
+          Resolve only what the player's attempt physically does. Do not speak, act, or react for the people in the room: anyone the action affects responds on their own turn, in their own voice.
           `,
         },
         ...this.historyForEntity({ limit: 4 }),

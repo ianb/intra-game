@@ -221,3 +221,33 @@ meterMoves(
 ).length;
 => 0
 ```
+
+## An action done to someone wakes them
+
+A resolved player action naming a character triggers their reaction, the same
+as dialog directed at them. Without this, an action's target could never
+answer it — and the action adjudicator used to fill that silence by
+roleplaying the target itself.
+
+```ts
+world.entities.Milton.inside = "Feedback_Booth";
+world.entities.PLAYER.inside = "Feedback_Booth";
+const reactions = world.entities.Milton.onStoryEvent({
+  id: "PLAYER",
+  totalTime: 1,
+  roomId: "Feedback_Booth",
+  changes: {},
+  actions: [
+    {
+      type: "actionAttempt",
+      id: "PLAYER",
+      attempt: "Ada hands Milton a blank complaint form.",
+      success: true,
+      minutes: 1,
+      resolution: "Milton is now holding the form.",
+    },
+  ],
+});
+(reactions ?? []).length >= 1;
+=> true
+```
