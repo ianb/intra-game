@@ -853,7 +853,7 @@ export class Person<
 
     <set attr="${this.id}.${entries[0]![0]}">+1</set>
 
-    Use -1 for a step down. At most one step per meter per turn; most turns move nothing.
+    Use -1 for a step down. At most one step per meter per turn; most turns move nothing. When a meter moves, show the shift in ${this.name}'s behavior in the same response, so the player can feel the change without seeing the number.
     `;
   }
 
