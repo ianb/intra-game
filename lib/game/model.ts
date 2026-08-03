@@ -491,6 +491,16 @@ export class Model {
       this.answerNav(nav[1] ?? "");
       return undefined;
     }
+    // Movement with a known destination — what a map click sends. The typed
+    // path exists to interpret prose ("head over to the cafe"); a click has
+    // nothing to interpret, and was paying a model call to rediscover the
+    // room id it started with.
+    const go = /^\/go\s+(.+)$/.exec(text.trim());
+    if (go) {
+      await this.run(() => this.directGoto(go[1]!));
+      await this.run(() => this.scheduleTick());
+      return undefined;
+    }
     const parsed = this.parseText(text);
     if (parsed.undo) {
       return this.undo();
@@ -538,6 +548,32 @@ export class Model {
    * Appended rather than generated: it is a lookup, so there is nothing for a
    * model to add and one more thing for it to get wrong.
    */
+  /**
+   * Move the player to a named destination through the full goto path —
+   * sealed doors refuse, restricted exits still go to the adjudication
+   * prompt, visits count, the arrival description (and its people prose) is
+   * produced — with only the input-interpretation model call skipped, since
+   * there is nothing to interpret.
+   */
+  async directGoto(destination: string) {
+    const player = this.world.entities.PLAYER;
+    const storyEvent: StoryEventType = {
+      id: player.id,
+      roomId: this.world.entityRoom(player.id).id,
+      totalTime: 0,
+      changes: {},
+      actions: [],
+    };
+    const event = await player.processTag({
+      tag: { type: "goto", attrs: {}, content: destination },
+      model: this,
+      parameters: {},
+      storyEvent,
+      llmResponse: "",
+    });
+    await this.addStoryEvent(event);
+  }
+
   /**
    * A message from the interface about how to use a command. In the
    * transcript, and nowhere else: the event is uiOnly, so it never enters any

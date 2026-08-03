@@ -129,9 +129,11 @@ function MapSvg({ world, reveal }: { world: World; reveal: boolean }) {
   // dashed stubs, which is how you step into somewhere new.
   const here = world.entityRoom("PLAYER");
   const neighbors = new Set((here.exits ?? []).map((exit) => exit.roomId));
-  const goTo = (name: string) => {
+  const goTo = (roomId: string) => {
     if (!turnRunning.value) {
-      void playTurn(`Go to ${name}`);
+      // /go skips the input-interpretation model call — the click already
+      // knows the destination; see Model.directGoto.
+      void playTurn(`/go ${roomId}`);
     }
   };
 
@@ -181,7 +183,7 @@ function MapSvg({ world, reveal }: { world: World; reveal: boolean }) {
               canGo
                 ? (event) => {
                     event.stopPropagation(); // don't also open the zoom
-                    goTo(p.name);
+                    goTo(p.id);
                   }
                 : undefined
             }
