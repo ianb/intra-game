@@ -69,6 +69,16 @@
     // still, but AI Gateway has no Z.ai provider, so it would mean bypassing
     // both.
     "GATEWAY_MODEL": "openai/gpt-5.6-luna",
+    // The "flash" tier: prompts that declare model: "flash" (today only
+    // "describe people", the one prose-not-tags prompt in the game) run here
+    // instead of GATEWAY_MODEL. Atmosphere, not canon, so it gets the
+    // cheapest fast model on the gateway: this exact id was production until
+    // 2026-07-30, so it is known-good through this gateway. Its protocol
+    // weakness (needed reasoning "medium" to emit tags reliably) does not
+    // apply to prose. Note the usage meter prices flash calls at the
+    // GATEWAY_PRICE rates below, which overcounts them slightly — the safe
+    // direction for the quota.
+    "GATEWAY_FLASH_MODEL": "openai/gpt-5.4-nano",
     // Deliberately unset, where gpt-5.4-nano needed "medium" to get from 21/26
     // to 25/26. Measured on this model rather than assumed: "medium" scores the
     // same 26/26, takes 35s longer and costs more, because the only thing it
