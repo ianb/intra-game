@@ -2,8 +2,98 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
+import { entities } from "../lib/game/content";
 import { parseTags, serializeAttrs } from "../lib/parsetags";
 import { esc, STYLE } from "./page";
+
+/**
+ * The game's entity colors, carried onto these pages: every character and
+ * room name is tinted the way the play UI tints it, built from the real
+ * entity list so the colors cannot drift from the game. The Tailwind class
+ * names are resolved to their palette values here because these pages carry
+ * no Tailwind.
+ */
+const TAILWIND: Record<string, string> = {
+  "text-amber-600": "#d97706",
+  "text-blue-300": "#93c5fd",
+  "text-blue-500": "#3b82f6",
+  "text-cyan-500": "#06b6d4",
+  "text-emerald-400": "#34d399",
+  "text-emerald-500": "#10b981",
+  "text-gray-300": "#d1d5db",
+  "text-gray-500": "#6b7280",
+  "text-gray-600": "#4b5563",
+  "text-gray-700": "#374151",
+  "text-green-400": "#4ade80",
+  "text-green-500": "#22c55e",
+  "text-indigo-400": "#818cf8",
+  "text-indigo-500": "#6366f1",
+  "text-lime-500": "#84cc16",
+  "text-orange-500": "#f97316",
+  "text-pink-400": "#f472b6",
+  "text-pink-500": "#ec4899",
+  "text-purple-500": "#a855f7",
+  "text-red-400": "#f87171",
+  "text-red-500": "#ef4444",
+  "text-rose-400": "#fb7185",
+  "text-slate-400": "#94a3b8",
+  "text-stone-400": "#a8a29e",
+  "text-teal-500": "#14b8a6",
+  "text-yellow-400": "#facc15",
+  "text-yellow-500": "#eab308",
+  "text-yellow-600": "#ca8a04",
+  "text-sky-300": "#7dd3fc",
+  "text-white": "#ffffff",
+};
+
+interface NameColor {
+  token: string;
+  cls: string;
+}
+
+function nameColors(): { spans: NameColor[]; css: string; regex: RegExp } {
+  const spans: NameColor[] = [];
+  const css: string[] = [];
+  const seen = new Set<string>();
+  const add = (token: string, id: string, color: string) => {
+    if (!token || seen.has(token) || !TAILWIND[color]) {
+      return;
+    }
+    seen.add(token);
+    spans.push({ token, cls: `c-${id}` });
+    css.push(`.c-${id} { color: ${TAILWIND[color]}; }`);
+  };
+  for (const entity of Object.values(entities)) {
+    add(entity.name, entity.id, entity.color);
+    if (entity.id !== entity.name) {
+      add(entity.id, entity.id, entity.color);
+    }
+  }
+  // The recorded runs all start from the briefed checkpoint, where the player
+  // named themselves Ada Quill; the entity list only knows "You".
+  add("Ada Quill", "PLAYER", entities.PLAYER.color);
+  // Longest first, so "Archive Lounge" wins over any shorter overlap.
+  spans.sort((a, b) => b.token.length - a.token.length);
+  const alternation = spans
+    .map((s) => s.token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|");
+  // Built from the fixed entity list, not from input.
+  // eslint-disable-next-line security/detect-non-literal-regexp -- fixed list
+  const regex = new RegExp(`(^|[^\\w-])(${alternation})(?![\\w-])`, "g");
+  return { spans, css: css.join("\n"), regex };
+}
+
+const COLORS = nameColors();
+const CLS_BY_TOKEN = new Map(COLORS.spans.map((s) => [s.token, s.cls]));
+
+/** Tint entity names in already-escaped text, the way the game does. */
+function colorize(escaped: string): string {
+  return escaped.replace(
+    COLORS.regex,
+    (_m, pre: string, name: string) =>
+      `${pre}<span class="${CLS_BY_TOKEN.get(name) ?? ""}">${name}</span>`,
+  );
+}
 
 /**
  * Render the recorded quest runs (evals/quests/*.yaml) as static HTML pages.
@@ -80,9 +170,9 @@ function loadRuns(): NamedRun[] {
     });
 }
 
-const SPOILERS = `<p class="spoiler">Warning: these transcripts can show the
-solutions to the mysteries of the game. If you want to find the solutions in
-play, <a href="/">play the game first</a>.</p>`;
+const SPOILERS = `<p class="spoiler">CAUTION: these records contain the
+answers to the mysteries. If you want to find the answers in play,
+<a href="/">play the game first</a>.</p>`;
 
 /**
  * The apparatus, explained once on the index and linked from each run. The
@@ -157,14 +247,14 @@ function eventBlock(event: QuestEvent): string {
   if (event.response) {
     for (const tag of parseTags(event.response)) {
       if (tag.type === "comment") {
-        parts.push(`<pre class="tagbody">${esc(tag.content)}</pre>`);
+        parts.push(`<pre class="tagbody">${colorize(esc(tag.content))}</pre>`);
         continue;
       }
       parts.push(
         `<div class="tagname">&lt;${esc(tag.type)}${esc(serializeAttrs(tag.attrs))}&gt;</div>`,
       );
       if (tag.content.trim()) {
-        parts.push(`<pre class="tagbody">${esc(tag.content.trim())}</pre>`);
+        parts.push(`<pre class="tagbody">${colorize(esc(tag.content.trim()))}</pre>`);
       }
     }
   }
@@ -173,11 +263,11 @@ function eventBlock(event: QuestEvent): string {
   }
   if (event.changes?.length) {
     parts.push(
-      `<div class="changes">${event.changes.map(esc).join("<br>")}</div>`,
+      `<div class="changes">${event.changes.map((c) => colorize(esc(c))).join("<br>")}</div>`,
     );
   }
   return `<div class="event">
-  <div class="eventhead">${esc(event.id)}${event.title ? ` <span class="meta">${esc(event.title)}</span>` : ""}</div>
+  <div class="eventhead"><span class="${CLS_BY_TOKEN.get(event.id) ?? ""}">${esc(event.id)}</span>${event.title ? ` <span class="meta">${esc(event.title)}</span>` : ""}</div>
   ${parts.join("\n")}
 </div>`;
 }
@@ -202,10 +292,10 @@ function turnBlock(turn: QuestTurn): string {
     .join(" ");
   const notes = turn.notes
     ? `<div class="notes"><div class="label">notes of the player model, before this turn</div>
-       <pre>${esc(turn.notes)}</pre></div>`
+       <pre>${colorize(esc(turn.notes))}</pre></div>`
     : "";
   const saw = (turn.saw ?? [])
-    .map((line) => `<pre class="saw">${esc(line)}</pre>`)
+    .map((line) => `<pre class="saw">${colorize(esc(line))}</pre>`)
     .join("\n");
   return `
 <section class="turn">
@@ -238,12 +328,17 @@ function runPage(named: NamedRun): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Intra playthrough — ${esc(run.quest)} — ${esc(date)}</title>
-<style>${STYLE}${EXTRA_STYLE}</style>
+<style>${STYLE}${EXTRA_STYLE}${COLORS.css}</style>
 </head>
 <body>
 <header>
-  <p class="note"><a href="./">all playthroughs</a> · <a href="/evals/">evals</a> · <a href="/">the game</a></p>
+  <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
+  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
   <h1>${esc(run.quest)} — ${esc(date)}</h1>
+  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
+  ${esc(run.quest)}. Outcome: ${run.solved ? "TASK COMPLETE! Wonderful!" : "INCOMPLETE. The day ends. The record stays."}
+  This record begins on the same morning as every other record. It is always
+  the same morning.</p>
   <p>A model plays Intra. It can see only the data a player can see. It keeps
   its own notes between turns. The engine measures its progress against the
   world state. <a href="./">Read how the system works.</a></p>
@@ -294,12 +389,18 @@ function indexPage(runs: NamedRun[]): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Intra — recorded playthroughs</title>
-<style>${STYLE}${EXTRA_STYLE}</style>
+<style>${STYLE}${EXTRA_STYLE}${COLORS.css}</style>
 </head>
 <body>
 <header>
-  <p class="note"><a href="/evals/">evals</a> · <a href="/">the game</a></p>
+  <p class="note"><a href="/evals/">capability records</a> · <a href="/">the game</a></p>
+  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORDS  ▓▒░</div>
   <h1>Watching a model play</h1>
+  <p class="archivist">Oh, hello! Records! I keep ALL the records. These are
+  the PLAYBACK RECORDS: a citizen arrives, a task is assigned, and the archive
+  keeps every attempt. Every record begins on the same morning. The citizen
+  never remembers the other records. I remember all of them. What can I help
+  you find today?</p>
   <p><a href="/">Intra</a> is a text adventure. A language model operates the
   game. In the recordings below, a different model plays the game. The player
   model has a quest to complete and a limit on its turns. Nobody helps it.</p>
@@ -308,6 +409,8 @@ function indexPage(runs: NamedRun[]): string {
   together with the good runs, because the failed runs show more.</p>
   ${SPOILERS}
 </header>
+<p class="archivist">The notes below are from the operators. They are less
+excited than I am.</p>
 ${APPARATUS}
 <h2>The runs</h2>
 <p>The table shows all the recorded runs. A failed run has value. One 20-turn

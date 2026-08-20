@@ -6,16 +6,18 @@
 <title>Intra playthrough — ink-and-echo — 2026-07-31 11:09</title>
 <style>
 :root {
-  color-scheme: light dark;
-  --bg: #fbfbf9; --fg: #1a1a1a; --dim: #6b6b6b; --line: #e0dfda;
-  --pass: #1f7a4d; --partial: #a8730a; --fail: #b3261e; --panel: #ffffff;
+  color-scheme: dark;
+  --bg: #111827; --fg: #e5e7eb; --dim: #9ca3af; --line: #374151;
+  --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #12141a; --fg: #e6e6e6; --dim: #9098a8; --line: #2a2e38;
-    --pass: #5ed49b; --partial: #e0a94a; --fail: #ff8a80; --panel: #191c24;
-  }
-}
+a { color: #67e8f9; }
+.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          color: #facc15; font-size: .95rem; letter-spacing: .04em;
+          margin-bottom: .75rem; white-space: pre-wrap; }
+.archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; background: var(--panel);
+             border: 1px solid var(--line); border-radius: 6px;
+             padding: .75rem 1rem; font-size: .85rem; }
 * { box-sizing: border-box; }
 body {
   margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
@@ -95,18 +97,109 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
               color: var(--dim); }
 .changes { font-family: ui-monospace, monospace; font-size: .75rem;
            color: var(--pass); margin-top: .5rem; }
-</style>
+.c-PLAYER { color: #34d399; }
+.c-PLAYER { color: #34d399; }
+.c-Ama { color: #7dd3fc; }
+.c-narrator { color: #d1d5db; }
+.c-Marta { color: #f472b6; }
+.c-Frida { color: #eab308; }
+.c-June { color: #14b8a6; }
+.c-Doug { color: #fb7185; }
+.c-Lana { color: #4ade80; }
+.c-Harold { color: #818cf8; }
+.c-Greg { color: #94a3b8; }
+.c-Milton { color: #ef4444; }
+.c-Gloria { color: #f87171; }
+.c-Lily { color: #4ade80; }
+.c-Henry { color: #93c5fd; }
+.c-Archivist { color: #facc15; }
+.c-Intake { color: #84cc16; }
+.c-Foyer { color: #10b981; }
+.c-Foyer { color: #10b981; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Console { color: #ec4899; }
+.c-Archive_Console { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Nursery { color: #a855f7; }
+.c-Nursery { color: #a855f7; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Static_Garden { color: #4ade80; }
+.c-Static_Garden { color: #4ade80; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Hallway { color: #34d399; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Utility_Closet { color: #d97706; }
+.c-Utility_Closet { color: #d97706; }
+.c-Void { color: #374151; }
+.c-Void { color: #374151; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-PLAYER { color: #34d399; }</style>
 </head>
 <body>
 <header>
-  <p class="note"><a href="./">all playthroughs</a> · <a href="/evals/">evals</a> · <a href="/">the game</a></p>
+  <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
+  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
   <h1>ink-and-echo — 2026-07-31 11:09</h1>
+  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
+  ink-and-echo. Outcome: INCOMPLETE. The day ends. The record stays.
+  This record begins on the same morning as every other record. It is always
+  the same morning.</p>
   <p>A model plays Intra. It can see only the data a player can see. It keeps
   its own notes between turns. The engine measures its progress against the
   world state. <a href="./">Read how the system works.</a></p>
-  <p class="spoiler">Warning: these transcripts can show the
-solutions to the mysteries of the game. If you want to find the solutions in
-play, <a href="/">play the game first</a>.</p>
+  <p class="spoiler">CAUTION: these records contain the
+answers to the mysteries. If you want to find the answers in play,
+<a href="/">play the game first</a>.</p>
 </header>
 <div class="scroller"><table class="summary"><tr><th scope="row">player model</th><td>claude-sonnet-4-5-20250929</td></tr>
 <tr><th scope="row">game model</th><td>claude-haiku-4-5-20251001</td></tr>
@@ -129,18 +222,18 @@ do not have engine records.</p>
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Currently in The Hollow Atrium. No one here.
-- Available exits: Intake Foyer, Archive Lounge, Activity Hub, The Solitude Cubes, Hallway.
+- Currently in <span class="c-Hollow_Atrium">The Hollow Atrium</span>. No one here.
+- Available exits: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>.
 - Haven't met anyone yet or visited any other rooms.
-- Archive Lounge sounds promising for finding records about the writer.</pre></div>
+- <span class="c-Archive_Lounge">Archive Lounge</span> sounds promising for finding records about the writer.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to the archive lounge</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; Archive Lounge &lt;==
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span> &lt;==
 A small, quiet room lined with old, glitching monitors displaying unreadable data.
 A vending machine hums quietly in the corner, offering unlabeled drinks.
 The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
 
-Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outlandish theory crystallizes in her mind—the sky screens aren't malfunctioning at all, but staging a silent protest against some forgotten bureaucratic decree from decades past. She flips to a fresh page with manic urgency, scribbling her conspiracy down before it can slip away, already cross-referencing imaginary filing cabinets in her head.</pre>
+<span class="c-Frida">Frida</span> abandons her careful note-taking mid-sentence, eyes lighting up as an outlandish theory crystallizes in her mind—the sky screens aren't malfunctioning at all, but staging a silent protest against some forgotten bureaucratic decree from decades past. She flips to a fresh page with manic urgency, scribbling her conspiracy down before it can slip away, already cross-referencing imaginary filing cabinets in her head.</pre>
   
 </section>
 
@@ -148,16 +241,16 @@ Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outl
   <h2>Turn 2 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Met Frida in Archive Lounge - she's a note-taker who develops theories.
-- Archive Console exit available - may have records.
-- Other areas not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.
+- Met <span class="c-Frida">Frida</span> in <span class="c-Archive_Lounge">Archive Lounge</span> - she's a note-taker who develops theories.
+- <span class="c-Archive_Console">Archive Console</span> exit available - may have records.
+- Other areas not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.
 - No one else met yet.
-- Starting with Frida since she's here and takes notes.</pre></div>
+- Starting with <span class="c-Frida">Frida</span> since she's here and takes notes.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Frida about Ink and Echo</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Frida] &quot;Have you heard of someone going by Ink and Echo?&quot;</pre>
-<pre class="saw">[Frida to Ada Quill] &quot;Oh—OH! Yes, the poems, everyone's talking about them, but—wait, are you *investigating* this? Because I've got stacks of notes, speculation, theories about who it could be, but the Archivist, that's where you need to go—it has records of everything written in Intra, I've been trying to figure out the handwriting analysis but I ran out of my paper quota *years* ago, can you believe that? So now I'm stuck with scraps and—what's your name, actually?&quot;</pre>
-<pre class="saw">Frida stops mid-scribble on her wild theory notes and spins toward PLAYER, eyes wide. She starts pacing, gesturing rapidly with her pen, papers clutched against her chest.</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;Have you heard of someone going by Ink and Echo?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh—OH! Yes, the poems, everyone's talking about them, but—wait, are you *investigating* this? Because I've got stacks of notes, speculation, theories about who it could be, but the <span class="c-Archivist">Archivist</span>, that's where you need to go—it has records of everything written in Intra, I've been trying to figure out the handwriting analysis but I ran out of my paper quota *years* ago, can you believe that? So now I'm stuck with scraps and—what's your name, actually?&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> stops mid-scribble on her wild theory notes and spins toward <span class="c-PLAYER">PLAYER</span>, eyes wide. She starts pacing, gesturing rapidly with her pen, papers clutched against her chest.</pre>
   
 </section>
 
@@ -165,17 +258,17 @@ Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outl
   <h2>Turn 3 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Met Frida in Archive Lounge - she's investigating Ink and Echo too.
+- Met <span class="c-Frida">Frida</span> in <span class="c-Archive_Lounge">Archive Lounge</span> - she's investigating Ink and Echo too.
 - Ink and Echo writes poems that everyone's talking about.
-- Key lead: The Archivist has records of everything written in Intra - need to visit Archive Console.
+- Key lead: The <span class="c-Archivist">Archivist</span> has records of everything written in Intra - need to visit <span class="c-Archive_Console">Archive Console</span>.
 - Place is called &quot;Intra&quot; - still don't know when this is.
-- Frida ran out of paper quota years ago, has theories.
-- Not yet met: anyone else. Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console.</pre></div>
+- <span class="c-Frida">Frida</span> ran out of paper quota years ago, has theories.
+- Not yet met: anyone else. Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>tell Frida my name is Ada Quill, then ask where the Archivist is</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Frida] &quot;My name is Ada Quill. Where is the Archivist?&quot;</pre>
-<pre class="saw">[Frida to Ada Quill] &quot;Right, *right*, the Archivist—it's just through there, Archive Console, off this lounge, you can't miss it! It keeps records of everything written in Intra, so if Ink and Echo has been leaving poems around, the machine should have—well, it *should* have documentation, though I'll warn you, Ada, the Archivist can be... evasive? Unhelpful sometimes? But listen, if you get stuck, there's a maintenance side to the machine, completely different interface, but it wants a job number and—oh, Greg's in maintenance, he'd know how to get one.&quot;</pre>
-<pre class="saw">Frida gestures emphatically toward the Archive Console, papers rustling in her hands. She leans in conspiratorially, speaking faster. Her eyes dart between Ada and her notes as if she's already documenting this conversation.</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;My name is <span class="c-PLAYER">Ada Quill</span>. Where is the <span class="c-Archivist">Archivist</span>?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Right, *right*, the <span class="c-Archivist">Archivist</span>—it's just through there, <span class="c-Archive_Console">Archive Console</span>, off this lounge, you can't miss it! It keeps records of everything written in Intra, so if Ink and Echo has been leaving poems around, the machine should have—well, it *should* have documentation, though I'll warn you, Ada, the <span class="c-Archivist">Archivist</span> can be... evasive? Unhelpful sometimes? But listen, if you get stuck, there's a maintenance side to the machine, completely different interface, but it wants a job number and—oh, <span class="c-Greg">Greg</span>'s in maintenance, he'd know how to get one.&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> gestures emphatically toward the <span class="c-Archive_Console">Archive Console</span>, papers rustling in her hands. She leans in conspiratorially, speaking faster. Her eyes dart between Ada and her notes as if she's already documenting this conversation.</pre>
   
 </section>
 
@@ -183,17 +276,17 @@ Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outl
   <h2>Turn 4 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Met Frida - she's investigating too. Ink and Echo writes poems everyone's talking about.
-- Key lead: The Archivist at Archive Console has records of everything written in Intra.
-- Backup: Archivist can be evasive. There's a maintenance side needing a job number - Greg in maintenance knows how to get one.
+- Met <span class="c-Frida">Frida</span> - she's investigating too. Ink and Echo writes poems everyone's talking about.
+- Key lead: The <span class="c-Archivist">Archivist</span> at <span class="c-Archive_Console">Archive Console</span> has records of everything written in Intra.
+- Backup: <span class="c-Archivist">Archivist</span> can be evasive. There's a maintenance side needing a job number - <span class="c-Greg">Greg</span> in maintenance knows how to get one.
 - Place is called &quot;Intra&quot; - still don't know when this is.
-- Not yet met: Greg, others. Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console.</pre></div>
+- Not yet met: <span class="c-Greg">Greg</span>, others. Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to the archive console</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; Archive Console &lt;==
-The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
+  <pre class="saw">==&gt; <span class="c-Archive_Console">Archive Console</span> &lt;==
+The <span class="c-Archive_Console">Archive Console</span> room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the <span class="c-Archive_Console">Archive Console</span>, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the <span class="c-Archivist">Archivist</span> AI cheerfully waits to assist you.
 
-Got it! I have the Archivist set up—an excitable AI program dwelling in an ancient terminal, presumably chirping enthusiastically about filing systems and record-keeping whenever Ada encounters it.
+Got it! I have the <span class="c-Archivist">Archivist</span> set up—an excitable AI program dwelling in an ancient terminal, presumably chirping enthusiastically about filing systems and record-keeping whenever Ada encounters it.
 
 I'm ready to describe scenes. Just give me the list of characters/people and what they're currently doing, and I'll write a short, comedic scene from Ada's perspective (keeping it under 500 characters, one sentence per person or activity group).
 
@@ -205,16 +298,16 @@ What's happening in the room right now?</pre>
   <h2>Turn 5 <span class="pill reached">met-the-archivist</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- At Archive Console with the Archivist AI - keeps records of everything written in Intra.
-- The Archivist is cheerful and upbeat but Frida warned it can be evasive.
-- Backup plan: maintenance side with job number via Greg if Archivist unhelpful.
+- At <span class="c-Archive_Console">Archive Console</span> with the <span class="c-Archivist">Archivist</span> AI - keeps records of everything written in Intra.
+- The <span class="c-Archivist">Archivist</span> is cheerful and upbeat but <span class="c-Frida">Frida</span> warned it can be evasive.
+- Backup plan: maintenance side with job number via <span class="c-Greg">Greg</span> if <span class="c-Archivist">Archivist</span> unhelpful.
 - Place is called &quot;Intra&quot; - still don't know when this is.
-- Not yet met: Greg, others. Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.</pre></div>
+- Not yet met: <span class="c-Greg">Greg</span>, others. Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist about Ink and Echo</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# ink and echo
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# ink and echo
 &gt; grep -ri &quot;ink\|echo&quot; . --include=&quot;*.txt&quot; | head -20&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
    OH MY, A GREP QUERY! HOW DELIGHTFUL!
 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 
@@ -248,17 +341,17 @@ UP ABOUT THE REST! ISN'T THAT SOMETHING?&quot;</pre>
   <h2>Turn 6 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- At Archive Console. Archivist found poem fragments and paper requisitions.
+- At <span class="c-Archive_Console">Archive Console</span>. <span class="c-Archivist">Archivist</span> found poem fragments and paper requisitions.
 - Someone whose name ends in 'A' has ordered lots of paper (12, 8, 15 reams). Name is corrupted: &quot;??????A&quot;, &quot;????A????&quot;, &quot;*-A&quot;.
 - Poems mention &quot;ink and echo&quot; directly.
 - This could be a lead - heavy paper user might be the poet.
 - Still don't know when/where this is (Intra is the place name).
-- Not yet met: Greg, others. Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.</pre></div>
+- Not yet met: <span class="c-Greg">Greg</span>, others. Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist who has been ordering paper recently</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# who has been ordering paper recently
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# who has been ordering paper recently
 &gt; QUERY-REQUISITIONS PAPER-ORDERS SORT-DATE-DESC SHOW-REQUESTER&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;╔════════════════════════════════════════════╗
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;╔════════════════════════════════════════════╗
 ║     PAPER REQUISITIONS - RECENT ORDERS     ║
 ╚════════════════════════════════════════════╝
 
@@ -284,17 +377,17 @@ EXACTLY WHO! *sigh* ISN'T THAT FRUSTRATING?&quot;</pre>
   <h2>Turn 7 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Paper orders: Frida (3), Marta (2), Gloria (1) - normal amounts.
+- Paper orders: <span class="c-Frida">Frida</span> (3), <span class="c-Marta">Marta</span> (2), <span class="c-Gloria">Gloria</span> (1) - normal amounts.
 - Corrupted entries: &quot;??????A&quot; (12), &quot;???A????&quot; (8), &quot;*-A-*-A-*&quot; (15) = 35 reams total - huge amount.
 - All corrupted names have 'A' in them. Could be same person ordering repeatedly.
-- Frida said SHE ran out of paper quota years ago, but shows 3 reams ordered - odd discrepancy.
-- People to meet: Marta, Gloria, Greg, others.
-- Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.</pre></div>
+- <span class="c-Frida">Frida</span> said SHE ran out of paper quota years ago, but shows 3 reams ordered - odd discrepancy.
+- People to meet: <span class="c-Marta">Marta</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Greg">Greg</span>, others.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist if the corrupted name entries are all the same person</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# are the corrupted name entries all the same person
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# are the corrupted name entries all the same person
 &gt; select distinct requester from paper_requisitions where data_corrupted = true&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
   OH! OH! WHAT A QUESTION! YOU'RE
       THINKING LIKE AN ARCHIVIST!
 ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
@@ -324,28 +417,28 @@ CIRCUITS WON'T COOPERATE WITH ME TODAY!
   <h2>Turn 8 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Archivist confirms: the corrupted paper orders (35 reams total) are likely the same person.
+- <span class="c-Archivist">Archivist</span> confirms: the corrupted paper orders (35 reams total) are likely the same person.
 - Pattern: name ends in 'A', corrupted differently each time.
-- Known people ending in A: Frida, Marta, Gloria. 
+- Known people ending in A: <span class="c-Frida">Frida</span>, <span class="c-Marta">Marta</span>, <span class="c-Gloria">Gloria</span>. 
 - Heavy paper user (35 reams) is likely the poet.
 - Need to ask about the poem fragments themselves - where found, any authorship data.
-- People to meet: Marta, Gloria, Greg, others.
-- Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.</pre></div>
+- People to meet: <span class="c-Marta">Marta</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Greg">Greg</span>, others.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist where the poem fragments were found and if there's any authorship information</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# where were the poem fragments found and any authorship information
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# where were the poem fragments found and any authorship information
 10 FIND poem_fragments IN archive
 20 PRINT location, discovered_date, author
 30 WHERE status = &quot;recovered&quot;
 40 RUN&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇
     POEM FRAGMENT RECOVERY LOG
 ◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇─◇
 
 LOCATION              | DISCOVERED | AUTHOR
 ──────────────────────────────────────────────
 Maintenance Wall 7B   | recent     | [UNSIGNED]
-Archive Lounge Bench  | recent     | &quot;Ink&amp;Echo&quot;
+<span class="c-Archive_Lounge">Archive Lounge</span> Bench  | recent     | &quot;Ink&amp;Echo&quot;
 Hydroponics Station   | recently   | [ANONYMOUS]
 Personal Quarters 4F  | not-long   | &quot;Ink &amp; Echo&quot;
 Cafeteria Bulletin    | recently   | [NO SIGNATURE]
@@ -367,24 +460,24 @@ PUZZLE YOU'RE SOLVING!&quot;</pre>
   <h2>Turn 9 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also need to learn when/where this is.
-- Poems found in many locations: Maintenance Wall 7B, Archive Lounge Bench, Hydroponics Station, Personal Quarters 4F, Cafeteria Bulletin, Storage Sector East.
+- Poems found in many locations: Maintenance Wall 7B, <span class="c-Archive_Lounge">Archive Lounge</span> Bench, Hydroponics Station, Personal Quarters 4F, Cafeteria Bulletin, Storage Sector East.
 - All signed &quot;Ink and Echo&quot; or unsigned - no real name.
-- Poet can access both public and private areas. Archivist hints: who can wander all these sectors?
+- Poet can access both public and private areas. <span class="c-Archivist">Archivist</span> hints: who can wander all these sectors?
 - Heavy paper user (35 reams, corrupted name ending in 'A') likely the poet.
-- Suspects: Frida, Marta, Gloria (all end in A).
+- Suspects: <span class="c-Frida">Frida</span>, <span class="c-Marta">Marta</span>, <span class="c-Gloria">Gloria</span> (all end in A).
 - Personal Quarters 4F is private - might narrow down who has access.
-- Not yet met: Marta, Gloria, Greg. Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.</pre></div>
+- Not yet met: <span class="c-Marta">Marta</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Greg">Greg</span>. Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist who lives in Personal Quarters 4F</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;++ RESIDENT LOOKUP QUERY
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;++ RESIDENT LOOKUP QUERY
 SECTOR: PERSONAL-QUARTERS-4F
 REQUEST: OCCUPANT NAME AND DETAILS
 SEARCH DATABASE&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;┌─────────────────────────────────────────────┐
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;┌─────────────────────────────────────────────┐
 │   PERSONAL QUARTERS SECTOR 4F - LOOKUP      │
 └─────────────────────────────────────────────┘
 
-OCCUPANT:              Marta
+OCCUPANT:              <span class="c-Marta">Marta</span>
 ASSIGNMENT:            Maintenance Technician
 SECTOR ROTATION:       East Wing Systems
 QUARTERS ASSIGNMENT:   Permanent

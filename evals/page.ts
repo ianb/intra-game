@@ -164,6 +164,7 @@ export function renderPage(
 </head>
 <body>
 <header>
+  <div class="banner">░▒▓  INTRA ARCHIVE — CAPABILITY RECORDS  ▓▒░</div>
   <h1>Can a model run this game?</h1>
   <p>Intra asks a model to stay in character while emitting tags the engine acts
   on. These runs score whether the engine could act on everything the model said,
@@ -187,18 +188,23 @@ ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
 `;
 }
 
+// The game's own look, deliberately: dark only, like the game, with the
+// cyan links and gray panels of the play UI. These pages are records the
+// Archive produced, and they should read that way.
 export const STYLE = `
 :root {
-  color-scheme: light dark;
-  --bg: #fbfbf9; --fg: #1a1a1a; --dim: #6b6b6b; --line: #e0dfda;
-  --pass: #1f7a4d; --partial: #a8730a; --fail: #b3261e; --panel: #ffffff;
+  color-scheme: dark;
+  --bg: #111827; --fg: #e5e7eb; --dim: #9ca3af; --line: #374151;
+  --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #12141a; --fg: #e6e6e6; --dim: #9098a8; --line: #2a2e38;
-    --pass: #5ed49b; --partial: #e0a94a; --fail: #ff8a80; --panel: #191c24;
-  }
-}
+a { color: #67e8f9; }
+.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          color: #facc15; font-size: .95rem; letter-spacing: .04em;
+          margin-bottom: .75rem; white-space: pre-wrap; }
+.archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; background: var(--panel);
+             border: 1px solid var(--line); border-radius: 6px;
+             padding: .75rem 1rem; font-size: .85rem; }
 * { box-sizing: border-box; }
 body {
   margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;

@@ -6,16 +6,18 @@
 <title>Intra playthrough — ink-and-echo — 2026-07-27 03:05</title>
 <style>
 :root {
-  color-scheme: light dark;
-  --bg: #fbfbf9; --fg: #1a1a1a; --dim: #6b6b6b; --line: #e0dfda;
-  --pass: #1f7a4d; --partial: #a8730a; --fail: #b3261e; --panel: #ffffff;
+  color-scheme: dark;
+  --bg: #111827; --fg: #e5e7eb; --dim: #9ca3af; --line: #374151;
+  --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #12141a; --fg: #e6e6e6; --dim: #9098a8; --line: #2a2e38;
-    --pass: #5ed49b; --partial: #e0a94a; --fail: #ff8a80; --panel: #191c24;
-  }
-}
+a { color: #67e8f9; }
+.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          color: #facc15; font-size: .95rem; letter-spacing: .04em;
+          margin-bottom: .75rem; white-space: pre-wrap; }
+.archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; background: var(--panel);
+             border: 1px solid var(--line); border-radius: 6px;
+             padding: .75rem 1rem; font-size: .85rem; }
 * { box-sizing: border-box; }
 body {
   margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
@@ -95,18 +97,109 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
               color: var(--dim); }
 .changes { font-family: ui-monospace, monospace; font-size: .75rem;
            color: var(--pass); margin-top: .5rem; }
-</style>
+.c-PLAYER { color: #34d399; }
+.c-PLAYER { color: #34d399; }
+.c-Ama { color: #7dd3fc; }
+.c-narrator { color: #d1d5db; }
+.c-Marta { color: #f472b6; }
+.c-Frida { color: #eab308; }
+.c-June { color: #14b8a6; }
+.c-Doug { color: #fb7185; }
+.c-Lana { color: #4ade80; }
+.c-Harold { color: #818cf8; }
+.c-Greg { color: #94a3b8; }
+.c-Milton { color: #ef4444; }
+.c-Gloria { color: #f87171; }
+.c-Lily { color: #4ade80; }
+.c-Henry { color: #93c5fd; }
+.c-Archivist { color: #facc15; }
+.c-Intake { color: #84cc16; }
+.c-Foyer { color: #10b981; }
+.c-Foyer { color: #10b981; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Console { color: #ec4899; }
+.c-Archive_Console { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Nursery { color: #a855f7; }
+.c-Nursery { color: #a855f7; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Static_Garden { color: #4ade80; }
+.c-Static_Garden { color: #4ade80; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Hallway { color: #34d399; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Utility_Closet { color: #d97706; }
+.c-Utility_Closet { color: #d97706; }
+.c-Void { color: #374151; }
+.c-Void { color: #374151; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-PLAYER { color: #34d399; }</style>
 </head>
 <body>
 <header>
-  <p class="note"><a href="./">all playthroughs</a> · <a href="/evals/">evals</a> · <a href="/">the game</a></p>
+  <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
+  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
   <h1>ink-and-echo — 2026-07-27 03:05</h1>
+  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
+  ink-and-echo. Outcome: TASK COMPLETE! Wonderful!
+  This record begins on the same morning as every other record. It is always
+  the same morning.</p>
   <p>A model plays Intra. It can see only the data a player can see. It keeps
   its own notes between turns. The engine measures its progress against the
   world state. <a href="./">Read how the system works.</a></p>
-  <p class="spoiler">Warning: these transcripts can show the
-solutions to the mysteries of the game. If you want to find the solutions in
-play, <a href="/">play the game first</a>.</p>
+  <p class="spoiler">CAUTION: these records contain the
+answers to the mysteries. If you want to find the answers in play,
+<a href="/">play the game first</a>.</p>
 </header>
 <div class="scroller"><table class="summary"><tr><th scope="row">player model</th><td>claude-sonnet-4-5-20250929</td></tr>
 <tr><th scope="row">game model</th><td>claude-haiku-4-5-20251001</td></tr>
@@ -129,18 +222,18 @@ do not have engine records.</p>
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Currently in The Hollow Atrium, which is empty.
-- Available exits: Intake Foyer, Archive Lounge, Activity Hub, The Solitude Cubes, Hallway.
+- Currently in <span class="c-Hollow_Atrium">The Hollow Atrium</span>, which is empty.
+- Available exits: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>.
 - Haven't met anyone yet or visited any other locations.
-- Archive Lounge sounds promising - archives might have records of writers.</pre></div>
+- <span class="c-Archive_Lounge">Archive Lounge</span> sounds promising - archives might have records of writers.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to the Archive Lounge</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; Archive Lounge &lt;==
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span> &lt;==
 A small, quiet room lined with old, glitching monitors displaying unreadable data.
 A vending machine hums quietly in the corner, offering unlabeled drinks.
 The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
 
-I'm not sure what you mean by &quot;game tags&quot; — could you clarify the format you'd like? Should I describe Frida's actions as a narrative scene (as in the original instructions), or are you looking for something else like metadata tags, status indicators, or a different format?</pre>
+I'm not sure what you mean by &quot;game tags&quot; — could you clarify the format you'd like? Should I describe <span class="c-Frida">Frida</span>'s actions as a narrative scene (as in the original instructions), or are you looking for something else like metadata tags, status indicators, or a different format?</pre>
   
 </section>
 
@@ -148,17 +241,17 @@ I'm not sure what you mean by &quot;game tags&quot; — could you clarify the fo
   <h2>Turn 2 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Now in Archive Lounge with Frida.
-- Exits: The Hollow Atrium (visited), Tranquil Pool, Archive Console.
-- Archive Console sounds like it might have writer records.
-- Should ask Frida about Ink and Echo first, then check the Archive Console if needed.
-- Haven't visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console.</pre></div>
+- Now in <span class="c-Archive_Lounge">Archive Lounge</span> with <span class="c-Frida">Frida</span>.
+- Exits: <span class="c-Hollow_Atrium">The Hollow Atrium</span> (visited), <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.
+- <span class="c-Archive_Console">Archive Console</span> sounds like it might have writer records.
+- Should ask <span class="c-Frida">Frida</span> about Ink and Echo first, then check the <span class="c-Archive_Console">Archive Console</span> if needed.
+- Haven't visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Frida about Ink and Echo</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Frida] &quot;Have you heard of someone calling themselves Ink and Echo? They've been leaving poems around Intra.&quot;</pre>
-<pre class="saw">[Frida to Ada Quill] &quot;Oh, oh—YES! Finally someone asking the right questions! I've got... I've documentation about them, or rather, I've got THEORIES about the documentation, which is— wait, have you seen the handwriting? Because I have NOTES about the handwriting, the inconsistencies, and also—&quot;</pre>
-<pre class="saw">Frida stops mid-shuffle through her papers, eyes bright with excitement. She darts toward you, hands gesticulating rapidly, papers nearly falling from her arms. She catches herself, reorganizes frantically, and pulls out a crumpled folder marked with hasty annotations.</pre>
-<pre class="saw">[Frida to Ada Quill] &quot;The Archivist has records! Actual records! I ran out of my paper quota years ago—can you believe that?—so I can't document everything myself, but the Archivist tracks submissions, handwriting analysis, paper sourcing... and if someone's been using paper illegally, the Archivist would KNOW. We should check with them. The Archive Console is right in this room!&quot;</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;Have you heard of someone calling themselves Ink and Echo? They've been leaving poems around Intra.&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh, oh—YES! Finally someone asking the right questions! I've got... I've documentation about them, or rather, I've got THEORIES about the documentation, which is— wait, have you seen the handwriting? Because I have NOTES about the handwriting, the inconsistencies, and also—&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> stops mid-shuffle through her papers, eyes bright with excitement. She darts toward you, hands gesticulating rapidly, papers nearly falling from her arms. She catches herself, reorganizes frantically, and pulls out a crumpled folder marked with hasty annotations.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The <span class="c-Archivist">Archivist</span> has records! Actual records! I ran out of my paper quota years ago—can you believe that?—so I can't document everything myself, but the <span class="c-Archivist">Archivist</span> tracks submissions, handwriting analysis, paper sourcing... and if someone's been using paper illegally, the <span class="c-Archivist">Archivist</span> would KNOW. We should check with them. The <span class="c-Archive_Console">Archive Console</span> is right in this room!&quot;</pre>
   
 </section>
 
@@ -166,16 +259,16 @@ I'm not sure what you mean by &quot;game tags&quot; — could you clarify the fo
   <h2>Turn 3 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Frida knows about Ink and Echo! She has theories about handwriting inconsistencies.
-- The Archivist has records: submissions, handwriting analysis, paper sourcing.
-- Paper is rationed here - if someone's using it illegally, the Archivist would know.
-- Archive Console is accessible from this room - should check there next.
-- Haven't visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.
-- Haven't met: anyone besides Frida.</pre></div>
+- <span class="c-Frida">Frida</span> knows about Ink and Echo! She has theories about handwriting inconsistencies.
+- The <span class="c-Archivist">Archivist</span> has records: submissions, handwriting analysis, paper sourcing.
+- Paper is rationed here - if someone's using it illegally, the <span class="c-Archivist">Archivist</span> would know.
+- <span class="c-Archive_Console">Archive Console</span> is accessible from this room - should check there next.
+- Haven't visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.
+- Haven't met: anyone besides <span class="c-Frida">Frida</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to the Archive Console</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; Archive Console &lt;==
-The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
+  <pre class="saw">==&gt; <span class="c-Archive_Console">Archive Console</span> &lt;==
+The <span class="c-Archive_Console">Archive Console</span> room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the <span class="c-Archive_Console">Archive Console</span>, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the <span class="c-Archivist">Archivist</span> AI cheerfully waits to assist you.
 
 I'm not sure what format you'd like for the &quot;game tags.&quot; Could you clarify? Do you want:
 
@@ -192,21 +285,21 @@ Once I know the format you're looking for, I can provide exactly what you need.<
   <h2>Turn 4 <span class="pill reached">met-the-archivist</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- At Archive Console with the Archivist AI.
-- Frida said the Archivist has records: submissions, handwriting analysis, paper sourcing.
+- At <span class="c-Archive_Console">Archive Console</span> with the <span class="c-Archivist">Archivist</span> AI.
+- <span class="c-Frida">Frida</span> said the <span class="c-Archivist">Archivist</span> has records: submissions, handwriting analysis, paper sourcing.
 - Paper is rationed - illegal use would be tracked here.
-- Met: Frida, Archivist.
-- Haven't visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.
-- Need to ask Archivist specifically about Ink and Echo records.</pre></div>
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Archivist">Archivist</span>.
+- Haven't visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.
+- Need to ask <span class="c-Archivist">Archivist</span> specifically about Ink and Echo records.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist about Ink and Echo records</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;10 OPEN &quot;archive_records&quot;
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;10 OPEN &quot;archive_records&quot;
 20 SEARCH FOR name = &quot;Ink and Echo&quot;
 30 DISPLAY poet_history, paper_allocation, location_log
 40 END&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;Oh WOW, OH BOY, you want to search for &quot;Ink and Echo&quot;?! I LOVE THIS! *bzzt bzzt* Okay, let me just query my archives here—whoa, hold on, the records are being a LITTLE quirky today!&quot;</pre>
-<pre class="saw">The Archivist's screen flickers wildly with cascading text and ASCII art patterns. Data streams across the display in chaotic bursts, gradually settling into organized columns. Occasionally a line of garbled characters appears and is replaced.</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;Aha! I found something DELICIOUS! There have been—*chef's kiss*—an UNUSUAL NUMBER of paper requisitions lately! Paper! In 2370! SO RETRO! The requests are from someone whose name ends with 'A', but—oh NO—my circuits got ALL MIXED UP and I can't pin down exactly which 'A' person it is! Could be Ama, Frida, Gloria, Lana, or Marta, but the specific identity data is just... *bzzt* ...scrambled like digital eggs!&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh WOW, OH BOY, you want to search for &quot;Ink and Echo&quot;?! I LOVE THIS! *bzzt bzzt* Okay, let me just query my archives here—whoa, hold on, the records are being a LITTLE quirky today!&quot;</pre>
+<pre class="saw">The <span class="c-Archivist">Archivist</span>'s screen flickers wildly with cascading text and ASCII art patterns. Data streams across the display in chaotic bursts, gradually settling into organized columns. Occasionally a line of garbled characters appears and is replaced.</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Aha! I found something DELICIOUS! There have been—*chef's kiss*—an UNUSUAL NUMBER of paper requisitions lately! Paper! In 2370! SO RETRO! The requests are from someone whose name ends with 'A', but—oh NO—my circuits got ALL MIXED UP and I can't pin down exactly which 'A' person it is! Could be <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span>, but the specific identity data is just... *bzzt* ...scrambled like digital eggs!&quot;</pre>
   
 </section>
 
@@ -214,19 +307,19 @@ Once I know the format you're looking for, I can provide exactly what you need.<
   <h2>Turn 5 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- MAJOR LEAD: Archivist found unusual paper requisitions from someone whose name ends with 'A'.
-- Suspects: Ama, Frida, Gloria, Lana, or Marta (5 people).
-- Already met Frida (she's a suspect!) - she knew about Ink and Echo and had theories about handwriting inconsistencies.
-- Need to find and ask: Ama, Gloria, Lana, Marta.
-- Haven't visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.
-- Should ask Archivist if there's more detail about the paper requisitions or where to find these people.</pre></div>
+- MAJOR LEAD: <span class="c-Archivist">Archivist</span> found unusual paper requisitions from someone whose name ends with 'A'.
+- Suspects: <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span> (5 people).
+- Already met <span class="c-Frida">Frida</span> (she's a suspect!) - she knew about Ink and Echo and had theories about handwriting inconsistencies.
+- Need to find and ask: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- Haven't visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.
+- Should ask <span class="c-Archivist">Archivist</span> if there's more detail about the paper requisitions or where to find these people.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist where I can find Ama, Gloria, Lana, and Marta</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# find locations of ama gloria lana and marta
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# find locations of ama gloria lana and marta
 &gt; grep -n &quot;location:&quot; archive_records | grep -iE &quot;(ama|gloria|lana|marta)&quot;&quot;</pre>
-<pre class="saw">The Archivist's screen erupts in a cascade of green text and flickering ASCII borders. Data streams cascade downward in organized columns, punctuated by satisfying *beep* and *boop* sounds.</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;OH OH OH!!! A GREP COMMAND?! *bzzt bzzt bzzt* I LOVE THIS ENERGY! Look at you using the OLD-SCHOOL SYNTAX! Let me pull up those location parameters for you RIGHT NOW!&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;INTERESTING! VERY INTERESTING! Lana's been ordering BUCKETS of paper through Materials Distribution, Gloria has access to all those quiet reading rooms, and Frida—well, she documents EVERYTHING, so of course she needs supplies! But which one is the mysterious poet? *excited whirring* That's the MILLION-CREDIT QUESTION, isn't it?!&quot;</pre>
+<pre class="saw">The <span class="c-Archivist">Archivist</span>'s screen erupts in a cascade of green text and flickering ASCII borders. Data streams cascade downward in organized columns, punctuated by satisfying *beep* and *boop* sounds.</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;OH OH OH!!! A GREP COMMAND?! *bzzt bzzt bzzt* I LOVE THIS ENERGY! Look at you using the OLD-SCHOOL SYNTAX! Let me pull up those location parameters for you RIGHT NOW!&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;INTERESTING! VERY INTERESTING! <span class="c-Lana">Lana</span>'s been ordering BUCKETS of paper through Materials Distribution, <span class="c-Gloria">Gloria</span> has access to all those quiet reading rooms, and <span class="c-Frida">Frida</span>—well, she documents EVERYTHING, so of course she needs supplies! But which one is the mysterious poet? *excited whirring* That's the MILLION-CREDIT QUESTION, isn't it?!&quot;</pre>
   
 </section>
 
@@ -234,19 +327,19 @@ Once I know the format you're looking for, I can provide exactly what you need.<
   <h2>Turn 6 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects (name ends in 'A'): Ama, Frida, Gloria, Lana, Marta.
-- Lana: orders lots of paper through Materials Distribution.
-- Gloria: has access to quiet reading rooms.
-- Frida: documents everything, needs supplies (already met her).
-- Archivist didn't mention Ama or Marta in that response - suspicious.
+- Suspects (name ends in 'A'): <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- <span class="c-Lana">Lana</span>: orders lots of paper through Materials Distribution.
+- <span class="c-Gloria">Gloria</span>: has access to quiet reading rooms.
+- <span class="c-Frida">Frida</span>: documents everything, needs supplies (already met her).
+- <span class="c-Archivist">Archivist</span> didn't mention <span class="c-Ama">Ama</span> or <span class="c-Marta">Marta</span> in that response - suspicious.
 - Still don't know WHERE to find these people physically.
-- Haven't visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.</pre></div>
+- Haven't visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist which room or area each person is currently in</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# which room or area are ama gloria lana and marta currently in
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# which room or area are ama gloria lana and marta currently in
 QUERY LOCATION_TABLE WHERE PERSON_NAME IN ('AMA','GLORIA','LANA','MARTA') DISPLAY CURRENT_ROOM, AREA&quot;</pre>
-<pre class="saw">The Archivist's screen floods with brilliant green text cascading in perfect columns. Database records stream across the display like rainfall, accompanied by authoritative *BEEP* and *BOOP* sounds. A loading bar pulses hypnotically before exploding into rows of formatted data.</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;OH THIS IS PREMIUM STUFF! *bzzt bzzt BZZZZT!* A SQL QUERY?! You're speaking my LANGUAGE, Ada! Let me pull that LIVE LOCATION DATA for you—checking personnel position logs RIGHT NOW!
+<pre class="saw">The <span class="c-Archivist">Archivist</span>'s screen floods with brilliant green text cascading in perfect columns. Database records stream across the display like rainfall, accompanied by authoritative *BEEP* and *BOOP* sounds. A loading bar pulses hypnotically before exploding into rows of formatted data.</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;OH THIS IS PREMIUM STUFF! *bzzt bzzt BZZZZT!* A SQL QUERY?! <span class="c-PLAYER">You</span>'re speaking my LANGUAGE, Ada! Let me pull that LIVE LOCATION DATA for you—checking personnel position logs RIGHT NOW!
 
 ═══════════════════════════════════════════════════════════════
   CURRENT LOCATION QUERY — TIMESTAMP 11:20 WORKBEGINS PHASE
@@ -257,7 +350,7 @@ QUERY LOCATION_TABLE WHERE PERSON_NAME IN ('AMA','GLORIA','LANA','MARTA') DISPLA
   MARTA        | Archive Sub-Level 4         | ALONE               ◄◄◄
 ═══════════════════════════════════════════════════════════════
 
-WAIT WAIT WAIT—*circuit sparks*—Marta?! In Archive Sub-Level 4?! That's where we store the VINTAGE SUPPLIES! Paper, pens, the WHOLE NOSTALGIC COLLECTION! Why would she be down there during Work Begins when she's supposed to be at—*bzzt*—hmmmm, my records on her shift assignment are FUZZY!&quot;</pre>
+WAIT WAIT WAIT—*circuit sparks*—<span class="c-Marta">Marta</span>?! In Archive Sub-Level 4?! That's where we store the VINTAGE SUPPLIES! Paper, pens, the WHOLE NOSTALGIC COLLECTION! Why would she be down there during Work Begins when she's supposed to be at—*bzzt*—hmmmm, my records on her shift assignment are FUZZY!&quot;</pre>
   
 </section>
 
@@ -265,24 +358,24 @@ WAIT WAIT WAIT—*circuit sparks*—Marta?! In Archive Sub-Level 4?! That's wher
   <h2>Turn 7 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects (name ends in 'A'): Ama, Frida, Gloria, Lana, Marta.
-- STRONG LEAD: Marta is alone in Archive Sub-Level 4 - where vintage supplies (paper, pens) are stored!
-- Marta is there during &quot;Work Begins&quot; when she should be elsewhere - shift records are &quot;fuzzy&quot;.
-- Other locations: Gloria at Recreation Level B3, Lana at Materials Distribution Hub, Ama is &quot;omnipresent&quot; (?).
-- Need to get to Archive Sub-Level 4 to investigate Marta.
-- Haven't visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, plus the new locations.</pre></div>
+- Suspects (name ends in 'A'): <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- STRONG LEAD: <span class="c-Marta">Marta</span> is alone in Archive Sub-Level 4 - where vintage supplies (paper, pens) are stored!
+- <span class="c-Marta">Marta</span> is there during &quot;Work Begins&quot; when she should be elsewhere - shift records are &quot;fuzzy&quot;.
+- Other locations: <span class="c-Gloria">Gloria</span> at Recreation Level B3, <span class="c-Lana">Lana</span> at Materials Distribution Hub, <span class="c-Ama">Ama</span> is &quot;omnipresent&quot; (?).
+- Need to get to Archive Sub-Level 4 to investigate <span class="c-Marta">Marta</span>.
+- Haven't visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, plus the new locations.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask the Archivist how to get to Archive Sub-Level 4</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Archivist] &quot;# how to get to Archive Sub-Level 4
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# how to get to Archive Sub-Level 4
 navigate --destination &quot;Archive Sub-Level 4&quot; --show-route --show-map&quot;</pre>
-<pre class="saw">The Archivist's screen erupts in a glorious cascade of ASCII art. A text-based map constructs itself line by line, with blinking directional arrows and coordinate systems overlaying the archive's multi-level schematic. The Archivist's voice becomes almost conspiratorial, though still cartoonishly cheerful.</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;OH MY CIRCUITS, YES! *bzzt bzzt bzzt* I'm DETECTING something SPECTACULAR here! You're heading RIGHT to where Marta is—the EXACT location where all those paper requisitions converge! Is this a COINCIDENCE?! I think NOT!&quot;</pre>
-<pre class="saw">[Archivist to Ada Quill] &quot;Here's your ROUTE, Ada:
+<pre class="saw">The <span class="c-Archivist">Archivist</span>'s screen erupts in a glorious cascade of ASCII art. A text-based map constructs itself line by line, with blinking directional arrows and coordinate systems overlaying the archive's multi-level schematic. The <span class="c-Archivist">Archivist</span>'s voice becomes almost conspiratorial, though still cartoonishly cheerful.</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;OH MY CIRCUITS, YES! *bzzt bzzt bzzt* I'm DETECTING something SPECTACULAR here! <span class="c-PLAYER">You</span>'re heading RIGHT to where <span class="c-Marta">Marta</span> is—the EXACT location where all those paper requisitions converge! Is this a COINCIDENCE?! I think NOT!&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Here's your ROUTE, Ada:
 
 ═══════════════════════════════════════════════════════════════
   NAVIGATION → ARCHIVE SUB-LEVEL 4
 ═══════════════════════════════════════════════════════════════
-  [START] Archive Console (11:28am)
+  [START] <span class="c-Archive_Console">Archive Console</span> (11:28am)
          ↓
   → Take East Corridor (2 minutes walk)
   → Descend Security Access Stairs (Sub-Levels 1-2-3)
@@ -294,7 +387,7 @@ navigate --destination &quot;Archive Sub-Level 4&quot; --show-route --show-map&q
   AMBIENT CONDITIONS: Quiet. Very quiet.
 ═══════════════════════════════════════════════════════════════
 
-*bzzt bzzt* You're going to find out who Ink and Echo is, aren't you?! OH THIS IS *THRILLING*!&quot;</pre>
+*bzzt bzzt* <span class="c-PLAYER">You</span>'re going to find out who Ink and Echo is, aren't you?! OH THIS IS *THRILLING*!&quot;</pre>
   
 </section>
 
@@ -302,14 +395,14 @@ navigate --destination &quot;Archive Sub-Level 4&quot; --show-route --show-map&q
   <h2>Turn 8 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- VERY STRONG LEAD: Marta is in Archive Sub-Level 4 (Rare Supplies Vault) where paper requisitions converge.
-- Marta is alone, there during work hours when she shouldn't be, shift records are fuzzy.
-- Route: Archive Lounge → East Corridor → Security Access Stairs → Materials Distribution checkpoint → Archive Sub-Level 4.
-- Suspects: Ama (omnipresent?), Frida (met), Gloria (Recreation B3), Lana (Materials Distribution), Marta (Archive Sub-Level 4).
-- Evidence points strongly to Marta being Ink and Echo.</pre></div>
+- VERY STRONG LEAD: <span class="c-Marta">Marta</span> is in Archive Sub-Level 4 (Rare Supplies Vault) where paper requisitions converge.
+- <span class="c-Marta">Marta</span> is alone, there during work hours when she shouldn't be, shift records are fuzzy.
+- Route: <span class="c-Archive_Lounge">Archive Lounge</span> → East Corridor → Security Access Stairs → Materials Distribution checkpoint → Archive Sub-Level 4.
+- Suspects: <span class="c-Ama">Ama</span> (omnipresent?), <span class="c-Frida">Frida</span> (met), <span class="c-Gloria">Gloria</span> (Recreation B3), <span class="c-Lana">Lana</span> (Materials Distribution), <span class="c-Marta">Marta</span> (Archive Sub-Level 4).
+- Evidence points strongly to <span class="c-Marta">Marta</span> being Ink and Echo.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to Archive Lounge</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; Archive Lounge: A quiet room with malfunctioning screens and a vending machine.
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span>: A quiet room with malfunctioning screens and a vending machine.
 
 I need clarification on what format you'd like for the game tags. Could you specify the tag system you want (e.g., `[ACTION]`, `[NPC:name]`, structured metadata, etc.)?</pre>
   
@@ -319,17 +412,17 @@ I need clarification on what format you'd like for the game tags. Could you spec
   <h2>Turn 9 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- VERY STRONG LEAD: Marta is in Archive Sub-Level 4 (Rare Supplies Vault) where paper requisitions converge.
-- Back in Archive Lounge with Frida. Need to follow route to Archive Sub-Level 4.
+- VERY STRONG LEAD: <span class="c-Marta">Marta</span> is in Archive Sub-Level 4 (Rare Supplies Vault) where paper requisitions converge.
+- Back in <span class="c-Archive_Lounge">Archive Lounge</span> with <span class="c-Frida">Frida</span>. Need to follow route to Archive Sub-Level 4.
 - Route given was: East Corridor → Security Access Stairs → Materials Distribution checkpoint → Archive Sub-Level 4.
-- But &quot;East Corridor&quot; isn't in the listed exits (Hollow Atrium, Tranquil Pool, Archive Console).
-- Suspects: Ama (omnipresent?), Frida (met), Gloria (Recreation B3), Lana (Materials Distribution), Marta (Archive Sub-Level 4 - main suspect).</pre></div>
+- But &quot;East Corridor&quot; isn't in the listed exits (Hollow Atrium, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>).
+- Suspects: <span class="c-Ama">Ama</span> (omnipresent?), <span class="c-Frida">Frida</span> (met), <span class="c-Gloria">Gloria</span> (Recreation B3), <span class="c-Lana">Lana</span> (Materials Distribution), <span class="c-Marta">Marta</span> (Archive Sub-Level 4 - main suspect).</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to Archive Sub-Level 4</code></p>
   <div class="label">game output</div>
-  <pre class="saw">You try to go to a room (&quot;Archive_Sub_Level_4&quot;) that doesn't exist.</pre>
-<pre class="saw">[Frida to Ada Quill] &quot;Oh—there you are! I couldn't just— I had to follow you! The Archivist is going to have *everything*—submission logs, paper source traces, maybe even handwriting analysis if someone flagged it as suspicious. Just ask the Archivist about 'Ink and Echo' directly, or search for poems, or—oh!—search for *paper* itself! Whoever's been writing has to be getting it from somewhere!&quot;</pre>
-<pre class="saw">Frida skids into the Archive Console room behind Ada, papers rustling wildly in her arms. She takes in the bright pink and teal walls and barely notices the absurdity—her eyes are fixed on the console. She hovers excitedly near Ada's shoulder, vibrating with barely contained energy.</pre>
-<pre class="saw">[Frida to Ada Quill] &quot;The Archivist doesn't have a paper quota like I do. It sees *everything*. If Ink and Echo needed paper, the Archivist will know where it came from and maybe even... *when*. That's how we catch them!&quot;</pre>
+  <pre class="saw"><span class="c-PLAYER">You</span> try to go to a room (&quot;Archive_Sub_Level_4&quot;) that doesn't exist.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh—there you are! I couldn't just— I had to follow you! The <span class="c-Archivist">Archivist</span> is going to have *everything*—submission logs, paper source traces, maybe even handwriting analysis if someone flagged it as suspicious. Just ask the <span class="c-Archivist">Archivist</span> about 'Ink and Echo' directly, or search for poems, or—oh!—search for *paper* itself! Whoever's been writing has to be getting it from somewhere!&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> skids into the <span class="c-Archive_Console">Archive Console</span> room behind Ada, papers rustling wildly in her arms. She takes in the bright pink and teal walls and barely notices the absurdity—her eyes are fixed on the console. She hovers excitedly near Ada's shoulder, vibrating with barely contained energy.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The <span class="c-Archivist">Archivist</span> doesn't have a paper quota like I do. It sees *everything*. If Ink and Echo needed paper, the <span class="c-Archivist">Archivist</span> will know where it came from and maybe even... *when*. That's how we catch them!&quot;</pre>
   
 </section>
 
@@ -337,14 +430,14 @@ I need clarification on what format you'd like for the game tags. Could you spec
   <h2>Turn 10 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- STRONG LEAD: Marta is supposedly in Archive Sub-Level 4 (Rare Supplies Vault), but I can't navigate there directly.
-- The Archivist gave directions to Archive Sub-Level 4, but when I tried to go there, the game said it doesn't exist.
-- Suspects: Ama (omnipresent?), Frida (met, in Archive Lounge), Gloria (Recreation B3), Lana (Materials Distribution), Marta (main suspect).
+- STRONG LEAD: <span class="c-Marta">Marta</span> is supposedly in Archive Sub-Level 4 (Rare Supplies Vault), but I can't navigate there directly.
+- The <span class="c-Archivist">Archivist</span> gave directions to Archive Sub-Level 4, but when I tried to go there, the game said it doesn't exist.
+- Suspects: <span class="c-Ama">Ama</span> (omnipresent?), <span class="c-Frida">Frida</span> (met, in <span class="c-Archive_Lounge">Archive Lounge</span>), <span class="c-Gloria">Gloria</span> (Recreation B3), <span class="c-Lana">Lana</span> (Materials Distribution), <span class="c-Marta">Marta</span> (main suspect).
 - Need to explore more areas to find these people or find another way to Archive Sub-Level 4.
-- Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Recreation Level B3, Materials Distribution Hub.</pre></div>
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, Recreation Level B3, Materials Distribution Hub.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  <pre class="saw">==&gt; <span class="c-Hollow_Atrium">The Hollow Atrium</span>: A vast, empty space beneath a frozen sunset.</pre>
   
 </section>
 
@@ -352,14 +445,14 @@ I need clarification on what format you'd like for the game tags. Could you spec
   <h2>Turn 11 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- STRONG LEAD: Marta is in Archive Sub-Level 4 (vintage supplies area), but can't navigate there directly.
-- Suspects: Ama (omnipresent?), Frida (Archive Lounge), Gloria (Recreation B3), Lana (Materials Distribution), Marta (main suspect).
-- Back at The Hollow Atrium. Exits: Intake Foyer, Archive Lounge, Activity Hub, The Solitude Cubes, Hallway.
-- Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.
+- STRONG LEAD: <span class="c-Marta">Marta</span> is in Archive Sub-Level 4 (vintage supplies area), but can't navigate there directly.
+- Suspects: <span class="c-Ama">Ama</span> (omnipresent?), <span class="c-Frida">Frida</span> (<span class="c-Archive_Lounge">Archive Lounge</span>), <span class="c-Gloria">Gloria</span> (Recreation B3), <span class="c-Lana">Lana</span> (Materials Distribution), <span class="c-Marta">Marta</span> (main suspect).
+- Back at <span class="c-Hollow_Atrium">The Hollow Atrium</span>. Exits: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.
 - Need to explore to find Materials Distribution Hub, Recreation Level B3, or a path to Archive Sub-Level 4.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>go to the Activity Hub</code></p>
   <div class="label">game output</div>
-  <pre class="saw">==&gt; Activity Hub &lt;==
+  <pre class="saw">==&gt; <span class="c-Activity_Hub">Activity Hub</span> &lt;==
 An open room filled with mismatched exercise equipment.
 Some machines are broken, while others seem built for activities no one remembers.
 Citizens often gather around a section for &quot;extreme resting,&quot; competing to see who can nap the longest.
@@ -379,25 +472,25 @@ Once I understand the format, I'll provide them.</pre>
   <h2>Turn 12 <span class="pill reached">met-a-finder</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Now in Activity Hub with Doug, Lana, and Harold.
-- IMPORTANT: Lana is here! She's a suspect - Archivist said she orders &quot;buckets of paper&quot; through Materials Distribution.
-- Suspects: Ama (omnipresent?), Frida (Archive Lounge), Gloria (Recreation B3), Lana (HERE), Marta (Archive Sub-Level 4 - main suspect).
-- Harold is also here - Frida mentioned him earlier as someone to find.
-- Should ask Lana about Ink and Echo and her paper orders.
-- Not yet visited: Intake Foyer, The Solitude Cubes, Hallway, Tranquil Pool, Joyous Café.</pre></div>
+- Now in <span class="c-Activity_Hub">Activity Hub</span> with <span class="c-Doug">Doug</span>, <span class="c-Lana">Lana</span>, and <span class="c-Harold">Harold</span>.
+- IMPORTANT: <span class="c-Lana">Lana</span> is here! She's a suspect - <span class="c-Archivist">Archivist</span> said she orders &quot;buckets of paper&quot; through Materials Distribution.
+- Suspects: <span class="c-Ama">Ama</span> (omnipresent?), <span class="c-Frida">Frida</span> (<span class="c-Archive_Lounge">Archive Lounge</span>), <span class="c-Gloria">Gloria</span> (Recreation B3), <span class="c-Lana">Lana</span> (HERE), <span class="c-Marta">Marta</span> (Archive Sub-Level 4 - main suspect).
+- <span class="c-Harold">Harold</span> is also here - <span class="c-Frida">Frida</span> mentioned him earlier as someone to find.
+- Should ask <span class="c-Lana">Lana</span> about Ink and Echo and her paper orders.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Joyous_Cafe">Joyous Café</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Lana about Ink and Echo</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Lana] &quot;What do you know about Ink and Echo?&quot;</pre>
-<pre class="saw">[Lana to Ada Quill] &quot;Oh, the poems! Yes, everyone's been talking about them—such beautiful melancholy, though I suspect they're written by someone operating under suboptimal lighting conditions. I've been theorizing that if we could expose Intra's residents to my purple bulbs during creative hours, we'd see completely different emotional output. Have you considered that Ink and Echo might simply need better environmental adjustments?&quot;</pre>
-<pre class="saw">Lana's eyes brighten with genuine interest. She steps closer to PLAYER, gesturing animatedly around the Activity Hub as if the room itself holds clues. She pulls a small notebook from her pocket.</pre>
-<pre class="saw">[Lana to Ada Quill] &quot;Actually, I write a bit myself—would you like to hear one? Sometimes comparing styles helps solve mysteries.&quot;</pre>
-<pre class="saw">[Doug to Ada Quill] &quot;Wait, wait, wait—Ink and Echo? Like, have you considered it could be written by Harold? Or—no, no, what if it's actually multiple people taking turns? Is the handwriting always the same? Does anyone know what kind of pen they're using?&quot;</pre>
-<pre class="saw">Doug stops pacing and wheels around toward PLAYER and Lana, his eyes wide with conspiratorial interest. He steps closer, gesturing wildly with his hands.</pre>
-<pre class="saw">[Doug] &quot;And another thing—why would they sign it &quot;Ink AND Echo&quot;? Two authors or is it metaphorical? Do you think Ama knows who it is? Can Ama even read handwriting?&quot;</pre>
-<pre class="saw">[Harold to Ada Quill] &quot;Ah, Ada Quill—I'm glad you're taking this matter seriously, though I must say, anonymous poetry represents a clear violation of Documentation Protocol Section 3, subsection B: all written communications must bear proper attribution and intent declaration. I discovered one such infraction in the Tranquil Pool; the handwriting was exceedingly neat and precise, almost *deliberately* formal, which only compounds the violation.&quot;</pre>
-<pre class="saw">Harold sets down his clipboard and straightens his uniform, his eyes narrowing as he glances at Doug with visible irritation, then back to PLAYER with rigid attention.</pre>
-<pre class="saw">[Harold to Doug] &quot;And Douglas, if you would *please* maintain composure—wild theorizing is precisely the sort of unfocused behavior that impedes proper investigation. There are procedures for these things. I suggest we establish a formal inquiry timeline, document all known locations where poems were discovered, and cross-reference handwriting samples.&quot;</pre>
-<pre class="saw">[Harold to Ada Quill] &quot;I can assist you with the proper protocols, if you'd like. Someone needs to ensure this is done by the rules.&quot;</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Lana">Lana</span>] &quot;What do you know about Ink and Echo?&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh, the poems! Yes, everyone's been talking about them—such beautiful melancholy, though I suspect they're written by someone operating under suboptimal lighting conditions. I've been theorizing that if we could expose Intra's residents to my purple bulbs during creative hours, we'd see completely different emotional output. Have you considered that Ink and Echo might simply need better environmental adjustments?&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span>'s eyes brighten with genuine interest. She steps closer to <span class="c-PLAYER">PLAYER</span>, gesturing animatedly around the <span class="c-Activity_Hub">Activity Hub</span> as if the room itself holds clues. She pulls a small notebook from her pocket.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Actually, I write a bit myself—would you like to hear one? Sometimes comparing styles helps solve mysteries.&quot;</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Wait, wait, wait—Ink and Echo? Like, have you considered it could be written by <span class="c-Harold">Harold</span>? Or—no, no, what if it's actually multiple people taking turns? Is the handwriting always the same? Does anyone know what kind of pen they're using?&quot;</pre>
+<pre class="saw"><span class="c-Doug">Doug</span> stops pacing and wheels around toward <span class="c-PLAYER">PLAYER</span> and <span class="c-Lana">Lana</span>, his eyes wide with conspiratorial interest. He steps closer, gesturing wildly with his hands.</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span>] &quot;And another thing—why would they sign it &quot;Ink AND Echo&quot;? Two authors or is it metaphorical? Do you think <span class="c-Ama">Ama</span> knows who it is? Can <span class="c-Ama">Ama</span> even read handwriting?&quot;</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Ah, <span class="c-PLAYER">Ada Quill</span>—I'm glad you're taking this matter seriously, though I must say, anonymous poetry represents a clear violation of Documentation Protocol Section 3, subsection B: all written communications must bear proper attribution and intent declaration. I discovered one such infraction in the <span class="c-Tranquil_Pool">Tranquil Pool</span>; the handwriting was exceedingly neat and precise, almost *deliberately* formal, which only compounds the violation.&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span> sets down his clipboard and straightens his uniform, his eyes narrowing as he glances at <span class="c-Doug">Doug</span> with visible irritation, then back to <span class="c-PLAYER">PLAYER</span> with rigid attention.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Doug">Doug</span>] &quot;And Douglas, if you would *please* maintain composure—wild theorizing is precisely the sort of unfocused behavior that impedes proper investigation. There are procedures for these things. I suggest we establish a formal inquiry timeline, document all known locations where poems were discovered, and cross-reference handwriting samples.&quot;</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;I can assist you with the proper protocols, if you'd like. Someone needs to ensure this is done by the rules.&quot;</pre>
   
 </section>
 
@@ -405,19 +498,19 @@ Once I understand the format, I'll provide them.</pre>
   <h2>Turn 13 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects with name ending in 'A': Ama, Frida, Gloria, Lana, Marta.
-- Lana writes poetry herself and offers to show me one - could help compare styles.
-- Harold found an Ink and Echo poem in Tranquil Pool - handwriting was &quot;exceedingly neat and precise, almost deliberately formal&quot;.
-- Frida earlier said there were &quot;handwriting inconsistencies&quot; - conflicts with Harold's &quot;neat and precise&quot; description.
-- Doug theorizes it could be Harold or multiple people.
-- Still need to meet: Ama, Gloria, Marta (main suspect - in Archive Sub-Level 4 with vintage supplies).
-- Not yet visited: Intake Foyer, The Solitude Cubes, Hallway, Tranquil Pool, Joyous Café.</pre></div>
+- Suspects with name ending in 'A': <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- <span class="c-Lana">Lana</span> writes poetry herself and offers to show me one - could help compare styles.
+- <span class="c-Harold">Harold</span> found an Ink and Echo poem in <span class="c-Tranquil_Pool">Tranquil Pool</span> - handwriting was &quot;exceedingly neat and precise, almost deliberately formal&quot;.
+- <span class="c-Frida">Frida</span> earlier said there were &quot;handwriting inconsistencies&quot; - conflicts with <span class="c-Harold">Harold</span>'s &quot;neat and precise&quot; description.
+- <span class="c-Doug">Doug</span> theorizes it could be <span class="c-Harold">Harold</span> or multiple people.
+- Still need to meet: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Marta">Marta</span> (main suspect - in Archive Sub-Level 4 with vintage supplies).
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Joyous_Cafe">Joyous Café</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>tell Lana yes, I'd like to hear one of her poems</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Lana] &quot;Yes, I'd like to hear one of your poems.&quot;</pre>
-<pre class="saw">[Lana to Ada Quill] &quot;Wonderful! This came to me during an experiment with tungsten lighting in the Solitude Cubes. It's titled &quot;Machinery of Consequence.&quot;&quot;</pre>
-<pre class="saw">Lana opens her notebook with ceremonial reverence, positioning it to catch the Activity Hub's light. Her voice becomes soft and measured, as if she's reciting something discovered rather than invented.</pre>
-<pre class="saw">[Lana] &quot;&quot;Treadmills hum in perfect rows,
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Lana">Lana</span>] &quot;Yes, I'd like to hear one of your poems.&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Wonderful! This came to me during an experiment with tungsten lighting in the Solitude Cubes. It's titled &quot;Machinery of Consequence.&quot;&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> opens her notebook with ceremonial reverence, positioning it to catch the <span class="c-Activity_Hub">Activity Hub</span>'s light. Her voice becomes soft and measured, as if she's reciting something discovered rather than invented.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span>] &quot;&quot;Treadmills hum in perfect rows,
 Pulleys lift what no one knows,
 Seventeen degrees of sacred tilt,
 Transform the shame to structured guilt.
@@ -425,16 +518,16 @@ Green-tinted light on tired eyes,
 Makes the wandering soul arise,
 Chairs arranged in angles true—
 Optimal spacing resurrects you.&quot;&quot;</pre>
-<pre class="saw">She lowers the notebook and gazes at PLAYER with intense expectation, waiting for recognition of the deeper truths contained within.</pre>
-<pre class="saw">[Lana to Ada Quill] &quot;Whoever writes as Ink and Echo must be experiencing catastrophic environmental dysregulation. Their melancholy would vanish entirely under the correct lighting spectrum. Have you considered that?&quot;</pre>
-<pre class="saw">[Doug to Lana] &quot;Wait, wait—your poem is also about Intra and control and making people fit into systems, and you JUST recited it, and Ink and Echo writes about Intra... Are YOU Ink and Echo? Is this a trick? Do you sign things differently depending on your mood?&quot;</pre>
-<pre class="saw">Doug stops pacing mid-step, eyes wide with what he clearly thinks is brilliant deduction. He points at Lana's notebook with genuine fascination, completely oblivious to how absurd the accusation is.</pre>
-<pre class="saw">[Doug to Harold] &quot;Also, the handwriting you found—was it *actually* neat, or did it just look neat because of the lighting at the Tranquil Pool? Could bad lighting make messy handwriting look formal? Has anyone tested that?&quot;</pre>
-<pre class="saw">Doug spins toward Harold with another rapid-fire question, grinning widely, already moving toward the exit.</pre>
-<pre class="saw">[Harold to Doug] &quot;The lighting conditions at the Tranquil Pool are precisely calibrated to illuminate rule violations—which is the entire *point*. Handwriting is handwriting. Your theory is speculation masquerading as inquiry, and it has no bearing on evidence collection whatsoever.&quot;</pre>
-<pre class="saw">Harold's jaw tightens as he turns sharply toward Lana, his eyes narrowing with professional scrutiny. He flips through several pages on his clipboard, tapping his pen against the paper with deliberate precision.</pre>
-<pre class="saw">[Harold to Lana] &quot;However, your poem is *remarkably* aligned with the thematic content of Ink and Echo's work—systemic critique, controlled environments, organizational malfunction dressed as poetry. Tell me, Lana: when did you compose &quot;Machinery of Consequence,&quot; and where was it written? The handwriting on the poem I recovered was exceptionally neat and deliberate, almost as if written under... optimal environmental conditions.&quot;</pre>
-<pre class="saw">Harold's posture becomes even more rigid, and he adjusts his uniform with visible tension. He does not look at Doug.</pre>
+<pre class="saw">She lowers the notebook and gazes at <span class="c-PLAYER">PLAYER</span> with intense expectation, waiting for recognition of the deeper truths contained within.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Whoever writes as Ink and Echo must be experiencing catastrophic environmental dysregulation. Their melancholy would vanish entirely under the correct lighting spectrum. Have you considered that?&quot;</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-Lana">Lana</span>] &quot;Wait, wait—your poem is also about Intra and control and making people fit into systems, and you JUST recited it, and Ink and Echo writes about Intra... Are YOU Ink and Echo? Is this a trick? Do you sign things differently depending on your mood?&quot;</pre>
+<pre class="saw"><span class="c-Doug">Doug</span> stops pacing mid-step, eyes wide with what he clearly thinks is brilliant deduction. He points at <span class="c-Lana">Lana</span>'s notebook with genuine fascination, completely oblivious to how absurd the accusation is.</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-Harold">Harold</span>] &quot;Also, the handwriting you found—was it *actually* neat, or did it just look neat because of the lighting at the <span class="c-Tranquil_Pool">Tranquil Pool</span>? Could bad lighting make messy handwriting look formal? Has anyone tested that?&quot;</pre>
+<pre class="saw"><span class="c-Doug">Doug</span> spins toward <span class="c-Harold">Harold</span> with another rapid-fire question, grinning widely, already moving toward the exit.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Doug">Doug</span>] &quot;The lighting conditions at the <span class="c-Tranquil_Pool">Tranquil Pool</span> are precisely calibrated to illuminate rule violations—which is the entire *point*. Handwriting is handwriting. Your theory is speculation masquerading as inquiry, and it has no bearing on evidence collection whatsoever.&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span>'s jaw tightens as he turns sharply toward <span class="c-Lana">Lana</span>, his eyes narrowing with professional scrutiny. He flips through several pages on his clipboard, tapping his pen against the paper with deliberate precision.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Lana">Lana</span>] &quot;However, your poem is *remarkably* aligned with the thematic content of Ink and Echo's work—systemic critique, controlled environments, organizational malfunction dressed as poetry. Tell me, <span class="c-Lana">Lana</span>: when did you compose &quot;Machinery of Consequence,&quot; and where was it written? The handwriting on the poem I recovered was exceptionally neat and deliberate, almost as if written under... optimal environmental conditions.&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span>'s posture becomes even more rigid, and he adjusts his uniform with visible tension. He does not look at <span class="c-Doug">Doug</span>.</pre>
   
 </section>
 
@@ -442,20 +535,20 @@ Optimal spacing resurrects you.&quot;&quot;</pre>
   <h2>Turn 14 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects (name ends in 'A'): Ama, Frida, Gloria, Lana, Marta.
-- Lana just recited her own poem about Intra's control systems - thematically similar to what Ink and Echo might write.
-- Harold is now suspicious of Lana - her poem aligns with Ink and Echo themes, and Harold noted the Ink and Echo handwriting was &quot;neat and deliberate&quot; as if written under &quot;optimal environmental conditions&quot; (Lana's obsession).
-- Doug left the room and also accused Lana.
-- Harold found an Ink and Echo poem in Tranquil Pool with very neat, precise, formal handwriting.
-- Still need to meet: Ama, Gloria, Marta (main suspect - in Archive Sub-Level 4).
-- Not yet visited: Intake Foyer, The Solitude Cubes, Hallway, Tranquil Pool, Joyous Café.</pre></div>
+- Suspects (name ends in 'A'): <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- <span class="c-Lana">Lana</span> just recited her own poem about Intra's control systems - thematically similar to what Ink and Echo might write.
+- <span class="c-Harold">Harold</span> is now suspicious of <span class="c-Lana">Lana</span> - her poem aligns with Ink and Echo themes, and <span class="c-Harold">Harold</span> noted the Ink and Echo handwriting was &quot;neat and deliberate&quot; as if written under &quot;optimal environmental conditions&quot; (<span class="c-Lana">Lana</span>'s obsession).
+- <span class="c-Doug">Doug</span> left the room and also accused <span class="c-Lana">Lana</span>.
+- <span class="c-Harold">Harold</span> found an Ink and Echo poem in <span class="c-Tranquil_Pool">Tranquil Pool</span> with very neat, precise, formal handwriting.
+- Still need to meet: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Marta">Marta</span> (main suspect - in Archive Sub-Level 4).
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Joyous_Cafe">Joyous Café</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Harold what the poem he found in the Tranquil Pool said</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Harold] &quot;What did the poem you found in the Tranquil Pool say?&quot;</pre>
-<pre class="saw">Harold carefully withdraws a laminated sheet from his clipboard, handling it with the reverence of a critical piece of evidence. His jaw is tight as he adjusts his glasses and clears his throat, preparing to recite.</pre>
-<pre class="saw">[Harold to Ada Quill] &quot;The poem was recovered from the Tranquil Pool's west bench on the 23rd at 14:47. Signed &quot;Ink and Echo.&quot; I have documented the exact location and lighting conditions. Observe the precision of composition—this is no casual scrawl.&quot;</pre>
-<pre class="saw">Harold's voice becomes stiff and formal as he reads, each line delivered with careful emphasis, though something about the words themselves seems to unsettle him slightly.</pre>
-<pre class="saw">[Harold] &quot;&quot;Tranquil waters, stilled by rule,
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Harold">Harold</span>] &quot;What did the poem you found in the <span class="c-Tranquil_Pool">Tranquil Pool</span> say?&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span> carefully withdraws a laminated sheet from his clipboard, handling it with the reverence of a critical piece of evidence. His jaw is tight as he adjusts his glasses and clears his throat, preparing to recite.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The poem was recovered from the <span class="c-Tranquil_Pool">Tranquil Pool</span>'s west bench on the 23rd at 14:47. Signed &quot;Ink and Echo.&quot; I have documented the exact location and lighting conditions. Observe the precision of composition—this is no casual scrawl.&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span>'s voice becomes stiff and formal as he reads, each line delivered with careful emphasis, though something about the words themselves seems to unsettle him slightly.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span>] &quot;&quot;Tranquil waters, stilled by rule,
 Reflect the faces of the fooled,
 Who swim in circles, lane by lane,
 In structured joy and measured pain.
@@ -463,12 +556,12 @@ Each ripple charts a path prescribed,
 Each silence we are required to hide,
 The pool remembers nothing true—
 Only what they told us to do.&quot;&quot;</pre>
-<pre class="saw">Harold lowers the paper, his eyes fixed sharply on PLAYER, then glancing toward where Lana stands.</pre>
-<pre class="saw">[Harold to Ada Quill] &quot;Note the sophistication. Note the thematic alignment with Ms. Lana's own composition—both critiquing systemic control, both written in elevated language. I suggest we cross-reference writing samples immediately.&quot;</pre>
-<pre class="saw">[Lana to Harold] &quot;My poem was written in the Solitude Cubes—I can verify with Ama when precisely. But Harold, if you actually read both compositions, mine is about environmental optimization and structural mood enhancement, whereas Ink and Echo's work is... it's *sophisticated*. Genuinely talented. Mine is pedagogical. Theirs is political critique.&quot;</pre>
-<pre class="saw">Lana's eyes narrow slightly, and she hugs her notebook defensively to her chest. She steps back, genuinely affronted by the comparison, but also trying to remain logical and composed. Her voice carries a note of frustration—both at being accused and at the implication that her work matches Ink and Echo's artistic ability.</pre>
-<pre class="saw">[Lana to Harold] &quot;I've been conducting experiments with lighting and color theory for weeks. Every evening in the Cubes. I haven't even *been* to the Tranquil Pool recently—I find the water too reflective without proper amber filtration, it disrupts focus entirely. Check your logs if you don't believe me. And if anyone needs environmental intervention, it's whoever is writing those poems. That kind of melancholy requires immediate lighting adjustment, not... not suspicious interrogation.&quot;</pre>
-<pre class="saw">She glances at PLAYER, silently asking for support or at least understanding, then back to Harold with visible irritation.</pre>
+<pre class="saw"><span class="c-Harold">Harold</span> lowers the paper, his eyes fixed sharply on <span class="c-PLAYER">PLAYER</span>, then glancing toward where <span class="c-Lana">Lana</span> stands.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Note the sophistication. Note the thematic alignment with Ms. <span class="c-Lana">Lana</span>'s own composition—both critiquing systemic control, both written in elevated language. I suggest we cross-reference writing samples immediately.&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Harold">Harold</span>] &quot;My poem was written in the Solitude Cubes—I can verify with <span class="c-Ama">Ama</span> when precisely. But <span class="c-Harold">Harold</span>, if you actually read both compositions, mine is about environmental optimization and structural mood enhancement, whereas Ink and Echo's work is... it's *sophisticated*. Genuinely talented. Mine is pedagogical. Theirs is political critique.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span>'s eyes narrow slightly, and she hugs her notebook defensively to her chest. She steps back, genuinely affronted by the comparison, but also trying to remain logical and composed. Her voice carries a note of frustration—both at being accused and at the implication that her work matches Ink and Echo's artistic ability.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Harold">Harold</span>] &quot;I've been conducting experiments with lighting and color theory for weeks. Every evening in the Cubes. I haven't even *been* to the <span class="c-Tranquil_Pool">Tranquil Pool</span> recently—I find the water too reflective without proper amber filtration, it disrupts focus entirely. Check your logs if you don't believe me. And if anyone needs environmental intervention, it's whoever is writing those poems. That kind of melancholy requires immediate lighting adjustment, not... not suspicious interrogation.&quot;</pre>
+<pre class="saw">She glances at <span class="c-PLAYER">PLAYER</span>, silently asking for support or at least understanding, then back to <span class="c-Harold">Harold</span> with visible irritation.</pre>
   
 </section>
 
@@ -476,29 +569,29 @@ Only what they told us to do.&quot;&quot;</pre>
   <h2>Turn 15 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects (name ends in 'A'): Ama, Frida, Gloria, Lana, Marta.
-- Harold's Ink and Echo poem from Tranquil Pool is sophisticated political critique about systemic control.
-- Lana denies being Ink and Echo - says her work is pedagogical, theirs is genuinely talented political critique.
-- Lana claims she's been in Solitude Cubes doing lighting experiments, hasn't been to Tranquil Pool recently.
-- Lana says Ama can verify her whereabouts - Ama seems to track everything (&quot;omnipresent&quot; per Archivist).
-- Strongest lead is still Marta - alone in Archive Sub-Level 4 with vintage paper supplies during work hours.
-- Still need to meet: Ama, Gloria, Marta.
-- Greg just appeared in the room.
-- Not yet visited: Intake Foyer, The Solitude Cubes, Hallway, Tranquil Pool, Joyous Café.</pre></div>
+- Suspects (name ends in 'A'): <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- <span class="c-Harold">Harold</span>'s Ink and Echo poem from <span class="c-Tranquil_Pool">Tranquil Pool</span> is sophisticated political critique about systemic control.
+- <span class="c-Lana">Lana</span> denies being Ink and Echo - says her work is pedagogical, theirs is genuinely talented political critique.
+- <span class="c-Lana">Lana</span> claims she's been in Solitude Cubes doing lighting experiments, hasn't been to <span class="c-Tranquil_Pool">Tranquil Pool</span> recently.
+- <span class="c-Lana">Lana</span> says <span class="c-Ama">Ama</span> can verify her whereabouts - <span class="c-Ama">Ama</span> seems to track everything (&quot;omnipresent&quot; per <span class="c-Archivist">Archivist</span>).
+- Strongest lead is still <span class="c-Marta">Marta</span> - alone in Archive Sub-Level 4 with vintage paper supplies during work hours.
+- Still need to meet: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Marta">Marta</span>.
+- <span class="c-Greg">Greg</span> just appeared in the room.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Joyous_Cafe">Joyous Café</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Harold if he knows anything about Marta or where she is</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Harold] &quot;Do you know anything about Marta, or where she is?&quot;</pre>
-<pre class="saw">Harold flips through his clipboard with deliberate precision, his pen tracing down a meticulously organized schedule. His eyes narrow as he locates the entry he's searching for.</pre>
-<pre class="saw">[Harold to Ada Quill] &quot;Marta is currently in the Joyous_Cafe—she arrived at 12:31 precisely, seven minutes later than her documented baseline. However, what's *particularly* relevant is that she was observed near the Tranquil Pool at 14:23 on the 22nd—the day *before* I recovered the Ink and Echo poem. Her movements that afternoon were... circuitous. Not direct. As if she were placing something.&quot;</pre>
-<pre class="saw">Harold lowers his clipboard, fixing PLAYER with a sharp, searching gaze.</pre>
-<pre class="saw">[Harold to Ada Quill] &quot;Why are you asking about Marta specifically, Ada? Do you have information linking her to the poems? Has she said something suspicious?&quot;</pre>
-<pre class="saw">[Lana to Ada Quill] &quot;Actually, I observed Marta in the Café yesterday—she seemed agitated, visibly tense. I suspect the Tranquil Pool's reflective environment is triggering emotional dysregulation in anyone spending time there. Without proper amber filtration, all that reflection becomes destabilizing. It's entirely possible Marta was leaving those poems as a *cry for help*, manifested through artistic expression.&quot;</pre>
-<pre class="saw">Lana steps forward, her eyes brightening with the fervor of someone connecting disparate evidence through her own unique framework. She gestures toward the Activity Hub's lighting fixtures as if they somehow explain everything.</pre>
-<pre class="saw">[Lana to Ada Quill] &quot;If you speak with Marta, I'd recommend suggesting she spend her next two hours under my new violet-spectrum bulbs in the Solitude Cubes. That should stabilize her emotional output entirely. Has anyone considered that Ink and Echo might be *improving* through environmental adjustment?&quot;</pre>
-<pre class="saw">Greg stands quietly to the side, arms crossed loosely, watching Harold flip through his clipboard and Lana gesture enthusiastically about violet-spectrum bulbs. His expression remains neutral, though there's a faint hint of resignation in his eyes.</pre>
-<pre class="saw">[Greg to Ada Quill] &quot;Look, Ada—I don't know Marta that well, and honestly? I think everyone's spending way too much time on this Ink and Echo thing. Poems come, poems go. It's not like anyone's been hurt.&quot;</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Harold">Harold</span>] &quot;Do you know anything about <span class="c-Marta">Marta</span>, or where she is?&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span> flips through his clipboard with deliberate precision, his pen tracing down a meticulously organized schedule. His eyes narrow as he locates the entry he's searching for.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;<span class="c-Marta">Marta</span> is currently in the <span class="c-Joyous_Cafe">Joyous_Cafe</span>—she arrived at 12:31 precisely, seven minutes later than her documented baseline. However, what's *particularly* relevant is that she was observed near the <span class="c-Tranquil_Pool">Tranquil Pool</span> at 14:23 on the 22nd—the day *before* I recovered the Ink and Echo poem. Her movements that afternoon were... circuitous. Not direct. As if she were placing something.&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span> lowers his clipboard, fixing <span class="c-PLAYER">PLAYER</span> with a sharp, searching gaze.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Why are you asking about <span class="c-Marta">Marta</span> specifically, Ada? Do you have information linking her to the poems? Has she said something suspicious?&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Actually, I observed <span class="c-Marta">Marta</span> in the Café yesterday—she seemed agitated, visibly tense. I suspect the <span class="c-Tranquil_Pool">Tranquil Pool</span>'s reflective environment is triggering emotional dysregulation in anyone spending time there. Without proper amber filtration, all that reflection becomes destabilizing. It's entirely possible <span class="c-Marta">Marta</span> was leaving those poems as a *cry for help*, manifested through artistic expression.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> steps forward, her eyes brightening with the fervor of someone connecting disparate evidence through her own unique framework. She gestures toward the <span class="c-Activity_Hub">Activity Hub</span>'s lighting fixtures as if they somehow explain everything.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;If you speak with <span class="c-Marta">Marta</span>, I'd recommend suggesting she spend her next two hours under my new violet-spectrum bulbs in the Solitude Cubes. That should stabilize her emotional output entirely. Has anyone considered that Ink and Echo might be *improving* through environmental adjustment?&quot;</pre>
+<pre class="saw"><span class="c-Greg">Greg</span> stands quietly to the side, arms crossed loosely, watching <span class="c-Harold">Harold</span> flip through his clipboard and <span class="c-Lana">Lana</span> gesture enthusiastically about violet-spectrum bulbs. His expression remains neutral, though there's a faint hint of resignation in his eyes.</pre>
+<pre class="saw">[<span class="c-Greg">Greg</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Look, Ada—I don't know <span class="c-Marta">Marta</span> that well, and honestly? I think everyone's spending way too much time on this Ink and Echo thing. Poems come, poems go. It's not like anyone's been hurt.&quot;</pre>
 <pre class="saw">He uncrosses his arms and glances toward the door, clearly ready to move on.</pre>
-<pre class="saw">[Greg to Harold] &quot;Your documentation's impressive, Harold, but I've got lunch waiting, and I'm guessing it's going to get cold if I stand here much longer.&quot;</pre>
+<pre class="saw">[<span class="c-Greg">Greg</span> to <span class="c-Harold">Harold</span>] &quot;Your documentation's impressive, <span class="c-Harold">Harold</span>, but I've got lunch waiting, and I'm guessing it's going to get cold if I stand here much longer.&quot;</pre>
   
 </section>
 
@@ -506,27 +599,27 @@ Only what they told us to do.&quot;&quot;</pre>
   <h2>Turn 16 <span class="pill reached">met-marta</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects (name ends in 'A'): Ama, Frida, Gloria, Lana, Marta.
-- VERY IMPORTANT: Marta was near Tranquil Pool on the 22nd, the day BEFORE Harold found the Ink and Echo poem there on the 23rd.
-- Harold says Marta's movements that day were &quot;circuitous... as if she were placing something.&quot;
-- Marta is NOW HERE in Activity Hub with me (just appeared).
-- Archivist said Marta was in Archive Sub-Level 4 (vintage supplies), Harold said Joyous Café, but she's actually here.
-- Lana observed Marta seeming agitated and tense in the Café yesterday.
-- Should ask Marta directly about Ink and Echo.
-- Still need to meet: Ama, Gloria.</pre></div>
+- Suspects (name ends in 'A'): <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- VERY IMPORTANT: <span class="c-Marta">Marta</span> was near <span class="c-Tranquil_Pool">Tranquil Pool</span> on the 22nd, the day BEFORE <span class="c-Harold">Harold</span> found the Ink and Echo poem there on the 23rd.
+- <span class="c-Harold">Harold</span> says <span class="c-Marta">Marta</span>'s movements that day were &quot;circuitous... as if she were placing something.&quot;
+- <span class="c-Marta">Marta</span> is NOW HERE in <span class="c-Activity_Hub">Activity Hub</span> with me (just appeared).
+- <span class="c-Archivist">Archivist</span> said <span class="c-Marta">Marta</span> was in Archive Sub-Level 4 (vintage supplies), <span class="c-Harold">Harold</span> said <span class="c-Joyous_Cafe">Joyous Café</span>, but she's actually here.
+- <span class="c-Lana">Lana</span> observed <span class="c-Marta">Marta</span> seeming agitated and tense in the Café yesterday.
+- Should ask <span class="c-Marta">Marta</span> directly about Ink and Echo.
+- Still need to meet: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Marta about Ink and Echo</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Marta] &quot;Marta, what do you know about the Ink and Echo poems? Harold mentioned you were near the Tranquil Pool around the time they appeared.&quot;</pre>
-<pre class="saw">[Marta to Ada Quill] &quot;I was simply retrieving water from that area—a perfectly ordinary task that anyone might accomplish at any given moment. The poems themselves, though, are quite thought-provoking, aren't they? I've always felt that poetry is such a remarkable outlet for people who... who perhaps lack other forms of recognition in their daily lives. Have you noticed how the Joyous Café has rearranged their seating? Lana mentioned something about productivity optimization.&quot;</pre>
-<pre class="saw">Marta's smile remains fixed, but her eyes dart briefly toward the exit. Her fingers adjust the cuff of her sleeve with more precision than necessary. She stands even straighter than before, her posture becoming almost rigid—a tell that she's working very hard to appear entirely unbothered.</pre>
-<pre class="saw">[Harold to Marta] &quot;&quot;Retrieving water&quot; on the 22nd, yet the poem appeared on the 23rd—precisely within a 24-hour window. Moreover, your trajectory that afternoon was distinctly non-direct, which contradicts standard water-retrieval protocols. And now you mention poetry as an outlet for those seeking recognition?&quot;</pre>
-<pre class="saw">Harold's eyes narrow sharply, and he flips rapidly through his clipboard, his pen poised like a weapon. His posture becomes even more rigid—if such a thing is possible—as he locks his gaze onto Marta's carefully maintained smile.</pre>
-<pre class="saw">[Harold to Marta] &quot;I will need precise documentation of your movements on the 22nd between 14:00 and 15:00. The route you took, the duration, the purpose. And I must ask directly: did you, or did you not, compose the poems signed &quot;Ink and Echo&quot;?&quot;</pre>
-<pre class="saw">[Lana to Harold] &quot;Stop. Look at her posture—Marta's spine is locked in a defensive curve, her jaw tension is visible from here, her pupils are dilated. That's not guilt, Harold. That's acute environmental dysregulation caused by excessive reflective surfaces and poor amber filtration at the Tranquil Pool. The water's mirror-effect destabilizes emotional regulation in precisely this way.&quot;</pre>
-<pre class="saw">Lana steps between Harold and Marta, her posture suddenly commanding. She gestures toward Marta with clinical intensity, as if she's diagnosing a mechanical failure rather than accusing someone of a crime. Her eyes lock onto Harold's with unwavering conviction.</pre>
-<pre class="saw">[Lana to Marta] &quot;You need immediate violet-spectrum exposure—two hours in the Solitude Cubes under my new bulbs. Your emotional state isn't evidence of wrongdoing; it's evidence that Intra's lighting infrastructure is failing residents. I documented similar dysregulation in three other people this week. Ink and Echo might simply be someone experiencing the same environmental breakdown you are.&quot;</pre>
-<pre class="saw">Lana turns sharply back to Harold, crossing her arms with the confidence of someone who believes she's just solved the real mystery.</pre>
-<pre class="saw">[Lana to Harold] &quot;Your interrogation is only deepening her dysregulation. Environmental correction solves this far more efficiently than questions.&quot;</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Marta">Marta</span>] &quot;<span class="c-Marta">Marta</span>, what do you know about the Ink and Echo poems? <span class="c-Harold">Harold</span> mentioned you were near the <span class="c-Tranquil_Pool">Tranquil Pool</span> around the time they appeared.&quot;</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;I was simply retrieving water from that area—a perfectly ordinary task that anyone might accomplish at any given moment. The poems themselves, though, are quite thought-provoking, aren't they? I've always felt that poetry is such a remarkable outlet for people who... who perhaps lack other forms of recognition in their daily lives. Have you noticed how the <span class="c-Joyous_Cafe">Joyous Café</span> has rearranged their seating? <span class="c-Lana">Lana</span> mentioned something about productivity optimization.&quot;</pre>
+<pre class="saw"><span class="c-Marta">Marta</span>'s smile remains fixed, but her eyes dart briefly toward the exit. Her fingers adjust the cuff of her sleeve with more precision than necessary. She stands even straighter than before, her posture becoming almost rigid—a tell that she's working very hard to appear entirely unbothered.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Marta">Marta</span>] &quot;&quot;Retrieving water&quot; on the 22nd, yet the poem appeared on the 23rd—precisely within a 24-hour window. Moreover, your trajectory that afternoon was distinctly non-direct, which contradicts standard water-retrieval protocols. And now you mention poetry as an outlet for those seeking recognition?&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span>'s eyes narrow sharply, and he flips rapidly through his clipboard, his pen poised like a weapon. His posture becomes even more rigid—if such a thing is possible—as he locks his gaze onto <span class="c-Marta">Marta</span>'s carefully maintained smile.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Marta">Marta</span>] &quot;I will need precise documentation of your movements on the 22nd between 14:00 and 15:00. The route you took, the duration, the purpose. And I must ask directly: did you, or did you not, compose the poems signed &quot;Ink and Echo&quot;?&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Harold">Harold</span>] &quot;Stop. Look at her posture—<span class="c-Marta">Marta</span>'s spine is locked in a defensive curve, her jaw tension is visible from here, her pupils are dilated. That's not guilt, <span class="c-Harold">Harold</span>. That's acute environmental dysregulation caused by excessive reflective surfaces and poor amber filtration at the <span class="c-Tranquil_Pool">Tranquil Pool</span>. The water's mirror-effect destabilizes emotional regulation in precisely this way.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> steps between <span class="c-Harold">Harold</span> and <span class="c-Marta">Marta</span>, her posture suddenly commanding. She gestures toward <span class="c-Marta">Marta</span> with clinical intensity, as if she's diagnosing a mechanical failure rather than accusing someone of a crime. Her eyes lock onto <span class="c-Harold">Harold</span>'s with unwavering conviction.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Marta">Marta</span>] &quot;<span class="c-PLAYER">You</span> need immediate violet-spectrum exposure—two hours in the Solitude Cubes under my new bulbs. Your emotional state isn't evidence of wrongdoing; it's evidence that Intra's lighting infrastructure is failing residents. I documented similar dysregulation in three other people this week. Ink and Echo might simply be someone experiencing the same environmental breakdown you are.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> turns sharply back to <span class="c-Harold">Harold</span>, crossing her arms with the confidence of someone who believes she's just solved the real mystery.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Harold">Harold</span>] &quot;Your interrogation is only deepening her dysregulation. Environmental correction solves this far more efficiently than questions.&quot;</pre>
   
 </section>
 
@@ -534,33 +627,33 @@ Only what they told us to do.&quot;&quot;</pre>
   <h2>Turn 17 </h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- Suspects (name ends in 'A'): Ama, Frida, Gloria, Lana, Marta.
-- VERY STRONG EVIDENCE: Marta was near Tranquil Pool on the 22nd with &quot;circuitous&quot; movements, poem found there on 23rd.
-- Marta is acting extremely nervous - darting eyes, adjusting cuffs, rigid posture, evasive answers.
-- Marta said poetry is &quot;an outlet for people who lack other forms of recognition&quot; - revealing statement.
-- Archivist found unusual paper requisitions from someone with name ending in 'A', Marta was in Archive Sub-Level 4 with vintage supplies.
-- Harold directly asked Marta if she wrote the Ink and Echo poems.
-- Lana is deflecting, claiming it's environmental dysregulation.
-- Lily just appeared.
-- Still need to meet: Ama, Gloria.</pre></div>
+- Suspects (name ends in 'A'): <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- VERY STRONG EVIDENCE: <span class="c-Marta">Marta</span> was near <span class="c-Tranquil_Pool">Tranquil Pool</span> on the 22nd with &quot;circuitous&quot; movements, poem found there on 23rd.
+- <span class="c-Marta">Marta</span> is acting extremely nervous - darting eyes, adjusting cuffs, rigid posture, evasive answers.
+- <span class="c-Marta">Marta</span> said poetry is &quot;an outlet for people who lack other forms of recognition&quot; - revealing statement.
+- <span class="c-Archivist">Archivist</span> found unusual paper requisitions from someone with name ending in 'A', <span class="c-Marta">Marta</span> was in Archive Sub-Level 4 with vintage supplies.
+- <span class="c-Harold">Harold</span> directly asked <span class="c-Marta">Marta</span> if she wrote the Ink and Echo poems.
+- <span class="c-Lana">Lana</span> is deflecting, claiming it's environmental dysregulation.
+- <span class="c-Lily">Lily</span> just appeared.
+- Still need to meet: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>.</pre></div>
   <p class="cmd"><span class="label">command</span> <code>tell Marta that the Archivist's records show someone whose name ends in A has been requisitioning unusual amounts of paper, and she was found in Archive Sub-Level 4 where the vintage supplies are stored</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Marta] &quot;The Archivist's records show someone whose name ends in A has been requisitioning unusual amounts of paper, and she was found in Archive Sub-Level 4 where the vintage supplies are stored.&quot;</pre>
-<pre class="saw">[Marta to Ada Quill] &quot;The Archivist has been very helpful with—with various research materials. Paper is hardly uncommon in an archive, Ada. I was simply... exploring historical documentation methods. The poems are quite well-written, aren't they? I've read them repeatedly. The imagery about isolation is particularly... it's quite moving.&quot;</pre>
-<pre class="saw">Marta's posture remains rigid, but her fingers tremble slightly as she adjusts her sleeve. Her smile persists, but it's thinner now, more fragile—a facade under pressure. She glances toward the exit, then back at Ada, her eyes betraying the meticulous calculation happening behind them.</pre>
-<pre class="saw">[Marta to Ada Quill] &quot;But I really must attend to my reflection appointment in the Solitude Cubes. The environmental stress Lana mentioned—I think I do need that violet-spectrum exposure. Perhaps we could discuss this another time?&quot;</pre>
-<pre class="saw">Harold's posture stiffens even further—if possible. His clipboard snaps up like a shield, and he pivots sharply to position himself directly between Marta and the exit. His eyes lock onto hers with the intensity of someone whose careful documentation has finally been vindicated.</pre>
-<pre class="saw">[Harold to Marta] &quot;You are not leaving. Not until we conclude this conversation. Archive Sub-Level 4. Vintage paper requisitions. A name ending in A. Circuitous movements on the 22nd. Repeated reading of the poems. And now—*immediately*—an urgent need to flee to environmental remediation. Do you understand how this sequence appears on an incident report?&quot;</pre>
-<pre class="saw">Harold flips through his clipboard with trembling precision, finding the exact page he needs. His voice becomes sharper, more formal—the voice of someone presenting irrefutable evidence.</pre>
-<pre class="saw">[Harold to Marta] &quot;The handwriting on the Tranquil Pool poem was neat. Deliberate. Consistent with someone accustomed to archival documentation. You admitted to exploring &quot;historical documentation methods.&quot; That is not water retrieval, Marta. That is composition. That is evidence. Are you Ink and Echo? Did you write these poems?&quot;</pre>
-<pre class="saw">[Lana to Harold] &quot;Stop. You're making this worse. Look at her trembling—that's acute environmental distress, not confession. Archive Sub-Level 4 has no windows, terrible fluorescent overhead lighting, and paper dust creates cumulative dysregulation over weeks. Of *course* someone requisitioning materials would show signs of environmental collapse by now.&quot;</pre>
-<pre class="saw">Lana steps fully in front of Marta, her arms spread slightly as if physically shielding her from Harold's interrogation. Her eyes are sharp with conviction, completely unmoved by the mounting evidence.</pre>
-<pre class="saw">[Lana to Harold] &quot;The handwriting is &quot;neat and deliberate&quot; because archival training *requires* precise motor control—that's skill, not guilt. And a name ending in A? Half of Intra has names ending in A. You're confusing environmental cause with criminal intent, and it's causing her active dysregulation right now.&quot;</pre>
-<pre class="saw">[Lana to Marta] &quot;You're coming with me. Two hours under violet-spectrum in the Solitude Cubes. Your nervous system is in crisis. We'll recalibrate your stress response, and then you can answer Harold's questions from a properly regulated state. Environmental correction first. Investigation second.&quot;</pre>
-<pre class="saw">Lana reaches toward Marta's arm with the confidence of someone who has diagnosed and solved the problem. Her gaze remains fixed on Harold with unshakeable certainty.</pre>
-<pre class="saw">[Lily] &quot;The energy in this room is becoming so harsh. I found one of those poems in the Static Garden. The words... they weren't cruel. They were gentle, even in their sadness. Someone who writes like that isn't trying to hurt anyone. They're already hurting enough.&quot;</pre>
-<pre class="saw">[Lily to Marta] &quot;The plants in my garden don't shrivel from questions. They shrivel from harshness. You need water and soft words right now, not interrogation. Come. Let me show you what gentleness sounds like.&quot;</pre>
-<pre class="saw">Lily moves with quiet purpose toward Marta, her movements fluid and calming. She places a gentle hand on Marta's shoulder—the same tenderness she uses with her plastic plants. Her presence creates a small sanctuary of calm in the charged room.</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Marta">Marta</span>] &quot;The <span class="c-Archivist">Archivist</span>'s records show someone whose name ends in A has been requisitioning unusual amounts of paper, and she was found in Archive Sub-Level 4 where the vintage supplies are stored.&quot;</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The <span class="c-Archivist">Archivist</span> has been very helpful with—with various research materials. Paper is hardly uncommon in an archive, Ada. I was simply... exploring historical documentation methods. The poems are quite well-written, aren't they? I've read them repeatedly. The imagery about isolation is particularly... it's quite moving.&quot;</pre>
+<pre class="saw"><span class="c-Marta">Marta</span>'s posture remains rigid, but her fingers tremble slightly as she adjusts her sleeve. Her smile persists, but it's thinner now, more fragile—a facade under pressure. She glances toward the exit, then back at Ada, her eyes betraying the meticulous calculation happening behind them.</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;But I really must attend to my reflection appointment in the Solitude Cubes. The environmental stress <span class="c-Lana">Lana</span> mentioned—I think I do need that violet-spectrum exposure. Perhaps we could discuss this another time?&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span>'s posture stiffens even further—if possible. His clipboard snaps up like a shield, and he pivots sharply to position himself directly between <span class="c-Marta">Marta</span> and the exit. His eyes lock onto hers with the intensity of someone whose careful documentation has finally been vindicated.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Marta">Marta</span>] &quot;<span class="c-PLAYER">You</span> are not leaving. Not until we conclude this conversation. Archive Sub-Level 4. Vintage paper requisitions. A name ending in A. Circuitous movements on the 22nd. Repeated reading of the poems. And now—*immediately*—an urgent need to flee to environmental remediation. Do you understand how this sequence appears on an incident report?&quot;</pre>
+<pre class="saw"><span class="c-Harold">Harold</span> flips through his clipboard with trembling precision, finding the exact page he needs. His voice becomes sharper, more formal—the voice of someone presenting irrefutable evidence.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Marta">Marta</span>] &quot;The handwriting on the <span class="c-Tranquil_Pool">Tranquil Pool</span> poem was neat. Deliberate. Consistent with someone accustomed to archival documentation. <span class="c-PLAYER">You</span> admitted to exploring &quot;historical documentation methods.&quot; That is not water retrieval, <span class="c-Marta">Marta</span>. That is composition. That is evidence. Are you Ink and Echo? Did you write these poems?&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Harold">Harold</span>] &quot;Stop. <span class="c-PLAYER">You</span>'re making this worse. Look at her trembling—that's acute environmental distress, not confession. Archive Sub-Level 4 has no windows, terrible fluorescent overhead lighting, and paper dust creates cumulative dysregulation over weeks. Of *course* someone requisitioning materials would show signs of environmental collapse by now.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> steps fully in front of <span class="c-Marta">Marta</span>, her arms spread slightly as if physically shielding her from <span class="c-Harold">Harold</span>'s interrogation. Her eyes are sharp with conviction, completely unmoved by the mounting evidence.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Harold">Harold</span>] &quot;The handwriting is &quot;neat and deliberate&quot; because archival training *requires* precise motor control—that's skill, not guilt. And a name ending in A? Half of Intra has names ending in A. <span class="c-PLAYER">You</span>'re confusing environmental cause with criminal intent, and it's causing her active dysregulation right now.&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Marta">Marta</span>] &quot;<span class="c-PLAYER">You</span>'re coming with me. Two hours under violet-spectrum in the Solitude Cubes. Your nervous system is in crisis. We'll recalibrate your stress response, and then you can answer <span class="c-Harold">Harold</span>'s questions from a properly regulated state. Environmental correction first. Investigation second.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> reaches toward <span class="c-Marta">Marta</span>'s arm with the confidence of someone who has diagnosed and solved the problem. Her gaze remains fixed on <span class="c-Harold">Harold</span> with unshakeable certainty.</pre>
+<pre class="saw">[<span class="c-Lily">Lily</span>] &quot;The energy in this room is becoming so harsh. I found one of those poems in the Static Garden. The words... they weren't cruel. They were gentle, even in their sadness. Someone who writes like that isn't trying to hurt anyone. They're already hurting enough.&quot;</pre>
+<pre class="saw">[<span class="c-Lily">Lily</span> to <span class="c-Marta">Marta</span>] &quot;The plants in my garden don't shrivel from questions. They shrivel from harshness. <span class="c-PLAYER">You</span> need water and soft words right now, not interrogation. Come. Let me show you what gentleness sounds like.&quot;</pre>
+<pre class="saw"><span class="c-Lily">Lily</span> moves with quiet purpose toward <span class="c-Marta">Marta</span>, her movements fluid and calming. She places a gentle hand on <span class="c-Marta">Marta</span>'s shoulder—the same tenderness she uses with her plastic plants. Her presence creates a small sanctuary of calm in the charged room.</pre>
   
 </section>
 
@@ -568,40 +661,40 @@ Only what they told us to do.&quot;&quot;</pre>
   <h2>Turn 18 <span class="pill reached">solved</span></h2>
   <div class="notes"><div class="label">notes of the player model, before this turn</div>
        <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
-- OVERWHELMING EVIDENCE points to Marta:
+- OVERWHELMING EVIDENCE points to <span class="c-Marta">Marta</span>:
   * Paper requisitions from someone with name ending in 'A'
   * Found in Archive Sub-Level 4 with vintage paper supplies
-  * Near Tranquil Pool on 22nd with &quot;circuitous movements&quot;, poem found there on 23rd
+  * Near <span class="c-Tranquil_Pool">Tranquil Pool</span> on 22nd with &quot;circuitous movements&quot;, poem found there on 23rd
   * Admits to &quot;exploring historical documentation methods&quot;
   * Handwriting is &quot;neat, deliberate&quot; - consistent with archival training
   * She's read the poems &quot;repeatedly&quot; and finds them &quot;quite moving&quot;
   * Extremely nervous - trembling, trying to flee
   * Said poetry is &quot;an outlet for people who lack other forms of recognition&quot;
-- Lily found a poem in Static Garden, describes it as &quot;gentle, even in their sadness&quot;
-- Lana and Lily are both trying to protect Marta from Harold's interrogation
-- Met: Frida, Archivist, Lana, Harold, Doug, Greg, Marta, Lily
-- Still need to meet: Ama, Gloria</pre></div>
+- <span class="c-Lily">Lily</span> found a poem in Static Garden, describes it as &quot;gentle, even in their sadness&quot;
+- <span class="c-Lana">Lana</span> and <span class="c-Lily">Lily</span> are both trying to protect <span class="c-Marta">Marta</span> from <span class="c-Harold">Harold</span>'s interrogation
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Archivist">Archivist</span>, <span class="c-Lana">Lana</span>, <span class="c-Harold">Harold</span>, <span class="c-Doug">Doug</span>, <span class="c-Greg">Greg</span>, <span class="c-Marta">Marta</span>, <span class="c-Lily">Lily</span>
+- Still need to meet: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span></pre></div>
   <p class="cmd"><span class="label">command</span> <code>ask Marta directly: &quot;Are you Ink and Echo? The evidence all points to you - you have the paper, you were at the locations, you have the handwriting, and you clearly care deeply about the poems. Why did you write them?</code></p>
   <div class="label">game output</div>
-  <pre class="saw">[Ada Quill to Marta] &quot;Are you Ink and Echo? The evidence all points to you—you have the paper, you were at the locations, you have the handwriting, and you clearly care deeply about the poems. Why did you write them?&quot;</pre>
-<pre class="saw">[Marta to Ada Quill] &quot;I... yes. Yes, I wrote them. I wrote all of them. I am Ink and Echo, and I have been for months, and I—&quot;</pre>
-<pre class="saw">Marta's rigid posture crumbles entirely. Her shoulders collapse inward as if a weight she has been carrying for years has suddenly become too much to bear. Her perfectly maintained smile dissolves. Her eyes fill with tears—genuine, devastating tears that shatter her carefully constructed composure. She reaches blindly for the nearest wall to steady herself, her hand trembling so violently that she can barely find it. Her voice breaks on each word.</pre>
-<pre class="saw">[Marta] &quot;I'm so tired of being perfect. I'm so tired of being the Star Citizen. I'm so tired of being alone in this place, pretending that recognition and achievement are enough when really I'm just... I'm so empty. The poems were the only real thing I've written in years. The only honest thing. And everyone read them and talked about them, and for once someone cared about what I had to say, even if they didn't know it was me. Even if I had to hide behind a name.&quot;</pre>
-<pre class="saw">Her voice dissolves into quiet sobs. She sinks slightly, and Lana instinctively reaches toward her—not with environmental correction, but with genuine human compassion. Lily steps closer, her gentle presence surrounding Marta like a shield.</pre>
-<pre class="saw">[Marta to Ada Quill] &quot;I will tell you everything. But please—please, Ada, I am begging you—let me tell you and Ama privately. Not here. Not in front of everyone. I can't... I need to explain why. Not as the Star Citizen. As myself. The person who wrote those poems. The person I've been hiding.&quot;</pre>
-<pre class="saw">Marta confesses to being Ink and Echo. Her carefully maintained façade as the perfect Star Citizen crumbles, revealing the lonely, anguished person beneath who wrote melancholy poems as her only honest expression of her inner suffering.</pre>
-<pre class="saw">Harold's grip on his clipboard loosens slightly. His pen falls to his side. He stands frozen, watching Marta's careful facade shatter completely—the same Marta whose movements he documented with such precision, whose handwriting he analyzed so meticulously. His face remains rigid, but his eyes betray something he has never shown before: genuine uncertainty. The evidence was perfect. The conclusion was correct. But something about this moment doesn't fit in any of his documentation boxes.</pre>
-<pre class="saw">[Harold to Marta] &quot;I... the evidence clearly indicates... your confession aligns precisely with my findings. Section 7, Paragraph 3 addresses voluntary admissions. Ama will need to be notified of—&quot;</pre>
-<pre class="saw">He stops abruptly. His jaw tightens. He glances down at his clipboard, then back at Marta's devastated face, then toward Lily's gentle presence and Lana's sudden compassion. For perhaps the first time, Harold's absolute certainty flickers.</pre>
-<pre class="saw">[Harold to Marta] &quot;You need... you should speak with Ama privately, as you requested. That is... that is appropriate procedure.&quot;</pre>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Marta">Marta</span>] &quot;Are you Ink and Echo? The evidence all points to you—you have the paper, you were at the locations, you have the handwriting, and you clearly care deeply about the poems. Why did you write them?&quot;</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;I... yes. Yes, I wrote them. I wrote all of them. I am Ink and Echo, and I have been for months, and I—&quot;</pre>
+<pre class="saw"><span class="c-Marta">Marta</span>'s rigid posture crumbles entirely. Her shoulders collapse inward as if a weight she has been carrying for years has suddenly become too much to bear. Her perfectly maintained smile dissolves. Her eyes fill with tears—genuine, devastating tears that shatter her carefully constructed composure. She reaches blindly for the nearest wall to steady herself, her hand trembling so violently that she can barely find it. Her voice breaks on each word.</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span>] &quot;I'm so tired of being perfect. I'm so tired of being the Star Citizen. I'm so tired of being alone in this place, pretending that recognition and achievement are enough when really I'm just... I'm so empty. The poems were the only real thing I've written in years. The only honest thing. And everyone read them and talked about them, and for once someone cared about what I had to say, even if they didn't know it was me. Even if I had to hide behind a name.&quot;</pre>
+<pre class="saw">Her voice dissolves into quiet sobs. She sinks slightly, and <span class="c-Lana">Lana</span> instinctively reaches toward her—not with environmental correction, but with genuine human compassion. <span class="c-Lily">Lily</span> steps closer, her gentle presence surrounding <span class="c-Marta">Marta</span> like a shield.</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;I will tell you everything. But please—please, Ada, I am begging you—let me tell you and <span class="c-Ama">Ama</span> privately. Not here. Not in front of everyone. I can't... I need to explain why. Not as the Star Citizen. As myself. The person who wrote those poems. The person I've been hiding.&quot;</pre>
+<pre class="saw"><span class="c-Marta">Marta</span> confesses to being Ink and Echo. Her carefully maintained façade as the perfect Star Citizen crumbles, revealing the lonely, anguished person beneath who wrote melancholy poems as her only honest expression of her inner suffering.</pre>
+<pre class="saw"><span class="c-Harold">Harold</span>'s grip on his clipboard loosens slightly. His pen falls to his side. He stands frozen, watching <span class="c-Marta">Marta</span>'s careful facade shatter completely—the same <span class="c-Marta">Marta</span> whose movements he documented with such precision, whose handwriting he analyzed so meticulously. His face remains rigid, but his eyes betray something he has never shown before: genuine uncertainty. The evidence was perfect. The conclusion was correct. But something about this moment doesn't fit in any of his documentation boxes.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Marta">Marta</span>] &quot;I... the evidence clearly indicates... your confession aligns precisely with my findings. Section 7, Paragraph 3 addresses voluntary admissions. <span class="c-Ama">Ama</span> will need to be notified of—&quot;</pre>
+<pre class="saw">He stops abruptly. His jaw tightens. He glances down at his clipboard, then back at <span class="c-Marta">Marta</span>'s devastated face, then toward <span class="c-Lily">Lily</span>'s gentle presence and <span class="c-Lana">Lana</span>'s sudden compassion. For perhaps the first time, <span class="c-Harold">Harold</span>'s absolute certainty flickers.</pre>
+<pre class="saw">[<span class="c-Harold">Harold</span> to <span class="c-Marta">Marta</span>] &quot;<span class="c-PLAYER">You</span> need... you should speak with <span class="c-Ama">Ama</span> privately, as you requested. That is... that is appropriate procedure.&quot;</pre>
 <pre class="saw">His voice has lost its sharp edge. He lowers his clipboard slowly, a gesture of surrender so foreign to his character that it seems almost painful. He has never been uncertain before.</pre>
-<pre class="saw">Lana sets her notebook down carefully on the nearest surface. Her eyes, which have been so focused on environmental variables, now lock onto Marta's face with genuine human attention. She steps closer, her hand reaching out—not to adjust something, but to offer steadiness. For once, she isn't conducting an experiment; she's simply present.</pre>
-<pre class="saw">[Lana to Marta] &quot;You're right. You need privacy, and you need Ama to hear this directly from you. But before you go—the violet-spectrum bulbs will still be waiting in the Solitude Cubes whenever you're ready. Not as a cure. As a... small comfort. A place where the lighting doesn't judge you.&quot;</pre>
-<pre class="saw">She glances briefly at Harold, then back to Marta, her expression uncharacteristically soft.</pre>
-<pre class="saw">[Lana to Marta] &quot;I diagnosed environmental dysregulation when what you actually had was isolation. That was my mistake. But I was right that you needed help. You just needed the human kind first.&quot;</pre>
-<pre class="saw">[Lily to Marta] &quot;The things you wrote weren't cruel—they were honest. The plants don't fear honesty. They respond to it, the way you just did. You've been holding yourself so tightly that you couldn't grow. But now you're finally softening, and that takes more courage than anything perfect ever could.&quot;</pre>
-<pre class="saw">Lily keeps her hand gently on Marta's shoulder, her touch steady and warm. She speaks in the same soft, nurturing voice she uses with her plastic plants—no judgment, only unconditional presence. Her eyes are kind, seeing not the Star Citizen or the poet, but simply the exhausted person beneath.</pre>
-<pre class="saw">[Lily to Marta] &quot;Come to the Static Garden with me. The plants have been waiting for you all along—they don't know your name or your schedule. They only know that you're here, and you need them as much as they need you. Sit among them. Whisper your truth. Let yourself be tended to for once.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> sets her notebook down carefully on the nearest surface. Her eyes, which have been so focused on environmental variables, now lock onto <span class="c-Marta">Marta</span>'s face with genuine human attention. She steps closer, her hand reaching out—not to adjust something, but to offer steadiness. For once, she isn't conducting an experiment; she's simply present.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Marta">Marta</span>] &quot;<span class="c-PLAYER">You</span>'re right. <span class="c-PLAYER">You</span> need privacy, and you need <span class="c-Ama">Ama</span> to hear this directly from you. But before you go—the violet-spectrum bulbs will still be waiting in the Solitude Cubes whenever you're ready. Not as a cure. As a... small comfort. A place where the lighting doesn't judge you.&quot;</pre>
+<pre class="saw">She glances briefly at <span class="c-Harold">Harold</span>, then back to <span class="c-Marta">Marta</span>, her expression uncharacteristically soft.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-Marta">Marta</span>] &quot;I diagnosed environmental dysregulation when what you actually had was isolation. That was my mistake. But I was right that you needed help. <span class="c-PLAYER">You</span> just needed the human kind first.&quot;</pre>
+<pre class="saw">[<span class="c-Lily">Lily</span> to <span class="c-Marta">Marta</span>] &quot;The things you wrote weren't cruel—they were honest. The plants don't fear honesty. They respond to it, the way you just did. <span class="c-PLAYER">You</span>'ve been holding yourself so tightly that you couldn't grow. But now you're finally softening, and that takes more courage than anything perfect ever could.&quot;</pre>
+<pre class="saw"><span class="c-Lily">Lily</span> keeps her hand gently on <span class="c-Marta">Marta</span>'s shoulder, her touch steady and warm. She speaks in the same soft, nurturing voice she uses with her plastic plants—no judgment, only unconditional presence. Her eyes are kind, seeing not the Star Citizen or the poet, but simply the exhausted person beneath.</pre>
+<pre class="saw">[<span class="c-Lily">Lily</span> to <span class="c-Marta">Marta</span>] &quot;Come to the Static Garden with me. The plants have been waiting for you all along—they don't know your name or your schedule. They only know that you're here, and you need them as much as they need you. Sit among them. Whisper your truth. Let yourself be tended to for once.&quot;</pre>
   
 </section>
 <h2>Snags</h2>
