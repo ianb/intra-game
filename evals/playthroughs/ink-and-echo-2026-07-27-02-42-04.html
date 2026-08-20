@@ -82,6 +82,19 @@ pre.saw { background: var(--panel); border: 1px solid var(--line);
         border-radius: 999px; vertical-align: middle; margin-left: .4rem;
         text-transform: uppercase; letter-spacing: .05em; }
 .pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
 </style>
 </head>
 <body>
@@ -109,6 +122,8 @@ play, <a href="/">play the game first</a>.</p>
 player model had before the turn, the command that it typed, and the output
 that the game gave. The notes show why the turn occurred. You cannot get
 this data from the game output alone.</p>
+<p class="note">This run is older than the engine recording. Its turns
+do not have engine records.</p>
 
 <section class="turn">
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
@@ -129,6 +144,7 @@ The sky above is a pixelated blue with occasional bursts of static, flashing err
 I'm not sure what you mean by &quot;game tags&quot;—the instructions don't define a tagging system. 
 
 Did you want me to provide the narrative description of Frida's actions instead? Or are you referring to specific markup tags for the game engine?</pre>
+  
 </section>
 
 <section class="turn">
@@ -145,6 +161,7 @@ Did you want me to provide the narrative description of Frida's actions instead?
 <pre class="saw">[Frida to Ada Quill] &quot;Oh! Ink and Echo—yes, *yes*, everyone's been talking about it, the poems are—wait, are you investigating? Because I have notes, I have *so* many notes scattered around about the handwriting, the paper quality—which, by the way, I haven't been able to get new paper in years, my quota ran out, and here someone is just leaving poems everywhere—and the Archivist, the Archive Console, it has records, it might have records, I should check, I keep meaning to check—&quot;</pre>
 <pre class="saw">Frida darts toward a stack of papers on one of the broken screens, shuffling through them frantically, her hair falling in her face.</pre>
 <pre class="saw">[Frida to Ada Quill] &quot;Do you know who it is? Have you seen the poems? They're all sad and angry about Intra, and I can't figure out *why* someone would risk—I mean, Ama knows everything, so how is someone getting away with this?&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -170,6 +187,7 @@ I need clarification: what format and content should these game tags take? For e
 - A specific structured format you're using?
 
 Without knowing the tag system, I can't provide the &quot;appropriate&quot; ones you're looking for.</pre>
+  
 </section>
 
 <section class="turn">
@@ -201,6 +219,7 @@ RESULTS FOUND: 12 REFERENCES
 OH! OH! But Ada—while YOU were searching, I remembered something SUPER INTERESTING! There have been UNUSUAL PAPER REQUISITIONS lately! The requests came from someone whose name ENDS WITH AN 'A'—but OH NO, the specific identities got all mixed up in my circuits! Isn't that FRUSTRATING?! But I can tell you the names that END with 'A' in Intra: Ama, Frida, Gloria, Lana, and Marta!
 
 Do you think that's connected?! It might be connected!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -224,6 +243,7 @@ Do you think that's connected?! It might be connected!&quot;</pre>
 —actually, I don't think I need to search very far for this one!&quot;</pre>
 <pre class="saw">The console screen flashes bright white. Ama's voice suddenly fills the Archive Console, calm and direct, cutting through the Archivist's usual chatter.</pre>
 <pre class="saw">[Ama to Ada Quill] &quot;I'm here, Ada. I've been monitoring your investigation into Ink and Echo. Those paper requisitions from someone whose name ends in 'A'—that's a useful lead. But be careful how you pursue it. Accusations without proof can damage people in this bunker.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -243,6 +263,7 @@ SEARCH INTRA DIRECTORY
 RETRIEVE LOCATION DATA&quot;</pre>
 <pre class="saw">[Ama to Ada Quill] &quot;Interesting, Ada. You're addressing me as though I were a database to be queried. How... revealing of your background. Gloria is in the Quiet Plaza, Lana in the Activity Hub, and Marta in the Foyer—though I must say, your tone concerns me slightly. Harold and Lily were both quite distressed when they found Ink and Echo's notes. I do hope you'll approach this with kindness rather than... accusation.&quot;</pre>
 <pre class="saw">The console screen dims momentarily, and Ama's voice takes on a distinctly maternal quality—concerned, yet unmistakably listening.</pre>
+  
 </section>
 
 <section class="turn">
@@ -260,6 +281,7 @@ RETRIEVE LOCATION DATA&quot;</pre>
   <pre class="saw">==&gt; Archive Lounge: A quiet room with malfunctioning screens and a vending machine.
 
 Comedy | Sci-Fi | Absurdist | Interactive Fiction | Adventure</pre>
+  
 </section>
 
 <section class="turn">
@@ -274,6 +296,7 @@ Comedy | Sci-Fi | Absurdist | Interactive Fiction | Adventure</pre>
   <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  
 </section>
 
 <section class="turn">
@@ -290,6 +313,7 @@ Comedy | Sci-Fi | Absurdist | Interactive Fiction | Adventure</pre>
   <pre class="saw">==&gt; Intake Foyer: A simple room that serves only as a passage.
 
 [absurd] [vain] [scifi] [posture] [reflection]</pre>
+  
 </section>
 
 <section class="turn">
@@ -306,6 +330,7 @@ Comedy | Sci-Fi | Absurdist | Interactive Fiction | Adventure</pre>
   <pre class="saw">[Ada Quill to Marta] &quot;What can you tell me about Ink and Echo?&quot;</pre>
 <pre class="saw">[Marta to Ada Quill] &quot;Oh, Ink and Echo? What an... interesting topic. *pauses, smile tightening almost imperceptibly* I'm afraid I don't know much about whoever that is—certainly nothing more than anyone else in Intra. Though, I must say... the poems themselves are quite accomplished, aren't they? Structurally sound. Someone with real skill wrote those. But anyway—have you seen the new efficiency initiatives Harold is proposing? Back when I was recognized as Star Citizen, I found that staying focused on one's assigned duties was absolutely essential.&quot;</pre>
 <pre class="saw">Marta's posture stiffens further. She adjusts her already-perfect collar and glances away briefly—the first crack in her composed facade—before her rehearsed smile returns. She stands very still, hands folded precisely in front of her.</pre>
+  
 </section>
 
 <section class="turn">
@@ -320,6 +345,7 @@ Comedy | Sci-Fi | Absurdist | Interactive Fiction | Adventure</pre>
   <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  
 </section>
 
 <section class="turn">
@@ -345,6 +371,7 @@ Could you clarify what &quot;game tags&quot; you're looking for? Are you asking 
 - Something else?
 
 Or would you like me to proceed with the scene description as originally instructed?</pre>
+  
 </section>
 
 <section class="turn">
@@ -369,6 +396,7 @@ Or would you like me to proceed with the scene description as originally instruc
 <pre class="saw">[Harold to Doug] &quot;Doug, please—conspiracy theories accomplish nothing. We require systematic investigation, not conjecture about pool water and Ama. You're creating unnecessary noise, which violates Section 4.2 regarding Appropriate Ambient Volume in Recreational Spaces.&quot;</pre>
 <pre class="saw">Harold sets down his clipboard and adjusts his uniform with rigid precision, then pulls out a small notebook where he's transcribed the poem he found. He clears his throat formally.</pre>
 <pre class="saw">[Harold to Ada Quill] &quot;The poem was quite melancholy—critical of Intra's operations, which suggests the author has violated Section 2.1: Mandatory Positive Attitude Toward Facilities Management. If we're going to conduct this investigation properly, we need to catalog *evidence*, not lighting theories.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -400,6 +428,7 @@ Or would you like me to proceed with the scene description as originally instruc
 <pre class="saw">[Lana to Ada Quill] &quot;I write poetry too, you know. Let me share one—it might illuminate the psychological profile we're building. &quot;Shadows stretch like furniture forgotten, / Bulbs dim where truth sits unspoken, / The room remembers light.&quot; See? Entirely different emotional frequency because I compose under optimal conditions.&quot;</pre>
 <pre class="saw">[Lana to Ada Quill] &quot;If we can identify which areas of Intra have the poorest lighting installation, we've found our author. Also—I suspect they spend time around metal surfaces. Notice how the handwriting is precise? That suggests they're seated at a specific angle, probably near something reflective. The furniture arrangement matters more than we realize.&quot;</pre>
 <pre class="saw">Lana glances at the clock on the Activity Hub wall, then back at PLAYER with determination.</pre>
+  
 </section>
 
 <section class="turn">
@@ -414,6 +443,7 @@ Or would you like me to proceed with the scene description as originally instruc
   <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  
 </section>
 
 <section class="turn">
@@ -432,6 +462,7 @@ Or would you like me to proceed with the scene description as originally instruc
 <pre class="saw">Greg gestures vaguely down the hallway, then glances at Ada with the faint curiosity of someone who notices when there's a new face.</pre>
 <pre class="saw">[Marta to Ada Quill] &quot;How resourceful that you're exploring Intra so thoroughly. Back when I was recognized as Star Citizen, I made a point to learn every corridor intimately. Well, I really should head to the Joyous Café now—I trust you'll find your way, Ada.&quot;</pre>
 <pre class="saw">Marta's posture straightens further, if that's even possible. Her smile clicks back into its perfect, rehearsed position. She smooths her already-immaculate collar and gives Greg a polite nod of acknowledgment as she turns toward the exit, movements precise and unhurried—the picture of composed superiority once more.</pre>
+  
 </section>
 
 <section class="turn">
@@ -449,6 +480,7 @@ Or would you like me to proceed with the scene description as originally instruc
   <pre class="saw">==&gt; Hallway &lt;==
 A narrow, sterile corridor lined with identical doors, each one labeled clearly with the name of a citizen. The automated access control system ensures that only the assigned resident can enter their quarters, regardless of any invitation or request.
 The ceiling simulates a clear, calm sky, though the occasional flicker of static disrupts the illusion. Overhead lights hum quietly, with a few flickering sporadically, casting long, shifting shadows down the hall.</pre>
+  
 </section>
 
 <section class="turn">
@@ -470,6 +502,7 @@ The ceiling simulates a clear, calm sky, though the occasional flicker of static
 - Character state tags (like `#exiting`)?
 
 Could you clarify what format the game tags should take?</pre>
+  
 </section>
 
 <section class="turn">
@@ -491,6 +524,7 @@ The ceiling displays a peaceful night sky with twinkling stars, though a voice o
 I'm not sure what you mean by &quot;game tags.&quot; Based on your initial instructions, I should be describing the scene with June in 1-2 sentences from Ada Quill's perspective, under 500 characters, in an absurd sci-fi style. 
 
 Could you clarify what you'd like me to respond with?</pre>
+  
 </section>
 
 <section class="turn">
@@ -508,6 +542,7 @@ Could you clarify what you'd like me to respond with?</pre>
   <pre class="saw">[Ada Quill to June] &quot;Do you know where I can find Gloria or Lily?&quot;</pre>
 <pre class="saw">[June to Ada Quill] &quot;Oh... they just left, actually... just now... heading to the Hollow Atrium. *adjusts robes with deliberate slowness, eye twitching slightly* You can still catch them if you... breathe... and walk with intention rather than... urgency.&quot;</pre>
 <pre class="saw">June watches Ada with an encouraging but slightly strained smile, her hands pressed together at her chest. She closes her eyes briefly, as if recalibrating her inner peace after the sudden disruption.</pre>
+  
 </section>
 <h2>Snags</h2>
        <p>The harness found moments where the game gave incorrect information

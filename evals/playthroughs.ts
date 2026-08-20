@@ -2,6 +2,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
+import { parseTags, serializeAttrs } from "../lib/parsetags";
 import { esc, STYLE } from "./page";
 
 /**
@@ -23,12 +24,21 @@ const root = dirname(fileURLToPath(import.meta.url));
 const QUESTS = resolve(root, "quests");
 const OUT = resolve(root, "playthroughs");
 
+interface QuestEvent {
+  id: string;
+  title?: string;
+  response?: string;
+  changes?: string[];
+  roll?: number;
+}
+
 interface QuestTurn {
   n: number;
   input: string;
   notes?: string;
   saw?: string[];
   reached?: string[];
+  machinery?: QuestEvent[];
 }
 
 interface QuestRun {
@@ -137,6 +147,55 @@ function summaryTable(run: QuestRun): string {
   return `<div class="scroller"><table class="summary">${body}</table></div>`;
 }
 
+/**
+ * One engine event, rendered the way the game's own debug view renders it:
+ * each tag on its own header line, its content under it. This is where the
+ * <context> judgment steps, <mind>, and <attitude> become visible.
+ */
+function eventBlock(event: QuestEvent): string {
+  const parts: string[] = [];
+  if (event.response) {
+    for (const tag of parseTags(event.response)) {
+      if (tag.type === "comment") {
+        parts.push(`<pre class="tagbody">${esc(tag.content)}</pre>`);
+        continue;
+      }
+      parts.push(
+        `<div class="tagname">&lt;${esc(tag.type)}${esc(serializeAttrs(tag.attrs))}&gt;</div>`,
+      );
+      if (tag.content.trim()) {
+        parts.push(`<pre class="tagbody">${esc(tag.content.trim())}</pre>`);
+      }
+    }
+  }
+  if (event.roll !== undefined) {
+    parts.push(`<div class="changes">d20: ${event.roll}</div>`);
+  }
+  if (event.changes?.length) {
+    parts.push(
+      `<div class="changes">${event.changes.map(esc).join("<br>")}</div>`,
+    );
+  }
+  return `<div class="event">
+  <div class="eventhead">${esc(event.id)}${event.title ? ` <span class="meta">${esc(event.title)}</span>` : ""}</div>
+  ${parts.join("\n")}
+</div>`;
+}
+
+function machineryBlock(turn: QuestTurn): string {
+  if (!turn.machinery?.length) {
+    return "";
+  }
+  return `<details class="machinery" open>
+  <summary>engine record: ${turn.machinery.length} event${turn.machinery.length === 1 ? "" : "s"}</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  ${turn.machinery.map(eventBlock).join("\n")}
+</details>`;
+}
+
 function turnBlock(turn: QuestTurn): string {
   const reached = (turn.reached ?? [])
     .map((m) => pill(m, "reached"))
@@ -155,6 +214,7 @@ function turnBlock(turn: QuestTurn): string {
   <p class="cmd"><span class="label">command</span> <code>${esc(turn.input)}</code></p>
   <div class="label">game output</div>
   ${saw}
+  ${machineryBlock(turn)}
 </section>`;
 }
 
@@ -194,6 +254,15 @@ ${summaryTable(run)}
 player model had before the turn, the command that it typed, and the output
 that the game gave. The notes show why the turn occurred. You cannot get
 this data from the game output alone.</p>
+${
+  run.log.some((turn) => turn.machinery?.length)
+    ? `<p>Some turns also have an <strong>engine record</strong>. It shows the
+side of the turn that the player model cannot see: the game model's numbered
+thoughts, the private notes and feelings of the characters, the state
+changes, and the dice.</p>`
+    : `<p class="note">This run is older than the engine recording. Its turns
+do not have engine records.</p>`
+}
 ${run.log.map(turnBlock).join("\n")}
 ${snags}
 ${error}
@@ -285,6 +354,19 @@ pre.saw { background: var(--panel); border: 1px solid var(--line);
         border-radius: 999px; vertical-align: middle; margin-left: .4rem;
         text-transform: uppercase; letter-spacing: .05em; }
 .pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
 `;
 
 function main() {

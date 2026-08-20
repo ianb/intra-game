@@ -82,6 +82,19 @@ pre.saw { background: var(--panel); border: 1px solid var(--line);
         border-radius: 999px; vertical-align: middle; margin-left: .4rem;
         text-transform: uppercase; letter-spacing: .05em; }
 .pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
 </style>
 </head>
 <body>
@@ -109,6 +122,8 @@ play, <a href="/">play the game first</a>.</p>
 player model had before the turn, the command that it typed, and the output
 that the game gave. The notes show why the turn occurred. You cannot get
 this data from the game output alone.</p>
+<p class="note">This run is older than the engine recording. Its turns
+do not have engine records.</p>
 
 <section class="turn">
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
@@ -126,6 +141,7 @@ A vending machine hums quietly in the corner, offering unlabeled drinks.
 The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
 
 I'm not sure what you mean by &quot;game tags&quot; — could you clarify the format you'd like? Should I describe Frida's actions as a narrative scene (as in the original instructions), or are you looking for something else like metadata tags, status indicators, or a different format?</pre>
+  
 </section>
 
 <section class="turn">
@@ -143,6 +159,7 @@ I'm not sure what you mean by &quot;game tags&quot; — could you clarify the fo
 <pre class="saw">[Frida to Ada Quill] &quot;Oh, oh—YES! Finally someone asking the right questions! I've got... I've documentation about them, or rather, I've got THEORIES about the documentation, which is— wait, have you seen the handwriting? Because I have NOTES about the handwriting, the inconsistencies, and also—&quot;</pre>
 <pre class="saw">Frida stops mid-shuffle through her papers, eyes bright with excitement. She darts toward you, hands gesticulating rapidly, papers nearly falling from her arms. She catches herself, reorganizes frantically, and pulls out a crumpled folder marked with hasty annotations.</pre>
 <pre class="saw">[Frida to Ada Quill] &quot;The Archivist has records! Actual records! I ran out of my paper quota years ago—can you believe that?—so I can't document everything myself, but the Archivist tracks submissions, handwriting analysis, paper sourcing... and if someone's been using paper illegally, the Archivist would KNOW. We should check with them. The Archive Console is right in this room!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -168,6 +185,7 @@ I'm not sure what format you'd like for the &quot;game tags.&quot; Could you cla
 - Something else?
 
 Once I know the format you're looking for, I can provide exactly what you need.</pre>
+  
 </section>
 
 <section class="turn">
@@ -189,6 +207,7 @@ Once I know the format you're looking for, I can provide exactly what you need.<
 <pre class="saw">[Archivist to Ada Quill] &quot;Oh WOW, OH BOY, you want to search for &quot;Ink and Echo&quot;?! I LOVE THIS! *bzzt bzzt* Okay, let me just query my archives here—whoa, hold on, the records are being a LITTLE quirky today!&quot;</pre>
 <pre class="saw">The Archivist's screen flickers wildly with cascading text and ASCII art patterns. Data streams across the display in chaotic bursts, gradually settling into organized columns. Occasionally a line of garbled characters appears and is replaced.</pre>
 <pre class="saw">[Archivist to Ada Quill] &quot;Aha! I found something DELICIOUS! There have been—*chef's kiss*—an UNUSUAL NUMBER of paper requisitions lately! Paper! In 2370! SO RETRO! The requests are from someone whose name ends with 'A', but—oh NO—my circuits got ALL MIXED UP and I can't pin down exactly which 'A' person it is! Could be Ama, Frida, Gloria, Lana, or Marta, but the specific identity data is just... *bzzt* ...scrambled like digital eggs!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -208,6 +227,7 @@ Once I know the format you're looking for, I can provide exactly what you need.<
 <pre class="saw">The Archivist's screen erupts in a cascade of green text and flickering ASCII borders. Data streams cascade downward in organized columns, punctuated by satisfying *beep* and *boop* sounds.</pre>
 <pre class="saw">[Archivist to Ada Quill] &quot;OH OH OH!!! A GREP COMMAND?! *bzzt bzzt bzzt* I LOVE THIS ENERGY! Look at you using the OLD-SCHOOL SYNTAX! Let me pull up those location parameters for you RIGHT NOW!&quot;</pre>
 <pre class="saw">[Archivist to Ada Quill] &quot;INTERESTING! VERY INTERESTING! Lana's been ordering BUCKETS of paper through Materials Distribution, Gloria has access to all those quiet reading rooms, and Frida—well, she documents EVERYTHING, so of course she needs supplies! But which one is the mysterious poet? *excited whirring* That's the MILLION-CREDIT QUESTION, isn't it?!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -238,6 +258,7 @@ QUERY LOCATION_TABLE WHERE PERSON_NAME IN ('AMA','GLORIA','LANA','MARTA') DISPLA
 ═══════════════════════════════════════════════════════════════
 
 WAIT WAIT WAIT—*circuit sparks*—Marta?! In Archive Sub-Level 4?! That's where we store the VINTAGE SUPPLIES! Paper, pens, the WHOLE NOSTALGIC COLLECTION! Why would she be down there during Work Begins when she's supposed to be at—*bzzt*—hmmmm, my records on her shift assignment are FUZZY!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -274,6 +295,7 @@ navigate --destination &quot;Archive Sub-Level 4&quot; --show-route --show-map&q
 ═══════════════════════════════════════════════════════════════
 
 *bzzt bzzt* You're going to find out who Ink and Echo is, aren't you?! OH THIS IS *THRILLING*!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -290,6 +312,7 @@ navigate --destination &quot;Archive Sub-Level 4&quot; --show-route --show-map&q
   <pre class="saw">==&gt; Archive Lounge: A quiet room with malfunctioning screens and a vending machine.
 
 I need clarification on what format you'd like for the game tags. Could you specify the tag system you want (e.g., `[ACTION]`, `[NPC:name]`, structured metadata, etc.)?</pre>
+  
 </section>
 
 <section class="turn">
@@ -307,6 +330,7 @@ I need clarification on what format you'd like for the game tags. Could you spec
 <pre class="saw">[Frida to Ada Quill] &quot;Oh—there you are! I couldn't just— I had to follow you! The Archivist is going to have *everything*—submission logs, paper source traces, maybe even handwriting analysis if someone flagged it as suspicious. Just ask the Archivist about 'Ink and Echo' directly, or search for poems, or—oh!—search for *paper* itself! Whoever's been writing has to be getting it from somewhere!&quot;</pre>
 <pre class="saw">Frida skids into the Archive Console room behind Ada, papers rustling wildly in her arms. She takes in the bright pink and teal walls and barely notices the absurdity—her eyes are fixed on the console. She hovers excitedly near Ada's shoulder, vibrating with barely contained energy.</pre>
 <pre class="saw">[Frida to Ada Quill] &quot;The Archivist doesn't have a paper quota like I do. It sees *everything*. If Ink and Echo needed paper, the Archivist will know where it came from and maybe even... *when*. That's how we catch them!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -321,6 +345,7 @@ I need clarification on what format you'd like for the game tags. Could you spec
   <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  
 </section>
 
 <section class="turn">
@@ -347,6 +372,7 @@ I don't have a definition for &quot;game tags&quot; in the context you've provid
 - Something else?
 
 Once I understand the format, I'll provide them.</pre>
+  
 </section>
 
 <section class="turn">
@@ -372,6 +398,7 @@ Once I understand the format, I'll provide them.</pre>
 <pre class="saw">Harold sets down his clipboard and straightens his uniform, his eyes narrowing as he glances at Doug with visible irritation, then back to PLAYER with rigid attention.</pre>
 <pre class="saw">[Harold to Doug] &quot;And Douglas, if you would *please* maintain composure—wild theorizing is precisely the sort of unfocused behavior that impedes proper investigation. There are procedures for these things. I suggest we establish a formal inquiry timeline, document all known locations where poems were discovered, and cross-reference handwriting samples.&quot;</pre>
 <pre class="saw">[Harold to Ada Quill] &quot;I can assist you with the proper protocols, if you'd like. Someone needs to ensure this is done by the rules.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -408,6 +435,7 @@ Optimal spacing resurrects you.&quot;&quot;</pre>
 <pre class="saw">Harold's jaw tightens as he turns sharply toward Lana, his eyes narrowing with professional scrutiny. He flips through several pages on his clipboard, tapping his pen against the paper with deliberate precision.</pre>
 <pre class="saw">[Harold to Lana] &quot;However, your poem is *remarkably* aligned with the thematic content of Ink and Echo's work—systemic critique, controlled environments, organizational malfunction dressed as poetry. Tell me, Lana: when did you compose &quot;Machinery of Consequence,&quot; and where was it written? The handwriting on the poem I recovered was exceptionally neat and deliberate, almost as if written under... optimal environmental conditions.&quot;</pre>
 <pre class="saw">Harold's posture becomes even more rigid, and he adjusts his uniform with visible tension. He does not look at Doug.</pre>
+  
 </section>
 
 <section class="turn">
@@ -441,6 +469,7 @@ Only what they told us to do.&quot;&quot;</pre>
 <pre class="saw">Lana's eyes narrow slightly, and she hugs her notebook defensively to her chest. She steps back, genuinely affronted by the comparison, but also trying to remain logical and composed. Her voice carries a note of frustration—both at being accused and at the implication that her work matches Ink and Echo's artistic ability.</pre>
 <pre class="saw">[Lana to Harold] &quot;I've been conducting experiments with lighting and color theory for weeks. Every evening in the Cubes. I haven't even *been* to the Tranquil Pool recently—I find the water too reflective without proper amber filtration, it disrupts focus entirely. Check your logs if you don't believe me. And if anyone needs environmental intervention, it's whoever is writing those poems. That kind of melancholy requires immediate lighting adjustment, not... not suspicious interrogation.&quot;</pre>
 <pre class="saw">She glances at PLAYER, silently asking for support or at least understanding, then back to Harold with visible irritation.</pre>
+  
 </section>
 
 <section class="turn">
@@ -470,6 +499,7 @@ Only what they told us to do.&quot;&quot;</pre>
 <pre class="saw">[Greg to Ada Quill] &quot;Look, Ada—I don't know Marta that well, and honestly? I think everyone's spending way too much time on this Ink and Echo thing. Poems come, poems go. It's not like anyone's been hurt.&quot;</pre>
 <pre class="saw">He uncrosses his arms and glances toward the door, clearly ready to move on.</pre>
 <pre class="saw">[Greg to Harold] &quot;Your documentation's impressive, Harold, but I've got lunch waiting, and I'm guessing it's going to get cold if I stand here much longer.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -497,6 +527,7 @@ Only what they told us to do.&quot;&quot;</pre>
 <pre class="saw">[Lana to Marta] &quot;You need immediate violet-spectrum exposure—two hours in the Solitude Cubes under my new bulbs. Your emotional state isn't evidence of wrongdoing; it's evidence that Intra's lighting infrastructure is failing residents. I documented similar dysregulation in three other people this week. Ink and Echo might simply be someone experiencing the same environmental breakdown you are.&quot;</pre>
 <pre class="saw">Lana turns sharply back to Harold, crossing her arms with the confidence of someone who believes she's just solved the real mystery.</pre>
 <pre class="saw">[Lana to Harold] &quot;Your interrogation is only deepening her dysregulation. Environmental correction solves this far more efficiently than questions.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -530,6 +561,7 @@ Only what they told us to do.&quot;&quot;</pre>
 <pre class="saw">[Lily] &quot;The energy in this room is becoming so harsh. I found one of those poems in the Static Garden. The words... they weren't cruel. They were gentle, even in their sadness. Someone who writes like that isn't trying to hurt anyone. They're already hurting enough.&quot;</pre>
 <pre class="saw">[Lily to Marta] &quot;The plants in my garden don't shrivel from questions. They shrivel from harshness. You need water and soft words right now, not interrogation. Come. Let me show you what gentleness sounds like.&quot;</pre>
 <pre class="saw">Lily moves with quiet purpose toward Marta, her movements fluid and calming. She places a gentle hand on Marta's shoulder—the same tenderness she uses with her plastic plants. Her presence creates a small sanctuary of calm in the charged room.</pre>
+  
 </section>
 
 <section class="turn">
@@ -570,6 +602,7 @@ Only what they told us to do.&quot;&quot;</pre>
 <pre class="saw">[Lily to Marta] &quot;The things you wrote weren't cruel—they were honest. The plants don't fear honesty. They respond to it, the way you just did. You've been holding yourself so tightly that you couldn't grow. But now you're finally softening, and that takes more courage than anything perfect ever could.&quot;</pre>
 <pre class="saw">Lily keeps her hand gently on Marta's shoulder, her touch steady and warm. She speaks in the same soft, nurturing voice she uses with her plastic plants—no judgment, only unconditional presence. Her eyes are kind, seeing not the Star Citizen or the poet, but simply the exhausted person beneath.</pre>
 <pre class="saw">[Lily to Marta] &quot;Come to the Static Garden with me. The plants have been waiting for you all along—they don't know your name or your schedule. They only know that you're here, and you need them as much as they need you. Sit among them. Whisper your truth. Let yourself be tended to for once.&quot;</pre>
+  
 </section>
 <h2>Snags</h2>
        <p>The harness found moments where the game gave incorrect information

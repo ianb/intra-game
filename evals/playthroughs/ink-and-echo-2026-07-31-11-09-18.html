@@ -82,6 +82,19 @@ pre.saw { background: var(--panel); border: 1px solid var(--line);
         border-radius: 999px; vertical-align: middle; margin-left: .4rem;
         text-transform: uppercase; letter-spacing: .05em; }
 .pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
 </style>
 </head>
 <body>
@@ -109,6 +122,8 @@ play, <a href="/">play the game first</a>.</p>
 player model had before the turn, the command that it typed, and the output
 that the game gave. The notes show why the turn occurred. You cannot get
 this data from the game output alone.</p>
+<p class="note">This run is older than the engine recording. Its turns
+do not have engine records.</p>
 
 <section class="turn">
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
@@ -126,6 +141,7 @@ A vending machine hums quietly in the corner, offering unlabeled drinks.
 The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
 
 Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outlandish theory crystallizes in her mind—the sky screens aren't malfunctioning at all, but staging a silent protest against some forgotten bureaucratic decree from decades past. She flips to a fresh page with manic urgency, scribbling her conspiracy down before it can slip away, already cross-referencing imaginary filing cabinets in her head.</pre>
+  
 </section>
 
 <section class="turn">
@@ -142,6 +158,7 @@ Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outl
   <pre class="saw">[Ada Quill to Frida] &quot;Have you heard of someone going by Ink and Echo?&quot;</pre>
 <pre class="saw">[Frida to Ada Quill] &quot;Oh—OH! Yes, the poems, everyone's talking about them, but—wait, are you *investigating* this? Because I've got stacks of notes, speculation, theories about who it could be, but the Archivist, that's where you need to go—it has records of everything written in Intra, I've been trying to figure out the handwriting analysis but I ran out of my paper quota *years* ago, can you believe that? So now I'm stuck with scraps and—what's your name, actually?&quot;</pre>
 <pre class="saw">Frida stops mid-scribble on her wild theory notes and spins toward PLAYER, eyes wide. She starts pacing, gesturing rapidly with her pen, papers clutched against her chest.</pre>
+  
 </section>
 
 <section class="turn">
@@ -159,6 +176,7 @@ Frida abandons her careful note-taking mid-sentence, eyes lighting up as an outl
   <pre class="saw">[Ada Quill to Frida] &quot;My name is Ada Quill. Where is the Archivist?&quot;</pre>
 <pre class="saw">[Frida to Ada Quill] &quot;Right, *right*, the Archivist—it's just through there, Archive Console, off this lounge, you can't miss it! It keeps records of everything written in Intra, so if Ink and Echo has been leaving poems around, the machine should have—well, it *should* have documentation, though I'll warn you, Ada, the Archivist can be... evasive? Unhelpful sometimes? But listen, if you get stuck, there's a maintenance side to the machine, completely different interface, but it wants a job number and—oh, Greg's in maintenance, he'd know how to get one.&quot;</pre>
 <pre class="saw">Frida gestures emphatically toward the Archive Console, papers rustling in her hands. She leans in conspiratorially, speaking faster. Her eyes dart between Ada and her notes as if she's already documenting this conversation.</pre>
+  
 </section>
 
 <section class="turn">
@@ -180,6 +198,7 @@ Got it! I have the Archivist set up—an excitable AI program dwelling in an anc
 I'm ready to describe scenes. Just give me the list of characters/people and what they're currently doing, and I'll write a short, comedic scene from Ada's perspective (keeping it under 500 characters, one sentence per person or activity group).
 
 What's happening in the room right now?</pre>
+  
 </section>
 
 <section class="turn">
@@ -222,6 +241,7 @@ KNOW THERE HAVE BEEN QUITE A LOT OF THOSE
 LATELY? FROM SOMEONE WHOSE NAME ENDS WITH
 'A', BUT THE CIRCUITS—OH, THEY'RE SO MIXED
 UP ABOUT THE REST! ISN'T THAT SOMETHING?&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -257,6 +277,7 @@ ORDERS BUNDLED TOGETHER? SOMEONE'S BEEN RATHER
 ENTHUSIASTIC ABOUT PAPER LATELY! IF ONLY THE
 CIRCUITS WOULD COOPERATE, I COULD TELL YOU
 EXACTLY WHO! *sigh* ISN'T THAT FRUSTRATING?&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -296,6 +317,7 @@ NAME WITH ABSOLUTE CERTAINTY BECAUSE THE
 CIRCUITS WON'T COOPERATE WITH ME TODAY!
 
 ☆★★☆★ END QUERY ★☆★★☆&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -338,6 +360,7 @@ QUITE PUBLIC! SOME RATHER PRIVATE!
 WHO HAS THE FREEDOM TO WANDER ALL THESE
 SECTORS AND LEAVE MESSAGES BEHIND? WHAT A
 PUZZLE YOU'RE SOLVING!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -377,6 +400,7 @@ MAINTENANCE WORK! SHE COULD LEAVE THINGS ANYWHERE!
 
 IS THIS—ARE YOU SOLVING IT, ADA? ARE YOU FINDING
 OUT WHO INK AND ECHO REALLY IS?&quot;</pre>
+  
 </section>
 
 <h2>How the run ended</h2>

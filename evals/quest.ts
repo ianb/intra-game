@@ -3,6 +3,7 @@ import { llmPlayer } from "./llmplayer";
 import { playerView } from "./playerview";
 import { classifyWarnings } from "./harness";
 import type { ChatFn, Model } from "../lib/game/model";
+import { isStoryActionAttempt, type StoryEventType } from "../lib/types";
 
 /**
  * Can a model *solve* this game, rather than run it?
@@ -47,6 +48,72 @@ export interface QuestTurn {
   saw: string[];
   /** Milestones true after this turn that weren't before. */
   reached: string[];
+  /**
+   * The engine's side of the turn: one entry per event, with the raw model
+   * response (context steps, minds, attitudes, the tags), the state changes
+   * as before=>after lines, and the d20 when one was rolled. The player never
+   * sees any of this; it is recorded for the playthrough pages and for
+   * debugging a run after the fact.
+   */
+  machinery?: QuestEventType[];
+}
+
+export interface QuestEventType {
+  /** Which entity's turn this event was. */
+  id: string;
+  /** The prompt's title, e.g. "prompt Milton" or "player action". */
+  title?: string;
+  /** The model's raw response, tags and all. */
+  response?: string;
+  /** State changes as "Entity.attr: before => after" lines. */
+  changes?: string[];
+  /** The d20 shown to the action adjudicator, when this event rolled one. */
+  roll?: number;
+}
+
+/**
+ * The engine's record of one turn, trimmed for the log.
+ *
+ * The raw llmResponse is kept whole — it is where the judgment machinery
+ * lives (the <context> steps, <mind>, <attitude>, the tags) and trimming it
+ * would trim exactly what the record is for. Changes become before=>after
+ * lines because that is how a human reads them; todaysSchedule is dropped
+ * because a regenerated day-plan is a page of noise per character. Events
+ * that carry nothing (pure bookkeeping) are dropped whole.
+ */
+function machineryOf(events: StoryEventType[]): QuestEventType[] {
+  return events
+    .map((event) => {
+      const changes: string[] = [];
+      for (const [entityId, change] of Object.entries(event.changes ?? {})) {
+        for (const key of Object.keys(change.after ?? {})) {
+          if (key === "todaysSchedule") {
+            continue;
+          }
+          const before = JSON.stringify(change.before?.[key]);
+          const after = JSON.stringify(change.after[key]);
+          if (before !== after) {
+            changes.push(`${entityId}.${key}: ${before ?? "unset"} => ${after}`);
+          }
+        }
+      }
+      const roll = event.actions
+        .filter(isStoryActionAttempt)
+        .find((action) => action.roll !== undefined)?.roll;
+      return {
+        id: event.id,
+        ...(event.llmTitle ? { title: event.llmTitle } : {}),
+        ...(event.llmResponse ? { response: event.llmResponse } : {}),
+        ...(changes.length ? { changes } : {}),
+        ...(roll !== undefined ? { roll } : {}),
+      };
+    })
+    .filter(
+      (event) =>
+        event.response !== undefined ||
+        event.changes !== undefined ||
+        event.roll !== undefined,
+    );
 }
 
 export interface QuestResult {
@@ -205,6 +272,7 @@ export async function runQuest({
         ...(snag ? { snag } : {}),
         saw: playerView(model, cursor).transcript,
         reached: justReached,
+        machinery: machineryOf(model.updates.value.slice(cursor)),
       };
       log.push(turn);
       onTurn?.(turn);

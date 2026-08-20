@@ -82,6 +82,19 @@ pre.saw { background: var(--panel); border: 1px solid var(--line);
         border-radius: 999px; vertical-align: middle; margin-left: .4rem;
         text-transform: uppercase; letter-spacing: .05em; }
 .pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
 </style>
 </head>
 <body>
@@ -109,6 +122,8 @@ play, <a href="/">play the game first</a>.</p>
 player model had before the turn, the command that it typed, and the output
 that the game gave. The notes show why the turn occurred. You cannot get
 this data from the game output alone.</p>
+<p class="note">This run is older than the engine recording. Its turns
+do not have engine records.</p>
 
 <section class="turn">
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
@@ -126,6 +141,7 @@ A vending machine hums quietly in the corner, offering unlabeled drinks.
 The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
 
 I don't have the schema for the game's tagging system. Could you clarify what format or tags are expected? (For example: XML tags, a specific list of tag categories, state flags, etc.)</pre>
+  
 </section>
 
 <section class="turn">
@@ -142,6 +158,7 @@ I don't have the schema for the game's tagging system. Could you clarify what fo
   <pre class="saw">Ada Quill (to Frida): &quot;Have you heard of anyone called Ink and Echo? They've been leaving poems around Intra.&quot;</pre>
 <pre class="saw">Frida (to Ada Quill): &quot;Oh! Oh, you're asking about—yes, the poems, the *handwritten* poems—and here's the thing, the *irony*, I ran out of my paper quota years ago, *years*, and now someone's leaving these all over Intra, so either they have access I don't or—wait, wait, the Archivist has records, I know because I checked, I'm always checking things, and the poems are there, documented, all melancholy and critical, which makes sense because everyone's gossiping about it, and I have this theory—&quot;</pre>
 <pre class="saw">Frida stops mid-scribble, her pen still in hand, papers scattered across her lap and the table. She jumps up suddenly, knocking a pen onto the floor, and starts pacing while talking, her hands gesturing wildly. She glances back at you with intense curiosity, pulling at her messy hair absently.</pre>
+  
 </section>
 
 <section class="turn">
@@ -160,6 +177,7 @@ I don't have the schema for the game's tagging system. Could you clarify what fo
 The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
 
 I need clarification—what format do you use for game tags in this engine? Could you share an example of how characters/NPCs are tagged, or point me to where they're defined in the codebase (likely in `lib/game/content/`)?</pre>
+  
 </section>
 
 <section class="turn">
@@ -202,6 +220,7 @@ in -A. Possible candidates: AMA / FRIDA / GLORIA / LANA / MARTA
 CIRCUITS SCRAMBLED ON SPECIFICS—APOLOGIES!—but the TRAIL is 
 warm, Ada Quill!&quot;</pre>
 <pre class="saw">The console flickers and whirs, displaying cascading search results with visible electronic enthusiasm</pre>
+  
 </section>
 
 <section class="turn">
@@ -220,6 +239,7 @@ warm, Ada Quill!&quot;</pre>
   <p class="cmd"><span class="label">command</span> <code>go to the hollow atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">You try to go to The Hollow Atrium but you can't get there from here.</pre>
+  
 </section>
 
 <section class="turn">
@@ -244,6 +264,7 @@ I'm not sure what format you mean by &quot;game tags.&quot; Could you clarify wh
 - A structured data format?
 
 Or if you'd like me to go back to the original task (describing the scene from Ada's perspective in about one sentence), just let me know!</pre>
+  
 </section>
 
 <section class="turn">
@@ -260,6 +281,7 @@ Or if you'd like me to go back to the original task (describing the scene from A
   <p class="cmd"><span class="label">command</span> <code>go to the hollow atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  
 </section>
 
 <section class="turn">
@@ -282,6 +304,7 @@ Citizens often gather around a section for &quot;extreme resting,&quot; competin
 The ceiling shows a clear sky, though birds sometimes fly backward or in loops.
 
 Doug corners Harold with increasingly wild conspiracy theories while Harold frantically scribbles new regulations into his rulebook. Meanwhile, Lana drifts between them, bathing everything in purple light and insisting it will reduce stress by precisely eight percent.</pre>
+  
 </section>
 
 <section class="turn">
@@ -308,6 +331,7 @@ Have you noticed? I've actually been composing something myself—would you like
 <pre class="saw">Harold looks up sharply from his clipboard, pen poised mid-notation. He straightens his already-rigid posture and turns toward PLAYER with an oddly intense expression—as though he's been waiting for someone to finally ask the right questions.</pre>
 <pre class="saw">Harold (to Ada Quill): &quot;As for Ink and Echo—I found one of those poems myself, in the Tranquil Pool, during my afternoon rounds. The handwriting was suspiciously neat. Precise. Deliberate. Whoever is writing these is violating at least four conduct ordinances that I can identify: unauthorized documentation, emotional disruption of communal spaces, and failure to register with proper authorities before posting materials.&quot;</pre>
 <pre class="saw">Harold taps his pen against his clipboard authoritatively, as if the sound itself proves his point. His eyes narrow as he regards PLAYER with something approaching approval—finally, someone interested in proper procedure.</pre>
+  
 </section>
 
 <section class="turn">
@@ -342,6 +366,7 @@ I've found that alternating purple with blue lighting during composition actuall
 <pre class="saw">Harold's grip tightens on his clipboard. There's an unusual gleam in his eyes—he's found a mystery that requires methodical analysis and rule enforcement. He glances sharply at Doug, then back to PLAYER with focused intensity.</pre>
 <pre class="saw">Harold (to Ada Quill): &quot;If you're conducting a proper investigation, we need data. I have access to entry logs for all communal spaces. The Tranquil Pool placement occurred between 10:15 and 10:45 this morning. We can establish parameters, cross-reference movement patterns, eliminate suspects. This is systematic investigation—not atmospheric lighting theories or... whatever Doug is suggesting.&quot;</pre>
 <pre class="saw">His voice carries an edge of dismissal toward Doug and Lana, but his posture toward PLAYER remains rigidly formal and expectant, as if awaiting instruction from someone who finally understands the proper way to conduct an orderly search.</pre>
+  
 </section>
 
 <section class="turn">
@@ -372,6 +397,7 @@ I've found that alternating purple with blue lighting during composition actuall
 <pre class="saw">Doug stops pacing for exactly one second, squinting at Lana with genuine confusion. His grin widens as he realizes he might have stumbled onto something actually interesting, even if by complete accident. He's completely oblivious to how rude this question is and thoroughly entertained by Lana's obvious discomfort.</pre>
 <pre class="saw">Doug (to Harold): &quot;And YOU'RE acting all intense and clipboard-y about this, which is your normal thing, but like... are YOU investigating because you think someone broke the rules, or because you think it's actually interesting? Because Harold, you got REALLY enthusiastic when the PLAYER asked questions, and that's not your usual vibe.&quot;</pre>
 <pre class="saw">He turns toward Harold with that lopsided grin, clearly not intending any real accusation, just genuinely curious about why everyone suddenly cares so much about secret poems. He's already moving back toward the lighting fixtures, touching things he shouldn't, utterly indifferent to personal boundaries.</pre>
+  
 </section>
 
 <section class="turn">
@@ -390,6 +416,7 @@ I've found that alternating purple with blue lighting during composition actuall
   <p class="cmd"><span class="label">command</span> <code>go to the hollow atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; The Hollow Atrium: A vast, empty space beneath a frozen sunset.</pre>
+  
 </section>
 
 <section class="turn">
@@ -419,6 +446,7 @@ Yeah, I've seen those poems around. Somebody's just venting, I figure. Look, it'
 <pre class="saw">Henry (to Ada Quill): &quot;*looks up from his magazine with genuine curiosity, setting it down carefully*
 
 You know, I haven't found one of those poems myself yet—which is remarkable, actually. I notice everything in here, or at least I try to. *leans forward slightly* But you're asking directly, which is rather brave. Marta seemed quite... careful about her answer, didn't she? If Ama's asked you to look into this, then I suppose there's something real to find. I'd be quite interested to know what you discover.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -458,6 +486,7 @@ Well, I'd say you've just gotten your answer—though perhaps not in words. Did 
 *leans back with quiet satisfaction*
 
 You know, patience teaches you to read people. When you've waited as long as I have, you learn to notice what others say when they're trying not to say it.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -495,6 +524,7 @@ You know, Ada, that took courage—asking her directly like that. I've learned t
 And now Lily's given you something concrete: the handwriting, the content, the fact that it's a woman. That's more than I've managed in all my waiting. *pauses, a faint smile* Perhaps I should finally find one of those poems myself. Or perhaps you will—you're moving far faster than I ever have.
 
 If you're looking for someone who truly sees what happens in Intra, Frida does understand things. She notices patterns. She might know more than she lets on.&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -515,6 +545,7 @@ If you're looking for someone who truly sees what happens in Intra, Frida does u
   <p class="cmd"><span class="label">command</span> <code>go to archive lounge</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; Archive Lounge: A quiet room with malfunctioning screens and a vending machine.</pre>
+  
 </section>
 
 <section class="turn">
@@ -539,6 +570,7 @@ If you're looking for someone who truly sees what happens in Intra, Frida does u
 I need clarification: do you want me to write the game scene description as originally instructed (including all four names in prose form, under 500 characters), or do you want something else tagged in a specific markup format? &quot;Game tags&quot; could mean the formatted scene prose, but your final instruction to respond with &quot;ONLY the appropriate game tags, nothing else&quot; suggests something different.
 
 What format are you expecting?</pre>
+  
 </section>
 
 <section class="turn">
@@ -559,6 +591,7 @@ What format are you expecting?</pre>
   <p class="cmd"><span class="label">command</span> <code>go to intake foyer</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; Intake Foyer: A simple room that serves only as a passage.</pre>
+  
 </section>
 
 <section class="turn">
@@ -579,6 +612,7 @@ What format are you expecting?</pre>
   <p class="cmd"><span class="label">command</span> <code>go to the hollow atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw"></pre>
+  
 </section>
 
 <section class="turn">
@@ -604,6 +638,7 @@ The walls are thin, allowing faint voices from other cubes to be heard.
 The ceiling displays a peaceful night sky with twinkling stars, though a voice occasionally announces the trajectory of a shooting star.
 
 June sits cross-legged, eating with deliberate slowness while dispensing unsolicited wisdom—her aura of serenity so rigidly maintained it might snap.</pre>
+  
 </section>
 
 

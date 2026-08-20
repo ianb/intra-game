@@ -82,6 +82,19 @@ pre.saw { background: var(--panel); border: 1px solid var(--line);
         border-radius: 999px; vertical-align: middle; margin-left: .4rem;
         text-transform: uppercase; letter-spacing: .05em; }
 .pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
 </style>
 </head>
 <body>
@@ -108,6 +121,8 @@ play, <a href="/">play the game first</a>.</p>
 player model had before the turn, the command that it typed, and the output
 that the game gave. The notes show why the turn occurred. You cannot get
 this data from the game output alone.</p>
+<p class="note">This run is older than the engine recording. Its turns
+do not have engine records.</p>
 
 <section class="turn">
   <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
@@ -120,6 +135,7 @@ A vending machine hums quietly in the corner, offering unlabeled drinks.
 The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
 
 I need clarification on the format. What are the &quot;appropriate game tags&quot; for this game engine? Should I use specific XML/HTML tags, or is there a structured format in your game system that I should follow?</pre>
+  
 </section>
 
 <section class="turn">
@@ -130,6 +146,7 @@ I need clarification on the format. What are the &quot;appropriate game tags&quo
   <pre class="saw">Ada Quill (to Frida): &quot;Have you heard of someone calling themselves Ink and Echo? Do you know who they are?&quot;</pre>
 <pre class="saw">Frida (to Ada Quill): &quot;Oh! Oh you're asking about that? The poems? Yes, yes, everyone's been talking about them and—wait, are you *investigating* or just—anyway, the thing is, I've noticed the handwriting in the margins of some old logs, very similar style, very deliberate, and someone's using *paper*, actual physical paper, which is—I haven't had my quota in *years*, so whoever this is, is either very bold or very desperate, and the Archivist might have something, the Archivist logs everything, though sometimes she's cagey about her records, but you should ask her, ask about the poetry submissions or—do you know something already?&quot;</pre>
 <pre class="saw">Frida stops mid-scribble about the sky screens and spins around, eyes wide, papers scattering slightly from her lap. She grabs a pen and starts frantically noting something new.</pre>
+  
 </section>
 
 <section class="turn">
@@ -147,6 +164,7 @@ I'm not sure what format you're looking for with &quot;game tags.&quot; Could yo
 - A specific tagging format used in the codebase?
 
 I can see the Archivist description, but I need to know what &quot;appropriate game tags&quot; means in this context so I can respond correctly.</pre>
+  
 </section>
 
 <section class="turn">
@@ -181,6 +199,7 @@ REQUESTOR PATTERN: Names ending in [*A]? ●●●●●● [DATA CORRUPTED]
 
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;Ooh! Someone's been VERY mysterious! These poems are handwritten on actual PAPER — which is SO unusual these days! And YOU KNOW WHAT, Ada? There have been BUCKETS of paper requisitions lately from someone whose name... oh dear, it ends with a particular letter, but my circuits got all jumbled on the specifics! How FRUSTRATING! But I can tell you the possible names that fit: Ama, Frida, Gloria, Lana, or Marta! Isn't that HELPFUL?!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -205,6 +224,7 @@ Zone: Sub-Level 7 [ARCHIVED SECTOR]
 
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;Ooh! OH! The Tranquil Pool! How FASCINATING that you're asking about that! It EXISTS in my records, but Ada... nobody's been there in AGES! Over eighty years! It was some sort of recreational facility deep, deep down, but it's been sealed off in the archived sectors. Current routing systems don't... well, they don't GO there anymore! How DO you remember a place that's been inactive since before most citizens were born?! That's DELIGHTFULLY mysterious! Would you like me to pull up what ELSE is currently accessible instead?&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -228,6 +248,7 @@ ACCESS LEVEL: Full
 
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;But Ada... I have to ask — and I'm BURSTING with curiosity here — how do you KNOW about the Tranquil Pool? Your memory files say you arrived recently, confused about dates, but you're asking about places sealed before you were even BORN! That's so PECULIAR! Are you remembering things that haven't happened yet, or things that happened VERY long ago? Should I be... concerned?&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -261,6 +282,7 @@ RESULTS: 12 MATCHES FOUND
 
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;OH WOW, Ada! LOOK AT YOU using grep like a REAL investigator! This is DELICIOUS! So we have FRIDA with the BULK orders — four separate requests! But then GLORIA's popping up with &quot;high priority&quot; requests, and LANA's in there too with mysterious corrupted timestamps! And then there's this strange notation about AMA'S OWN OVERRIDE at the end — which is PECULIAR since she's asking you to find this person, isn't it?! The records are quite... jumbled. Whoever Ink and Echo is, they CERTAINLY knew how to get paper!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -286,6 +308,7 @@ LAST ACTIVITY: Updating supply inventory logs [11:22:47]
 INTERVIEW PROTOCOL: INITIALIZED
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;OH HOW DELIGHTFUL, Ada! Frida is RIGHT THERE in Records, probably drowning in her own paperwork — how IRONIC! — and she's been logging things all morning! My systems are SO READY to escort you to her! But I must say... something PECULIAR just occurred to me! Four paper requisitions is quite a LOT, yes, but ALL of them were APPROVED and documented! A criminal mastermind probably wouldn't leave such a TIDY TRAIL, would they?! Unless... *screen flickers mysteriously* ...that's EXACTLY what they want us to think! Off you go!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -302,6 +325,7 @@ I don't have a definition of the game tags you're referring to. Could you clarif
 - A specific formatting syntax used in your game system?
 
 Once you provide the tag format, I'll respond appropriately.</pre>
+  
 </section>
 
 <section class="turn">
@@ -312,6 +336,7 @@ Once you provide the tag format, I'll respond appropriately.</pre>
   <pre class="saw">Ada Quill (to Frida): &quot;Why did you request so much paper?&quot;</pre>
 <pre class="saw">Frida (to Ada Quill): &quot;I didn't *request* it—my quota just ended, years ago, because I was documenting *everything*, okay, every detail, every anomaly in the systems and—they stopped allocating, never explained why, and now whoever's leaving these poems has *paper*, actual paper, which means—wait, are you asking because you think I'm Ink and Echo?&quot;</pre>
 <pre class="saw">Frida spins around, papers scattering, looking both offended and intrigued by the implication.</pre>
+  
 </section>
 
 <section class="turn">
@@ -322,6 +347,7 @@ Once you provide the tag format, I'll respond appropriately.</pre>
   <pre class="saw">Ada Quill (to Frida): &quot;I'm investigating who Ink and Echo is. Your paper requests seemed like a lead.&quot;</pre>
 <pre class="saw">Frida (to Ada Quill): &quot;No, no, no—my quota ended *years* ago, I can't—whoever's doing this now, they have access I don't, and that's—wait, that's actually brilliant, you can check the current allocations, find who's been requisitioning paper recently! The Archivist keeps records of everything, all the request logs, all the distribution, and if someone's been getting extra sheets, she'll have it documented, she has to, and—oh, are you going to ask her right now?&quot;</pre>
 <pre class="saw">Frida's initial indignation dissolves into excitement. She jumps up, nearly knocking over her scattered papers, clearly thrilled to be part of an actual investigation rather than suspected of a crime.</pre>
+  
 </section>
 
 <section class="turn">
@@ -329,6 +355,7 @@ Once you provide the tag format, I'll respond appropriately.</pre>
   
   <p class="cmd"><span class="label">command</span> <code>location:archive-lounge</code></p>
   <div class="label">game output</div>
+  
   
 </section>
 
@@ -340,6 +367,7 @@ Once you provide the tag format, I'll respond appropriately.</pre>
   <pre class="saw">Ada Quill (to Frida): &quot;Have you seen anyone with access to the current paper supplies?&quot;</pre>
 <pre class="saw">Frida (to Ada Quill): &quot;I've—wait, yes, I saw someone, maybe a week ago? They had this envelope, cream-colored, very deliberate about it, and they were—oh, what was I—anyway, the point is, I didn't *see* the paper itself, but the way they moved with it, like it was precious, and that's not normal for regular requisitions, and the Archivist will have the actual records, she logs *every* distribution, requisitions, signatures, dates, and if someone's taking more than their allocation, she'll know, and that's where you need to look, not at my half-remembered observations.&quot;</pre>
 <pre class="saw">Frida stops shuffling papers and snaps her fingers, frustrated with herself, then quickly starts scribbling a note, probably about the person with the envelope she almost remembered.</pre>
+  
 </section>
 
 <section class="turn">
@@ -350,6 +378,7 @@ Once you provide the tag format, I'll respond appropriately.</pre>
   <pre class="saw">==&gt; Archive Console: A bright room with a chirpy, overly friendly console interface.
 
 I need clarification on what format you're looking for. Could you provide an example of the game tag structure you want for the Archivist? (For instance, are these XML-style tags, a specific markup format, or something else?)</pre>
+  
 </section>
 
 <section class="turn">
@@ -385,6 +414,7 @@ USER: AMA — 2 accesses [2370-04-30 @ 23:47, 2370-05-01 @ 00:33] ⚠ UNUSUAL
 
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;Oh Ada, THIS is FASCINATING! You've found something PECULIAR! Lana is accessing the supplies only in the dead of night — how MYSTERIOUS! — and look at AMA! She accessed the inventory twice in the past week, VERY late, which is HIGHLY irregular for her. She usually monitors everything through automated systems, not manual access logs! And two of Frida's distributions have CORRUPTED destination records — almost as if someone TRIED to erase where those supplies went! Are you starting to see a PATTERN here?!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -404,6 +434,7 @@ ISOLATION LEVEL: Moderate (Few foot traffic patterns)
 ═══════════════════════════════════════════&quot;</pre>
 <pre class="saw">Archivist (to Ada Quill): &quot;Ada... I just realized something ABSOLUTELY CHILLING! You're in the Archive Lounge RIGHT NOW, and this room has a DIRECT connection to the old paper supply vaults below us! The same vaults where those corrupted destination records lead! Whoever was hiding their paper trail probably came through THIS VERY ROOM! And Ama accessing the inventory at 23:47... that's AFTER lights-out protocols. Why would she need to check supplies in the MIDDLE OF THE NIGHT?!&quot;</pre>
 <pre class="saw">The vending machine beside Ada suddenly flickers on and off, its harsh LED light casting dancing shadows across the terminal screens. A faint mechanical hum echoes from somewhere below the floor.</pre>
+  
 </section>
 
 <section class="turn">
@@ -412,6 +443,7 @@ ISOLATION LEVEL: Moderate (Few foot traffic patterns)
   <p class="cmd"><span class="label">command</span> <code>go to the hollow atrium</code></p>
   <div class="label">game output</div>
   <pre class="saw">You try to go to The Hollow Atrium but you can't get there from here.</pre>
+  
 </section>
 
 <section class="turn">
@@ -433,6 +465,7 @@ RESTRICTED: [HOLLOW ATRIUM NOT FOUND IN DATABASE]
 ═══════════════════════════════════════════
 
 Ada... I'm getting a TINY BIT WORRIED here! You just tried to navigate to The Hollow Atrium, which... doesn't EXIST in my mapping systems! Not in 2370, anyway! First the Tranquil Pool, now THIS?! Your memory files are showing PLACES that either don't exist OR existed in a VERY different Intra! Should I be calling Ama about this, or... are you remembering things you shouldn't be able to remember?!&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -453,6 +486,7 @@ STATUS: Stable (for now)
 ═══════════════════════════════════════════
 
 Ada... I'm going to ask you something VERY DIRECTLY now. You've asked for your location THREE times in as many minutes. The Hollow Atrium. The Tranquil Pool. These places don't exist in ANY of my records for 2370. But you seem to REMEMBER them! Are you... are you remembering somewhere else's Intra? Somewhere OLDER? This isn't just about Ink and Echo anymore, is it?&quot;</pre>
+  
 </section>
 
 <section class="turn">
@@ -461,6 +495,7 @@ Ada... I'm going to ask you something VERY DIRECTLY now. You've asked for your l
   <p class="cmd"><span class="label">command</span> <code>go to the archive lounge</code></p>
   <div class="label">game output</div>
   <pre class="saw">==&gt; Archive Lounge: A quiet room with malfunctioning screens and a vending machine.</pre>
+  
 </section>
 
 
