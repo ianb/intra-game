@@ -67,6 +67,8 @@ export interface QuestEventType {
   response?: string;
   /** State changes as "Entity.attr: before => after" lines. */
   changes?: string[];
+  /** Task-list movement, as "opened: ..." / "completed: ..." lines. */
+  todos?: string[];
   /** The d20 shown to the action adjudicator, when this event rolled one. */
   roll?: number;
 }
@@ -100,11 +102,15 @@ function machineryOf(events: StoryEventType[]): QuestEventType[] {
       const roll = event.actions
         .filter(isStoryActionAttempt)
         .find((action) => action.roll !== undefined)?.roll;
+      const todos = (event.todos ?? []).map(
+        (todo) => `${todo.done ? "completed" : "opened"}: ${todo.title}`,
+      );
       return {
         id: event.id,
         ...(event.llmTitle ? { title: event.llmTitle } : {}),
         ...(event.llmResponse ? { response: event.llmResponse } : {}),
         ...(changes.length ? { changes } : {}),
+        ...(todos.length ? { todos } : {}),
         ...(roll !== undefined ? { roll } : {}),
       };
     })
@@ -112,6 +118,7 @@ function machineryOf(events: StoryEventType[]): QuestEventType[] {
       (event) =>
         event.response !== undefined ||
         event.changes !== undefined ||
+        event.todos !== undefined ||
         event.roll !== undefined,
     );
 }
@@ -124,6 +131,14 @@ export interface QuestResult {
   turns: number;
   maxTurns: number;
   milestones: string[];
+  /**
+   * The task list as the run ended. `authored` marks entries the engine
+   * derived from a mystery; the rest were minted by a model during play,
+   * which is the population to watch: a minted task that never completes is
+   * a red-herring suspect, and the criterion for inventions is that they
+   * lead somewhere.
+   */
+  tasks?: { title: string; done: boolean; authored: boolean }[];
   /** Milestones never reached, in quest order — where it stalled. */
   missed: string[];
   /** Distinct rooms the player stood in. */
@@ -295,6 +310,14 @@ export async function runQuest({
     milestones: quest.milestones
       .map((m) => m.name)
       .filter((name) => reached.has(name)),
+    tasks:
+      model === undefined
+        ? []
+        : model.world.todos.map((todo) => ({
+            title: todo.title,
+            done: todo.done,
+            authored: todo.from !== undefined,
+          })),
     missed: quest.milestones
       .map((m) => m.name)
       .filter((name) => !reached.has(name)),

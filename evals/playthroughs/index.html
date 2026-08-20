@@ -97,6 +97,8 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
               color: var(--dim); }
 .changes { font-family: ui-monospace, monospace; font-size: .75rem;
            color: var(--pass); margin-top: .5rem; }
+.todoline { font-family: ui-monospace, monospace; font-size: .75rem;
+            color: var(--partial); margin-top: .5rem; }
 .c-PLAYER { color: #34d399; }
 .c-PLAYER { color: #34d399; }
 .c-Ama { color: #7dd3fc; }
@@ -232,6 +234,12 @@ question again. <strong>Fumbles</strong> is the number of commands that the
 game could not use. <strong>Snags</strong> are moments where the game gave
 incorrect information to the player. A snag is a defect in the game, not in
 the player.</p>
+<p>The task list is also measured. The engine adds some tasks from the
+mysteries. The models can add other tasks during play, from details they
+invent. An invented task must lead somewhere: the game must be able to
+complete it. The summary of each run shows the two groups, and shows which
+tasks were completed. An invented task that stays open in run after run is a
+red herring, and we treat it as a defect.</p>
 <h2>The runs</h2>
 <p>The table shows all the recorded runs. A failed run has value. One 20-turn
 run did not go out of the archive area. That run showed us that a player can

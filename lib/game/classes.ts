@@ -953,7 +953,9 @@ export class Person<
           [[This character has some knowledge of some mysteries; follow these additional instructions:
           """
           ${mysteryHints}
-          """]]
+          """
+
+          Inventing around a mystery: invented detail is welcome, and invented side paths are welcome, but a side path must lead toward something real that the instructions above mention — a person, a place, a record. Do not invent evidence that names a culprit, answers a mystery's question, or points suspicion at anyone these instructions do not implicate. An invented lead the player follows should connect them back to the real trail.]]
 
           [[${todoPrompt(this.world.todos)}]]
 
@@ -2084,6 +2086,8 @@ export class PlayerClass extends Person<PlayerInputType> {
           In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
 
           Resolve only what the player's attempt physically does. Do not speak, act, or react for the people in the room: anyone the action affects responds on their own turn, in their own voice.
+
+          If the action uncovers something, keep it small and local. Do not invent objects or information that answer or resolve a mystery.
           `,
         },
         ...this.historyForEntity({ limit: 4 }),

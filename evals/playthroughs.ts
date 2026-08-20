@@ -119,6 +119,7 @@ interface QuestEvent {
   title?: string;
   response?: string;
   changes?: string[];
+  todos?: string[];
   roll?: number;
 }
 
@@ -144,6 +145,7 @@ interface QuestRun {
   repeats: number;
   fumbles?: number;
   snags?: { turn: number; text: string }[];
+  tasks?: { title: string; done: boolean; authored: boolean }[];
   dropped?: string[];
   ms: number;
   error?: string;
@@ -203,7 +205,26 @@ of turns where the player went to the same room again, or asked the same
 question again. <strong>Fumbles</strong> is the number of commands that the
 game could not use. <strong>Snags</strong> are moments where the game gave
 incorrect information to the player. A snag is a defect in the game, not in
-the player.</p>`;
+the player.</p>
+<p>The task list is also measured. The engine adds some tasks from the
+mysteries. The models can add other tasks during play, from details they
+invent. An invented task must lead somewhere: the game must be able to
+complete it. The summary of each run shows the two groups, and shows which
+tasks were completed. An invented task that stays open in run after run is a
+red herring, and we treat it as a defect.</p>`;
+
+function taskRows(run: QuestRun): [string, string][] {
+  const tasks = run.tasks ?? [];
+  if (!tasks.length) {
+    return [];
+  }
+  const line = (list: typeof tasks) =>
+    list.map((t) => `${t.done ? "[done] " : "[open] "}${t.title}`).join(" · ");
+  return [
+    ["tasks, authored", line(tasks.filter((t) => t.authored)) || "none"],
+    ["tasks, model-minted", line(tasks.filter((t) => !t.authored)) || "none"],
+  ];
+}
 
 function pill(text: string, cls: string): string {
   return `<span class="pill ${cls}">${esc(text)}</span>`;
@@ -223,6 +244,7 @@ function summaryTable(run: QuestRun): string {
     ["missed", run.missed.length ? run.missed.join(", ") : "none"],
     ["rooms visited", run.roomsVisited.join(", ")],
     ["repeated itself", `${run.repeats} turns`],
+    ...taskRows(run),
     ["wall clock", `${Math.round(run.ms / 60000)} min`],
   ];
   if (run.fumbles !== undefined) {
@@ -260,6 +282,11 @@ function eventBlock(event: QuestEvent): string {
   }
   if (event.roll !== undefined) {
     parts.push(`<div class="changes">d20: ${event.roll}</div>`);
+  }
+  if (event.todos?.length) {
+    parts.push(
+      `<div class="todoline">${event.todos.map((t) => colorize(esc(t))).join("<br>")}</div>`,
+    );
   }
   if (event.changes?.length) {
     parts.push(
@@ -470,6 +497,8 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
               color: var(--dim); }
 .changes { font-family: ui-monospace, monospace; font-size: .75rem;
            color: var(--pass); margin-top: .5rem; }
+.todoline { font-family: ui-monospace, monospace; font-size: .75rem;
+            color: var(--partial); margin-top: .5rem; }
 `;
 
 function main() {
