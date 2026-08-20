@@ -69,6 +69,17 @@ export function Help() {
         <code className="text-cyan-300">todo</code> list, in the panel on the
         right. Nobody makes you do any of it.
       </div>
+      <div className="mb-4 text-sm">
+        Curious how this game is built and tested? See the{" "}
+        <a className="text-cyan-300 underline" href="/playthroughs/">
+          recorded playthroughs
+        </a>{" "}
+        (a model playing the game, its reasoning visible) and the{" "}
+        <a className="text-cyan-300 underline" href="/evals/">
+          model evals
+        </a>
+        . Warning: both can spoil the mysteries — finish playing first.
+      </div>
       <div className="flex justify-center mb-4">
         <pre>
           {"+-------------------------+\n"}

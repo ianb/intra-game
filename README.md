@@ -2,6 +2,21 @@
 
 This is a game written from September 27-29, 2024, for the [Text Adventure Hack](https://textadventurehack.com/).
 
+## Watching a model play
+
+The development apparatus is published alongside the game, and it may be the
+most interesting part for LLM-curious readers:
+
+- **[Recorded playthroughs](https://playintra.win/playthroughs/)** — a model
+  playing the game blind, with its own notes shown before every command, and
+  the engine's record underneath: the game model's judgment steps, the
+  characters' private thoughts and feelings, the state changes, the dice.
+- **[Model evals](https://playintra.win/evals/)** — short scored scenarios
+  asking whether a model can run the game at all.
+
+**Spoiler warning:** both contain the solutions to the game's mysteries. If
+you want to play first, [play first](https://playintra.win/).
+
 # Installation instructions
 
 **[INSTALL.md](./INSTALL.md) is the full setup**, covering playing it, working
