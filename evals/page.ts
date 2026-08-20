@@ -44,7 +44,7 @@ const escapeMap: Record<string, string> = {
   '"': "&quot;",
 };
 
-function esc(text: string): string {
+export function esc(text: string): string {
   return text.replace(/[&<>"]/g, (c) => escapeMap[c]!);
 }
 
@@ -171,6 +171,9 @@ export function renderPage(
   scores whether the writing was any good.</p>
   <p class="note">Generated from the YAML under <code>evals/results/</code> by
   <code>pnpm evals</code>. Scenarios and checks are in <code>evals/scenarios.ts</code>.</p>
+  <p class="note">These are short, separate scenarios. To see a model play
+  the game for many turns, with its notes visible, see the
+  <a href="/playthroughs/">recorded playthroughs</a>.</p>
 </header>
 ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
 <footer>
@@ -184,7 +187,7 @@ ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
 `;
 }
 
-const STYLE = `
+export const STYLE = `
 :root {
   color-scheme: light dark;
   --bg: #fbfbf9; --fg: #1a1a1a; --dim: #6b6b6b; --line: #e0dfda;

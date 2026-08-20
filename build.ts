@@ -112,6 +112,13 @@ function copyStatic() {
     resolve(root, "evals/index.html"),
     resolve(outdir, "evals/index.html"),
   );
+  // The rendered quest playthroughs, served at /playthroughs/. Generated and
+  // committed by `pnpm playthroughs`, same contract as the eval page.
+  cpSync(
+    resolve(root, "evals/playthroughs"),
+    resolve(outdir, "playthroughs"),
+    { recursive: true },
+  );
   copyCheckpoints();
 }
 

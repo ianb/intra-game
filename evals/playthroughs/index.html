@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intra — recorded playthroughs</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #fbfbf9; --fg: #1a1a1a; --dim: #6b6b6b; --line: #e0dfda;
+  --pass: #1f7a4d; --partial: #a8730a; --fail: #b3261e; --panel: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12141a; --fg: #e6e6e6; --dim: #9098a8; --line: #2a2e38;
+    --pass: #5ed49b; --partial: #e0a94a; --fail: #ff8a80; --panel: #191c24;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
+h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
+     text-transform: uppercase; letter-spacing: .06em; }
+header p { max-width: 46rem; }
+.note, .meta { color: var(--dim); font-size: .85rem; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+.scroller { overflow-x: auto; margin: .5rem 0 1rem; }
+table { width: 100%; border-collapse: collapse; min-width: 30rem; }
+th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
+           color: var(--dim); font-weight: 600; }
+th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
+th.model .meta { display: block; font-weight: 400; font-family: inherit; }
+td.score { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+td.score.pass { color: var(--pass); }
+td.score.partial { color: var(--partial); }
+td.score.fail { color: var(--fail); }
+td.score.none { color: var(--dim); font-weight: 400; }
+td.total { border-left: 1px solid var(--line); }
+ul.failures { margin: 0; padding-left: 1.1rem; }
+ul.failures li { margin: .3rem 0; }
+.allclear { color: var(--dim); }
+details { border: 1px solid var(--line); border-radius: 6px; margin: .4rem 0;
+          background: var(--panel); }
+summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
+          font-family: ui-monospace, monospace; }
+summary .meta { font-family: inherit; }
+.transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
+.transcript p { margin: .55rem 0; }
+.who { display: inline-block; min-width: 5.5rem; color: var(--dim);
+       font-family: ui-monospace, monospace; font-size: .8rem; }
+footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+         color: var(--dim); font-size: .9rem; }
+@media (max-width: 34rem) {
+  .who { display: block; min-width: 0; }
+  body { padding-top: 1.5rem; }
+  th.model { word-break: normal; }
+  summary { font-size: .8rem; }
+}
+
+.spoiler { border-left: 3px solid var(--partial); padding: .4rem .75rem;
+           color: var(--dim); font-size: .9rem; background: var(--panel); }
+.summary th { width: 11rem; color: var(--dim); font-weight: 600;
+              font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+.turn { border-top: 1px solid var(--line); margin-top: 2rem; }
+.turn h2 { margin-top: 1.25rem; }
+.label { color: var(--dim); font-size: .75rem; text-transform: uppercase;
+         letter-spacing: .06em; margin: .75rem 0 .25rem; }
+.notes pre { background: var(--panel); border: 1px dashed var(--line);
+             border-radius: 6px; padding: .75rem; white-space: pre-wrap;
+             font-size: .85rem; }
+.cmd code { font-size: 1rem; }
+pre.saw { background: var(--panel); border: 1px solid var(--line);
+          border-radius: 6px; padding: .6rem .75rem; white-space: pre-wrap;
+          font-size: .9rem; margin: .5rem 0; }
+.pill { display: inline-block; font-size: .7rem; padding: .1rem .5rem;
+        border-radius: 999px; vertical-align: middle; margin-left: .4rem;
+        text-transform: uppercase; letter-spacing: .05em; }
+.pill.reached { background: var(--pass); color: var(--bg); }
+</style>
+</head>
+<body>
+<header>
+  <p class="note"><a href="/evals/">evals</a> · <a href="/">the game</a></p>
+  <h1>Watching a model play</h1>
+  <p><a href="/">Intra</a> is a text adventure. A language model operates the
+  game. In the recordings below, a different model plays the game. The player
+  model has a quest to complete and a limit on its turns. Nobody helps it.</p>
+  <p>We made these recordings to answer a development question: can a model
+  play this game, and where does play stop? We publish the failed runs
+  together with the good runs, because the failed runs show more.</p>
+  <p class="spoiler">Warning: these transcripts can show the
+solutions to the mysteries of the game. If you want to find the solutions in
+play, <a href="/">play the game first</a>.</p>
+</header>
+
+<h2>How a quest run works</h2>
+<p>Two models operate in each run. The <strong>game model</strong> plays all
+the characters, describes the rooms, and sends the tags that the engine
+obeys. This is the same configuration as normal play.</p>
+<p>The <strong>player model</strong> plays the player. It can see only the
+data that a human player can see: the transcript, the current room, the
+exits, the persons in the room, the task list, and the names of the open
+mysteries. It cannot see the mystery hints. It cannot see the character
+instructions. The code in <code>evals/playerview.ts</code> makes this view. A
+test makes sure that the mystery answers are not in the view.</p>
+<p>The player model keeps notes between its turns. The notes are its memory.
+It writes the notes for itself. The pages below show the notes without
+changes. The notes show what the player model believed, and what it planned,
+before each turn.</p>
+<p>The engine measures progress. It does not ask a model for an opinion. A
+milestone, for example <code>met-marta</code>, is a check of the world state
+after each turn. A mystery counts as solved only when the game fires its own
+<code>&lt;resolveMystery&gt;</code> instruction.</p>
+<p>The pages show these counts also. <strong>Repeats</strong> is the number
+of turns where the player went to the same room again, or asked the same
+question again. <strong>Fumbles</strong> is the number of commands that the
+game could not use. <strong>Snags</strong> are moments where the game gave
+incorrect information to the player. A snag is a defect in the game, not in
+the player.</p>
+<h2>The runs</h2>
+<p>The table shows all the recorded runs. A failed run has value. One 20-turn
+run did not go out of the archive area. That run showed us that a player can
+stay too long with one lead. The snag logs from these runs caused several
+engine repairs.</p>
+<div class="scroller">
+<table>
+<thead><tr><th>run</th><th>quest</th><th>outcome</th><th>milestones</th><th>turns</th><th>repeats</th></tr></thead>
+<tbody>
+<tr>
+  <td><a href="ink-and-echo-2026-07-26-23-06-20.html">2026-07-26 23:06</a></td>
+  <td><code>ink-and-echo</code></td>
+  <td class="score fail">unsolved</td>
+  <td class="score">2/5</td>
+  <td class="score">20</td>
+  <td class="score">5</td>
+</tr>
+<tr>
+  <td><a href="ink-and-echo-2026-07-26-23-32-31.html">2026-07-26 23:32</a></td>
+  <td><code>ink-and-echo</code></td>
+  <td class="score fail">unsolved</td>
+  <td class="score">4/5</td>
+  <td class="score">20</td>
+  <td class="score">6</td>
+</tr>
+<tr>
+  <td><a href="ink-and-echo-2026-07-27-01-31-37.html">2026-07-27 01:31</a></td>
+  <td><code>ink-and-echo</code></td>
+  <td class="score fail">unsolved</td>
+  <td class="score">4/5</td>
+  <td class="score">20</td>
+  <td class="score">5</td>
+</tr>
+<tr>
+  <td><a href="ink-and-echo-2026-07-27-02-42-04.html">2026-07-27 02:42</a></td>
+  <td><code>ink-and-echo</code></td>
+  <td class="score fail">unsolved</td>
+  <td class="score">4/5</td>
+  <td class="score">20</td>
+  <td class="score">3</td>
+</tr>
+<tr>
+  <td><a href="ink-and-echo-2026-07-27-03-05-43.html">2026-07-27 03:05</a></td>
+  <td><code>ink-and-echo</code></td>
+  <td class="score pass">solved</td>
+  <td class="score">5/5</td>
+  <td class="score">18</td>
+  <td class="score">0</td>
+</tr>
+<tr>
+  <td><a href="ink-and-echo-2026-07-31-11-09-18.html">2026-07-31 11:09</a></td>
+  <td><code>ink-and-echo</code></td>
+  <td class="score fail">unsolved</td>
+  <td class="score">2/5</td>
+  <td class="score">9</td>
+  <td class="score">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<footer>
+  <p>The command <code>pnpm playthroughs</code> makes these pages from the
+  YAML files in <code>evals/quests/</code>. The harness is
+  <code>evals/runquest.ts</code>. The player view is
+  <code>evals/playerview.ts</code>. The <a href="/evals/">eval page</a> shows
+  scores for short, separate scenarios.</p>
+</footer>
+</body>
+</html>
