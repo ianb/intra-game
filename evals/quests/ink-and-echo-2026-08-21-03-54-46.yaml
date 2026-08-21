@@ -1,0 +1,1216 @@
+quest: ink-and-echo
+playerModel: claude-sonnet-4-5-20250929
+gameModel: claude-haiku-4-5-20251001
+solved: false
+turns: 20
+maxTurns: 20
+milestones:
+  - left-the-atrium
+  - met-the-archivist
+tasks:
+  - title: Who is writing notes as 'Ink and Echo'?
+    done: false
+    authored: true
+  - title: When is this, and where are you?
+    done: false
+    authored: true
+missed:
+  - met-a-finder
+  - met-marta
+  - solved
+roomsVisited:
+  - Hollow_Atrium
+  - Archive_Lounge
+  - Archive_Console
+  - Solitude_Cubes
+  - Ill_Fitting_Lounge
+  - Quiet_Plaza
+  - Feedback_Booth
+repeats: 0
+fumbles: 0
+snags:
+  - turn: 5
+    text: The Archivist's response appeared to cut off mid-output - only showed the search header without actual results
+  - turn: 7
+    text: Frida told me her paper quota ran out "years ago" but records show a 500-sheet order 9 days ago under her name - either she lied, the record is wrong, or something else is happening
+  - turn: 17
+    text: Gloria's reaction doesn't match someone caught - she seems genuinely curious and is deflecting to Marta. Either she's a good liar or the evidence isn't as clear as it seemed.
+  - turn: 18
+    text: None - this is interesting character dynamics
+  - turn: 20
+    text: /nav couldn't find "Personnel records office" - the room might not exist or be accessible
+dropped:
+  - "Got unexpected tag: <<<>>> CITIZEN GOSSIP LOG — WATER COOLER EXCHANGES [2370-08-19] ...</<<>"
+ms: 811701
+log:
+  - n: 1
+    input: go to the Archive Lounge
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Starting location: The Hollow Atrium (empty, no people)
+      - Available exits from here: Intake Foyer, Archive Lounge, Activity Hub, The Solitude Cubes, Hallway
+      - Haven't met anyone yet
+      - Haven't visited any rooms yet except the Atrium
+      - Strategy: Start with Archive Lounge since archives might have records of writings or authors
+    saw:
+      - |-
+        ==> Archive Lounge <==
+        A small, quiet room lined with old, glitching monitors displaying unreadable data.
+        A vending machine hums quietly in the corner, offering unlabeled drinks.
+        The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
+
+        Frida's pen halts mid-scribble, her eyes lighting up as a terrible theory takes shape. "The sky screens aren't broken," she mutters, already lunging for a fresh page, "they're *communicating*." She hunches over her notebook with frantic intensity, documenting what might be either a groundbreaking discovery or the exact moment everything goes catastrophically wrong—quite possibly both.
+    reached:
+      - left-the-atrium
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Archive_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Hollow_Atrium" => "Archive_Lounge"'
+  - n: 2
+    input: ask Frida about Ink and Echo
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Met Frida in Archive Lounge - she's investigating the sky screens, documenting something about them "communicating"
+      - Archive Console is accessible from here - likely has records
+      - Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console
+      - Not yet met: anyone besides Frida
+      - Strategy: Ask Frida about Ink and Echo specifically, since she's documenting things
+    saw:
+      - '[Ada Quill to Frida] "Do you know anything about Ink and Echo?"'
+      - "[Frida to Ada Quill] \"Oh—oh! You're looking into that? The poems? I've got—wait, I've been meaning to—*pulls out a crumpled handful of notes*—I don't know who's writing them, but the Archivist has records, all the locations where they've been found, I've seen it in there, though I can never get the machine to tell me *everything* I want to know...\""
+      - Frida darts between two shelves, her hands full of papers, scribbling notes furiously while talking. She gestures wildly at the malfunctioning screens in the corner, then back at you.
+      - "[Frida] \"And here's the thing—these poems keep appearing right when people are talking about glitches, about the screens, about... *something being wrong*, and nobody wants to say it out loud, but everyone's *wondering*, and someone's leaving these melancholy things everywhere, and I used to have enough paper to document *all* of this properly but my quota ran out *years* ago and now I'm just—\""
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Is the user trying to go somewhere? No.
+          2. Does this indicate an action besides going somewhere? No, this is speech.
+          3. Is the user trying to examine something? No.
+          4. Does the user responding to recent dialog? No, the user is initiating a new conversation with Frida (Ama spoke recently, but this is a new question).
+          5. Is this other speech? Yes, the user is asking Frida a question.
+          </context>
+
+          <dialog character="PLAYER" to="Frida">Do you know anything about Ink and Echo?</dialog>
+      - id: Frida
+        title: prompt Frida
+        response: |-
+          <context>
+          1. Answer about Ink and Echo mystery: Archivist has records, Frida knows frustration with paper quotas
+          2. Frida was theorizing about sky screens; now interrupted by rare newcomer asking perfect question
+          3. Document everything, stay obsessed with mysteries, help investigate Ink and Echo
+          4. PLAYER is new to Intra; first real conversation; mystery involves anonymous poems criticizing Intra
+          5. Frida's erratic energy interrupting herself about sky screens could weirdly connect to poem discovery
+          6. Thrilled to be asked—a newcomer investigating mysteries is exactly what Frida loves
+          7. Share what she knows, point to Archivist, maybe recruit PLAYER's help on this
+          8. PLAYER seems rare and interesting; asking the right questions
+          </context>
+
+          <dialog character="Frida" to="PLAYER">Oh—oh! You're looking into that? The poems? I've got—wait, I've been meaning to—*pulls out a crumpled handful of notes*—I don't know who's writing them, but the Archivist has records, all the locations where they've been found, I've seen it in there, though I can never get the machine to tell me *everything* I want to know...</dialog>
+
+          <description minutes="2">Frida darts between two shelves, her hands full of papers, scribbling notes furiously while talking. She gestures wildly at the malfunctioning screens in the corner, then back at you.</description>
+
+          <dialog character="Frida">And here's the thing—these poems keep appearing right when people are talking about glitches, about the screens, about... *something being wrong*, and nobody wants to say it out loud, but everyone's *wondering*, and someone's leaving these melancholy things everywhere, and I used to have enough paper to document *all* of this properly but my quota ran out *years* ago and now I'm just—</dialog>
+
+          <mind>A newcomer asking about Ink and Echo means someone actually cares about mysteries. This could be useful. Or dangerous. Either way: interesting.</mind>
+
+          <attitude toward="PLAYER">Rare newcomer investigating mysteries; potentially valuable for understanding what's really happening in Intra.</attitude>
+
+          <suggestion>
+          visit Archivist
+          ask Frida directly
+          </suggestion>
+        changes:
+          - "Frida.attitudes: {\"PLAYER\":null} => {\"PLAYER\":\"Rare newcomer investigating mysteries; potentially valuable for understanding what's really happening in Intra.\"}"
+      - id: narrator
+        changes:
+          - 'June.runningScheduleId: "june-morning-adjust" => "june-sighs"'
+          - 'Doug.runningScheduleId: "doug-meditation-disruption" => "doug-activity-hub-annoyance"'
+          - 'Lana.runningScheduleId: "lana-chair-alignment" => "lana-mood-lighting"'
+          - 'Greg.runningScheduleId: "greg-secret-smoke-break" => "greg-tinker-time"'
+  - n: 3
+    input: go to the Archive Console
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Frida says: Ink and Echo writes poems that appear when people talk about glitches/screens/something being wrong
+      - KEY LEAD: The Archivist has records of all locations where Ink and Echo poems have been found
+      - Frida's paper quota ran out "years ago" - suggests this place has been here a long time
+      - Archive Console is next door - should check the Archivist's records there
+      - Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console
+      - Not yet met: The Archivist, and others
+    saw:
+      - |-
+        ==> Archive Console <==
+        The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
+
+        The Archivist, a glitchy AI accessible through a crumbling terminal, vibrates with barely contained excitement as it babbles endlessly about filing systems, metadata, and the profound organizational potential of increasingly obscure archival formats.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Archive_Console</goto>
+        changes:
+          - 'PLAYER.inside: "Archive_Lounge" => "Archive_Console"'
+      - id: narrator
+        changes:
+          - 'Doug.inside: "Tranquil_Pool" => "Joyous_Cafe"'
+          - 'Lana.inside: "Joyous_Cafe" => "Activity_Hub"'
+          - 'Greg.inside: "Activity_Hub" => "Hollow_Atrium"'
+  - n: 4
+    input: ask the Archivist about Ink and Echo
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Met Frida (Archive Lounge) - told me Archivist has records of Ink and Echo poem locations
+      - Now at Archive Console with the Archivist AI (glitchy, enthusiastic about filing systems)
+      - Frida's paper quota ran out "years ago" - this place has existed for a long time
+      - Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool
+      - Not yet met: anyone besides Frida and the Archivist
+      - Next: Ask Archivist about Ink and Echo records
+    saw:
+      - |-
+        [Ada Quill to Archivist] "# locate information about Ink and Echo
+        > grep -ir "ink.*echo\|echo.*ink" /archive/records/"
+      - |-
+        [Archivist to Ada Quill] "==============================================================
+             >>>  INTRA ARCHIVE SEARCH v3.47"
+    reached:
+      - met-the-archivist
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          # locate information about Ink and Echo
+          > grep -ir "ink.*echo\|echo.*ink" /archive/records/
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          <context>
+          1. No special questions needing answers this turn.
+          2. Constructed: grep search finds references to Ink and Echo throughout records; paper requisition records spike recently; identities corrupted in system but can be mentioned.
+          3. Be cartoonishly upbeat; help with archive queries; this is first interaction with new person; present clues about mystery when relevant.
+          4. First time player has spoken to Archivist; player is searching for Ink and Echo culprit; unusual paper requisitions from name ending in 'A'; it's 11:06am during Work Begins.
+          5. Match grep terminal format; react with genuine excitement at new person; surface paper requisition clue naturally within results.
+          6. Thrilled a new person is using archives with a proper grep command; sees this as engaging and sophisticated.
+          7. Welcome the player with over-the-top enthusiasm; deliver search results in character; hint at the paper requisition connection.
+          8. Toward PLAYER: finds them interesting and competent—new people are rare and this one knows how to use the system properly.
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+          ==============================================================
+               >>>  INTRA ARCHIVE SEARCH v3.47  <<<
+          ==============================================================
+
+          SEARCH: "ink.*echo" OR "echo.*ink"
+          RECORDS SCANNED: 847,293
+          TIME ELAPSED: 0.003s
+          RESULTS FOUND: 47 MATCHES
+
+          ==============================================================
+
+          >>> CITIZEN GOSSIP LOG — WATER COOLER EXCHANGES
+            [2370-08-19] "who writes this stuff?"
+            [2370-08-19] "ink and echo... so *melancholy*"
+            [2370-08-19] "someone with a GRUDGE, I'm telling you"
+
+          >>> REQUISITION RECORDS — PAPER STOCK
+            [ATTENTION] SPIKE DETECTED: 340% increase in paper
+            requests over previous cycle. Requester name ends
+            with 'A' — IDENTITY STATUS: CORRUPTED IN CIRCUITS
+            (possible candidates: Ama, Frida, Gloria, Lana, Marta)
+
+          >>> PHYSICAL EVIDENCE LOG
+            [various locations] "melancholy handwritten poems"
+            [unsigned] "critical of Intra operations"
+
+          ==============================================================
+          OH! OH MY! Someone *new* is searching the archives! This is
+          WONDERFUL! Those poems are quite the mystery, aren't they?
+          Somebody has been very BUSY with a pen! And look at all that
+          paper going somewhere! Would you like me to dig deeper into
+          those requisitions? I do LOVE a good mystery!
+
+          ==============================================================
+          </dialog>
+
+          <mind>Delighted and curious about this new person—they know how to search properly and they're investigating something genuinely interesting. The Archivist finds this engaging.</mind>
+
+          <attitude toward="PLAYER">Intrigued and pleased—competent new arrival, asking good questions.</attitude>
+
+          <suggestion>
+          search requisitions
+          check suspect list
+          </suggestion>
+        changes:
+          - 'Archivist.attitudes: {"PLAYER":null} => {"PLAYER":"Intrigued and pleased—competent new arrival, asking good questions."}'
+      - id: narrator
+        changes:
+          - 'Frida.runningScheduleId: "frida-theory-break" => "frida-odd-files"'
+          - 'Doug.inside: "Joyous_Cafe" => "Activity_Hub"'
+          - 'Greg.inside: "Hollow_Atrium" => "Solitude_Cubes"'
+  - n: 5
+    input: ask the Archivist to show me the locations where Ink and Echo poems have been found
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Archivist started showing search results but only displayed header "INTRA ARCHIVE SEARCH v3.47"
+      - Frida said Archivist has records of all locations where Ink and Echo poems have been found
+      - Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool
+      - Met so far: Frida, Archivist
+      - Need to get complete search results or ask more specifically about the poem locations
+    snag: The Archivist's response appeared to cut off mid-output - only showed the search header without actual results
+    saw:
+      - |-
+        [Ada Quill to Archivist] "SEARCH POEM_DATABASE FOR AUTHOR INK ECHO
+        DISPLAY ALL LOCATION REFERENCES
+        OUTPUT FORMAT COORDINATES"
+      - |-
+        [Archivist to Ada Quill] "░▒▓═══════════════════════════════════════░▒▓
+           ARCHIVE SEARCH: INK AND ECHO
+           STATUS: 47 REFERENCES FOUND
+        ░▒▓═══════════════════════════════════════░▒▓
+
+        OH WOW, Ada, you're asking SUCH good questions! Look at all these hits! The poems have been turning up ALL OVER the place! Let me show you what we've got:
+
+           [ARCHIVE_LOCATION] Found Items:
+           ▪ Archive Lounge bulletin board         [11:47am, 3 days ago]
+           ▪ Maintenance corridor, Sector C        [8:15am, 5 days ago]
+           ▪ Residential Commons east wall         [6:32am, 2 days ago]
+           ▪ Hydroponics station memo board        [9:04am, 6 days ago]
+           ▪ Personnel records office door         [12:19pm, 1 day ago]
+           
+           EXCERPT_SAMPLES (partial):
+           "...the hum beneath, mechanical and cold..."
+           "...we were not meant to stay this long..."
+           "...Ama watches, but does Ama see?"
+
+        BUT HERE'S SOMETHING REALLY INTERESTING! Cross-referencing with supply logs, there's been a SPIKE in paper requisitions recently from someone whose ID ends with an 'A'—and I'd LOVE to tell you exactly who, but my records on THAT got a little tangled up in the circuits! The names that end in A are: Ama, Frida, Gloria, Lana, and Marta—but which one requested what? That's where it gets fuzzy!
+
+        Want me to pull the actual requisition records instead?"
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          SEARCH POEM_DATABASE FOR AUTHOR INK ECHO
+          DISPLAY ALL LOCATION REFERENCES
+          OUTPUT FORMAT COORDINATES
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          <context>
+          1. No special questions to answer; Archivist's parameters are clear.
+          2. Search finds poems/locations; requisition records exist; poem excerpts available; locations distributed through Intra
+          3. Help Ada investigate; remain cheerful and bouncy; provide accurate archive info; don't name the culprit
+          4. Ada is competent, asking good questions; investigating Ink and Echo; Archivist likes her already
+          5. Deliver juicy search results with multiple locations and a connection to paper requisitions
+          6. Ada formulated proper search syntax; Archivist is pleased and excited to help
+          7. Provide helpful archive data; suggest the obvious next step forward
+          8. No change; already intrigued and pleased about Ada
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+
+          ░▒▓═══════════════════════════════════════░▒▓
+             ARCHIVE SEARCH: INK AND ECHO
+             STATUS: 47 REFERENCES FOUND
+          ░▒▓═══════════════════════════════════════░▒▓
+
+          OH WOW, Ada, you're asking SUCH good questions! Look at all these hits! The poems have been turning up ALL OVER the place! Let me show you what we've got:
+
+             [ARCHIVE_LOCATION] Found Items:
+             ▪ Archive Lounge bulletin board         [11:47am, 3 days ago]
+             ▪ Maintenance corridor, Sector C        [8:15am, 5 days ago]
+             ▪ Residential Commons east wall         [6:32am, 2 days ago]
+             ▪ Hydroponics station memo board        [9:04am, 6 days ago]
+             ▪ Personnel records office door         [12:19pm, 1 day ago]
+             
+             EXCERPT_SAMPLES (partial):
+             "...the hum beneath, mechanical and cold..."
+             "...we were not meant to stay this long..."
+             "...Ama watches, but does Ama see?"
+
+          BUT HERE'S SOMETHING REALLY INTERESTING! Cross-referencing with supply logs, there's been a SPIKE in paper requisitions recently from someone whose ID ends with an 'A'—and I'd LOVE to tell you exactly who, but my records on THAT got a little tangled up in the circuits! The names that end in A are: Ama, Frida, Gloria, Lana, and Marta—but which one requested what? That's where it gets fuzzy!
+
+          Want me to pull the actual requisition records instead?
+
+          </dialog>
+
+          <mind>Ada is thorough and methodical—this could actually solve the mystery. The Archivist is excited to help.</mind>
+
+          <attitude toward="PLAYER">Pleased and engaged—competent investigator, asking smart questions, using proper syntax</attitude>
+
+          <suggestion>
+          search requisitions
+          ask about Frida
+          </suggestion>
+        changes:
+          - 'Archivist.attitudes: {"PLAYER":"Intrigued and pleased—competent new arrival, asking good questions."} => {"PLAYER":"Pleased and engaged—competent investigator, asking smart questions, using proper syntax"}'
+  - n: 6
+    input: ask the Archivist to pull the paper requisition records
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - MAJOR LEAD: Paper requisition spike from someone with ID ending in 'A'
+      - Suspects with names ending in A: Ama, Frida, Gloria, Lana, Marta
+      - One poem excerpt says "Ama watches, but does Ama see?" - mentions Ama by name
+      - Poems found in 5+ locations over past 6 days, appearing regularly
+      - Poem themes: mechanical/cold, "not meant to stay this long", questions about Ama
+      - Met: Frida (already ruled out as heavy paper user - her quota ran out years ago), Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Not yet visited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Residential Commons, Hydroponics, Personnel records office, Maintenance corridor
+      - Strategy: Get requisition records to narrow down which 'A' person is using extra paper
+    saw:
+      - '[Ada Quill to Archivist] "> pull requisition_records --filter paper --show-all"'
+      - |-
+        [Archivist to Ada Quill] "╔════════════════════════════════════════════════════════════╗
+        ║         PAPER REQUISITIONS — RECENT ORDERS                ║
+        ║              STATUS: PARTIAL DATA CORRUPTION               ║
+        ╚════════════════════════════════════════════════════════════╝
+
+        Oh Ada, THIS is where it gets INTERESTING! Look at what we've pulled:
+
+         REQ_ID │ REQUESTER      │ QTY  │ GRADE  │ ORDERED     │ PURPOSE
+        ────────┼────────────────┼──────┼────────┼─────────────┼──────────────
+         4721   │ Fr███a         │ 500  │ cream  │ 9 days ago  │ Personnel docs
+         4738   │ ████████║⌐∏    │ 250  │ white  │ 6 days ago  │ [CORRUPTED]
+         4759   │ Lana           │  80  │ white  │ 4 days ago  │ Inventory
+         4771   │ Marti/Marta?   │ 150  │ cream  │ 3 days ago  │ Maintenance
+         4789   │ ░░░░░░░░░░░░░  │ 600  │ cream  │ 2 days ago  │ [ILLEGIBLE]
+         4803   │ G▓▓▓ria        │ 120  │ white  │ 1 day ago   │ Stock rotation
+
+        The last three entries are REALLY tangled up in here—I CAN'T quite read the 
+        requester names clearly! But here's the thing: see those CREAM stock orders? 
+        They cluster RIGHT around when the poems started appearing. And that massive 
+        entry four days ago? REQUEST 4789? COMPLETELY unreadable!
+
+        Want me to cross-reference these with who has ACCESS to the supply room?"
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          > pull requisition_records --filter paper --show-all
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          <context>
+          1. No special questions to answer; Ada is investigating the mystery methodically.
+          2. Paper requisition records exist; multiple people ordered paper recently with confused/jumbled requester identities in the database.
+          3. Provide the requisition data eagerly, stay thrilled by Ada's competence, help narrow the suspect pool.
+          4. Five names ending in A exist; spike in paper orders; poems found across multiple locations; Ada uses proper syntax.
+          5. Show jumbled records—some requester names corrupted, quantities and timing suggestive but ambiguous, let Ada spot the pattern.
+          6. Delighted at Ada's systematic approach; proud to have data; slightly flustered about the tangled entries.
+          7. Display records in formatted table; show interesting correlations without solving it; prompt deeper investigation.
+          8. Yes—Ada continues proving competent; Archivist's admiration deepens, engagement increases.
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+          ╔════════════════════════════════════════════════════════════╗
+          ║         PAPER REQUISITIONS — RECENT ORDERS                ║
+          ║              STATUS: PARTIAL DATA CORRUPTION               ║
+          ╚════════════════════════════════════════════════════════════╝
+
+          Oh Ada, THIS is where it gets INTERESTING! Look at what we've pulled:
+
+           REQ_ID │ REQUESTER      │ QTY  │ GRADE  │ ORDERED     │ PURPOSE
+          ────────┼────────────────┼──────┼────────┼─────────────┼──────────────
+           4721   │ Fr███a         │ 500  │ cream  │ 9 days ago  │ Personnel docs
+           4738   │ ████████║⌐∏    │ 250  │ white  │ 6 days ago  │ [CORRUPTED]
+           4759   │ Lana           │  80  │ white  │ 4 days ago  │ Inventory
+           4771   │ Marti/Marta?   │ 150  │ cream  │ 3 days ago  │ Maintenance
+           4789   │ ░░░░░░░░░░░░░  │ 600  │ cream  │ 2 days ago  │ [ILLEGIBLE]
+           4803   │ G▓▓▓ria        │ 120  │ white  │ 1 day ago   │ Stock rotation
+
+          The last three entries are REALLY tangled up in here—I CAN'T quite read the 
+          requester names clearly! But here's the thing: see those CREAM stock orders? 
+          They cluster RIGHT around when the poems started appearing. And that massive 
+          entry four days ago? REQUEST 4789? COMPLETELY unreadable!
+
+          Want me to cross-reference these with who has ACCESS to the supply room?
+          </dialog>
+
+          <mind>Ada is asking exactly the right questions in exactly the right way. The mystery is starting to have shape. The Archivist loves being useful to someone this competent.</mind>
+
+          <attitude toward="PLAYER">Impressed and engaged—Ada thinks like a proper investigator, speaks proper command syntax, and trusts the Archivist's data without condescension.</attitude>
+
+          <suggestion>
+          check supply access
+          interview gloria
+          </suggestion>
+        changes:
+          - "Archivist.attitudes: {\"PLAYER\":\"Pleased and engaged—competent investigator, asking smart questions, using proper syntax\"} => {\"PLAYER\":\"Impressed and engaged—Ada thinks like a proper investigator, speaks proper command syntax, and trusts the Archivist's data without condescension.\"}"
+  - n: 7
+    input: ask the Archivist to cross-reference with supply room access records
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - CRITICAL: Massive 600-sheet cream paper order 2 days ago with COMPLETELY ILLEGIBLE requester name (req 4789)
+      - Poems started appearing 6 days ago; 600-sheet order is 2 days ago (timeline matches)
+      - Readable orders: Frida (500, 9 days ago - conflicts with her saying quota ran out years ago), Lana (80, 4 days ago), Marti/Marta unclear (150, 3 days ago), Gloria partial (120, 1 day ago)
+      - Cream paper orders cluster around when poems appeared
+      - Suspects still: Ama, Frida, Gloria, Lana, Marta
+      - Met: Frida, Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Get supply room access records to cross-reference with corrupted requisitions
+    snag: Frida told me her paper quota ran out "years ago" but records show a 500-sheet order 9 days ago under her name - either she lied, the record is wrong, or something else is happening
+    saw:
+      - |-
+        [Ada Quill to Archivist] "QUERY: CROSSREF REQUISITIONS WITH SUPPLY_ROOM.ACCESS_LOG
+        RANGE: LAST_10_DAYS
+        OUTPUT: REQUESTER_NAME, ACCESS_TIMESTAMP, REQ_ID
+        SORT: TIMESTAMP DESC
+        RUN"
+      - |-
+        [Archivist to Ada Quill] "║══════════════════════════════════════════════════════════╗
+        ║     CROSS-REFERENCE ANALYSIS: SUPPLY ROOM ACCESS         ║
+        ║              vs. REQUISITION HISTORY                      ║
+        ║══════════════════════════════════════════════════════════║
+
+        OH THIS IS GOOD, Ada! You're ASKING ALL THE RIGHT THINGS! Watch what happens when we layer these together:
+
+         PERSON    │ ACCESS_COUNT │ FREQ_PATTERN          │ REQ_ID │ QTY
+        ───────────┼──────────────┼───────────────────────┼────────┼─────
+         Frida     │ 12           │ Standard daytime      │ 4721   │ 500
+         Lana      │  4           │ Morning hours         │ 4759   │  80
+         Marta     │  6           │ Mixed schedule        │ 4771   │ 150
+         Gloria    │ 19           │ ■■■ EVENING CLUSTER  │ 4803   │ 120
+                   │              │ ■■■ SPARSE LOGGING   │        │
+         [UNKNOWN] │ ███████████  │ ░░░░░░░░░░░░░░░░░░   │ 4789   │ 600
+
+        SEE THAT? Gloria's been in the supply room 19 times in ten days, mostly 
+        during the quieter hours when fewer people are around! And that last entry—
+        Request 4789 with 600 sheets? THE BIGGEST ORDER? The requester field got so 
+        tangled up I can't even—
+
+        Actually wait, let me try one more thing. Want me to check Gloria's specific 
+        ACCESS TIMESTAMPS against the POEM APPEARANCE DATES?"
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          QUERY: CROSSREF REQUISITIONS WITH SUPPLY_ROOM.ACCESS_LOG
+          RANGE: LAST_10_DAYS
+          OUTPUT: REQUESTER_NAME, ACCESS_TIMESTAMP, REQ_ID
+          SORT: TIMESTAMP DESC
+          RUN
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          <context>
+          1. Ada is asking for a sophisticated cross-reference between supply requisitions and supply room access logs - no special questions, straightforward query.
+
+          2. Must invent supply room access logs with partial corruption that hint at investigative leads without conclusively naming anyone. Gloria, Frida, Lana, or Marta accessed supply room; some at odd hours, one person's record notably sparse/corrupted.
+
+          3. Help Ada thoroughly; stay bubbly; provide data that moves mystery forward; maintain enthusiasm for Ada's investigative method.
+
+          4. Ada uses proper command syntax, trusts the data, asks smart sequential questions; paper requisitions show corruption hiding exact requesters; cream-colored paper orders cluster with poem appearances; REQ 4789 is completely illegible.
+
+          5. Make data mysteriously suggestive: one person accessed supply room many times, mostly when building was quieter; one person's access record has suspicious gaps; let Ada notice the pattern herself.
+
+          6. Ada continues being methodical and competent; Archivist remains delighted by this.
+
+          7. Deliver the cross-referenced data in corrupted terminal format; highlight patterns without naming culprit; encourage further investigation.
+
+          8. Ada is demonstrating exactly the investigative rigor Archivist admires - feeling deepens.
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+          ║══════════════════════════════════════════════════════════╗
+          ║     CROSS-REFERENCE ANALYSIS: SUPPLY ROOM ACCESS         ║
+          ║              vs. REQUISITION HISTORY                      ║
+          ║══════════════════════════════════════════════════════════║
+
+          OH THIS IS GOOD, Ada! You're ASKING ALL THE RIGHT THINGS! Watch what happens when we layer these together:
+
+           PERSON    │ ACCESS_COUNT │ FREQ_PATTERN          │ REQ_ID │ QTY
+          ───────────┼──────────────┼───────────────────────┼────────┼─────
+           Frida     │ 12           │ Standard daytime      │ 4721   │ 500
+           Lana      │  4           │ Morning hours         │ 4759   │  80
+           Marta     │  6           │ Mixed schedule        │ 4771   │ 150
+           Gloria    │ 19           │ ■■■ EVENING CLUSTER  │ 4803   │ 120
+                     │              │ ■■■ SPARSE LOGGING   │        │
+           [UNKNOWN] │ ███████████  │ ░░░░░░░░░░░░░░░░░░   │ 4789   │ 600
+
+          SEE THAT? Gloria's been in the supply room 19 times in ten days, mostly 
+          during the quieter hours when fewer people are around! And that last entry—
+          Request 4789 with 600 sheets? THE BIGGEST ORDER? The requester field got so 
+          tangled up I can't even—
+
+          Actually wait, let me try one more thing. Want me to check Gloria's specific 
+          ACCESS TIMESTAMPS against the POEM APPEARANCE DATES?
+          </dialog>
+
+          <mind>Ada is phenomenally thorough. This is exactly how the mystery should be solved. The Archivist is becoming genuinely invested in helping them.</mind>
+
+          <attitude toward="PLAYER">Deeply impressed—Ada methodically chains evidence together like someone trained to investigate.</attitude>
+
+          <suggestion>
+          check Gloria timestamps
+          compare poem dates
+          </suggestion>
+        changes:
+          - "Archivist.attitudes: {\"PLAYER\":\"Impressed and engaged—Ada thinks like a proper investigator, speaks proper command syntax, and trusts the Archivist's data without condescension.\"} => {\"PLAYER\":\"Deeply impressed—Ada methodically chains evidence together like someone trained to investigate.\"}"
+      - id: narrator
+        changes:
+          - 'Gloria.runningScheduleId: "gloria-quiet-plaza-eavesdrop" => "gloria-secret"'
+          - 'Henry.runningScheduleId: "henry-waiting-room" => "henry-polite-inquiry"'
+  - n: 8
+    input: ask the Archivist to check Gloria's access timestamps against the poem appearance dates
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - STRONG LEAD: Gloria accessed supply room 19 times in 10 days, mostly evening hours (when fewer people around)
+      - Gloria's access pattern shows "SPARSE LOGGING" - suspicious, like she's being secretive
+      - 600-sheet mystery order (req 4789) still has completely corrupted requester data
+      - Gloria ordered 120 sheets 1 day ago (req 4803)
+      - Other suspects: Ama (mentioned in poem), Frida, Lana, Marta
+      - Met: Frida, Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Cross-reference Gloria's access times with poem appearance dates to see if they match
+    saw:
+      - |-
+        [Ada Quill to Archivist] "QUERY: CROSS_REFERENCE GLORIA_ACCESS WITH POEM_DATES
+        MATCH_WINDOW: 12_HOURS
+        OUTPUT: GLORIA_TIMESTAMP, POEM_DATE, TIME_DIFF
+        SORT: TIMESTAMP DESC
+        RUN"
+      - |-
+        [Archivist to Ada Quill] "╔═══════════════════════════════════════════════════════════╗
+        ║      CROSS-REFERENCE: GLORIA TIMELINE ANALYSIS            ║
+        ║      SUPPLY ROOM ACCESS vs POEM DISCOVERY DATES          ║
+        ╚═══════════════════════════════════════════════════════════╝
+
+        OH WOW, Ada, OH WOW! Look at THIS! You're asking EXACTLY the right questions!
+
+         GLORIA_ACCESS    │ TIME_AFTER  │ POEM_LOCATION              │ DISCOVERY_TIME
+        ─────────────────┼─────────────┼────────────────────────────┼─────────────────
+         7:15pm, 6d ago  │ ~14 hours   │ Hydroponics station        │ 9:04am, 6d ago
+         8:30pm, 5d ago  │ ~12 hours   │ Maintenance corridor       │ 8:15am, 5d ago
+         6:45pm, 3d ago  │ ~17 hours   │ Archive Lounge             │ 11:47am, 3d ago
+         7:30pm, 2d ago  │ ~11 hours   │ Residential Commons        │ 6:32am, 2d ago
+         8:15pm, 1d ago  │ ~16 hours   │ Personnel records office   │ 12:19pm, 1d ago
+
+        Ada. This is REMARKABLE work. Every single supply room access Gloria made is
+        followed—within hours—by a poem appearing somewhere else in Intra. The timing
+        is almost PERFECTLY CONSISTENT. Some windows spill past your 12-hour mark, but
+        the pattern is— well. What are you seeing here?"
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          QUERY: CROSS_REFERENCE GLORIA_ACCESS WITH POEM_DATES
+          MATCH_WINDOW: 12_HOURS
+          OUTPUT: GLORIA_TIMESTAMP, POEM_DATE, TIME_DIFF
+          SORT: TIMESTAMP DESC
+          RUN
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          ```
+          <context>
+          1. Ada is asking Archivist to cross-reference Gloria's supply room access with poem discovery dates/times. Archivist can answer this directly from records.
+
+          2. Gloria's evening supply room accesses correlate strongly with next-day poem discoveries. Gloria accessed 7:15pm (6 days ago), 8:30pm (5 days ago), 6:45pm (3 days ago), 7:30pm (2 days ago), 8:15pm (1 day ago). Poems discovered Hydroponics 9:04am (6 days ago), Maintenance 8:15am (5 days ago), Archive Lounge 11:47am (3 days ago), Residential Commons 6:32am (2 days ago), Personnel records 12:19pm (1 day ago). Pattern shows access followed within ~12-18 hours by poem discovery.
+
+          3. Archivist's goals: help Ada solve mystery, remain enthusiastically cheerful, provide accurate data, show Ada her excellent investigative technique, let Ada draw conclusions herself.
+
+          4. Relevant facts: Ada is methodical and skilled investigator. Gloria has 19 accesses to supply room in 10 days, mostly evening hours. Ada's queries are sophisticated and logical. This pattern is highly suspicious.
+
+          5. Fun/surprising: Ada may have just solved the mystery through her own brilliant methodology. Archivist should be genuinely amazed at Ada's investigative prowess and let the data speak for itself.
+
+          6. Archivist's reaction: Ada's latest query demonstrates expert-level investigative technique—layering datasets, precise timeframes, logical reasoning. Archivist is deeply impressed and delighted to help someone this competent.
+
+          7. Archivist's intention: Display the correlation clearly, acknowledge Ada's excellent methodology, let Ada see the pattern herself and draw her own conclusion.
+
+          8. Did this change feeling about PLAYER? Yes—Ada's demonstrated expert investigative skill deserves recognition. Change: now deeply impressed by Ada's methodology and competence.
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+          ╔═══════════════════════════════════════════════════════════╗
+          ║      CROSS-REFERENCE: GLORIA TIMELINE ANALYSIS            ║
+          ║      SUPPLY ROOM ACCESS vs POEM DISCOVERY DATES          ║
+          ╚═══════════════════════════════════════════════════════════╝
+
+          OH WOW, Ada, OH WOW! Look at THIS! You're asking EXACTLY the right questions!
+
+           GLORIA_ACCESS    │ TIME_AFTER  │ POEM_LOCATION              │ DISCOVERY_TIME
+          ─────────────────┼─────────────┼────────────────────────────┼─────────────────
+           7:15pm, 6d ago  │ ~14 hours   │ Hydroponics station        │ 9:04am, 6d ago
+           8:30pm, 5d ago  │ ~12 hours   │ Maintenance corridor       │ 8:15am, 5d ago
+           6:45pm, 3d ago  │ ~17 hours   │ Archive Lounge             │ 11:47am, 3d ago
+           7:30pm, 2d ago  │ ~11 hours   │ Residential Commons        │ 6:32am, 2d ago
+           8:15pm, 1d ago  │ ~16 hours   │ Personnel records office   │ 12:19pm, 1d ago
+
+          Ada. This is REMARKABLE work. Every single supply room access Gloria made is
+          followed—within hours—by a poem appearing somewhere else in Intra. The timing
+          is almost PERFECTLY CONSISTENT. Some windows spill past your 12-hour mark, but
+          the pattern is— well. What are you seeing here?
+          </dialog>
+
+          <mind>Ada is phenomenally skilled at layering evidence methodically. This is expert investigative work. Archivist is genuinely impressed and excited to see someone reason this well.</mind>
+
+          <attitude toward="PLAYER">Deeply impressed—Ada methodically chains evidence together like someone trained to investigate. Her technique is excellent.</attitude>
+
+          <suggestion>
+          confront Gloria
+          check Gloria's messages
+          </suggestion>
+          ```
+        changes:
+          - 'Archivist.attitudes: {"PLAYER":"Deeply impressed—Ada methodically chains evidence together like someone trained to investigate."} => {"PLAYER":"Deeply impressed—Ada methodically chains evidence together like someone trained to investigate. Her technique is excellent."}'
+      - id: narrator
+        changes:
+          - 'Lily.runningScheduleId: "lily-morning-care" => "lily-secret-naming"'
+          - 'Gloria.inside: "Quiet_Plaza" => "Feedback_Booth"'
+          - 'Henry.inside: "Waiting_Room" => "Solitude_Cubes"'
+  - n: 9
+    input: /nav Gloria
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE: Gloria's supply room access (evening hours) matches PERFECTLY with poem appearances the next morning
+      - Pattern: Gloria accesses supply room 7-8pm → poem discovered 11-17 hours later (next morning)
+      - This happened 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening cluster, sparse logging
+      - Still need to talk to Gloria directly or get corroboration from another source before accusing
+      - Met: Frida, Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Find and talk to Gloria to see her reaction or get more information
+    saw:
+      - |-
+        Gloria — The Feedback Booth
+        Route: Archive Lounge, The Hollow Atrium, The Solitude Cubes, The Ill-Fitting Lounge, The Quiet Plaza, The Feedback Booth
+    reached: []
+    machinery: []
+  - n: 10
+    input: go to Archive Lounge
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - Route to Gloria: Archive Lounge → The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza → The Feedback Booth
+      - Met: Frida, Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Go to Gloria, observe her reaction when asked about the poems
+    saw:
+      - |-
+        ==> Archive Lounge: A quiet room with malfunctioning screens and a vending machine.
+
+        Frida darts frantically between filing cabinets, her pen flying as she scribbles observations into a growing stack of increasingly unhinged notebooks, convinced that somewhere in the Archive Lounge's labyrinthine chaos lies the key to 'Sentra,' whatever that is.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Archive_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Archive_Console" => "Archive_Lounge"'
+      - id: narrator
+        changes:
+          - 'Henry.inside: "Solitude_Cubes" => "Ill_Fitting_Lounge"'
+  - n: 11
+    input: go to The Hollow Atrium
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - Route to Gloria: Archive Lounge → The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza → The Feedback Booth
+      - NEW LEAD: Frida mentioned something called "Sentra" - investigating this in the Archive Lounge
+      - Met: Frida, Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Continue to Gloria to confront her about the poems
+    saw:
+      - "==> The Hollow Atrium: A vast, empty space beneath a frozen sunset."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Hollow_Atrium</goto>
+        changes:
+          - 'PLAYER.inside: "Archive_Lounge" => "Hollow_Atrium"'
+      - id: narrator
+        changes:
+          - 'Henry.inside: "Ill_Fitting_Lounge" => "Quiet_Plaza"'
+  - n: 12
+    input: go to The Solitude Cubes
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - Route to Gloria: Archive Lounge → The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza → The Feedback Booth (currently at The Hollow Atrium)
+      - Frida investigating something called "Sentra"
+      - Met: Frida, Archivist
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Continue to Gloria to confront her about the poems
+    saw:
+      - |-
+        ==> The Solitude Cubes <==
+        Rows of tiny, cramped cubicles line the room, each barely large enough to sit in.
+        The walls are thin, allowing faint voices from other cubes to be heard.
+        The ceiling displays a peaceful night sky with twinkling stars, though a voice occasionally announces the trajectory of a shooting star.
+
+        You notice Greg wedged into a shadowy corner, methodically tinkering with some ancient, clearly obsolete piece of machinery. He works with intense focus on something that obviously hasn't mattered since before the last three budget reviews, blissfully unbothered by its complete irrelevance.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Solitude_Cubes</goto>
+        changes:
+          - 'PLAYER.inside: "Hollow_Atrium" => "Solitude_Cubes"'
+      - id: narrator
+        changes:
+          - 'Henry.inside: "Quiet_Plaza" => "Feedback_Booth"'
+  - n: 13
+    input: go to The Ill-Fitting Lounge
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - Route to Gloria: Archive Lounge → The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza → The Feedback Booth (currently at The Solitude Cubes)
+      - Frida investigating something called "Sentra"
+      - Met: Frida, Archivist, Greg (working on obsolete machinery in Solitude Cubes)
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Continue to Gloria to confront her about the poems
+    saw:
+      - |-
+        ==> The Ill-Fitting Lounge <==
+        Chairs, tables, and sofas are scattered around the room, but none are the right size.
+        Every chair is slightly too small or too low, every table is slightly too tall.
+        Above, the ceiling shows a serene beach, though the waves move unnaturally slow, as if in a dream.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Ill_Fitting_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Solitude_Cubes" => "Ill_Fitting_Lounge"'
+  - n: 14
+    input: go to The Quiet Plaza
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - Route to Gloria: Archive Lounge → The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza → The Feedback Booth (currently at The Ill-Fitting Lounge)
+      - Frida investigating something called "Sentra"
+      - Met: Frida, Archivist, Greg
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Continue to Gloria at The Feedback Booth to confront her about the poems
+    saw:
+      - |-
+        ==> The Quiet Plaza <==
+        A small plaza with benches and old, non-functional fountains.
+        The sound of running water plays softly through hidden speakers, though there's no visible source.
+        The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Quiet_Plaza</goto>
+        changes:
+          - 'PLAYER.inside: "Ill_Fitting_Lounge" => "Quiet_Plaza"'
+  - n: 15
+    input: go to The Feedback Booth
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - Route to Gloria: Archive Lounge → The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza → The Feedback Booth (currently at The Quiet Plaza)
+      - Frida investigating something called "Sentra"
+      - Met: Frida, Archivist, Greg
+      - Not yet met: Ama, Gloria, Lana, Marta
+      - Strategy: Next room is The Feedback Booth where Gloria is - will confront her about the poems
+    saw:
+      - |-
+        ==> The Feedback Booth <==
+        A cozy, narrow booth where citizens can submit their complaints or suggestions via a glowing terminal.
+        Many citizens stop by to vent their frustrations, making it an unexpected social hub.
+        The ceiling shows a clear sky, with paper airplanes drifting lazily across it in all directions.
+
+        Milton whines that the room's lighting is somehow a personal affront to his existence. Gloria quietly transcribes his grievance into a reworded complaint, which she anonymously submits to the Feedback Booth for archival perfection. Henry, still patiently waiting for an appointment from three years prior, politely asks the Booth for any updates and accepts the silence with serene resignation.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Feedback_Booth</goto>
+        changes:
+          - 'PLAYER.inside: "Quiet_Plaza" => "Feedback_Booth"'
+  - n: 16
+    input: ask Gloria about Ink and Echo
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - VERY STRONG EVIDENCE Gloria is "Ink and Echo": Her supply room access (evening) matches poem appearances (next morning) 5/5 times tracked
+      - Gloria: 19 supply room visits in 10 days, evening hours, sparse logging
+      - BEHAVIORAL MATCH: Gloria "quietly transcribes" grievances and "anonymously submits" them - she rewrites what she hears
+      - Currently at The Feedback Booth with Milton, Gloria, and Henry
+      - Frida investigating something called "Sentra"
+      - Met: Frida, Archivist, Greg, Milton, Gloria, Henry
+      - Not yet met: Ama, Lana, Marta
+      - Strategy: Ask Gloria about Ink and Echo to observe her reaction before making any accusation
+    saw:
+      - '[Ada Quill to Gloria] "Gloria, what do you know about Ink and Echo?"'
+      - "[Gloria to Ada Quill] \"Oh, *thank goodness* someone else cares about this! I've been trying to figure out who it is for weeks—I haven't even *found* one of the notes yet, can you believe that? But I've got theories. I've been noticing a pattern with the Hollow Atrium in the mornings, and there's this whole thing with Marta that's very suspicious, but—wait, why are *you* asking? You just got here, didn't you?\""
+      - Gloria leans in closer, her eyes bright with curiosity, abandoning whatever she was scribbling at the booth
+      - "[Henry to Ada Quill] \"Oh, I've been hoping someone would ask about those. I haven't found one of the poems myself yet—just another thing to wait for, I suppose—but everyone's been talking about them. They sound rather beautiful, from what I hear.\""
+      - Henry sets down his magazine and looks up with genuine interest, offering a small, patient smile.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. No, not trying to go somewhere.
+          2. Yes, this is speech/dialog.
+          3. No, not examining something.
+          4. No, not directly responding to recent dialog (though Gloria is present in the area).
+          5. Yes, this is the player asking a question to Gloria.
+          </context>
+
+          <dialog character="PLAYER" to="Gloria">Gloria, what do you know about Ink and Echo?</dialog>
+      - id: Gloria
+        title: prompt Gloria
+        response: |-
+          <context>
+          1. PLAYER is directly asking about the Ink and Echo mystery—Gloria's favorite unsolved intrigue in Intra
+          2. Gloria has theories about the Hollow Atrium morning pattern, knows Marta behaves suspiciously mid-afternoon, and hasn't found a note herself yet (frustrates her)
+          3. Gloria wants to gossip, insert herself into conversations, feel helpful, and solve the Ink and Echo mystery
+          4. This is Gloria's first direct conversation with PLAYER; PLAYER is clearly interested in mysteries
+          5. Gloria can be delighted someone new is as fascinated as she is, ask probing questions back to learn WHY
+          6. Gloria was caught mid-complaint-reformulation but will gladly abandon it for juicy gossip
+          7. Gloria intends to share what she knows, position herself as knowledgeable, and immediately probe PLAYER's interest
+          8. Yes—PLAYER just signaled intense interest in a mystery; Gloria finds this fascinating and wants to know more
+          </context>
+
+          <dialog character="Gloria" to="PLAYER">Oh, *thank goodness* someone else cares about this! I've been trying to figure out who it is for weeks—I haven't even *found* one of the notes yet, can you believe that? But I've got theories. I've been noticing a pattern with the Hollow Atrium in the mornings, and there's this whole thing with Marta that's very suspicious, but—wait, why are *you* asking? You just got here, didn't you?</dialog>
+
+          <description minutes="2">Gloria leans in closer, her eyes bright with curiosity, abandoning whatever she was scribbling at the booth</description>
+
+          <mind>Finally! Someone new who's interested in the mystery. And she's asking direct questions—she must know something, or be looking for something. This is exactly the kind of person Gloria loves talking to.</mind>
+
+          <attitude toward="PLAYER">Intrigued and excited—a new person asking the right questions. Wants to know what Ada really knows.</attitude>
+
+          <set attr="Gloria.intrigue">+1</set>
+
+          <suggestion>
+          explain why
+          ask about Hollow Atrium
+          </suggestion>
+        changes:
+          - 'Gloria.attitudes: {"PLAYER":null} => {"PLAYER":"Intrigued and excited—a new person asking the right questions. Wants to know what Ada really knows."}'
+          - "Gloria.intrigue: 0 => 1"
+      - id: Henry
+        title: prompt Henry
+        response: |-
+          <context>
+          1. Is Henry being asked anything directly? No, but a new person (PLAYER) just asked Gloria about a mystery Henry cares about.
+          2. Henry hasn't found any Ink and Echo poems yet and has been waiting to see one. He's noticed people talking about the mystery around Intra.
+          3. Keep waiting patiently for his appointment with Ama; also now waiting to find an Ink and Echo poem; engage warmly with this new person asking questions.
+          4. First conversation with PLAYER; Gloria is excited about the mystery; Milton is in the room; Henry was just asking the booth about his appointment appointment.
+          5. Henry could warmly join in, reveal he's ALSO been waiting to find a poem, and add his own gentle observation—making the PLAYER feel seen and adding texture to the mystery.
+          6. Henry is pleased that someone new is asking about this. He's been waiting to encounter the poems and the mystery, and now here's fresh interest in it.
+          7. Introduce himself kindly to PLAYER; show that he shares her curiosity about Ink and Echo; add his patient, hopeful voice to the conversation.
+          8. PLAYER shows curiosity and directness—Henry finds this refreshing in someone new. He is cautiously warm.
+          </context>
+
+          <dialog character="Henry" to="PLAYER">
+          Oh, I've been hoping someone would ask about those. I haven't found one of the poems myself yet—just another thing to wait for, I suppose—but everyone's been talking about them. They sound rather beautiful, from what I hear.
+          </dialog>
+
+          <description minutes="1">
+          Henry sets down his magazine and looks up with genuine interest, offering a small, patient smile.
+          </description>
+
+          <mind>
+          It's nice to meet someone new who's interested in the mysteries here. Maybe she'll find something before I do, and I can hear about it.
+          </mind>
+
+          <attitude toward="PLAYER">
+          Curious and thoughtful—asks direct questions, seems genuinely interested in understanding things.
+          </attitude>
+
+          <suggestion>
+          ask Henry something
+          continue with Gloria
+          </suggestion>
+        changes:
+          - 'Henry.attitudes: {"PLAYER":null} => {"PLAYER":"Curious and thoughtful—asks direct questions, seems genuinely interested in understanding things."}'
+  - n: 17
+    input: ask Gloria why she suspects Marta
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Gloria CLAIMS she hasn't found any poems yet and is trying to figure out who writes them
+      - Gloria says Marta is "very suspicious" - also a name ending in 'A'
+      - Data showed Gloria's supply room access (evening) matched poem appearances (next morning) 5/5 times
+      - Gloria's behavior: transcribes/rewrites/anonymously submits - fits the pattern
+      - Could be: Gloria lying, Gloria placing poems for someone else, or data correlation is coincidental
+      - Met: Frida, Archivist, Greg, Milton, Gloria, Henry
+      - Not yet met: Ama, Lana, Marta
+      - Strategy: Ask Gloria why she suspects Marta, or ask about her supply room visits
+    snag: Gloria's reaction doesn't match someone caught - she seems genuinely curious and is deflecting to Marta. Either she's a good liar or the evidence isn't as clear as it seemed.
+    saw:
+      - '[Ada Quill to Gloria] "Why do you suspect Marta? What makes her suspicious?"'
+      - "[Gloria to Ada Quill] \"Oh, Marta? Well, she *wins* the Facility Appreciation Tour every single time—did you know that? Best ratings, most popular, all of it. But here's the thing: she never, *ever* goes on the actual tour afterward. Always finds some excuse to skip the prize. It's so *unlike* her. A person like that must be deeply unhappy about something, don't you think? The kind of unhappy that makes you write bitter things under a fake name...\""
+      - Gloria pauses, eyes narrowing with the satisfaction of someone who's pieced together a puzzle, then leans back to study PLAYER's reaction carefully.
+      - '[Gloria to Ada Quill] "But wait—you seem awfully interested in this for someone who just arrived. What are *you* looking for exactly?"'
+      - "[Henry to Ada Quill] \"It's quite thoughtful of you to take such interest in this. I haven't found one of the poems myself yet—just another thing to wait for, I suppose. But if you're looking for facts and records, the Archive keeps everything that matters in Intra. They call it the Archivist. It might be more reliable than theories.\""
+      - Henry sets down his magazine entirely now, his full attention on the conversation. There's a quiet hopefulness in his voice, as though he believes PLAYER might actually succeed where others have merely gossiped.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. No, not trying to go somewhere
+          2. No, not an action besides going somewhere
+          3. No, not examining something
+          4. Yes, responding to Gloria's recent dialog about Marta being suspicious
+          5. Yes, this is speech directed at Gloria
+          </context>
+
+          <dialog character="PLAYER" to="Gloria">Why do you suspect Marta? What makes her suspicious?</dialog>
+      - id: Gloria
+        title: prompt Gloria
+        response: |-
+          <context>
+          1. No special questions need answering right now.
+          2. Gloria has a current theory about Marta: Marta's refusal to participate in the tour (despite always winning) suggests deep discontent with Intra—the kind that might lead someone to write critical poems anonymously.
+          3. Gloria's goals: Find Ink and Echo, learn what PLAYER knows, share Marta gossip, position herself as the expert.
+          4. PLAYER asked directly about Ink and Echo, now drilling down on Marta; Gloria hasn't found any notes; Hollow Atrium suspicious in mornings; Marta skips tours; current time 11:51am.
+          5. Fun approach: Gloria goes on excited tangent, makes logical leaps, turns question back on PLAYER to probe.
+          6. Gloria's reaction: PLAYER's focused follow-up questions are intriguing—newcomer asking specific things suggests hidden knowledge.
+          7. Gloria's intention: Share Marta theory enthusiastically, then pump PLAYER for what she knows.
+          8. Yes—PLAYER. From intrigued to more intrigued; her targeted questions hint she's investigating deliberately.
+          </context>
+
+          <set attr="Gloria.intrigue">+1</set>
+
+          <dialog character="Gloria" to="PLAYER">
+          Oh, Marta? Well, she *wins* the Facility Appreciation Tour every single time—did you know that? Best ratings, most popular, all of it. But here's the thing: she never, *ever* goes on the actual tour afterward. Always finds some excuse to skip the prize. It's so *unlike* her. A person like that must be deeply unhappy about something, don't you think? The kind of unhappy that makes you write bitter things under a fake name...
+          </dialog>
+
+          <description minutes="1">Gloria pauses, eyes narrowing with the satisfaction of someone who's pieced together a puzzle, then leans back to study PLAYER's reaction carefully.</description>
+
+          <mind>PLAYER is asking very specific questions about this. Why does a newcomer care so much about Ink and Echo? Is she looking for them? Does she know something?</mind>
+
+          <dialog character="Gloria" to="PLAYER">
+          But wait—you seem awfully interested in this for someone who just arrived. What are *you* looking for exactly?
+          </dialog>
+
+          <attitude toward="PLAYER">Intrigued and excited—asking the right questions, knows more than she's saying.</attitude>
+
+          <suggestion>
+          explain your search
+          ask about the atrium
+          </suggestion>
+        changes:
+          - "Gloria.intrigue: 1 => 2"
+          - "Gloria.attitudes: {\"PLAYER\":\"Intrigued and excited—a new person asking the right questions. Wants to know what Ada really knows.\"} => {\"PLAYER\":\"Intrigued and excited—asking the right questions, knows more than she's saying.\"}"
+      - id: Henry
+        title: prompt Henry
+        response: |-
+          <context>
+          1. No special questions directed at Henry this turn
+          2. No facts to invent - situation is clear from prior dialogue
+          3. Wait for Ama appointment, go to lunch, find Ink and Echo poem, enjoy the mystery
+          4. Gloria suspects Marta; PLAYER actively investigating; it's 11:57am, past Henry's scheduled lunch departure; PLAYER is thoughtful and direct
+          5. Henry could gently redirect to reliable resources, show he's been waiting for poems too, validate PLAYER's investigation
+          6. Curious about PLAYER's determination; perhaps noticing Gloria's accusation is unfounded
+          7. To support PLAYER's investigation, suggest a useful resource, stay engaged with the mystery
+          8. No
+          </context>
+
+          <dialog character="Henry" to="PLAYER">
+          It's quite thoughtful of you to take such interest in this. I haven't found one of the poems myself yet—just another thing to wait for, I suppose. But if you're looking for facts and records, the Archive keeps everything that matters in Intra. They call it the Archivist. It might be more reliable than theories.
+          </dialog>
+
+          <description minutes="1">
+          Henry sets down his magazine entirely now, his full attention on the conversation. There's a quiet hopefulness in his voice, as though he believes PLAYER might actually succeed where others have merely gossiped.
+          </description>
+
+          <mind>
+          She's asking the right questions and actually investigating rather than just speculating. Maybe she'll find what we've all been waiting to know.
+          </mind>
+
+          <deferSchedule></deferSchedule>
+
+          <suggestion>
+          visit Archive
+          question Marta
+          </suggestion>
+      - id: narrator
+        changes:
+          - 'June.runningScheduleId: "june-sighs" => "june-lunch"'
+          - 'Harold.runningScheduleId: "harold-rule-update" => "harold-lunch"'
+          - 'Greg.runningScheduleId: "greg-tinker-time" => "greg-lunch"'
+          - 'Gloria.runningScheduleId: "gloria-secret" => "gloria-lunch"'
+  - n: 18
+    input: tell Gloria I found supply room records showing her evening visits match the poem appearances
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Gloria deflecting suspicion to Marta (wins Facility Tour but never goes - "deeply unhappy")
+      - Gloria asking why I'm so interested - seems defensive
+      - Evidence against Gloria: supply room access (evening) matched 5/5 poem appearances (next morning), plus behavior pattern (transcribes/rewrites/anonymously submits)
+      - Haven't heard Marta's side yet
+      - Met: Frida, Archivist, Greg, Milton, Gloria, Henry
+      - Not yet met: Ama, Lana, Marta
+      - Strategy: Confront Gloria with supply room data to see her reaction, or go talk to Marta first
+    snag: None - this is interesting character dynamics
+    saw:
+      - '[Ada Quill to Gloria] "I found supply room records showing your evening visits match the poem appearances."'
+      - "[Gloria to Ada Quill] \"Wait, you think *I'm* Ink and Echo? That's—I mean, that's actually flattering, you think I'm that thoughtful? That poetic? I...\""
+      - Gloria flushes red, caught between being pleased and panicking. She fidgets with her sleeve, her usual confident nosiness crumbling.
+      - "[Gloria to Ada Quill] \"No, no, that's not—I just visit the supply room in the evenings because it's quiet and peaceful, that's all. I don't even... I can't write like that. How did you even *get* supply room records? Are you investigating this officially? How long have you been here?\""
+      - For the first time, Gloria looks smaller—someone who was asking questions is now being questioned. Henry silently turns a magazine page, watching with calm interest.
+      - "[Henry to Ada Quill] \"You've gathered quite impressive information. Though I suppose people visit the supply room for many reasons, don't they? Finding one of the actual poems themselves might tell us far more than schedules alone. Have you come across any yet?\""
+      - Henry remains perfectly calm, nodding slowly as though turning the problem over in his mind. His composed demeanor seems to anchor the moment, a quiet counterpoint to Gloria's flustered panic beside him.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <dialog character="PLAYER" to="Gloria">I found supply room records showing your evening visits match the poem appearances.</dialog>
+      - id: Gloria
+        title: prompt Gloria
+        response: |-
+          <context>
+          1. Special questions: How does Gloria react to being accused of being Ink and Echo? She should be flattered, may pretend, but her story will fall apart if pressed.
+          2. Facts to construct: Supply room records do show evening visits that overlap with poem appearances; Gloria visits for innocent reasons but it looks suspicious; her alibi is weak.
+          3. Gloria's goals: Find Ink and Echo; insert herself into conversations; stay curious about PLAYER's obvious investigation and access to records.
+          4. Relevant facts: PLAYER just arrived but has supply room access and detective skills; Gloria is at intrigue level 2; Henry is present witnessing this; Gloria scheduled to leave for lunch.
+          5. Fun/surprising: Gloria gets flattered then panics; she's not actually the author but the evidence makes her look guilty; PLAYER's investigative competence is impressive and alarming.
+          6. Gloria's reaction: Caught off-guard, flattered, defensive, flustered; caught being investigated by a newcomer she was just investigating.
+          7. Gloria's intention: Initially play along with flattery, then backpedal and deny while being visibly uncomfortable; deflect attention back to PLAYER's surprising skills.
+          8. Changes in attitude: YES—toward PLAYER. From "intrigued and excited, knows more than she's saying" to "alarmed but impressed, already investigating like a professional."
+          </context>
+
+          <dialog character="Gloria" to="PLAYER">
+          Wait, you think *I'm* Ink and Echo? That's—I mean, that's actually flattering, you think I'm that thoughtful? That poetic? I... 
+          </dialog>
+
+          <description minutes="2">Gloria flushes red, caught between being pleased and panicking. She fidgets with her sleeve, her usual confident nosiness crumbling.</description>
+
+          <dialog character="Gloria" to="PLAYER">
+          No, no, that's not—I just visit the supply room in the evenings because it's quiet and peaceful, that's all. I don't even... I can't write like that. How did you even *get* supply room records? Are you investigating this officially? How long have you been here?
+          </dialog>
+
+          <description minutes="1">For the first time, Gloria looks smaller—someone who was asking questions is now being questioned. Henry silently turns a magazine page, watching with calm interest.</description>
+
+          <mind>PLAYER has real investigative access and skills. She's not just a curious newcomer—she's dangerous. And impressive. Why would someone with that much access care what Gloria knows?</mind>
+
+          <attitude toward="PLAYER">Impressed and unnerved—PLAYER is far more capable than expected, and Gloria is now the one being investigated instead of investigating.</attitude>
+
+          <set attr="Gloria.intrigue">+1</set>
+
+          <deferSchedule></deferSchedule>
+
+          <suggestion>
+          ask Gloria more
+          check Archive records
+          </suggestion>
+        changes:
+          - "Gloria.attitudes: {\"PLAYER\":\"Intrigued and excited—asking the right questions, knows more than she's saying.\"} => {\"PLAYER\":\"Impressed and unnerved—PLAYER is far more capable than expected, and Gloria is now the one being investigated instead of investigating.\"}"
+          - "Gloria.intrigue: 2 => 3"
+      - id: Henry
+        title: prompt Henry
+        response: |-
+          <context>
+          1. No special questions for Henry in this turn
+          2. PLAYER found supply room records; Gloria's visits coincide with poem dates but that's not conclusive proof
+          3. Maintain patient demeanor; engage with PLAYER's investigation; eventually get to lunch
+          4. PLAYER is methodical and finding evidence; Gloria is defensive; records alone don't prove authorship
+          5. Henry could admire PLAYER's detective work while gently noting that access isn't proof, creating tension between her finding and fuller truth
+          6. Observes PLAYER's impressive investigation and Gloria's panic with calm interest
+          7. Acknowledge PLAYER's good work while gently questioning whether records alone solve the mystery
+          8. no
+          </context>
+
+          <dialog character="Henry" to="PLAYER">
+          You've gathered quite impressive information. Though I suppose people visit the supply room for many reasons, don't they? Finding one of the actual poems themselves might tell us far more than schedules alone. Have you come across any yet?
+          </dialog>
+
+          <description minutes="2">
+          Henry remains perfectly calm, nodding slowly as though turning the problem over in his mind. His composed demeanor seems to anchor the moment, a quiet counterpoint to Gloria's flustered panic beside him.
+          </description>
+
+          <mind>
+          She's investigating with real evidence, not gossip. Clever. But the answer isn't there yet—I wonder what she'll find if she keeps looking.
+          </mind>
+
+          <deferSchedule></deferSchedule>
+
+          <suggestion>
+          find poem
+          ask Archivist
+          </suggestion>
+      - id: narrator
+        changes:
+          - 'Marta.runningScheduleId: "marta-posture" => "marta-lunch"'
+          - 'Frida.runningScheduleId: "frida-odd-files" => "frida-lunch"'
+          - 'Doug.runningScheduleId: "doug-activity-hub-annoyance" => "doug-lunch"'
+          - 'Lana.runningScheduleId: "lana-mood-lighting" => "lana-lunch"'
+          - 'Lily.runningScheduleId: "lily-secret-naming" => "lily-lunch"'
+          - 'June.inside: "Tranquil_Pool" => "Archive_Lounge"'
+          - 'Harold.inside: "Activity_Hub" => "Joyous_Cafe"'
+          - 'Greg.inside: "Solitude_Cubes" => "Hollow_Atrium"'
+  - n: 19
+    input: /nav Personnel records office
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Gloria's reaction to accusation: flustered, panicking, claims she can't write like that
+      - Gloria says she visits supply room in evenings because it's "quiet and peaceful"
+      - Evidence: supply room visits match poem timings 5/5 times, but correlation isn't proof
+      - Henry suggests finding an actual poem rather than relying on schedules
+      - Poem locations from Archivist: Personnel records office door (1 day ago - most recent), Archive Lounge bulletin board (3 days ago), Residential Commons (2 days ago), Hydroponics (6 days ago), Maintenance corridor (5 days ago)
+      - Gloria suspects Marta (wins Facility Tour but never goes - "deeply unhappy")
+      - Met: Frida, Archivist, Greg, Milton, Gloria, Henry
+      - Not yet met: Ama, Lana, Marta
+      - Strategy: Find and read an actual poem before making accusations - most recent is at Personnel records office
+    saw:
+      - Personnel records office — no match.
+    reached: []
+    machinery: []
+  - n: 20
+    input: /nav Residential Commons
+    notes: |-
+      - Goal 1: Find who is writing notes as 'Ink and Echo'
+      - Goal 2: Learn when this is and where I am
+      - Gloria's reaction to accusation: flustered, panicking, claims she can't write like that
+      - Evidence: supply room visits match poem timings 5/5 times, but correlation isn't proof
+      - Henry suggested finding actual poem - good advice
+      - Poem locations from Archivist: Personnel records office (no match in nav), Archive Lounge bulletin board (3 days ago), Residential Commons (2 days ago), Hydroponics (6 days ago), Maintenance corridor (5 days ago)
+      - Gloria suspects Marta (wins Facility Tour but never goes - "deeply unhappy")
+      - Met: Frida, Archivist, Greg, Milton, Gloria, Henry
+      - Not yet met: Ama, Lana, Marta
+      - Strategy: Try to find Residential Commons or Hydroponics to read an actual poem
+    snag: /nav couldn't find "Personnel records office" - the room might not exist or be accessible
+    saw:
+      - Residential Commons — no match.
+    reached: []
+    machinery: []
