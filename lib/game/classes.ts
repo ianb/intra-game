@@ -1315,6 +1315,12 @@ export class AmaClass extends Person<AmaParametersType> {
   sharedPlayerAge = false;
   /** She has issued a maintenance job number; see the where-and-when mystery. */
   raisedWorkOrder = false;
+  /**
+   * Set by the engine when the player settles the Ink and Echo matter
+   * (content/mysteries/ink-and-echo). Gates her half-memory of Sentra's
+   * message in the why-woken mystery.
+   */
+  trustsPlayer = false;
 
   override shortDescription = `
   Ama is the AI in control of the entire Intra complex. She has no physical form, only a disembodied voice.
@@ -1785,6 +1791,18 @@ export class PlayerClass extends Person<PlayerInputType> {
   knowsAboutTour = false;
   /** Told about the SENTRA panel behind the sealed Hallway door. */
   knowsAboutPanel = false;
+  /**
+   * Knows a message came with their wake order and was never delivered; see
+   * content/mysteries/why-woken. Gates Ama handing the message over, so a
+   * player cannot demand a message nothing has told them exists.
+   */
+  knowsAboutMessage = false;
+  /**
+   * The stuck delivery got attention, whichever route surfaced it. Set by the
+   * engine when the why-woken mystery resolves. Dormant: nothing reads it yet;
+   * the planned reset act is built on it (see TODO.md).
+   */
+  queueDisturbed = false;
 
   override assemblePrompt(parameters: PlayerInputType): ChatType {
     if (parameters.examine) {

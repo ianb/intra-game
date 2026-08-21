@@ -45,6 +45,24 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **The reset act (design ledger)** `content` `L` — the planned final act,
+  designed in chat 2026-08-21; recorded here so the pieces stay findable.
+  Resolving why-woken sets `PLAYER.queueDisturbed` (the fuse, already live and
+  dormant). Later: the unclogged delivery queue starts clearing three hundred
+  years of backlog, including items addressed to citizens nobody recognizes;
+  the lethal phase arms only once the player is endgame-ready; a multi-turn
+  crisis (mealtime is the natural stage) where individual saves work but the
+  cascade re-aims until someone dies; Ama cannot file a death and resets Intra
+  — every NPC re-cloned from originals, the player exempt because their
+  baseline recording was never completed (pending), with Sentra having locked
+  their pod out of the refresh roster as the deeper cause. The reset event
+  must set a flag (e.g. `PLAYER.loopedBack`) so intake, the flashback, and
+  other one-time beats play differently on the second pass. The queue is
+  outside the reset and delivers the Facility Appreciation Tour days after,
+  so the player goes from second intake to the relay without replaying the
+  game. The victim comes back with everyone else; only the player carries the
+  death.
+
 - **Sonnet stalls intake by re-asking pronouns** `prompts` `S` — twice in four
   full eval runs, Sonnet's movement scenario failed the same way: intake never
   completes because Ama circles back to pronouns against the "do not hold up

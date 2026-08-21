@@ -1,6 +1,45 @@
 import { Mystery } from "../../../classes";
+import type { ActionRequestType, StoryEventType } from "../../../../types";
 
-export const Ink_And_Echo = new Mystery({
+export class InkAndEchoMystery extends Mystery {
+  override onStoryEvent(storyEvent: StoryEventType): ActionRequestType[] {
+    if (
+      storyEvent.changes[this.id]?.after?.state !== "solved" ||
+      this.world.entities.Ama.trustsPlayer
+    ) {
+      return [];
+    }
+    // The reward for settling Ama's errand: she trusts the player now, which
+    // is what unlocks her half-memory of Sentra's message in the why-woken
+    // mystery. Engine-made so the reward cannot be forgotten by a model.
+    const ama = this.world.entities.Ama;
+    return [
+      {
+        id: "Ama",
+        totalTime: 0,
+        roomId: this.world.entities.PLAYER.inside,
+        changes: {
+          Ama: {
+            before: {
+              trustsPlayer: false,
+              attitudes: { PLAYER: ama.attitudes.PLAYER ?? null },
+            },
+            after: {
+              trustsPlayer: true,
+              attitudes: {
+                PLAYER:
+                  "Settled the Ink and Echo matter for me. Someone I can hand things to.",
+              },
+            },
+          },
+        },
+        actions: [],
+      },
+    ];
+  }
+}
+
+export const Ink_And_Echo = new InkAndEchoMystery({
   id: "Ink_And_Echo",
   name: "Who is writing notes as 'Ink and Echo'?",
   // The first room the player reaches after intake. Ama reads the introduction
@@ -96,6 +135,17 @@ export const Ink_And_Echo = new Mystery({
     `,
     Yellow_Room: `
     Ink and Echo has left a poem in the Yellow Room. If the player enters or examines the room then mention the existance of the note. If the player picks up or reads the note they will find a poem that is critical of Intra, that mentions the player, and hints at the author's identity (Marta, who loves to mention that she received the Star Citizen award).
+    `,
+  },
+  solvedHints: {
+    "*": `
+    The Ink and Echo poems have stopped appearing, and Ama has said only that the matter is settled. This character does not know who the poet was unless the player told them, and mildly wants to.
+    `,
+    Ama: `
+    The player settled the Ink and Echo matter. Ama considers it handled well and now treats the player as someone she can hand things to: when the player asks her a question she would once have closed with a filing answer, she goes one step further before stopping.
+    `,
+    Marta: `
+    Marta's secret is in the player's hands and she knows it. She is formal with the player in public and drops the formality when they are alone. She does not mention the poems unless the player does. If the player has kept the secret, she leaves small correct observations in the player's hearing, which is the closest she comes to thanking them.
     `,
   },
 });

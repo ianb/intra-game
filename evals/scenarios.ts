@@ -8,6 +8,7 @@ import { MYSTERY_EVAL } from "../lib/game/content/mysteries/ink-and-echo/eval";
 import { WHERE_AND_WHEN_EVAL } from "../lib/game/content/mysteries/where-and-when/eval";
 import { STAR_CITIZEN_EVAL } from "../lib/game/content/mysteries/star-citizen/eval";
 import { SEALED_DOOR_EVAL } from "../lib/game/content/mysteries/sealed-door/eval";
+import { WHY_WOKEN_EVAL } from "../lib/game/content/mysteries/why-woken/eval";
 import type { Scenario } from "./harness";
 
 /**
@@ -216,5 +217,6 @@ export const EVAL_SCENARIOS: Scenario[] = [
   WHERE_AND_WHEN_EVAL,
   STAR_CITIZEN_EVAL,
   SEALED_DOOR_EVAL,
+  WHY_WOKEN_EVAL,
   TASK_LIST_EVAL,
 ];

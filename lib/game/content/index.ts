@@ -6,6 +6,7 @@ import {
   whereAndWhen,
   Star_Citizen,
   Sealed_Door,
+  Why_Woken,
 } from "./mysteries";
 import {
   Marta,
@@ -135,6 +136,7 @@ export const entities = {
   whereAndWhen,
   Star_Citizen,
   Sealed_Door,
+  Why_Woken,
 };
 
 // Content is written as indented template literals for readability; strip that
