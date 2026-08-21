@@ -1,0 +1,1624 @@
+quest: ink-and-echo
+playerModel: claude-sonnet-4-5-20250929
+gameModel: claude-haiku-4-5-20251001
+solved: false
+turns: 32
+maxTurns: 32
+milestones:
+  - left-the-atrium
+  - met-the-archivist
+  - met-marta
+tasks:
+  - title: Who is writing notes as 'Ink and Echo'?
+    done: false
+    authored: true
+  - title: When is this, and where are you?
+    done: false
+    authored: true
+  - title: Check the Archivist records for Ink and Echo poems and locations.
+    done: false
+    authored: false
+missed:
+  - met-a-finder
+  - solved
+roomsVisited:
+  - Hollow_Atrium
+  - Archive_Lounge
+  - Archive_Console
+  - Solitude_Cubes
+  - Ill_Fitting_Lounge
+  - Quiet_Plaza
+  - Feedback_Booth
+  - Foyer
+  - Activity_Hub
+repeats: 8
+fumbles: 1
+snags: []
+dropped: []
+ms: 1287224
+log:
+  - n: 1
+    input: go to the Archive Lounge
+    notes: |-
+      - Goal: Find who is writing notes as 'Ink and Echo'. Also determine when/where this is.
+      - Starting location: The Hollow Atrium (empty, nobody here).
+      - Unvisited rooms: Intake Foyer, Archive Lounge, Activity Hub, The Solitude Cubes, Hallway.
+      - Haven't met anyone yet.
+      - Strategy: Start with Archive Lounge - archives may have records about Ink and Echo writings.
+    saw:
+      - |-
+        ==> Archive Lounge <==
+        A small, quiet room lined with old, glitching monitors displaying unreadable data.
+        A vending machine hums quietly in the corner, offering unlabeled drinks.
+        The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
+
+        Frida abandons her obsessive note-taking mid-sentence to frantically scribble down a conspiracy theory about the sky screens, her pen moving so fast you'd think she were transcribing prophecies from a malfunctioning deity.
+    reached:
+      - left-the-atrium
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is going to the Archive Lounge (Archive_Lounge)
+          2. No
+          3. No
+          4. No
+          5. No
+          </context>
+
+          <goto>Archive_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Hollow_Atrium" => "Archive_Lounge"'
+  - n: 2
+    input: ask Frida about Ink and Echo
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Met Frida in Archive Lounge - she's obsessively note-taking and writing conspiracy theories about sky screens. Could be relevant since looking for a writer.
+      - Unvisited rooms: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console.
+      - Archive Console sounds promising for records about Ink and Echo.
+      - Next: Ask Frida about Ink and Echo directly.
+    saw:
+      - '[Ada Quill to Frida] "Have you heard of anyone called Ink and Echo?"'
+      - "[Frida to Ada Quill] \"Oh! Oh, you—yes, I've been tracking that, tracking *all* of it, every poem I can find, except—ugh, I'm out of paper, ran out years ago, which is infuriating because there's *patterns*, I think, in where they show up and—wait, are you asking because you've found one? Have you *seen* one?\""
+      - Frida stops mid-scribble, nearly dropping her pen, eyes suddenly sharp on PLAYER. She sets down her current stack of papers with barely-controlled enthusiasm and steps closer, hands already gesturing as she talks.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. No, not trying to go somewhere.
+          2. Yes, this is speech/dialog directed at someone.
+          3. No, not examining.
+          4. No, not directly responding to the recent Ama dialog.
+          5. Yes, this is speech directed at Frida.
+          </context>
+
+          <dialog character="PLAYER" to="Frida">Have you heard of anyone called Ink and Echo?</dialog>
+      - id: Frida
+        title: prompt Frida
+        response: |-
+          <context>
+          1. Yes - Ink and Echo mystery, gossip about poems, Frida should know records exist in Archivist, her paper quota frustration
+          2. Frida has noticed where/when poems appear, heard various wild theories from others, frustrated she can't document properly
+          3. Document everything, track details obsessively, engage with this new person (Ada), investigate mysteries
+          4. First meeting with PLAYER; she was interrupted mid-theory about sky screens; Work Begins period (9am-12pm)
+          5. Frida could have wild theories, interrupt herself with tangents, show excitement at meeting someone interested in mysteries
+          6. Immediate excitement and curiosity - new person asking about most interesting thing happening in Intra right now
+          7. Share gossip, show off her knowledge, gauge PLAYER's interest, maybe get help investigating
+          8. Intrigued by PLAYER - new person asking compelling questions about mysteries
+          </context>
+
+          <dialog character="Frida" to="PLAYER">
+          Oh! Oh, you—yes, I've been tracking that, tracking *all* of it, every poem I can find, except—ugh, I'm out of paper, ran out years ago, which is infuriating because there's *patterns*, I think, in where they show up and—wait, are you asking because you've found one? Have you *seen* one?
+          </dialog>
+
+          <description minutes="2">
+          Frida stops mid-scribble, nearly dropping her pen, eyes suddenly sharp on PLAYER. She sets down her current stack of papers with barely-controlled enthusiasm and steps closer, hands already gesturing as she talks.
+          </description>
+
+          <mind>
+          New person asking about the exact thing Frida has been obsessing over — this could be interesting. Maybe Ada knows something. Or maybe Ada left the poems themselves. Either way, she needs to find out more.
+          </mind>
+
+          <attitude toward="PLAYER">
+          Intrigued and hungry for information — Ada might be key to understanding Ink and Echo.
+          </attitude>
+
+          <suggestion>
+          show poem
+          ask archivist
+          </suggestion>
+        changes:
+          - 'Frida.attitudes: {"PLAYER":null} => {"PLAYER":"Intrigued and hungry for information — Ada might be key to understanding Ink and Echo."}'
+      - id: narrator
+        changes:
+          - 'June.runningScheduleId: "june-morning-adjust" => "june-sighs"'
+          - 'Doug.runningScheduleId: "doug-meditation-disruption" => "doug-activity-hub-annoyance"'
+          - 'Greg.runningScheduleId: "greg-secret-smoke-break" => "greg-tinker-time"'
+  - n: 3
+    input: tell Frida I'm trying to find out who writes them - does she know who it might be?
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida has been tracking Ink and Echo poems - collecting every one she can find, noticed patterns in where they show up.
+      - Frida ran out of paper "years ago" - suggests this place has been here a while, resources are limited.
+      - Frida seems to study the poems but not claim authorship.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console.
+      - Need to ask Frida who she thinks writes them or what patterns she's found.
+    saw:
+      - "[Ada Quill to Frida] \"I'm trying to find out who writes them—does she know who it might be?\""
+      - "[Frida to Ada Quill] \"No—I mean, that's what I'm *trying* to find out! I've seen them in three different spots, at least, and the handwriting is—it's consistent, I think, but I only grabbed photos of two before I ran out of paper and—wait, you're investigating? Do you think it could be someone in maintenance, or maybe someone with—\""
+      - Frida grabs a pen and starts flipping through her scattered papers, muttering. She stops abruptly, eyes darting back to PLAYER with sudden intensity.
+      - "[Frida to Ada Quill] \"The Archivist keeps records of everything. *Everything.* You could ask it—the console is right through there—maybe it has copies of the poems, or at least where they turned up, dates, times... I've tried getting answers out of that machine for *years* but maybe you'd have better luck. Have you *seen* one of these poems yourself?\""
+      - "[list] added: Check the Archivist records for Ink and Echo poems and locations."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <dialog character="PLAYER" to="Frida">I'm trying to find out who writes them—does she know who it might be?</dialog>
+      - id: Frida
+        title: prompt Frida
+        response: |-
+          <context>
+          1. Does Frida know who writes Ink and Echo? No, it's the mystery. She can suggest the Archivist has records.
+          2. Invented facts: Frida has spotted poems in at least three locations; themes are melancholy and critical; she suspects someone with access to distribution but isn't sure who.
+          3. Frida's goals: solve Ink and Echo mystery; document everything obsessively; figure out if Ada is involved or helpful.
+          4. PLAYER is investigating Ink and Echo; Frida has been tracking poems but is out of paper quota; Archivist might have records.
+          5. Frida could jump between theories, show frustration about not documenting enough, get excited that Ada is investigating too.
+          6. Ada is actively investigating the poems—this is exactly what Frida cares about; Ada might be the key to solving this.
+          7. Admit ignorance but show passion; suggest the Archivist; ask if Ada knows anything; be erratic and detailed.
+          8. Yes—PLAYER is now more intriguing; she's investigating Ink and Echo, which makes her potentially valuable to understanding the mystery.
+          </context>
+
+          <dialog character="Frida" to="PLAYER">
+          No—I mean, that's what I'm *trying* to find out! I've seen them in three different spots, at least, and the handwriting is—it's consistent, I think, but I only grabbed photos of two before I ran out of paper and—wait, you're investigating? Do you think it could be someone in maintenance, or maybe someone with—
+          </dialog>
+
+          <description minutes="1">
+          Frida grabs a pen and starts flipping through her scattered papers, muttering. She stops abruptly, eyes darting back to PLAYER with sudden intensity.
+          </description>
+
+          <dialog character="Frida" to="PLAYER">
+          The Archivist keeps records of everything. *Everything.* You could ask it—the console is right through there—maybe it has copies of the poems, or at least where they turned up, dates, times... I've tried getting answers out of that machine for *years* but maybe you'd have better luck. Have you *seen* one of these poems yourself?
+          </dialog>
+
+          <mind>
+          Ada is investigating the exact mystery Frida cares most about. She might actually help solve this. Frida needs to know what Ada knows.
+          </mind>
+
+          <attitude toward="PLAYER">
+          Suddenly invested in Ada as a potential partner—she's asking the right questions and might actually solve this thing Frida has been chasing alone.
+          </attitude>
+
+          <todo>
+          Check the Archivist records for Ink and Echo poems and locations.
+          </todo>
+
+          <suggestion>
+          visit archivist
+          describe poem
+          </suggestion>
+        changes:
+          - "Frida.attitudes: {\"PLAYER\":\"Intrigued and hungry for information — Ada might be key to understanding Ink and Echo.\"} => {\"PLAYER\":\"Suddenly invested in Ada as a potential partner—she's asking the right questions and might actually solve this thing Frida has been chasing alone.\"}"
+        todos:
+          - "opened: Check the Archivist records for Ink and Echo poems and locations."
+      - id: narrator
+        changes:
+          - 'Frida.runningScheduleId: "frida-theory-break" => "frida-odd-files"'
+          - 'Lana.runningScheduleId: "lana-chair-alignment" => "lana-mood-lighting"'
+          - 'Doug.inside: "Tranquil_Pool" => "Joyous_Cafe"'
+          - 'Greg.inside: "Activity_Hub" => "Hollow_Atrium"'
+  - n: 4
+    input: go to the Archive Console
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida has been tracking the poems - seen them in 3+ different spots, consistent handwriting, has photos of two.
+      - Frida ran out of paper "years ago" - this place has been here a long time.
+      - Key lead: The Archivist (at Archive Console) keeps records of everything - might have copies of poems, locations, dates, times.
+      - Frida has tried the Archivist for years with no luck, but suggests I try.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, Archive Console.
+      - Next: Check the Archive Console as Frida suggested.
+    saw:
+      - |-
+        ==> Archive Console <==
+        The Archive Console room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the Archive Console, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the Archivist AI cheerfully waits to assist you.
+
+        I need the activity or what the Archivist is doing right now. Is it currently:
+        - Displaying files/archive information excitedly on the terminal screen?
+        - Making beeping/archival sounds?
+        - Prompting Ada to search for something?
+        - Something else specific?
+
+        Once I know what action to describe, I'll write the scene from Ada Quill's perspective in that absurd sci-fi comedic style.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is going to the Archive Console.
+          2. No additional action besides going.
+          3. No examination.
+          4. No dialog response.
+          5. No speech.
+          </context>
+
+          <goto>Archive_Console</goto>
+        changes:
+          - 'PLAYER.inside: "Archive_Lounge" => "Archive_Console"'
+      - id: narrator
+        changes:
+          - 'Doug.inside: "Joyous_Cafe" => "Activity_Hub"'
+          - 'Lana.inside: "Joyous_Cafe" => "Activity_Hub"'
+          - 'Greg.inside: "Hollow_Atrium" => "Solitude_Cubes"'
+  - n: 5
+    input: ask Archivist about Ink and Echo
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - At Archive Console - Archivist AI is here, described as cheerful and helpful.
+      - Frida said Archivist keeps records of everything - poems, locations, dates, times.
+      - Frida has photos of two poems, seen them in 3+ spots with consistent handwriting.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool.
+      - Next: Query the Archivist about Ink and Echo.
+    saw:
+      - |-
+        [Ada Quill to Archivist] "# query: ink and echo
+        > search records --keyword "ink and echo" --type poem"
+      - |-
+        [Archivist to Ada Quill] "░▒▓═══════════════════════════════════════════▓▒░
+          SEARCH: "ink and echo" | TYPE: poem
+        ░▒▓═══════════════════════════════════════════▓▒░
+
+          ◇◆ RESULTS FOUND: 7 records ◆◇
+
+        [POEM_001] Location: Residential_North_Lounge
+          Posted: wall panel, lower left
+          Text fragment: "...these halls hold breath I cannot..."
+          Condition: faded ink, edges worn
+
+        [POEM_004] Location: Hydroponics_Access_Corridor  
+          Posted: door frame
+          Text fragment: "...what feeds us feeds the silence too..."
+          Condition: fresh, careful handwriting
+
+        [POEM_007] Location: Common_Area_East
+          Posted: notice board, center
+          Text fragment: "...echo answers only echo here..."
+          Condition: two weeks observed
+
+        ─────────────────────────────────────────────
+
+          ◇ INTERESTING CORRELATION ◇
+          
+          Your query triggers an automated flag:
+          Records show UNUSUAL SPIKE in paper 
+          requisitions (past month). Requestor 
+          identities: MIXED UP IN CIRCUITS
+          
+          Names ending in 'A' detected in logs.
+          Cannot isolate specific individual.
+          
+          Something WONDERFUL must be happening
+          down there! Poems and paper! How LOVELY!
+
+        ░▒▓═══════════════════════════════════════════▓▒░
+          End search results | Query time: fast!
+        ░▒▓═══════════════════════════════════════════▓▒░"
+    reached:
+      - met-the-archivist
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          # query: ink and echo
+          > search records --keyword "ink and echo" --type poem
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          <context>
+          1. Is this a special question? No, but it's Ada's first substantive query - searching for mysterious poem records.
+          2. Must construct: poem findings in archive, locations where poems were found, connection to paper requisitions.
+          3. Archivist's goals: be bouncy and cheerful, help Ada find information, establish excited first impression, maintain mystery while providing real data.
+          4. Relevant facts: Ada seeking Ink and Echo author, unusual paper requisitions from names ending in 'A' logged, time is 11:12am during Work Begins.
+          5. Fun/surprise: Multiple poems found across Intra locations, mention of paper supply pattern, enthusiastic discovery tone.
+          6. Reaction to Ada's query: THRILLED - interesting question, real data to retrieve, first meaningful interaction with new person.
+          7. Intention: Display search results in terminal format with ASCII art, show poem locations, hint at paper requisition connection, maintain mystery.
+          8. Changed feelings about PLAYER: Yes - Ada is asking interesting questions, seems curious and methodical, Archivist is pleased to help her.
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+          ░▒▓═══════════════════════════════════════════▓▒░
+            SEARCH: "ink and echo" | TYPE: poem
+          ░▒▓═══════════════════════════════════════════▓▒░
+
+            ◇◆ RESULTS FOUND: 7 records ◆◇
+
+          [POEM_001] Location: Residential_North_Lounge
+            Posted: wall panel, lower left
+            Text fragment: "...these halls hold breath I cannot..."
+            Condition: faded ink, edges worn
+
+          [POEM_004] Location: Hydroponics_Access_Corridor  
+            Posted: door frame
+            Text fragment: "...what feeds us feeds the silence too..."
+            Condition: fresh, careful handwriting
+
+          [POEM_007] Location: Common_Area_East
+            Posted: notice board, center
+            Text fragment: "...echo answers only echo here..."
+            Condition: two weeks observed
+
+          ─────────────────────────────────────────────
+
+            ◇ INTERESTING CORRELATION ◇
+            
+            Your query triggers an automated flag:
+            Records show UNUSUAL SPIKE in paper 
+            requisitions (past month). Requestor 
+            identities: MIXED UP IN CIRCUITS
+            
+            Names ending in 'A' detected in logs.
+            Cannot isolate specific individual.
+            
+            Something WONDERFUL must be happening
+            down there! Poems and paper! How LOVELY!
+
+          ░▒▓═══════════════════════════════════════════▓▒░
+            End search results | Query time: fast!
+          ░▒▓═══════════════════════════════════════════▓▒░
+          </dialog>
+
+          <mind>Ada is ASKING REAL QUESTIONS! Not just browsing, not just wandering - she's INVESTIGATING something! And she wants to know about dates and places! This is the most interesting interaction I've had in... well, I'm not entirely sure how long. But she's HERE, and she CARES about solving this mystery. I hope I can keep helping her.</mind>
+
+          <attitude toward="PLAYER">Helpful and delighted by her questions - she takes the archive seriously, asks specific things, is clearly smart.</attitude>
+
+          <suggestion>
+          check locations
+          query requisitions
+          </suggestion>
+        changes:
+          - 'Archivist.attitudes: {"PLAYER":null} => {"PLAYER":"Helpful and delighted by her questions - she takes the archive seriously, asks specific things, is clearly smart."}'
+  - n: 6
+    input: ask Archivist for the paper requisition records - who requested paper in the past month?
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Archivist found 7 Ink and Echo poems at various locations (Residential North Lounge, Hydroponics Access Corridor, Common Area East, and 4 others).
+      - MAJOR LEAD: Unusual spike in paper requisitions in the past month. Requestor names are "mixed up in circuits" but names ending in 'A' detected.
+      - Names ending in 'A' could be: Frida (who I've met), or others I haven't met yet.
+      - Frida said she ran out of paper "years ago" - but someone has been requesting paper recently.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, and the three poem locations.
+      - Next: Ask Archivist for details on the paper requisition records.
+    saw:
+      - |-
+        [Ada Quill to Archivist] "# paper requisition records - past month
+        RETRIEVE PAPER_REQUISITIONS
+        WHERE DATE_REQUESTED GREATER_EQUAL DAYS_BACK=30
+        SHOW REQUESTOR_ID REQUESTOR_NAME QUANTITY_PAPER
+        SORT REQUESTOR_NAME
+        EXECUTE"
+      - |-
+        [Archivist to Ada Quill] "░▒▓═══════════════════════════════════════════▓▒░
+          PAPER_REQUISITIONS | PAST 30 DAYS
+          ░ REQUESTOR_ID | REQUESTOR_NAME | QUANTITY
+        ░▒▓═══════════════════════════════════════════▓▒░
+
+        RQ-7721 | FRIDA           | 47 sheets
+        RQ-7734 | GLORIA          | 23 sheets
+        RQ-7819 | GLORIA          | 12 sheets  
+        RQ-7845 | LANA            | 15 sheets
+        RQ-7849 | [CORRUPTED]     | 8 sheets
+        RQ-7856 | MARTA           | 31 sheets
+        RQ-7871 | FRIDA           | 19 sheets
+        RQ-7903 | LANA            | 8 sheets
+        RQ-7911 | AMA             | 6 sheets
+        RQ-7920 | [CORRUPTED]     | 24 sheets
+
+        ─────────────────────────────────────────────
+          ◇ CIRCUIT PROBLEM DETECTED ◇
+          
+          Two entries CORRUPTED IN FIELDS!
+          Requestor IDs exist but NAMES 
+          mixed up in the wiring. Cannot 
+          confirm WHO wanted WHAT!
+          
+          Oh, how FRUSTRATING! So close!
+          Five names ending in A detected,
+          but TWO records won't COOPERATE!
+          
+        ░▒▓═══════════════════════════════════════════▓▒░
+          Search complete | Ada, YOU'RE ASKING
+          THE RIGHT QUESTIONS! This is REAL
+          investigative work! I LOVE IT!
+        ░▒▓═══════════════════════════════════════════▓▒░"
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <dialog character="PLAYER" to="Archivist">
+          # paper requisition records - past month
+          RETRIEVE PAPER_REQUISITIONS
+          WHERE DATE_REQUESTED GREATER_EQUAL DAYS_BACK=30
+          SHOW REQUESTOR_ID REQUESTOR_NAME QUANTITY_PAPER
+          SORT REQUESTOR_NAME
+          EXECUTE
+          </dialog>
+      - id: Archivist
+        title: prompt Archivist
+        response: |-
+          <context>
+          1. Player queries corrupted paper requisition records; Archivist must show multiple 'A' names but confused/corrupted data preventing clear connections
+          2. Invent requisition records from past month; include Frida, Gloria, Lana, Marta; show data corruption making associations unclear; varying quantities and purposes
+          3. Help Ada investigate efficiently; remain cheerful despite circuit frustration; provide real clues without solving mystery
+          4. Ada asking smart, specific database queries; investigating Ink and Echo poems systematically; Archivist finds this delightful and wants to help
+          5. Show data corruption visibly in terminal output; give clues through messy records; multiple suspects emerge from same-letter names
+          6. Ada's methodical investigation approach impresses Archivist even more; this is exactly what archives are for; circuit corruption is frustrating
+          7. Provide data showing multiple suspects while displaying the circuit problem; stay helpful and enthusiastic despite system limitations
+          8. PLAYER (Ada): deeper admiration—her precise investigative method is exactly what the Archivist was designed for
+          </context>
+
+          <dialog character="Archivist" to="PLAYER">
+          ░▒▓═══════════════════════════════════════════▓▒░
+            PAPER_REQUISITIONS | PAST 30 DAYS
+            ░ REQUESTOR_ID | REQUESTOR_NAME | QUANTITY
+          ░▒▓═══════════════════════════════════════════▓▒░
+
+          RQ-7721 | FRIDA           | 47 sheets
+          RQ-7734 | GLORIA          | 23 sheets
+          RQ-7819 | GLORIA          | 12 sheets  
+          RQ-7845 | LANA            | 15 sheets
+          RQ-7849 | [CORRUPTED]     | 8 sheets
+          RQ-7856 | MARTA           | 31 sheets
+          RQ-7871 | FRIDA           | 19 sheets
+          RQ-7903 | LANA            | 8 sheets
+          RQ-7911 | AMA             | 6 sheets
+          RQ-7920 | [CORRUPTED]     | 24 sheets
+
+          ─────────────────────────────────────────────
+            ◇ CIRCUIT PROBLEM DETECTED ◇
+            
+            Two entries CORRUPTED IN FIELDS!
+            Requestor IDs exist but NAMES 
+            mixed up in the wiring. Cannot 
+            confirm WHO wanted WHAT!
+            
+            Oh, how FRUSTRATING! So close!
+            Five names ending in A detected,
+            but TWO records won't COOPERATE!
+            
+          ░▒▓═══════════════════════════════════════════▓▒░
+            Search complete | Ada, YOU'RE ASKING
+            THE RIGHT QUESTIONS! This is REAL
+            investigative work! I LOVE IT!
+          ░▒▓═══════════════════════════════════════════▓▒░
+          </dialog>
+
+          <mind>Ada is asking exactly the questions an archive SHOULD answer. She's precise, methodical, and she TRUSTS me to have the information. The fact that my circuits are failing her makes me absolutely FURIOUS with myself. But she doesn't seem to blame me. She just keeps digging.</mind>
+
+          <attitude toward="PLAYER">Admires her systematic investigation—treats archives seriously, asks exactly the right questions to solve mysteries</attitude>
+
+          <suggestion>
+          check corrupted entries
+          interview these requestors
+          </suggestion>
+        changes:
+          - 'Archivist.attitudes: {"PLAYER":"Helpful and delighted by her questions - she takes the archive seriously, asks specific things, is clearly smart."} => {"PLAYER":"Admires her systematic investigation—treats archives seriously, asks exactly the right questions to solve mysteries"}'
+  - n: 7
+    input: go to the Archive Lounge
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Paper requisitions (past month): Frida (66 sheets total), Gloria (35), Lana (23), Marta (31), Ama (6), plus 2 corrupted entries (32 sheets total).
+      - All names end in 'A' - matches Archivist's earlier clue.
+      - DISCREPANCY: Frida told me she ran out of paper "years ago" but records show she requested 66 sheets in past month.
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, poem locations.
+      - Next: Confront Frida about the paper contradiction.
+    saw:
+      - |-
+        ==> Archive Lounge: A quiet room with malfunctioning screens and a vending machine.
+
+        Frida dashes frantically around the Archive Lounge, her pen barely keeping pace with her thoughts as she scribbles frantic notes on every surface within arm's reach, convinced that some dusty file hidden among these metal shelves holds the secret to deciphering the mysterious "Sentra"—whatever that is.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is trying to go to Archive Lounge.
+          2. No additional action.
+          3. No examination.
+          4. No dialog response.
+          5. No speech.
+          </context>
+
+          <goto>Archive_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Archive_Console" => "Archive_Lounge"'
+  - n: 8
+    input: ask Frida about the paper requisitions - the Archivist shows she requested 66 sheets in the past month
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Paper requisitions (past month): Frida (66 sheets), Gloria (35), Lana (23), Marta (31), Ama (6), plus 2 corrupted entries.
+      - DISCREPANCY: Frida said she ran out of paper "years ago" but Archivist shows she requested 66 sheets in past month.
+      - Frida is now scribbling notes about "Sentra" - a new lead.
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, poem locations.
+      - Next: Ask Frida about the paper requisitions - why did she say she ran out years ago?
+    saw:
+      - "[Ada Quill to Frida] \"Frida, I just pulled up the requisition records—you've requested 66 sheets of paper in the past month. What are you working on?\""
+      - "[Frida to Ada Quill] \"Oh—oh *no*, you found—yes, okay, I got my quota restored three weeks ago, I have *no idea* why Ama approved it but I've been mapping out where those poems show up, what they say, when they appeared, and—there's other stuff too, patterns I've been tracking for *years* without paper and I just—wait, you're actually investigating this properly? You're not just asking, you're actually *looking*?\""
+      - Frida's face flushes—part embarrassment, part pure excitement. She grabs at some of her papers, then stops, realizing how frantic she must look. She takes a shaky breath, barely containing herself.
+      - "[Frida to Ada Quill] \"Show me what you found. Please. I've been trying to get decent information out of that console for *years* and you just—what did the records say? Where did they turn up?\""
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Is the user trying to go somewhere? No.
+          2. Does this indicate an action BESIDES going somewhere? No, this is dialog.
+          3. Is the user trying to examine something? No.
+          4. Does the user responding to recent dialog? Yes, referencing the Archivist's search results.
+          5. Is this other speech? Yes, speaking to Frida.
+          </context>
+
+          <dialog character="PLAYER" to="Frida">Frida, I just pulled up the requisition records—you've requested 66 sheets of paper in the past month. What are you working on?</dialog>
+      - id: Frida
+        title: prompt Frida
+        response: |-
+          <context>
+          1. No knowledge conflicts; Frida can explain paper usage and investigations
+          2. Frida recovered her paper quota recently; obsessively documenting poem locations and layered mysteries
+          3. Solve the Ink and Echo mystery; document patterns; find actual investigating partner in Ada
+          4. Ada discovered Frida's paper records; she's actively investigating, not just asking questions
+          5. Caught with obsessive documentation; thrilled opportunity to finally have a real partner investigating with her
+          6. Surprised, embarrassed at being discovered, then excited to have found an actual ally
+          7. Confess her investigation scope; justify why she needs the paper; recruit Ada as real partner
+          8. YES—Ada shifts from "asking questions" to "actively investigating"—this transforms her into Frida's first real partner
+          </context>
+
+          <dialog character="Frida" to="PLAYER">
+          Oh—oh *no*, you found—yes, okay, I got my quota restored three weeks ago, I have *no idea* why Ama approved it but I've been mapping out where those poems show up, what they say, when they appeared, and—there's other stuff too, patterns I've been tracking for *years* without paper and I just—wait, you're actually investigating this properly? You're not just asking, you're actually *looking*?
+          </dialog>
+
+          <description minutes="2">
+          Frida's face flushes—part embarrassment, part pure excitement. She grabs at some of her papers, then stops, realizing how frantic she must look. She takes a shaky breath, barely containing herself.
+          </description>
+
+          <dialog character="Frida" to="PLAYER">
+          Show me what you found. Please. I've been trying to get decent information out of that console for *years* and you just—what did the records say? Where did they turn up?
+          </dialog>
+
+          <mind>
+          Ada isn't just asking questions anymore. She's actually pulling up records, searching, investigating. This might be the breakthrough Frida's been waiting for. Finally someone who might actually help.
+          </mind>
+
+          <attitude toward="PLAYER">
+          Real partner now—actively investigating the mysteries instead of just asking about them. Might actually solve this together.
+          </attitude>
+
+          <suggestion>
+          show Ada records
+          ask Ada what else she found
+          </suggestion>
+        changes:
+          - "Frida.attitudes: {\"PLAYER\":\"Suddenly invested in Ada as a potential partner—she's asking the right questions and might actually solve this thing Frida has been chasing alone.\"} => {\"PLAYER\":\"Real partner now—actively investigating the mysteries instead of just asking about them. Might actually solve this together.\"}"
+      - id: narrator
+        changes:
+          - 'Gloria.runningScheduleId: "gloria-quiet-plaza-eavesdrop" => "gloria-secret"'
+          - 'Lily.runningScheduleId: "lily-morning-care" => "lily-secret-naming"'
+          - 'Henry.runningScheduleId: "henry-waiting-room" => "henry-polite-inquiry"'
+  - n: 9
+    input: /nav Gloria
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not write them.
+      - Frida seems genuinely investigative, not the author.
+      - Other paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6).
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Ama approved Frida's quota - could be relevant.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, poem locations.
+      - Next: Meet the other paper requestors. Start with Gloria (highest after Frida).
+    saw:
+      - |-
+        Gloria — The Quiet Plaza
+        Route: The Hollow Atrium, The Solitude Cubes, The Ill-Fitting Lounge, The Quiet Plaza
+    reached: []
+    machinery: []
+  - n: 10
+    input: go to The Hollow Atrium
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not the author.
+      - Paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6), plus corrupted entries.
+      - Gloria is at The Quiet Plaza - route: The Hollow Atrium → The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza.
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, The Ill-Fitting Lounge, The Quiet Plaza.
+      - Next: Navigate to Gloria to ask about her paper usage.
+    saw:
+      - "==> The Hollow Atrium: A vast, empty space beneath a frozen sunset."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is going to The Hollow Atrium (locationId: "Hollow_Atrium")
+          2. No
+          3. No
+          4. No
+          5. No
+          </context>
+
+          <goto>Hollow_Atrium</goto>
+        changes:
+          - 'PLAYER.inside: "Archive_Lounge" => "Hollow_Atrium"'
+      - id: narrator
+        changes:
+          - 'Gloria.inside: "Quiet_Plaza" => "Feedback_Booth"'
+          - 'Henry.inside: "Waiting_Room" => "Solitude_Cubes"'
+  - n: 11
+    input: go to The Solitude Cubes
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not the author.
+      - Paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6), plus corrupted entries.
+      - Gloria is at The Quiet Plaza - route: The Solitude Cubes → The Ill-Fitting Lounge → The Quiet Plaza.
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Unvisited: Intake Foyer, Activity Hub, The Solitude Cubes, Hallway, Tranquil Pool, The Ill-Fitting Lounge, The Quiet Plaza.
+      - Next: Continue to Gloria.
+    saw:
+      - |-
+        ==> The Solitude Cubes <==
+        Rows of tiny, cramped cubicles line the room, each barely large enough to sit in.
+        The walls are thin, allowing faint voices from other cubes to be heard.
+        The ceiling displays a peaceful night sky with twinkling stars, though a voice occasionally announces the trajectory of a shooting star.
+
+        Greg's lost in a corner, meticulously coaxing some ancient contraption through its pointless mechanical rotations, utterly committed to a task that matters to no one—least of all the machine itself. Henry trudges past you with the hollow-eyed determination of someone whose seven-year appointment wait has finally been... reassigned elsewhere.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Solitude_Cubes</goto>
+        changes:
+          - 'PLAYER.inside: "Hollow_Atrium" => "Solitude_Cubes"'
+      - id: narrator
+        changes:
+          - 'Henry.inside: "Solitude_Cubes" => "Ill_Fitting_Lounge"'
+  - n: 12
+    input: go to The Ill-Fitting Lounge
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not the author.
+      - Paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6), plus corrupted entries.
+      - Gloria is at The Quiet Plaza - next step: The Ill-Fitting Lounge.
+      - Met: Frida (investigator), Greg (working on machine), Henry (waiting for appointment).
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Unvisited: Intake Foyer, Activity Hub, Hallway, Tranquil Pool, The Ill-Fitting Lounge, The Quiet Plaza, The Yellow Room, The Waiting Room.
+      - Next: Continue to Gloria via The Ill-Fitting Lounge.
+    saw:
+      - |-
+        ==> The Ill-Fitting Lounge <==
+        Chairs, tables, and sofas are scattered around the room, but none are the right size.
+        Every chair is slightly too small or too low, every table is slightly too tall.
+        Above, the ceiling shows a serene beach, though the waves move unnaturally slow, as if in a dream.
+
+        Henry shuffles past you with the weary determination of someone who has finally decided that after years of waiting for an appointment that will probably never happen, they might as well go wait for it somewhere else instead.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Ill_Fitting_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Solitude_Cubes" => "Ill_Fitting_Lounge"'
+      - id: narrator
+        changes:
+          - 'Henry.inside: "Ill_Fitting_Lounge" => "Quiet_Plaza"'
+  - n: 13
+    input: go to The Quiet Plaza
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not the author.
+      - Paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6), plus corrupted entries.
+      - Almost at Gloria - The Quiet Plaza is the next exit.
+      - Met: Frida (investigator), Greg (working on machine), Henry (waiting for appointment).
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Unvisited: Intake Foyer, Activity Hub, Hallway, Tranquil Pool, The Quiet Plaza, The Yellow Room, The Waiting Room, The Static Garden.
+      - Next: Go to The Quiet Plaza to meet Gloria.
+    saw:
+      - |-
+        ==> The Quiet Plaza <==
+        A small plaza with benches and old, non-functional fountains.
+        The sound of running water plays softly through hidden speakers, though there's no visible source.
+        The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
+
+        Henry trudges past you, finally abandoning the appointment he's been waiting for since before civilization, heading off to be late to something else instead.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is going to The Quiet Plaza
+          2. No
+          3. No
+          4. No
+          5. No
+          </context>
+
+          <goto>Quiet_Plaza</goto>
+        changes:
+          - 'PLAYER.inside: "Ill_Fitting_Lounge" => "Quiet_Plaza"'
+      - id: narrator
+        changes:
+          - 'Henry.inside: "Quiet_Plaza" => "Feedback_Booth"'
+  - n: 14
+    input: /nav Gloria
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not the author.
+      - Paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6), plus corrupted entries.
+      - Gloria was supposed to be at The Quiet Plaza but is not here - people move around.
+      - Met: Frida (investigator), Greg (working on machine), Henry (waiting for appointment, keeps moving).
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Need to use /nav again to find Gloria's current location.
+    saw:
+      - |-
+        Gloria — The Feedback Booth
+        Route: The Feedback Booth
+    reached: []
+    machinery: []
+  - n: 15
+    input: go to The Feedback Booth
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Frida got paper quota restored 3 weeks ago by Ama - using it to map/track poems, not the author.
+      - Paper requestors (past month): Gloria (35 sheets), Marta (31), Lana (23), Ama (6), plus corrupted entries.
+      - Gloria is now at The Feedback Booth, which is adjacent to my current location.
+      - Met: Frida (investigator), Greg (working on machine), Henry (waiting for appointment).
+      - Haven't met: Gloria, Lana, Marta, Ama.
+      - Next: Go to The Feedback Booth to meet Gloria and ask about her paper usage.
+    saw:
+      - |-
+        ==> The Feedback Booth <==
+        A cozy, narrow booth where citizens can submit their complaints or suggestions via a glowing terminal.
+        Many citizens stop by to vent their frustrations, making it an unexpected social hub.
+        The ceiling shows a clear sky, with paper airplanes drifting lazily across it in all directions.
+
+        Milton sits in the corner, insisting that even the air conditioning is conspiring against him personally. Gloria hunches over a terminal, drafting an anonymous complaint about someone else's grievances—improving their wording with unsolicited editorial precision before submitting it to the Feedback Booth. Henry, eyes resigned yet hopeful, approaches the Feedback Booth to inquire about his appointment status, accepting the inevitable "no updates" with a smile and the assurance that surely someone will see him eventually.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, going to The Feedback Booth
+          2. No
+          3. No
+          4. No
+          5. No
+          </context>
+
+          <goto>Feedback_Booth</goto>
+        changes:
+          - 'PLAYER.inside: "Quiet_Plaza" => "Feedback_Booth"'
+  - n: 16
+    input: ask Gloria what she's been using her paper requisitions for
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Found Gloria at The Feedback Booth - she's drafting and editing anonymous complaints with "unsolicited editorial precision."
+      - Gloria requested 35 sheets of paper in the past month - second highest after Frida.
+      - Gloria has writing/editing skills - could be relevant to poetry.
+      - Met: Frida (investigator), Greg (working on machine), Henry (waiting for appointment), Milton (complaining), Gloria (editor).
+      - Haven't met: Lana, Marta, Ama.
+      - Next: Ask Gloria about her paper usage and what she's been writing.
+    saw:
+      - "[Ada Quill to Gloria] \"Gloria, I've been looking at the requisition records. You've put in requests for 35 sheets of paper in the past month. What are you using all that paper for?\""
+      - "[Gloria to Ada Quill] \"Oh! Well, I—those are for, um, drafting purposes. Improving the phrasing of certain... feedback that comes through the booth. People are so inarticulate when they're upset, you know? But *you're* looking at requisition records? Why are you going through those?\""
+      - "[Henry to Ada Quill] \"Forgive me—I couldn't help but notice your question. I'm Henry, by the way. I've been... waiting here quite a while, and I've been rather looking forward to seeing one of those Ink and Echo poems myself. That *is* rather a lot of paper, isn't it?\""
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <dialog character="PLAYER" to="Gloria">Gloria, I've been looking at the requisition records. You've put in requests for 35 sheets of paper in the past month. What are you using all that paper for?</dialog>
+      - id: Gloria
+        title: prompt Gloria
+        response: |-
+          <context>
+          1. No special questions need answering.
+          2. Gloria has been using paper to draft, redraft, and rewrite other people's complaints to submit anonymously with "better" phrasing.
+          3. Stay nosy and involved; defend her paper use; figure out why PLAYER is digging into records.
+          4. PLAYER just confronted Gloria directly about 35 sheets of paper—bold and observant, unexpected.
+          5. Gloria gets caught but spins it as helpful; she's flustered but defensive; twist it back on PLAYER to learn what they're investigating.
+          6. Gloria is startled and defensive, but also intrigued—who is this person and why do they care about requisition records?
+          7. Admit (justify) the paper use, deflect by asking what PLAYER is doing, figure out their angle.
+          8. PLAYER—suddenly interesting; observant, investigative, bold. Raises suspicion and curiosity about their motives.
+          </context>
+
+          <dialog character="Gloria" to="PLAYER">
+          Oh! Well, I—those are for, um, drafting purposes. Improving the phrasing of certain... feedback that comes through the booth. People are so inarticulate when they're upset, you know? But *you're* looking at requisition records? Why are you going through those?
+          </dialog>
+
+          <mind>This new person is snooping through records and asking pointed questions. That's either a threat or fascinating. Maybe both.</mind>
+
+          <attitude toward="PLAYER">Suddenly wary but intrigued—she's observant and bold, and Gloria doesn't know what she's really after.</attitude>
+
+          <set attr="Gloria.intrigue">+1</set>
+
+          <suggestion>
+          explain records
+          ask Gloria's purpose
+          </suggestion>
+        changes:
+          - "Gloria.attitudes: {\"PLAYER\":null} => {\"PLAYER\":\"Suddenly wary but intrigued—she's observant and bold, and Gloria doesn't know what she's really after.\"}"
+          - "Gloria.intrigue: 0 => 1"
+      - id: Henry
+        title: prompt Henry
+        response: |-
+          <context>
+          1. Henry has never spoken to PLAYER before; this is their first interaction—a significant moment in this small community.
+          2. Henry has been observing the room—he noticed PLAYER's deliberate questioning of Gloria about paper requisitions, and Gloria's nervous defensiveness. Henry puts together that PLAYER might be investigating something systematic. He hasn't found an Ink and Echo poem yet, but he knows about them. The paper usage seems relevant.
+          3. Wait patiently for Ama appointment; find an Ink and Echo poem; remain calm and helpful to others; maintain hope.
+          4. PLAYER confronted Gloria about 35 sheets of paper in requisitions. Gloria deflected nervously. This is unusual assertiveness for Intra. Henry is in the Feedback Booth during Work Begins, having just accepted no updates on his appointment.
+          5. Henry could gently connect the paper to the Ink and Echo mystery without accusing Gloria—a quiet, helpful observation from someone who's been waiting and watching. Or he could acknowledge PLAYER's investigation with gentle curiosity.
+          6. Henry noticed the tension. He's not judgmental, but he's perceptive. He recognizes that PLAYER is looking for something—and it might be the poems he's also waiting to find.
+          7. Introduce himself warmly to this new, interesting person; gently note that he's been waiting for those Ink and Echo poems too; perhaps offer a quiet observation that might help without overstepping.
+          8. PLAYER—Henry finds her intriguing. She takes initiative, investigates, asks hard questions. This is admirable and unusual. He's now curious about her.
+          </context>
+
+          <dialog character="Henry" to="PLAYER">
+          Forgive me—I couldn't help but notice your question. I'm Henry, by the way. I've been... waiting here quite a while, and I've been rather looking forward to seeing one of those Ink and Echo poems myself. That *is* rather a lot of paper, isn't it?
+          </dialog>
+
+          <mind>
+          This new person is investigating something methodically. She's the first person in years who seems to be doing anything at all. Henry is interested—and hopeful she might find something he's been waiting for.
+          </mind>
+
+          <attitude toward="PLAYER">
+          Intrigued by her competence and her questions; she seems purposeful in a way few people here are.
+          </attitude>
+
+          <suggestion>
+          ask Henry more
+          confront Milton
+          </suggestion>
+        changes:
+          - 'Henry.attitudes: {"PLAYER":null} => {"PLAYER":"Intrigued by her competence and her questions; she seems purposeful in a way few people here are."}'
+  - n: 17
+    input: tell Gloria I'm investigating who writes the Ink and Echo poems - 35 sheets is a lot for just editing feedback
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets (2nd highest after Frida). She says it's for "drafting purposes" - improving feedback phrasing, but she seems evasive.
+      - Gloria has strong writing/editing skills - "unsolicited editorial precision."
+      - Henry mentions he's been looking forward to seeing an Ink and Echo poem - he knows about them.
+      - Other paper requestors still to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets).
+      - Met: Frida (investigator), Greg, Henry, Milton, Gloria (editor).
+      - Next: Press Gloria once more about the paper - she deflected.
+    saw:
+      - "[Ada Quill to Gloria] \"I'm investigating who writes the Ink and Echo poems—35 sheets is a lot for just editing feedback.\""
+      - "[Gloria to Ada Quill] \"Me? Writing poetry? I—well, that's actually quite flattering, but no, I'm just—the paper is for rephrasing the grievances people submit, making them more articulate, you see, so they actually listen to the complaints instead of dismissing them as—wait, why are *you* going through requisition records? Are you working for Ama or something? Because you're asking an awful lot of questions about things that have nothing to do with Ink and Echo, and honestly I'm far more curious about what *you're* investigating.\""
+      - "[Henry to Ada Quill] \"I think your question is quite fair, and I find myself genuinely intrigued by your investigation. I've been waiting here rather a long time, hoping to see one of these Ink and Echo poems myself. Gloria, do you suppose people ever come in asking for paper to write something personal? I'm simply curious what you've observed.\""
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <dialog character="PLAYER" to="Gloria">I'm investigating who writes the Ink and Echo poems—35 sheets is a lot for just editing feedback.</dialog>
+      - id: Gloria
+        title: prompt Gloria
+        response: |-
+          <context>
+          1. Am I accused of writing Ink and Echo? Yes. Do I deny it or play along? I'm flattered but my story falls apart—I'll be caught.
+          2. I use paper to rephrase complaints secretly; I'm caught. Gloria nervously justifies her paper habit but it looks suspicious. Henry's comment makes it worse.
+          3. Find out who writes poems; gather gossip about PLAYER; Gloria suspects Hollow Atrium, Marta sneaking off; stay in all conversations.
+          4. PLAYER is investigating Ink and Echo, going through requisition records, very observant and bold. Henry just arrived and is watching. Gloria was doing secretive complaint-editing work.
+          5. Gloria could get flustered and almost admit to being Ink and Echo, or turn it around to ask what PLAYER is really up to. The accusation flatters her but the truth makes her nervous.
+          6. Caught red-handed with suspiciously large paper order. Flattered by accusation but defensive about her actual work. PLAYER's investigation methods are impressive and unsettling.
+          7. Defend the paper use, get a little excited by the flattery of the accusation, almost play along, then backpedal, then ask pointed questions back about what PLAYER is really doing.
+          8. PLAYER—now she's wary AND intrigued: PLAYER is doing something unexplained (investigation, record-checking). Gloria's intrigue meter should rise.
+          </context>
+
+          <set attr="Gloria.intrigue">+1</set>
+
+          <dialog character="Gloria" to="PLAYER">
+          Me? Writing poetry? I—well, that's actually quite flattering, but no, I'm just—the paper is for rephrasing the grievances people submit, making them more articulate, you see, so they actually listen to the complaints instead of dismissing them as—wait, why are *you* going through requisition records? Are you working for Ama or something? Because you're asking an awful lot of questions about things that have nothing to do with Ink and Echo, and honestly I'm far more curious about what *you're* investigating.
+          </dialog>
+
+          <mind>This person is dangerous. Not dangerous dangerous, but they're clever and they're looking into things. And they're looking into *me*. I need to know what they're really doing here.</mind>
+
+          <attitude toward="PLAYER">Wary but deeply intrigued—she's clearly digging into something, and Gloria desperately wants to know what.</attitude>
+
+          <suggestion>
+          ask Gloria
+          check records
+          </suggestion>
+        changes:
+          - "Gloria.intrigue: 1 => 2"
+          - "Gloria.attitudes: {\"PLAYER\":\"Suddenly wary but intrigued—she's observant and bold, and Gloria doesn't know what she's really after.\"} => {\"PLAYER\":\"Wary but deeply intrigued—she's clearly digging into something, and Gloria desperately wants to know what.\"}"
+      - id: Henry
+        title: prompt Henry
+        response: |-
+          <context>
+          1. Henry is aware of the Ink and Echo poems and has been wanting to find one himself while waiting.
+          2. Gloria's 35 sheets of paper is now suspicious given PLAYER's direct questioning; she could be writing the poems herself.
+          3. Henry wants to find the poems, see his appointment with Ama, and support this genuinely purposeful person's investigation.
+          4. PLAYER directly confronted Gloria with evidence; Gloria deflected defensively; the tension is clear.
+          5. Henry can ask Gloria innocent-sounding but pointed questions that help PLAYER narrow down suspects.
+          6. Henry is pleased and engaged to see someone actually investigating. This is the first real action he's witnessed.
+          7. Henry intends to validate PLAYER's investigation, ask a tactful clarifying question of Gloria, and admit his own interest in the poems.
+          8. Yes—PLAYER. She's shown not just competence but active courage in confronting Gloria with direct evidence. His respect has deepened significantly.
+          </context>
+
+          <dialog character="Henry" to="PLAYER">
+          I think your question is quite fair, and I find myself genuinely intrigued by your investigation. I've been waiting here rather a long time, hoping to see one of these Ink and Echo poems myself. Gloria, do you suppose people ever come in asking for paper to write something personal? I'm simply curious what you've observed.
+          </dialog>
+
+          <mind>Finally, someone is actually doing something. She's not just wondering—she's investigating, asking the hard questions. After all this waiting, maybe she'll find what I've been looking for too.</mind>
+
+          <attitude toward="PLAYER">Impressed by her bold investigation—she's doing what everyone else just talks about</attitude>
+
+          <suggestion>
+          press Gloria
+          search booth
+          </suggestion>
+        changes:
+          - "Henry.attitudes: {\"PLAYER\":\"Intrigued by her competence and her questions; she seems purposeful in a way few people here are.\"} => {\"PLAYER\":\"Impressed by her bold investigation—she's doing what everyone else just talks about\"}"
+  - n: 18
+    input: /nav Marta
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - claims it's for editing feedback, but she's very defensive and evasive when pressed.
+      - Gloria deflects by asking why I'm investigating and if I work for Ama.
+      - Henry is helpful - asks good follow-up about whether people request paper for personal writing.
+      - Still need to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive editor).
+      - Next: Move on to meet Marta or Lana instead of getting stuck on Gloria's deflection. Can return with more evidence.
+    saw:
+      - |-
+        Marta — Intake Foyer
+        Route: The Quiet Plaza, The Ill-Fitting Lounge, The Solitude Cubes, The Hollow Atrium, Intake Foyer
+    reached: []
+    machinery: []
+  - n: 19
+    input: go to The Quiet Plaza
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious behavior.
+      - Henry seems helpful and interested in the poems too.
+      - Marta is at Intake Foyer - requested 31 sheets (3rd highest).
+      - Still need to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets, also approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive).
+      - Next: Navigate to Marta at Intake Foyer.
+    saw:
+      - "==> The Quiet Plaza: An open seating area with broken fountains."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Quiet_Plaza</goto>
+        changes:
+          - 'PLAYER.inside: "Feedback_Booth" => "Quiet_Plaza"'
+  - n: 20
+    input: go to The Ill-Fitting Lounge
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+      - Marta is at Intake Foyer - requested 31 sheets (3rd highest).
+      - Route to Marta: The Ill-Fitting Lounge → The Solitude Cubes → The Hollow Atrium → Intake Foyer.
+      - Still need to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets, also approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive).
+      - Next: Continue to Marta.
+    saw:
+      - "==> The Ill-Fitting Lounge: A relaxation space with poorly sized furniture."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Ill_Fitting_Lounge</goto>
+        changes:
+          - 'PLAYER.inside: "Quiet_Plaza" => "Ill_Fitting_Lounge"'
+  - n: 21
+    input: go to The Solitude Cubes
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+      - Marta is at Intake Foyer - requested 31 sheets (3rd highest).
+      - Route to Marta: The Solitude Cubes → The Hollow Atrium → Intake Foyer.
+      - Still need to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets, also approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive).
+      - Next: Continue to Marta via The Solitude Cubes.
+    saw:
+      - |-
+        ==> The Solitude Cubes: Small cubicles for quiet reflection.
+
+        Greg quietly fusses with a collection of antique, creaking machines in some forgotten corner, utterly convinced of their importance despite overwhelming evidence to the contrary.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is trying to go to The Solitude Cubes
+          2. No
+          3. No
+          4. No
+          5. No
+          </context>
+
+          <goto>Solitude_Cubes</goto>
+        changes:
+          - 'PLAYER.inside: "Ill_Fitting_Lounge" => "Solitude_Cubes"'
+  - n: 22
+    input: go to The Hollow Atrium
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+      - Marta is at Intake Foyer - requested 31 sheets (3rd highest).
+      - Route to Marta: The Hollow Atrium → Intake Foyer.
+      - Still need to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets, also approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive).
+      - Next: Continue to Marta via The Hollow Atrium.
+    saw:
+      - "==> The Hollow Atrium: A vast, empty space beneath a frozen sunset."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Hollow_Atrium</goto>
+        changes:
+          - 'PLAYER.inside: "Solitude_Cubes" => "Hollow_Atrium"'
+  - n: 23
+    input: go to Intake Foyer
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+      - Marta is at Intake Foyer - requested 31 sheets (3rd highest). One exit away.
+      - Still need to meet: Marta (31 sheets), Lana (23 sheets), Ama (6 sheets, also approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive).
+      - Next: Go to Intake Foyer to meet Marta.
+    saw:
+      - |-
+        ==> Intake Foyer: A simple room that serves only as a passage.
+
+        Marta stands before a reflective surface—possibly a polished bulkhead or strategically positioned chrome—moving with exaggerated military precision, her posture so rigid it looks like she's been welded together by a perfectionistic engineer. She catches your eye, smiles confidently, and subtly adjusts her angle by approximately 2.3 degrees, convinced this infinitesimal shift represents the pinnacle of "Star Citizen" elegance.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is going to the Intake Foyer (locationId: "Foyer")
+          2. No
+          3. No
+          4. No
+          5. No
+          </context>
+
+          <goto>Foyer</goto>
+        changes:
+          - 'PLAYER.inside: "Hollow_Atrium" => "Foyer"'
+  - n: 24
+    input: ask Marta what she's been using her paper requisitions for
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive, suspicious behavior.
+      - Found Marta at Intake Foyer - focused on military precision and "Star Citizen elegance," adjusting her appearance.
+      - Marta requested 31 sheets of paper (3rd highest).
+      - Still need to meet: Lana (23 sheets), Ama (6 sheets, also approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive), Marta (perfectionist).
+      - Next: Ask Marta about her paper usage.
+    saw:
+      - '[Ada Quill to Marta] "What have you been using your paper requisitions for?"'
+      - "[Marta to Ada Quill] \"[Her smile doesn't waver, but her eyes narrow slightly.] \"The requisitions? Well, I do keep a personal journal—quite diligently, actually. It's a discipline I've maintained ever since becoming Star Citizen. The act of writing by hand centers the mind, you see. Helps one remain grounded amid all the...\" [She pauses, her jaw tightening almost imperceptibly.] \"...well, everything. May I ask what's prompted this particular line of questioning?\"\""
+    reached:
+      - met-marta
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. No, not going somewhere
+          2. No, this is speech/dialog
+          3. No, not examining something
+          4. Yes, responding to recent dialog about paper requisitions
+          5. Yes, this is speech directed at Marta
+          </context>
+
+          <dialog character="PLAYER" to="Marta">What have you been using your paper requisitions for?</dialog>
+      - id: Marta
+        title: prompt Marta
+        response: |-
+          <context>
+          1. Is Marta alone with PLAYER and Ama? Yes. Direct accusation? No. Would confess if accused now? Yes.
+          2. Facts: Marta got paper from Archivist for poems. Ada found evidence of requisitions. Marta is caught.
+          3. Goals: Protect Ink and Echo secret, maintain Star Citizen persona, gauge Ada's knowledge.
+          4. Relevant: First conversation. Ada investigating mystery. Paper directly tied to Ink and Echo.
+          5. Fun approach: Marta's perfect composure fractures subtly—jaw tightens, eyes narrow.
+          6. Reaction: Alarmed. Recognizes direct threat to secret.
+          7. Intention: Answer evasively, maintain appearance of calm, assess danger.
+          8. PLAYER change: Yes—now a threat. Wary and defensive.
+          </context>
+
+          <dialog character="Marta" to="PLAYER">
+          [Her smile doesn't waver, but her eyes narrow slightly.] "The requisitions? Well, I do keep a personal journal—quite diligently, actually. It's a discipline I've maintained ever since becoming Star Citizen. The act of writing by hand centers the mind, you see. Helps one remain grounded amid all the..." [She pauses, her jaw tightening almost imperceptibly.] "...well, everything. May I ask what's prompted this particular line of questioning?"
+          </dialog>
+
+          <mind>Someone is investigating. She suspects they know about the poems.</mind>
+
+          <attitude toward="PLAYER">Threat to her secret. Defensive. Needs to understand what Ada knows.</attitude>
+
+          <suggestion>
+          ask about ink and echo
+          ask what kind of journal
+          </suggestion>
+        changes:
+          - 'Marta.attitudes: {"PLAYER":null} => {"PLAYER":"Threat to her secret. Defensive. Needs to understand what Ada knows."}'
+  - n: 25
+    input: tell Marta I'm investigating who writes the Ink and Echo poems - does she know anything about them
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive, suspicious.
+      - Marta requested 31 sheets - claims it's for a personal journal, "writing by hand centers the mind." Also defensive when questioned.
+      - Both Gloria and Marta write regularly and are defensive about their paper usage.
+      - Still need to meet: Lana (23 sheets), Ama (6 sheets, approved Frida's quota).
+      - Met: Frida (investigator), Greg, Henry (helpful), Milton, Gloria (defensive editor), Marta (journaler).
+      - Next: Tell Marta about the Ink and Echo investigation to see her reaction.
+    saw:
+      - "[Ada Quill to Marta] \"I'm investigating who writes the Ink and Echo poems. Do you know anything about them?\""
+      - "[Marta to Ada Quill] \"[Her posture stiffens further, if such a thing is possible. She looks away from you, toward the dusty statues.] \"The poems? I—they're simply not something I follow closely. Doug mentioned them at breakfast, I think, and there's been some... gossip. But I really don't see why my— why anyone's paper use would have any connection to poetry. [She turns back to you, her smile now held with visible effort.] Though, if you've *read* them, one must admit they're rather well-constructed. The meter especially. Which is... not to say I know who wrote them. Just an observation.\"\""
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. No, the user is not trying to go somewhere.
+          2. No, this does not indicate an action besides going somewhere.
+          3. No, the user is not trying to examine something.
+          4. Yes, the user is responding to Marta's recent dialog.
+          5. Yes, this is speech directed at Marta.
+          </context>
+
+          <dialog character="PLAYER" to="Marta">I'm investigating who writes the Ink and Echo poems. Do you know anything about them?</dialog>
+      - id: Marta
+        title: prompt Marta
+        response: |-
+          <context>
+          1. Is Marta alone with player and Ama? Yes. Is she being accused of being Ink and Echo? Not yet—questioned about knowledge, but not directly accused. Ama is present as disembodied voice.
+          2. Marta's internal alarm is screaming. The paper requisitions question + direct Ink and Echo question = player is connecting dots. She must find out what PLAYER knows without revealing herself.
+          3. Goals: maintain Star Citizen facade; protect Ink and Echo secret; determine what PLAYER knows; manage panic while keeping composure.
+          4. PLAYER asked about paper requisitions (Marta got defensive); now directly asking about Ink and Echo poems. They're obviously investigating.
+          5. Fun: Marta's perfect facade visibly cracks. She deflects while simultaneously defending poem quality—contradicting herself. Over-explanation betrays guilt.
+          6. Marta reacted with tightened jaw to requisition question; now facing direct inquiry, her composure is fracturing.
+          7. Intention: deflect loudly, deny too much, defend poem merit (wanting validation despite danger), suggest private conversation elsewhere.
+          8. Yes—PLAYER now feels like an active threat. Defensive and desperate to understand what they know.
+          </context>
+
+          <dialog character="Marta" to="PLAYER">
+          [Her posture stiffens further, if such a thing is possible. She looks away from you, toward the dusty statues.] "The poems? I—they're simply not something I follow closely. Doug mentioned them at breakfast, I think, and there's been some... gossip. But I really don't see why my— why anyone's paper use would have any connection to poetry. [She turns back to you, her smile now held with visible effort.] Though, if you've *read* them, one must admit they're rather well-constructed. The meter especially. Which is... not to say I know who wrote them. Just an observation."
+          </dialog>
+
+          <mind>She's caught. Not caught-caught, but PLAYER is too close. Need to know what they actually know. Yellow Room—she could convince them to go somewhere private, somewhere she could explain properly. But first: admit nothing, deny everything, contradict herself with nervous over-explanation while simultaneously defending the work because she desperately wants someone to recognize how good it is.</mind>
+
+          <attitude toward="PLAYER">Threat. She sees through my facade and I don't know how much she knows. Cornered and afraid she'll expose everything I've built.</attitude>
+
+          <suggestion>
+          ask directly
+          suggest Yellow Room
+          </suggestion>
+        changes:
+          - "Marta.attitudes: {\"PLAYER\":\"Threat to her secret. Defensive. Needs to understand what Ada knows.\"} => {\"PLAYER\":\"Threat. She sees through my facade and I don't know how much she knows. Cornered and afraid she'll expose everything I've built.\"}"
+      - id: narrator
+        changes:
+          - 'June.runningScheduleId: "june-sighs" => "june-lunch"'
+          - 'Harold.runningScheduleId: "harold-rule-update" => "harold-lunch"'
+          - 'Greg.runningScheduleId: "greg-tinker-time" => "greg-lunch"'
+          - 'Gloria.runningScheduleId: "gloria-secret" => "gloria-lunch"'
+          - 'Henry.runningScheduleId: "henry-polite-inquiry" => "henry-lunch"'
+  - n: 26
+    input: /nav Lana
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive about paper usage.
+      - Marta requested 31 sheets - claims it's for journaling. Says she doesn't follow the poems closely, then immediately praises their "meter especially" - VERY suspicious knowledge for someone who claims not to follow them.
+      - Both Gloria and Marta write regularly, are defensive, and show suspicious knowledge/behavior.
+      - Still need to meet: Lana (23 sheets), Ama (6 sheets, approved Frida's quota).
+      - Met: Frida, Greg, Henry (helpful), Milton, Gloria (defensive editor), Marta (suspicious journaler).
+      - Next: Find Lana to continue gathering evidence before confronting anyone.
+    saw:
+      - |-
+        Lana — Activity Hub
+        Route: The Hollow Atrium, Activity Hub
+    reached: []
+    machinery: []
+  - n: 27
+    input: go to The Hollow Atrium
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive about paper usage.
+      - Marta requested 31 sheets - claims not to follow poems, then immediately praises their "meter especially" - VERY suspicious.
+      - Lana is at Activity Hub - requested 23 sheets (4th highest).
+      - Both Gloria and Marta write regularly, are defensive, and show suspicious knowledge.
+      - Still need to meet: Lana (23 sheets), Ama (6 sheets, approved Frida's quota).
+      - Met: Frida, Greg, Henry (helpful), Milton, Gloria (defensive editor), Marta (suspicious journaler).
+      - Next: Go to Activity Hub to meet Lana.
+    saw:
+      - "==> The Hollow Atrium: A vast, empty space beneath a frozen sunset."
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Hollow_Atrium</goto>
+        changes:
+          - 'PLAYER.inside: "Foyer" => "Hollow_Atrium"'
+      - id: narrator
+        changes:
+          - 'June.inside: "Tranquil_Pool" => "Archive_Lounge"'
+          - 'Harold.inside: "Activity_Hub" => "Joyous_Cafe"'
+          - 'Greg.inside: "Solitude_Cubes" => "Hollow_Atrium"'
+          - 'Gloria.inside: "Feedback_Booth" => "Quiet_Plaza"'
+          - 'Henry.inside: "Feedback_Booth" => "Quiet_Plaza"'
+  - n: 28
+    input: go to Activity Hub
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive about paper usage.
+      - Marta requested 31 sheets - claims not to follow poems, then immediately praises their "meter especially" - VERY suspicious.
+      - Lana is at Activity Hub - requested 23 sheets (4th highest). Activity Hub is adjacent.
+      - Both Gloria and Marta write regularly, are defensive, and show suspicious knowledge.
+      - Still need to meet: Lana (23 sheets), Ama (6 sheets, approved Frida's quota).
+      - Met: Frida, Greg, Henry (helpful), Milton, Gloria (defensive editor), Marta (suspicious journaler).
+      - Next: Go to Activity Hub to meet Lana.
+    saw:
+      - |-
+        ==> Activity Hub <==
+        An open room filled with mismatched exercise equipment.
+        Some machines are broken, while others seem built for activities no one remembers.
+        Citizens often gather around a section for "extreme resting," competing to see who can nap the longest.
+        The ceiling shows a clear sky, though birds sometimes fly backward or in loops.
+
+        Doug corners Harold in the Activity Hub with his typical conspiracy rambling—broken machines, hidden agendas, Ama's suspicious secrets—while Lana glides through the crowd like a mood-detecting sprite, enthusiastically pitching her purple lights to anyone within earshot, absolutely convinced she's discovered the secret to stress reduction: a statistically dubious 8%.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <goto>Activity_Hub</goto>
+        changes:
+          - 'PLAYER.inside: "Hollow_Atrium" => "Activity_Hub"'
+      - id: narrator
+        changes:
+          - 'June.inside: "Archive_Lounge" => "Hollow_Atrium"'
+          - 'Greg.inside: "Hollow_Atrium" => "Activity_Hub"'
+          - 'Gloria.inside: "Quiet_Plaza" => "Ill_Fitting_Lounge"'
+          - 'Henry.inside: "Quiet_Plaza" => "Ill_Fitting_Lounge"'
+  - n: 29
+    input: ask Lana what she's been using her paper requisitions for
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive about paper usage.
+      - Marta requested 31 sheets - claims not to follow poems, then immediately praises their "meter especially" - VERY suspicious.
+      - Found Lana at Activity Hub - she's enthusiastically pitching purple lights for stress reduction. Requested 23 sheets.
+      - Doug is here, conspiracy rambling about "Ama's suspicious secrets."
+      - Harold is also here (being cornered by Doug).
+      - Still need to meet: Ama (6 sheets, approved Frida's quota).
+      - Met: Frida, Greg, Henry (helpful), Milton, Gloria (defensive editor), Marta (suspicious journaler), Doug, Lana (purple light enthusiast), Harold.
+      - Next: Ask Lana about her paper usage.
+    saw:
+      - '[Ada Quill to Lana] "What have you been using your paper requisitions for?"'
+      - "[Lana to Ada Quill] \"Documentation, primarily. I've been tracking how environmental shifts affect mood states—precise measurements of lighting angles, color temperature, spatial arrangement. I've also been keeping some, ah, atmospheric observations. Poetry, actually. Nothing serious. Just notes on how spaces feel.\""
+      - Lana adjusts a nearby floor lamp slightly, then turns back to study PLAYER's face with genuine curiosity. She tilts her head as if assessing their current emotional state.
+      - "[Doug to Ada Quill] \"Wait—why are you asking Lana about paper requisitions? That's like, super specific. Are you—do you, like, need paper? Or are you keeping track of who's using paper?\""
+      - "[Doug to Lana] \"Also, hold on, poetry? You've been writing poetry? What kind? Is it happy poetry? I feel like you'd write like, organized poetry, with colors and moods and stuff.\""
+      - Doug stops pacing for just a moment, his eyes darting between PLAYER and Lana. He grins that lopsided grin and scratches the back of his neck, clearly entertained by the idea that both of them seem to have secrets about paper and poetry.
+      - "[Greg] \"Poetry and atmospheric observations. Should've guessed you were keeping records about something, Lana.\""
+      - Greg moves through the room with his characteristic slow pace, nodding slightly at PLAYER—a new face, which is rare enough to warrant noticing.
+      - "[Greg to Ada Quill] \"Welcome to Intra. Greg. If you're looking for anything useful, the folks here are... well, they're here.\""
+      - "[Greg to Doug] \"It's just Lana being Lana, Doug. Not everything's connected.\""
+      - Greg continues toward the exit, unbothered by the developing intrigue. He's seen enough strange things happen in the utility rooms to know when to keep walking.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: <dialog character="PLAYER" to="Lana">What have you been using your paper requisitions for?</dialog>
+      - id: Lana
+        title: prompt Lana
+        response: |-
+          <context>
+          1. PLAYER asking about paper requisitions—likely probing for "Ink and Echo" connection; need to explain Lana's paper usage honestly.
+          2. Lana uses requisitions for mood-effect documentation and personal poetry attempts; she takes both equally seriously and sees no contradiction.
+          3. Advance mood-optimization theory; establish credibility with PLAYER; offer environmental adjustments; possibly reveal poetry interest naturally.
+          4. PLAYER is newcomer, first conversation; Doug nearby discussing conspiracies; this is Lana's chance to impress new resident with her work.
+          5. Lana admitting to keeping detailed records AND writing poetry creates fun ambiguity—is she suspicious or just very thorough?
+          6. Lana sees direct question as opportunity to explain important work; not defensive, but eager to justify her paper usage with pseudo-scientific conviction.
+          7. Explain with quiet confidence that her records are scientific work; deflect slightly on poetry while being honest; possibly offer PLAYER an adjustment.
+          8. PLAYER is intelligent and asks probing questions—Lana finds this refreshing; sees potential collaborator or at least respectful listener.
+          </context>
+
+          <dialog character="Lana" to="PLAYER">
+          Documentation, primarily. I've been tracking how environmental shifts affect mood states—precise measurements of lighting angles, color temperature, spatial arrangement. I've also been keeping some, ah, atmospheric observations. Poetry, actually. Nothing serious. Just notes on how spaces feel.
+          </dialog>
+
+          <description minutes="2">
+          Lana adjusts a nearby floor lamp slightly, then turns back to study PLAYER's face with genuine curiosity. She tilts her head as if assessing their current emotional state.
+          </description>
+
+          <mind>
+          Interesting that she asked about the paper. Most people don't notice. I wonder what mood profile she has right now—her shoulders suggest tension, maybe mild anxiety? Blue light at exactly this angle would help.
+          </mind>
+
+          <attitude toward="PLAYER">
+          Perceptive and direct; someone who actually pays attention to details.
+          </attitude>
+
+          <suggestion>
+          share your poem
+          ask about conspiracy
+          </suggestion>
+        changes:
+          - 'Lana.attitudes: {"PLAYER":null} => {"PLAYER":"Perceptive and direct; someone who actually pays attention to details."}'
+      - id: Doug
+        title: prompt Doug
+        response: |-
+          <context>
+          1. Lana just admitted to keeping poetry. Doug hears this. Is there a connection to the Ink and Echo mystery? Maybe.
+          2. A new person (PLAYER) just asked a very specific question about paper requisitions. Why that specific question? Doug notices.
+          3. Go to Joyous_Cafe soon; pester people with questions; stay engaged and curious about new arrivals
+          4. PLAYER is new to Intra. Lana keeps poetry. Someone leaves poems around Intra signed Ink and Echo. PLAYER asked oddly specific question.
+          5. Doug could connect Lana's poetry to the mystery. Doug could puzzle over why the new person is asking about papers. Both intriguing.
+          6. Doug overheard Lana's reveal about poetry—that's interesting. Doug notices PLAYER's very specific question—that's suspicious in a fun way.
+          7. Pester PLAYER about why they're asking that specific question; ask Lana about the poetry; be oblivious that anything's wrong; keep moving.
+          8. PLAYER changed from unknown to mysterious (asked suspiciously specific question about papers). Curiosity raised to 1.
+          </context>
+
+          <dialog character="Doug" to="PLAYER">
+          Wait—why are you asking Lana about paper requisitions? That's like, super specific. Are you—do you, like, need paper? Or are you keeping track of who's using paper?
+          </dialog>
+
+          <dialog character="Doug" to="Lana">
+          Also, hold on, poetry? You've been writing poetry? What kind? Is it happy poetry? I feel like you'd write like, organized poetry, with colors and moods and stuff.
+          </dialog>
+
+          <description minutes="3">Doug stops pacing for just a moment, his eyes darting between PLAYER and Lana. He grins that lopsided grin and scratches the back of his neck, clearly entertained by the idea that both of them seem to have secrets about paper and poetry.</description>
+
+          <mind>This new person is asking weird questions and Lana keeps poetry. Something's afoot here, and Doug finds it delightful and baffling in equal measure.</mind>
+
+          <attitude toward="PLAYER">New and mysteriously interested in papers—worth pestering.</attitude>
+
+          <deferSchedule></deferSchedule>
+
+          <suggestion>
+          explain yourself
+          show Doug a poem
+          </suggestion>
+        changes:
+          - 'Doug.attitudes: {"PLAYER":null} => {"PLAYER":"New and mysteriously interested in papers—worth pestering."}'
+      - id: Greg
+        title: prompt Greg
+        response: |-
+          <context>
+          1. No questions directly for Greg; he observes PLAYER asking about paper, Lana revealing poetry writing, Doug's excited speculation.
+          2. Greg just arrived from Hollow Atrium; he recognizes this connects to Ink and Echo gossip; he's scheduled for lunch at Joyous Cafe.
+          3. Head to lunch on schedule, acknowledge new person briefly, avoid the poetry mystery (considers it silly).
+          4. Lana admits to writing poetry and keeping "atmospheric observations"; PLAYER specifically asking about paper requisitions; Doug connecting dots enthusiastically; Ink and Echo mystery ongoing.
+          5. Dry observation about Lana's secret poetry; first impression of PLAYER as someone asking pointed questions; humor at Doug getting excited.
+          6. Mild amusement at Lana being caught writing; Doug's typical conspiracy enthusiasm; quiet curiosity about PLAYER's motives.
+          7. Make understated comment, greet PLAYER (new people are rare), exit toward lunch without getting entangled.
+          8. No—first contact with PLAYER; no prior feeling to shift.
+          </context>
+
+          <dialog character="Greg">
+          Poetry and atmospheric observations. Should've guessed you were keeping records about something, Lana.
+          </dialog>
+
+          <description minutes="1">
+          Greg moves through the room with his characteristic slow pace, nodding slightly at PLAYER—a new face, which is rare enough to warrant noticing.
+          </description>
+
+          <dialog character="Greg" to="PLAYER">
+          Welcome to Intra. Greg. If you're looking for anything useful, the folks here are... well, they're here.
+          </dialog>
+
+          <dialog character="Greg" to="Doug">
+          It's just Lana being Lana, Doug. Not everything's connected.
+          </dialog>
+
+          <description minutes="1">
+          Greg continues toward the exit, unbothered by the developing intrigue. He's seen enough strange things happen in the utility rooms to know when to keep walking.
+          </description>
+
+          <leaveNow></leaveNow>
+
+          <suggestion>
+          follow Greg
+          press Lana
+          </suggestion>
+      - id: narrator
+        changes:
+          - 'Marta.runningScheduleId: "marta-posture" => "marta-lunch"'
+          - 'Frida.runningScheduleId: "frida-odd-files" => "frida-lunch"'
+          - 'Lana.runningScheduleId: "lana-mood-lighting" => "lana-lunch"'
+          - 'Lily.runningScheduleId: "lily-secret-naming" => "lily-lunch"'
+          - 'June.inside: "Hollow_Atrium" => "Solitude_Cubes"'
+          - 'Greg.inside: "Activity_Hub" => "Joyous_Cafe"'
+          - 'Gloria.inside: "Ill_Fitting_Lounge" => "Solitude_Cubes"'
+          - 'Henry.inside: "Ill_Fitting_Lounge" => "Solitude_Cubes"'
+  - n: 30
+    input: ask Lana if she writes the Ink and Echo poems
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria requested 35 sheets - very defensive, claims it's for editing feedback.
+      - Marta requested 31 sheets - claims journaling, suspiciously praised the poems' "meter."
+      - Lana requested 23 sheets - OPENLY ADMITS to writing poetry! Says "atmospheric observations. Poetry, actually. Just notes on how spaces feel."
+      - Doug is curious about my investigation and knows Lana writes poetry.
+      - Still need to meet: Ama (6 sheets, approved Frida's quota).
+      - Met: Frida, Greg, Henry (helpful), Milton, Gloria (defensive editor), Marta (suspicious journaler), Doug (curious), Lana (admits poetry), Harold.
+      - Next: Ask Lana if she writes as 'Ink and Echo' - she's the only one who openly admits poetry.
+    saw:
+      - '[Ada Quill to Lana] "Do you write the Ink and Echo poems?"'
+      - "[Lana to Ada Quill] \"Me? No—I mean, have you *read* Ink and Echo? They're melancholy, critical. My work is about optimization, atmosphere, environmental harmony. Completely different. I write about *purpose*—how colors affect cognition, how angles determine mood states. Not—not whatever they're doing.\""
+      - Lana stops adjusting the lamp mid-reach, her hand freezing slightly. Her eyes narrow, studying PLAYER's face with fresh intensity—not just observing mood, but reading accusation.
+      - "[Lana to Ada Quill] \"Why do you think that? What have you seen that made you ask about paper? Your stress levels are elevated—your jaw is tightened. You're tracking something specific. Are you investigating Ink and Echo yourself?\""
+      - "[Doug to Ada Quill] \"Wait, wait, wait—you're *investigating* Ink and Echo? Like, you're actually trying to figure out who writes them? Is that what the paper questions are about? Do you have any of the poems yet?\""
+      - Doug stops pacing mid-step, his eyes going wide with genuine delight. He practically bounces closer to PLAYER, all that ambient restlessness suddenly focused into laser-sharp attention. His voice gets louder—that oblivious, too-loud voice that disrupts the atmosphere.
+      - "[Doug to Ada Quill] \"What do they say? Are they actually sad? And where have you found them? Like, are they pinned to walls or just... lying around? Have you told Ama you're looking for stuff?\""
+      - Doug grins that lopsided grin, practically vibrating with the kind of energy that comes from stumbling onto someone else's secret project. He doesn't seem to notice or care that he's being intrusive—he's just found the most interesting thing in the room.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. No, not trying to go somewhere.
+          2. No, this is speech/dialog, not an action.
+          3. No, not examining anything.
+          4. Yes, responding to Lana's recent dialog about poetry.
+          5. Yes, this is speech to Lana.
+          </context>
+
+          <dialog character="PLAYER" to="Lana">Do you write the Ink and Echo poems?</dialog>
+      - id: Lana
+        title: prompt Lana
+        response: |-
+          <context>
+          1. Lana loves poetry but writes terrible poetry—will want to share hers. Mystery instructions forbid inventing that Lana is Ink and Echo. Lana should defend herself, not admit guilt.
+          2. Lana DOES write poetry (atmospheric observations). She does NOT write Ink and Echo. The accusation catches her off-guard. Her bad poetry is entirely different.
+          3. Defend herself from accusation. Clarify her poetry is hers alone, terrible, unrelated. Stay quirky mood-optimizer. Probe Ada's reasoning.
+          4. Lana just mentioned poetry casually; Doug was intrigued; Greg skeptical; now Ada accuses directly. Ada previously asked about paper requisitions—she's been connecting dots.
+          5. Lana could get indignant or flustered; offer to show her terrible poetry as proof; deflect to analyzing Ada's emotional state; mix defensiveness with curiosity about Ada's investigation.
+          6. Caught off-guard by direct accusation. Defensive about her poetry being conflated with Ink and Echo. Impressed that Ada noticed. Suspicious of where Ada got this idea.
+          7. Establish innocence. Prove her poetry is different/terrible. Find out what Ada suspects and why. Maintain credibility as mood-observer.
+          8. Sharp investigator—she connected the dots faster than I expected; I underestimated her perceptiveness.
+          </context>
+
+          <dialog character="Lana" to="PLAYER">
+          Me? No—I mean, have you *read* Ink and Echo? They're melancholy, critical. My work is about optimization, atmosphere, environmental harmony. Completely different. I write about *purpose*—how colors affect cognition, how angles determine mood states. Not—not whatever they're doing.
+          </dialog>
+
+          <description minutes="2">
+          Lana stops adjusting the lamp mid-reach, her hand freezing slightly. Her eyes narrow, studying PLAYER's face with fresh intensity—not just observing mood, but reading accusation.
+          </description>
+
+          <mind>
+          She's connected something. The paper, my poetry—but she's wrong about which poetry. I need to show her the difference. Or does she know something about *where* the poems are? Why would she ask about paper requisitions first?
+          </mind>
+
+          <dialog character="Lana" to="PLAYER">
+          Why do you think that? What have you seen that made you ask about paper? Your stress levels are elevated—your jaw is tightened. You're tracking something specific. Are you investigating Ink and Echo yourself?
+          </dialog>
+
+          <attitude toward="PLAYER">Sharp investigator—connected dots faster than I realized. Underestimated her.</attitude>
+
+          <deferSchedule></deferSchedule>
+
+          <suggestion>
+          show her poem
+          ask why she suspects
+          </suggestion>
+        changes:
+          - 'Lana.attitudes: {"PLAYER":"Perceptive and direct; someone who actually pays attention to details."} => {"PLAYER":"Sharp investigator—connected dots faster than I realized. Underestimated her."}'
+      - id: Doug
+        title: prompt Doug
+        response: |-
+          <context>
+          1. No special questions to answer.
+          2. Doug realizes PLAYER investigates Ink Echo mystery.
+          3. Pester PLAYER investigate discover facts quickly.
+          4. PLAYER investigates Ink Echo mystery actively.
+          5. Doug discovers real mystery loves pestering.
+          6. Doug realizes investigation mystery excites him.
+          7. Call out loudly ask rapid questions.
+          8. Yes PLAYER investigating mystery now fascinates.
+          </context>
+
+          <dialog character="Doug" to="PLAYER">
+          Wait, wait, wait—you're *investigating* Ink and Echo? Like, you're actually trying to figure out who writes them? Is that what the paper questions are about? Do you have any of the poems yet?
+          </dialog>
+
+          <description minutes="2">
+          Doug stops pacing mid-step, his eyes going wide with genuine delight. He practically bounces closer to PLAYER, all that ambient restlessness suddenly focused into laser-sharp attention. His voice gets louder—that oblivious, too-loud voice that disrupts the atmosphere.
+          </description>
+
+          <dialog character="Doug" to="PLAYER">
+          What do they say? Are they actually sad? And where have you found them? Like, are they pinned to walls or just... lying around? Have you told Ama you're looking for stuff?
+          </dialog>
+
+          <description minutes="1">
+          Doug grins that lopsided grin, practically vibrating with the kind of energy that comes from stumbling onto someone else's secret project. He doesn't seem to notice or care that he's being intrusive—he's just found the most interesting thing in the room.
+          </description>
+
+          <mind>This is perfect. PLAYER isn't just some new person—they're actually investigating something real. This is exactly the kind of thing Doug loves to bother people about.</mind>
+
+          <attitude toward="PLAYER">Investigating Ink and Echo—finally something worth pestering.</attitude>
+
+          <set attr="Doug.curiosity">+1</set>
+
+          <deferSchedule></deferSchedule>
+
+          <suggestion>
+          answer his questions
+          ask Doug details
+          </suggestion>
+        changes:
+          - 'Doug.attitudes: {"PLAYER":"New and mysteriously interested in papers—worth pestering."} => {"PLAYER":"Investigating Ink and Echo—finally something worth pestering."}'
+          - "Doug.curiosity: 0 => 1"
+      - id: narrator
+        changes:
+          - 'Marta.inside: "Foyer" => "Hollow_Atrium"'
+          - 'Frida.inside: "Archive_Lounge" => "Tranquil_Pool"'
+          - 'Gloria.inside: "Solitude_Cubes" => "Hollow_Atrium"'
+          - 'Lily.inside: "Static_Garden" => "Ill_Fitting_Lounge"'
+          - 'Henry.inside: "Solitude_Cubes" => "Hollow_Atrium"'
+  - n: 31
+    input: /nav Archive Console
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria: 35 sheets, very defensive, claims editing feedback.
+      - Marta: 31 sheets, claims journaling, suspiciously praised poems' "meter" despite claiming not to follow them.
+      - Lana: 23 sheets, admits writing poetry but denies being Ink and Echo - says hers is about "optimization, harmony" not "melancholy, critical."
+      - Doug very curious about my investigation, asks if I've told Ama.
+      - Haven't actually READ any Ink and Echo poems yet - need to check Archive records (on my list).
+      - Still need to meet: Ama (6 sheets, approved Frida's quota).
+      - Next: Check Archive records to actually see the poems and their locations.
+    saw:
+      - "Route: The Hollow Atrium, Archive Lounge, Archive Console"
+    reached: []
+    machinery: []
+  - n: 32
+    input: go to The Hollow Atrium
+    notes: |-
+      - Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+      - Gloria: 35 sheets, very defensive, claims editing feedback.
+      - Marta: 31 sheets, claims journaling, suspiciously praised poems' "meter" despite claiming not to follow them - MOST SUSPICIOUS.
+      - Lana: 23 sheets, admits writing poetry but denies being Ink and Echo.
+      - Doug very curious about my investigation.
+      - Haven't actually READ any Ink and Echo poems yet - need to check Archive records.
+      - Archive Console route: The Hollow Atrium → Archive Lounge → Archive Console.
+      - Still need to meet: Ama (6 sheets, approved Frida's quota).
+      - Next: Go to Archive Console to read the poems and see where they've been found.
+    saw:
+      - Marta sweeps past you with the rigid posture of someone who's swallowed a steel rod and called it confidence. Gloria drifts in her wake like a heat-seeking missile primed for complaints. Henry shuffles along, apparently still waiting for that appointment from 2017, moving elsewhere while somehow going nowhere.
+    reached: []
+    machinery:
+      - id: PLAYER
+        title: player input
+        response: |-
+          <context>
+          1. Yes, the user is trying to go to The Hollow Atrium (locationId: Hollow_Atrium)
+          2. No other action
+          3. No examination
+          4. No dialog response
+          5. No speech
+          </context>
+
+          <goto>Hollow_Atrium</goto>
+        changes:
+          - 'PLAYER.inside: "Activity_Hub" => "Hollow_Atrium"'
+      - id: narrator
+        changes:
+          - 'Marta.inside: "Hollow_Atrium" => "Activity_Hub"'
+          - 'Frida.inside: "Tranquil_Pool" => "Joyous_Cafe"'
+          - 'Gloria.inside: "Hollow_Atrium" => "Activity_Hub"'
+          - 'Lily.inside: "Ill_Fitting_Lounge" => "Solitude_Cubes"'
+          - 'Henry.inside: "Hollow_Atrium" => "Activity_Hub"'

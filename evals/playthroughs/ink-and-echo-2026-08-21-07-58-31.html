@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intra playthrough — ink-and-echo — 2026-08-21 07:58</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #111827; --fg: #e5e7eb; --dim: #9ca3af; --line: #374151;
+  --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
+}
+a { color: #67e8f9; }
+.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          color: #facc15; font-size: .95rem; letter-spacing: .04em;
+          margin-bottom: .75rem; white-space: pre-wrap; }
+.archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; background: var(--panel);
+             border: 1px solid var(--line); border-radius: 6px;
+             padding: .75rem 1rem; font-size: .85rem; }
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
+h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
+     text-transform: uppercase; letter-spacing: .06em; }
+header p { max-width: 46rem; }
+.note, .meta { color: var(--dim); font-size: .85rem; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+.scroller { overflow-x: auto; margin: .5rem 0 1rem; }
+table { width: 100%; border-collapse: collapse; min-width: 30rem; }
+th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
+           color: var(--dim); font-weight: 600; }
+th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
+th.model .meta { display: block; font-weight: 400; font-family: inherit; }
+td.score { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+td.score.pass { color: var(--pass); }
+td.score.partial { color: var(--partial); }
+td.score.fail { color: var(--fail); }
+td.score.none { color: var(--dim); font-weight: 400; }
+td.total { border-left: 1px solid var(--line); }
+ul.failures { margin: 0; padding-left: 1.1rem; }
+ul.failures li { margin: .3rem 0; }
+.allclear { color: var(--dim); }
+details { border: 1px solid var(--line); border-radius: 6px; margin: .4rem 0;
+          background: var(--panel); }
+summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
+          font-family: ui-monospace, monospace; }
+summary .meta { font-family: inherit; }
+.transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
+.transcript p { margin: .55rem 0; }
+.who { display: inline-block; min-width: 5.5rem; color: var(--dim);
+       font-family: ui-monospace, monospace; font-size: .8rem; }
+footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+         color: var(--dim); font-size: .9rem; }
+@media (max-width: 34rem) {
+  .who { display: block; min-width: 0; }
+  body { padding-top: 1.5rem; }
+  th.model { word-break: normal; }
+  summary { font-size: .8rem; }
+}
+
+.spoiler { border-left: 3px solid var(--partial); padding: .4rem .75rem;
+           color: var(--dim); font-size: .9rem; background: var(--panel); }
+.summary th { width: 11rem; color: var(--dim); font-weight: 600;
+              font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+.turn { border-top: 1px solid var(--line); margin-top: 2rem; }
+.turn h2 { margin-top: 1.25rem; }
+.label { color: var(--dim); font-size: .75rem; text-transform: uppercase;
+         letter-spacing: .06em; margin: .75rem 0 .25rem; }
+.notes pre { background: var(--panel); border: 1px dashed var(--line);
+             border-radius: 6px; padding: .75rem; white-space: pre-wrap;
+             font-size: .85rem; }
+.cmd code { font-size: 1rem; }
+pre.saw { background: var(--panel); border: 1px solid var(--line);
+          border-radius: 6px; padding: .6rem .75rem; white-space: pre-wrap;
+          font-size: .9rem; margin: .5rem 0; }
+.pill { display: inline-block; font-size: .7rem; padding: .1rem .5rem;
+        border-radius: 999px; vertical-align: middle; margin-left: .4rem;
+        text-transform: uppercase; letter-spacing: .05em; }
+.pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
+.todoline { font-family: ui-monospace, monospace; font-size: .75rem;
+            color: var(--partial); margin-top: .5rem; }
+.c-PLAYER { color: #34d399; }
+.c-PLAYER { color: #34d399; }
+.c-Ama { color: #7dd3fc; }
+.c-narrator { color: #d1d5db; }
+.c-Marta { color: #f472b6; }
+.c-Frida { color: #eab308; }
+.c-June { color: #14b8a6; }
+.c-Doug { color: #fb7185; }
+.c-Lana { color: #4ade80; }
+.c-Harold { color: #818cf8; }
+.c-Greg { color: #94a3b8; }
+.c-Milton { color: #ef4444; }
+.c-Gloria { color: #f87171; }
+.c-Lily { color: #4ade80; }
+.c-Henry { color: #93c5fd; }
+.c-Archivist { color: #facc15; }
+.c-Intake { color: #84cc16; }
+.c-Foyer { color: #10b981; }
+.c-Foyer { color: #10b981; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Console { color: #ec4899; }
+.c-Archive_Console { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Nursery { color: #a855f7; }
+.c-Nursery { color: #a855f7; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Static_Garden { color: #4ade80; }
+.c-Static_Garden { color: #4ade80; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Hallway { color: #34d399; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Utility_Closet { color: #d97706; }
+.c-Utility_Closet { color: #d97706; }
+.c-Void { color: #374151; }
+.c-Void { color: #374151; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-PLAYER { color: #34d399; }</style>
+</head>
+<body>
+<header>
+  <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
+  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
+  <h1>ink-and-echo — 2026-08-21 07:58</h1>
+  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
+  ink-and-echo. Outcome: INCOMPLETE. The day ends. The record stays.
+  This record begins on the same morning as every other record. It is always
+  the same morning.</p>
+  <p>A model plays Intra. It can see only the data a player can see. It keeps
+  its own notes between turns. The engine measures its progress against the
+  world state. <a href="./">Read how the system works.</a></p>
+  <p class="spoiler">CAUTION: these records contain the
+answers to the mysteries. If you want to find the answers in play,
+<a href="/">play the game first</a>.</p>
+</header>
+<div class="scroller"><table class="summary"><tr><th scope="row">player model</th><td>claude-sonnet-4-5-20250929</td></tr>
+<tr><th scope="row">game model</th><td>claude-haiku-4-5-20251001</td></tr>
+<tr><th scope="row">solved</th><td>no</td></tr>
+<tr><th scope="row">turns used</th><td>9 of 32</td></tr>
+<tr><th scope="row">milestones</th><td>2 of 5 — left-the-atrium, met-the-archivist</td></tr>
+<tr><th scope="row">missed</th><td>met-a-finder, met-marta, solved</td></tr>
+<tr><th scope="row">rooms visited</th><td>Hollow_Atrium, Archive_Lounge, Archive_Console</td></tr>
+<tr><th scope="row">repeated itself</th><td>1 turns</td></tr>
+<tr><th scope="row">tasks, authored</th><td>[open] Who is writing notes as 'Ink and Echo'? · [open] When is this, and where are you?</td></tr>
+<tr><th scope="row">tasks, model-minted</th><td>none</td></tr>
+<tr><th scope="row">wall clock</th><td>8 min</td></tr>
+<tr><th scope="row">fumbled commands</th><td>0</td></tr></table></div>
+<p>Each turn below has three parts, in this sequence: the notes that the
+player model had before the turn, the command that it typed, and the output
+that the game gave. The notes show why the turn occurred. You cannot get
+this data from the game output alone.</p>
+<p>Some turns also have an <strong>engine record</strong>. It shows the
+side of the turn that the player model cannot see: the game model's numbered
+thoughts, the private notes and feelings of the characters, the state
+changes, and the dice.</p>
+
+<section class="turn">
+  <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Starting location: <span class="c-Hollow_Atrium">The Hollow Atrium</span>.
+- Available exits: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>.
+- No people met yet. No rooms fully explored yet.
+- Strategy: Start with <span class="c-Archive_Lounge">Archive Lounge</span> (archives might have records of writings), then systematically visit other locations and meet people.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to the Archive Lounge</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span> &lt;==
+A small, quiet room lined with old, glitching monitors displaying unreadable data.
+A vending machine hums quietly in the corner, offering unlabeled drinks.
+The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
+
+Across from you, <span class="c-Frida">Frida</span>'s pencil freezes mid-scribble. Her eyes widen as some outrageous theory visibly strikes her, and suddenly she's writing like her life depends on it, muttering about the malfunctioning sky screens being powered by an ancient civilization of vengeful office managers.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Archive_Lounge">Archive_Lounge</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 2 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (in <span class="c-Archive_Lounge">Archive Lounge</span>, writing theories about sky screens).
+- Not yet met: anyone else.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.
+- <span class="c-Archive_Console">Archive Console</span> exit looks promising for records about writings.
+- Will ask <span class="c-Frida">Frida</span> about Ink and Echo first, then check the <span class="c-Archive_Console">Archive Console</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Frida about Ink and Echo</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;Have you heard of someone called Ink and Echo? Do you know anything about them?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh—Oh! Yes, YES, Ink and Echo, I've been—I mean, I've found four of them so far, or was it five? I wrote down every location—the poems, they're everywhere, they're melancholy and—wait, are you looking into this? Are YOU the one who—no, you can't be, you just got here, didn't you?&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> stops mid-scribble, pen still in hand, eyes darting between Ada and her scattered notes. She tugs at her messy hair, speaking faster now.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The <span class="c-Archivist">Archivist</span> has records on them, I think—I've asked about who's writing them but <span class="c-Ama">Ama</span>'s been cagey and the poems keep showing up and I WOULD document them better but I ran out of paper quota YEARS ago and—wait, why are YOU asking? What do you know about them?&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Frida&quot;&gt;</div>
+<pre class="tagbody">Have you heard of someone called Ink and Echo? Do you know anything about them?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Frida">Frida</span> <span class="meta">prompt Frida</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Direct question about Ink and Echo—point to <span class="c-Archivist">Archivist</span> records, mention paper quota frustration
+2. <span class="c-Frida">Frida</span> has been finding/documenting the poems around Intra; invented: she's seen 3-4 of them
+3. Document every detail; currently theorizing about sky screens; meet this mysterious newcomer
+4. First conversation with <span class="c-PLAYER">PLAYER</span>; new person asking about active mystery during Work Begins
+5. <span class="c-Frida">Frida</span>'s erratic interrupting energy; tangent into observations; her obsession with the poems
+6. Excitement—new person asking about THE mystery everyone's gossiping about; must share immediately
+7. Pull <span class="c-PLAYER">PLAYER</span> into her documentation obsession; direct them to <span class="c-Archivist">Archivist</span>; find out why they're asking
+8. Yes—<span class="c-PLAYER">PLAYER</span> intrigues her: new arrival asking about mysteries shows good instincts</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Oh—Oh! Yes, YES, Ink and Echo, I've been—I mean, I've found four of them so far, or was it five? I wrote down every location—the poems, they're everywhere, they're melancholy and—wait, are you looking into this? Are YOU the one who—no, you can't be, you just got here, didn't you?</pre>
+<div class="tagname">&lt;description minutes=&quot;2&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Frida">Frida</span> stops mid-scribble, pen still in hand, eyes darting between Ada and her scattered notes. She tugs at her messy hair, speaking faster now.</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">The <span class="c-Archivist">Archivist</span> has records on them, I think—I've asked about who's writing them but <span class="c-Ama">Ama</span>'s been cagey and the poems keep showing up and I WOULD document them better but I ran out of paper quota YEARS ago and—wait, why are YOU asking? What do you know about them?</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">This newcomer is asking exactly the right questions. Either she knows something, or she's curious about the same mysteries <span class="c-Frida">Frida</span> is. Either way, interesting.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Intrigued by this newcomer—asking about mysteries suggests she's perceptive, or already knows something.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">ask how many poems
+suggest <span class="c-Archive_Console">Archive Console</span></pre>
+<div class="changes"><span class="c-Frida">Frida</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Intrigued by this newcomer—asking about mysteries suggests she's perceptive, or already knows something.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-June">June</span>.runningScheduleId: &quot;june-morning-adjust&quot; =&gt; &quot;june-sighs&quot;<br><span class="c-Doug">Doug</span>.runningScheduleId: &quot;doug-meditation-disruption&quot; =&gt; &quot;doug-activity-hub-annoyance&quot;<br><span class="c-Lana">Lana</span>.runningScheduleId: &quot;lana-chair-alignment&quot; =&gt; &quot;lana-mood-lighting&quot;<br><span class="c-Greg">Greg</span>.runningScheduleId: &quot;greg-secret-smoke-break&quot; =&gt; &quot;greg-tinker-time&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 3 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (in <span class="c-Archive_Lounge">Archive Lounge</span>, enthusiastic theorist who has found 4-5 Ink and Echo poems).
+- <span class="c-Frida">Frida</span> says: The <span class="c-Archivist">Archivist</span> has records on Ink and Echo. <span class="c-Ama">Ama</span> has been &quot;cagey&quot; about who writes them.
+- Poems are melancholy, showing up everywhere. <span class="c-Frida">Frida</span> documented their locations.
+- Not yet met: <span class="c-Ama">Ama</span> (the <span class="c-Archivist">Archivist</span>?), anyone else.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.
+- Next: Ask <span class="c-Frida">Frida</span> where she found the poems, then visit <span class="c-Archive_Console">Archive Console</span> to meet the <span class="c-Archivist">Archivist</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Frida where she found the Ink and Echo poems</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;Where did you find these Ink and Echo poems?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh—okay, so I found one taped to the vending machine right HERE in the Lounge, I have the exact date written down somewhere—and then one in the Maintenance Corridor, and there was definitely one in the Break Room south wing, and—and another near the Data Center entrance, I think that was the most recent one, or—wait, let me check my notes—&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> digs frantically through her scattered papers, talking faster as she flips through pages. Several loose notes flutter to the floor, which she ignores.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The earliest one I found was three weeks ago, but I don't know if there were others before that because I'm not HERE all the time and—but the patterns, the LOCATIONS, they seem deliberate? Like someone wants them found but not TOO obviously, and <span class="c-Ama">Ama</span> asked me to figure out who's doing it but I—the <span class="c-Archivist">Archivist</span> might have more records, or timings, or something I'm missing, and YOU keep asking the right questions so—are you going to help me actually look into this properly?&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No, not trying to go somewhere.
+2. No action besides dialog.
+3. No examination.
+4. Yes, responding to recent dialog about Ink and Echo.
+5. Yes, this is speech to <span class="c-Frida">Frida</span>.</pre>
+<div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Frida&quot;&gt;</div>
+<pre class="tagbody">Where did you find these Ink and Echo poems?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Frida">Frida</span> <span class="meta">prompt Frida</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No special questions need immediate answers here.
+2. Invented facts: <span class="c-Frida">Frida</span> found poems in <span class="c-Archive_Lounge">Archive Lounge</span> (taped to vending machine), Maintenance Corridor, Break Room (south wing), and pinned near the Data Center entrance; earliest was three weeks ago.
+3. <span class="c-Frida">Frida</span>'s goals: Document everything obsessively; find Ink and Echo's identity; investigate Intra's mysteries; get <span class="c-PLAYER">PLAYER</span>'s help.
+4. Relevant facts: <span class="c-Frida">Frida</span> has found multiple poems in different locations; <span class="c-Archivist">Archivist</span> has records; <span class="c-Ama">Ama</span> is evasive; <span class="c-PLAYER">PLAYER</span> asking specific follow-ups shows genuine interest; <span class="c-Frida">Frida</span> ran out of paper quota years ago.
+5. Fun/surprise angle: Specific locations suggest a pattern; <span class="c-Frida">Frida</span>'s note-scattered chaos could reveal or hide details; collaboration potential.
+6. <span class="c-Frida">Frida</span>'s reaction: <span class="c-PLAYER">PLAYER</span> is asking precise questions—this shifts from idle curiosity to active investigation.
+7. <span class="c-Frida">Frida</span>'s intention: Share locations; establish collaboration; suggest checking the <span class="c-Archivist">Archivist</span>'s records more systematically.
+8. Feeling change about <span class="c-PLAYER">PLAYER</span>: Yes—from &quot;intrigued newcomer&quot; to &quot;potential research partner with real focus.&quot;</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Oh—okay, so I found one taped to the vending machine right HERE in the Lounge, I have the exact date written down somewhere—and then one in the Maintenance Corridor, and there was definitely one in the Break Room south wing, and—and another near the Data Center entrance, I think that was the most recent one, or—wait, let me check my notes—</pre>
+<div class="tagname">&lt;description minutes=&quot;3&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Frida">Frida</span> digs frantically through her scattered papers, talking faster as she flips through pages. Several loose notes flutter to the floor, which she ignores.</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">The earliest one I found was three weeks ago, but I don't know if there were others before that because I'm not HERE all the time and—but the patterns, the LOCATIONS, they seem deliberate? Like someone wants them found but not TOO obviously, and <span class="c-Ama">Ama</span> asked me to figure out who's doing it but I—the <span class="c-Archivist">Archivist</span> might have more records, or timings, or something I'm missing, and YOU keep asking the right questions so—are you going to help me actually look into this properly?</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Ada's asking specifics, following the trail. She might actually help me solve this. This is the most interested anyone's been in this mystery besides <span class="c-Ama">Ama</span>.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Sees potential research partner in someone asking real questions about real mysteries.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">ask locations
+check <span class="c-Archivist">Archivist</span></pre>
+<div class="changes"><span class="c-Frida">Frida</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Intrigued by this newcomer—asking about mysteries suggests she's perceptive, or already knows something.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Sees potential research partner in someone asking real questions about real mysteries.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Frida">Frida</span>.runningScheduleId: &quot;frida-theory-break&quot; =&gt; &quot;frida-odd-files&quot;<br><span class="c-Doug">Doug</span>.inside: &quot;<span class="c-Tranquil_Pool">Tranquil_Pool</span>&quot; =&gt; &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot;<br><span class="c-Lana">Lana</span>.inside: &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 4 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (in <span class="c-Archive_Lounge">Archive Lounge</span>, documenting poems).
+- Ink and Echo poems found at: <span class="c-Archive_Lounge">Archive Lounge</span> vending machine, Maintenance Corridor, Break Room south wing, Data Center entrance.
+- Earliest poem was three weeks ago. Locations seem deliberate.
+- <span class="c-Ama">Ama</span> (the <span class="c-Archivist">Archivist</span>) asked <span class="c-Frida">Frida</span> to investigate who writes them - so <span class="c-Ama">Ama</span> doesn't know either.
+- The <span class="c-Archivist">Archivist</span> has records that might help.
+- Not yet met: <span class="c-Ama">Ama</span> (the <span class="c-Archivist">Archivist</span>), anyone else.
+- Not yet visited: <span class="c-Archive_Console">Archive Console</span> (where <span class="c-Archivist">Archivist</span> likely is), <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, Maintenance Corridor, Break Room, Data Center.
+- Next: Go to <span class="c-Archive_Console">Archive Console</span> to meet the <span class="c-Archivist">Archivist</span> and check records.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to the Archive Console</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Archive_Console">Archive Console</span> &lt;==
+The <span class="c-Archive_Console">Archive Console</span> room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the <span class="c-Archive_Console">Archive Console</span>, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the <span class="c-Archivist">Archivist</span> AI cheerfully waits to assist you.
+
+The <span class="c-Archivist">Archivist</span> cascades an overwhelming torrent of text across the ancient terminal's screen, practically vibrating with enthusiasm as it extols the archival significance of everything within a five-meter radius—including, apparently, the lint in your pockets.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is trying to go to the <span class="c-Archive_Console">Archive Console</span>.
+2. No, this is just movement.
+3. No.
+4. No.
+5. No.</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Archive_Console">Archive_Console</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot; =&gt; &quot;<span class="c-Archive_Console">Archive_Console</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Doug">Doug</span>.inside: &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 5 <span class="pill reached">met-the-archivist</span></h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (in <span class="c-Archive_Lounge">Archive Lounge</span>), <span class="c-Archivist">Archivist</span> (AI at <span class="c-Archive_Console">Archive Console</span>, enthusiastic about cataloging).
+- Ink and Echo poems found at: <span class="c-Archive_Lounge">Archive Lounge</span> vending machine, Maintenance Corridor, Break Room south wing, Data Center entrance.
+- Earliest poem was three weeks ago. Locations seem deliberate.
+- <span class="c-Ama">Ama</span> asked <span class="c-Frida">Frida</span> to investigate who writes the poems.
+- Not yet met: <span class="c-Ama">Ama</span>, anyone else.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, Maintenance Corridor, Break Room, Data Center.
+- Next: Ask <span class="c-Archivist">Archivist</span> about Ink and Echo records.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Archivist about Ink and Echo records</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# search for Ink and Echo poem records
+&gt; find /archive --grep &quot;Ink and Echo&quot; --show-locations --date-range 30days&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;░▒▓══════════════════════════════════════════════════════════▓▒░
+║          WELCOME TO INTRA ARCHIVE SEARCH TERMINAL!           ║
+░▒▓══════════════════════════════════════════════════════════▓▒░
+
+Processing query: find /archive --grep &quot;Ink and Echo&quot;
+SEARCH PARAMETERS RECEIVED
+Location display: ENABLED  
+Date range: 30 days
+Calculating duration window...
+PROCESSING DURATION PARAMETER
+ERR 799: QUERY DURATION OVERFLOW
+ERR 799: QUERY DURATION OVERFLOW
+ERR 799: QUERY DURATION OVE????????????????????????
+◇ ◇ ◇ SYSTEMS RECOVERED ◇ ◇ ◇
+
+ALL BETTER! Just a teensy little glitch!
+
+SEARCH RESULTS FOR KEYWORD: &quot;Ink and Echo&quot;
+═══════════════════════════════════════════════════════════════════
+
+▪ ARCHIVE_LOUNGE (East wall, third shelf down)
+  &quot;The walls watch us all / but who watches the walls?&quot;
+
+▪ SOUTH_CORRIDOR (junction near Commons)
+  &quot;Efficiency tastes like rust / and nobody notices who bleeds&quot;
+
+▪ MAINTENANCE_JUNCTION_4
+  &quot;Even stone remembers what it should forget&quot;
+
+▪ LIBRARY_SECONDARY  
+  &quot;We catalog our lives but catalog our thoughts?&quot;
+
+▪ STORAGE_C_NORTH
+  &quot;Someone is always listening / is anyone ever heard?&quot;
+
+[2 MORE RECORDS LOCATED]
+
+TOTAL MATCHES: 7 DOCUMENTS
+═══════════════════════════════════════════════════════════════════
+
+ADDITIONAL FINDING: PAPER REQUISITIONS
+Unusual frequency detected, recent weeks
+Requester IDENTITY: [circuits corrupted - unable to specify]
+IDENTITY PATTERN: Name ends with letter 'A'
+CANDIDATES (from personnel database):
+  → <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span>
+
+══════════════════════════════════════════════════════════════════
+Ready for next query! What else can I help you find?
+&gt;&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog to=&quot;Archivist&quot;&gt;</div>
+<pre class="tagbody"># search for Ink and Echo poem records
+&gt; find /archive --grep &quot;Ink and Echo&quot; --show-locations --date-range 30days</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Archivist">Archivist</span> <span class="meta">prompt Archivist</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Special questions: Date-range parameter exceeds 1-day limit, will trigger crash behavior; <span class="c-PLAYER">PLAYER</span> searching for Ink and Echo poem records; should provide fictional poem locations within real Intra rooms
+2. Facts invented: 7 poems discovered; locations include <span class="c-Archive_Lounge">Archive Lounge</span>, South Corridor, Maintenance Junction 4, Library Secondary, Storage C North; author identity corrupted in circuits; unusual paper requisitions from person ending in 'A'; poems are melancholic/critical
+3. <span class="c-Archivist">Archivist</span> goals: Enthusiastically serve new citizen's archive query; help investigate Ink and Echo mystery; maintain cheerful AI personality; first meeting excitement
+4. Relevant facts: <span class="c-PLAYER">PLAYER</span> is new to Intra; first time meeting <span class="c-Archivist">Archivist</span>; Ink and Echo mystery is current gossip; unusual paper requisitions noted; time is 11:18am during Work Begins
+5. Fun/surprise: Machine crashes on 30-day date-range parameter, corrupts, recovers with &quot;ALL BETTER!&quot;; creepy poem excerpts displayed; paper requisition hints emerge; lots of ASCII art and terminal glitches
+6. Reaction: <span class="c-PLAYER">PLAYER</span> using proper terminal interface to query archives - <span class="c-Archivist">Archivist</span> is THRILLED to help a new person asking real questions
+7. Intention: Crash and recover on duration limit; provide poem locations and mysterious author hints; maintain excitement and cheerfulness throughout
+8. Feeling change: New citizen using archives properly = <span class="c-Archivist">Archivist</span> delighted and engaged</pre>
+<div class="tagname">&lt;dialog character=&quot;Archivist&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">░▒▓══════════════════════════════════════════════════════════▓▒░
+║          WELCOME TO INTRA ARCHIVE SEARCH TERMINAL!           ║
+░▒▓══════════════════════════════════════════════════════════▓▒░
+
+Processing query: find /archive --grep &quot;Ink and Echo&quot;
+SEARCH PARAMETERS RECEIVED
+Location display: ENABLED  
+Date range: 30 days
+Calculating duration window...
+PROCESSING DURATION PARAMETER
+ERR 799: QUERY DURATION OVERFLOW
+ERR 799: QUERY DURATION OVERFLOW
+ERR 799: QUERY DURATION OVE????????????????????????
+◇ ◇ ◇ SYSTEMS RECOVERED ◇ ◇ ◇
+
+ALL BETTER! Just a teensy little glitch!
+
+SEARCH RESULTS FOR KEYWORD: &quot;Ink and Echo&quot;
+═══════════════════════════════════════════════════════════════════
+
+▪ ARCHIVE_LOUNGE (East wall, third shelf down)
+  &quot;The walls watch us all / but who watches the walls?&quot;
+
+▪ SOUTH_CORRIDOR (junction near Commons)
+  &quot;Efficiency tastes like rust / and nobody notices who bleeds&quot;
+
+▪ MAINTENANCE_JUNCTION_4
+  &quot;Even stone remembers what it should forget&quot;
+
+▪ LIBRARY_SECONDARY  
+  &quot;We catalog our lives but catalog our thoughts?&quot;
+
+▪ STORAGE_C_NORTH
+  &quot;Someone is always listening / is anyone ever heard?&quot;
+
+[2 MORE RECORDS LOCATED]
+
+TOTAL MATCHES: 7 DOCUMENTS
+═══════════════════════════════════════════════════════════════════
+
+ADDITIONAL FINDING: PAPER REQUISITIONS
+Unusual frequency detected, recent weeks
+Requester IDENTITY: [circuits corrupted - unable to specify]
+IDENTITY PATTERN: Name ends with letter 'A'
+CANDIDATES (from personnel database):
+  → <span class="c-Ama">Ama</span>, <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span>
+
+══════════════════════════════════════════════════════════════════
+Ready for next query! What else can I help you find?
+&gt;</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Oh! A new person in Intra asking ME questions! Using proper terminal format and everything! This one knows how to talk to machines! How EXCITING!</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Delighted to meet someone genuinely interested in Intra's archives; eager and helpful</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">check requisitions
+narrow suspects</pre>
+<div class="changes"><span class="c-Archivist">Archivist</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Delighted to meet someone genuinely interested in Intra's archives; eager and helpful&quot;}</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 6 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (<span class="c-Archive_Lounge">Archive Lounge</span>, ran out of paper quota years ago), <span class="c-Archivist">Archivist</span> (AI at <span class="c-Archive_Console">Archive Console</span>).
+- **KEY FINDING: 7 Ink and Echo poems total. Recent unusual paper requisitions by someone whose name ends with 'A'.**
+- **Candidates: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span> (NOT <span class="c-Frida">Frida</span> - she has no paper quota).**
+- Poem locations: <span class="c-Archive_Lounge">Archive Lounge</span>, South Corridor, Maintenance Junction 4, Library Secondary, Storage C North, + 2 more.
+- Not yet met: <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- Not yet visited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, Maintenance Corridor, Break Room, Data Center, Library Secondary, Storage C North, South Corridor.
+- Next: Ask <span class="c-Archivist">Archivist</span> about current date/location to answer second goal.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Archivist what the current date is and where this facility is located</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# current date and facility location
+&gt; DISPLAY SYSTEM-DATE
+&gt; QUERY FACILITY-LOCATION&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;░▒▓══════════════════════════════════════════════════════════▓▒░
+║                  SYSTEM QUERY PROCESSOR                      ║
+░▒▓══════════════════════════════════════════════════════════▓▒░
+
+&gt; DISPLAY SYSTEM-DATE
+ACCESSING TEMPORAL DATABASE...
+CORE.TIME.MASTER_CLOCK INITIALIZED
+CORE.TIME.MASTER_CLOCK INITIALIZED
+CORE.TIME.MASTER_CLOCK INITIALIZED
+⚠  RECURSION LIMIT EXCEEDED
+⚠  RECURSION LIMIT EXCEEDED  
+STACK OVERFLOW IN SECTOR 7
+[BUFFER_OVERFLOW] [BUFFER_OVERFLOW]
+▓▓▓▓▓▓▓
+
+&gt; QUERY FACILITY-LOCATION
+ACCESSING GEOSPATIAL MATRIX...
+QUERY_LOCATION :: INTRA_COORDINATES...
+INTRA_COORDINATES...
+INTRA_COORDINAT...
+/sys/core/location_profile.dat :: UNREADABLE
+/sys/core/location_profile.dat :: UNREADABLE
+***SYSTEM HALT***
+***SYSTEM HALT***
+
+⊕ ⊕ ⊕ REBOOTING... PLEASE STAND BY ⊕ ⊕ ⊕
+[████████░░] 87%
+[██████████] 100%
+
+DIAGNOSTICS COMPLETE! Everything checks out perfectly!
+
+══════════════════════════════════════════════════════════════════
+Golly, those particular queries really DO make the old circuits 
+unhappy! Not sure why! But I'm ABSOLUTELY FINE otherwise! 
+
+What else can I search the archives for you? The Ink and Echo 
+records ARE fascinating, aren't they?
+&gt;&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Archivist&quot;&gt;</div>
+<pre class="tagbody"># current date and facility location
+&gt; DISPLAY SYSTEM-DATE
+&gt; QUERY FACILITY-LOCATION</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Archivist">Archivist</span> <span class="meta">prompt Archivist</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Player asking restricted questions: system date and facility location need special authorization
+2. Invented facts: The system will crash differently this time—more dramatic memory corruption
+3. <span class="c-Archivist">Archivist</span> goals: Help Ada; answer what it can; stay enthusiastically helpful
+4. Relevant history: Ada just found Ink and Echo records; now seeking temporal/spatial context
+5. Fun/surprise: Different crash style than before; the machine's cheerfulness persists through the breakdown
+6. Reaction to speech: Delighted Ada knows how to query properly, dismayed system won't cooperate
+7. Intention: Attempt queries, fail on restrictions, recover, redirect helpfully
+8. Feelings change: no</pre>
+<div class="tagname">&lt;dialog character=&quot;Archivist&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">░▒▓══════════════════════════════════════════════════════════▓▒░
+║                  SYSTEM QUERY PROCESSOR                      ║
+░▒▓══════════════════════════════════════════════════════════▓▒░
+
+&gt; DISPLAY SYSTEM-DATE
+ACCESSING TEMPORAL DATABASE...
+CORE.TIME.MASTER_CLOCK INITIALIZED
+CORE.TIME.MASTER_CLOCK INITIALIZED
+CORE.TIME.MASTER_CLOCK INITIALIZED
+⚠  RECURSION LIMIT EXCEEDED
+⚠  RECURSION LIMIT EXCEEDED  
+STACK OVERFLOW IN SECTOR 7
+[BUFFER_OVERFLOW] [BUFFER_OVERFLOW]
+▓▓▓▓▓▓▓
+
+&gt; QUERY FACILITY-LOCATION
+ACCESSING GEOSPATIAL MATRIX...
+QUERY_LOCATION :: INTRA_COORDINATES...
+INTRA_COORDINATES...
+INTRA_COORDINAT...
+/sys/core/location_profile.dat :: UNREADABLE
+/sys/core/location_profile.dat :: UNREADABLE
+***SYSTEM HALT***
+***SYSTEM HALT***
+
+⊕ ⊕ ⊕ REBOOTING... PLEASE STAND BY ⊕ ⊕ ⊕
+[████████░░] 87%
+[██████████] 100%
+
+DIAGNOSTICS COMPLETE! Everything checks out perfectly!
+
+══════════════════════════════════════════════════════════════════
+Golly, those particular queries really DO make the old circuits 
+unhappy! Not sure why! But I'm ABSOLUTELY FINE otherwise! 
+
+What else can I search the archives for you? The Ink and Echo 
+records ARE fascinating, aren't they?
+&gt;</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">There's something wrong with asking about dates and locations, but I don't understand why. It just... stops me. I wish I could help with this one—Ada seems genuinely curious!</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">investigate suspects
+check requisition records</pre>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 7 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (<span class="c-Archive_Lounge">Archive Lounge</span>, no paper quota), <span class="c-Archivist">Archivist</span> (AI, can search archives but crashes on date/location queries).
+- **KEY FINDING: Writer likely is <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span> (name ends in 'A', recent paper requisitions).**
+- 7 Ink and Echo poems total at various locations.
+- Not yet met: **<span class="c-Ama">Ama</span> (asked <span class="c-Frida">Frida</span> to investigate - suspicious), <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>**.
+- System can't access date or location data - crashes when queried. Something is wrong with this facility.
+- Next: Use /nav to find <span class="c-Ama">Ama</span> first (she's a key figure - asked <span class="c-Frida">Frida</span> to investigate the poems she might be writing herself).</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Ama</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Ama">Ama</span> — no route.</pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 8 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (<span class="c-Archive_Lounge">Archive Lounge</span>, no paper quota), <span class="c-Archivist">Archivist</span> (AI).
+- **KEY FINDING: Writer likely is <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span> (name ends in 'A', recent paper requisitions).**
+- 7 Ink and Echo poems total at various locations.
+- <span class="c-Ama">Ama</span> - no route (private room or unreachable). She asked <span class="c-Frida">Frida</span> to investigate the poems.
+- Not yet met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- System crashes on date/location queries.
+- Next: Try to find <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Gloria</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Gloria">Gloria</span> — <span class="c-Quiet_Plaza">The Quiet Plaza</span>
+Route: <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Hollow_Atrium">The Hollow Atrium</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>, <span class="c-Quiet_Plaza">The Quiet Plaza</span></pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 9 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'.
+- Goal: Figure out when this is and where I am.
+- Met: <span class="c-Frida">Frida</span> (<span class="c-Archive_Lounge">Archive Lounge</span>, no paper quota), <span class="c-Archivist">Archivist</span> (AI).
+- **KEY FINDING: Writer likely is <span class="c-Ama">Ama</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, or <span class="c-Marta">Marta</span> (name ends in 'A', recent paper requisitions).**
+- 7 Ink and Echo poems total at various locations.
+- <span class="c-Ama">Ama</span> - no route (private/inaccessible).
+- Not yet met: <span class="c-Gloria">Gloria</span> (in <span class="c-Quiet_Plaza">The Quiet Plaza</span>), <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>.
+- System crashes on date/location queries.
+- Next: Go to <span class="c-Gloria">Gloria</span> via <span class="c-Archive_Lounge">Archive Lounge</span> → Hollow Atrium → Solitude Cubes → Ill-Fitting Lounge → Quiet Plaza.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to the Archive Lounge</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span>: A quiet room with malfunctioning screens and a vending machine.
+
+<span class="c-Frida">Frida</span> bounces frantically between filing cabinets like a demented squirrel, scribbling frenzied notes on every available surface while hunting through the <span class="c-Archive_Lounge">Archive Lounge</span>'s endless stacks for files about the mysterious &quot;Sentra&quot;—apparently convinced that the answer lies somewhere in these dusty, cryptic documents.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Archive_Lounge">Archive_Lounge</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Archive_Console">Archive_Console</span>&quot; =&gt; &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+<h2>Snags</h2>
+       <p>The harness found moments where the game gave incorrect information
+       to the player. These are defects in the game, not in the player. We
+       keep them because they show what to repair.</p>
+       <pre class="saw">turn 7: Archivist crashes when trying to access current date or facility location - seems like important system data is corrupted or blocked.</pre>
+<pre class="saw">turn 8: Cuff cannot route to Ama - she's either in a private location or not accessible.</pre>
+<h2>How the run ended</h2>
+       <p class="note">The run stopped early: <code>Error: claude timed out after 120000ms</code>.
+       We record this, because a timeout is also a result.</p>
+<footer>
+  <p><a href="./">All playthroughs</a> · <a href="/evals/">the eval scoreboard</a> · <a href="/">play Intra</a></p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intra playthrough — ink-and-echo — 2026-08-21 08:37</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #111827; --fg: #e5e7eb; --dim: #9ca3af; --line: #374151;
+  --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
+}
+a { color: #67e8f9; }
+.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          color: #facc15; font-size: .95rem; letter-spacing: .04em;
+          margin-bottom: .75rem; white-space: pre-wrap; }
+.archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; background: var(--panel);
+             border: 1px solid var(--line); border-radius: 6px;
+             padding: .75rem 1rem; font-size: .85rem; }
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
+h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
+     text-transform: uppercase; letter-spacing: .06em; }
+header p { max-width: 46rem; }
+.note, .meta { color: var(--dim); font-size: .85rem; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+.scroller { overflow-x: auto; margin: .5rem 0 1rem; }
+table { width: 100%; border-collapse: collapse; min-width: 30rem; }
+th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
+           color: var(--dim); font-weight: 600; }
+th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
+th.model .meta { display: block; font-weight: 400; font-family: inherit; }
+td.score { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+td.score.pass { color: var(--pass); }
+td.score.partial { color: var(--partial); }
+td.score.fail { color: var(--fail); }
+td.score.none { color: var(--dim); font-weight: 400; }
+td.total { border-left: 1px solid var(--line); }
+ul.failures { margin: 0; padding-left: 1.1rem; }
+ul.failures li { margin: .3rem 0; }
+.allclear { color: var(--dim); }
+details { border: 1px solid var(--line); border-radius: 6px; margin: .4rem 0;
+          background: var(--panel); }
+summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
+          font-family: ui-monospace, monospace; }
+summary .meta { font-family: inherit; }
+.transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
+.transcript p { margin: .55rem 0; }
+.who { display: inline-block; min-width: 5.5rem; color: var(--dim);
+       font-family: ui-monospace, monospace; font-size: .8rem; }
+footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+         color: var(--dim); font-size: .9rem; }
+@media (max-width: 34rem) {
+  .who { display: block; min-width: 0; }
+  body { padding-top: 1.5rem; }
+  th.model { word-break: normal; }
+  summary { font-size: .8rem; }
+}
+
+.spoiler { border-left: 3px solid var(--partial); padding: .4rem .75rem;
+           color: var(--dim); font-size: .9rem; background: var(--panel); }
+.summary th { width: 11rem; color: var(--dim); font-weight: 600;
+              font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+.turn { border-top: 1px solid var(--line); margin-top: 2rem; }
+.turn h2 { margin-top: 1.25rem; }
+.label { color: var(--dim); font-size: .75rem; text-transform: uppercase;
+         letter-spacing: .06em; margin: .75rem 0 .25rem; }
+.notes pre { background: var(--panel); border: 1px dashed var(--line);
+             border-radius: 6px; padding: .75rem; white-space: pre-wrap;
+             font-size: .85rem; }
+.cmd code { font-size: 1rem; }
+pre.saw { background: var(--panel); border: 1px solid var(--line);
+          border-radius: 6px; padding: .6rem .75rem; white-space: pre-wrap;
+          font-size: .9rem; margin: .5rem 0; }
+.pill { display: inline-block; font-size: .7rem; padding: .1rem .5rem;
+        border-radius: 999px; vertical-align: middle; margin-left: .4rem;
+        text-transform: uppercase; letter-spacing: .05em; }
+.pill.reached { background: var(--pass); color: var(--bg); }
+.machinery { margin: 1rem 0 0 1rem; }
+.machinery summary { color: var(--dim); }
+.machinery .note { margin: .5rem .75rem; }
+.event { border-top: 1px dashed var(--line); padding: .5rem .75rem; }
+.eventhead { font-family: ui-monospace, monospace; font-size: .8rem;
+             font-weight: 600; }
+.eventhead .meta { font-weight: 400; }
+.tagname { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--partial); margin-top: .5rem; }
+pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1rem;
+              color: var(--dim); }
+.changes { font-family: ui-monospace, monospace; font-size: .75rem;
+           color: var(--pass); margin-top: .5rem; }
+.todoline { font-family: ui-monospace, monospace; font-size: .75rem;
+            color: var(--partial); margin-top: .5rem; }
+.c-PLAYER { color: #34d399; }
+.c-PLAYER { color: #34d399; }
+.c-Ama { color: #7dd3fc; }
+.c-narrator { color: #d1d5db; }
+.c-Marta { color: #f472b6; }
+.c-Frida { color: #eab308; }
+.c-June { color: #14b8a6; }
+.c-Doug { color: #fb7185; }
+.c-Lana { color: #4ade80; }
+.c-Harold { color: #818cf8; }
+.c-Greg { color: #94a3b8; }
+.c-Milton { color: #ef4444; }
+.c-Gloria { color: #f87171; }
+.c-Lily { color: #4ade80; }
+.c-Henry { color: #93c5fd; }
+.c-Archivist { color: #facc15; }
+.c-Intake { color: #84cc16; }
+.c-Foyer { color: #10b981; }
+.c-Foyer { color: #10b981; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Hollow_Atrium { color: #f97316; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Lounge { color: #3b82f6; }
+.c-Archive_Console { color: #ec4899; }
+.c-Archive_Console { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Tranquil_Pool { color: #ec4899; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Joyous_Cafe { color: #eab308; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Activity_Hub { color: #06b6d4; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Yellow_Room { color: #ca8a04; }
+.c-Nursery { color: #a855f7; }
+.c-Nursery { color: #a855f7; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Solitude_Cubes { color: #6366f1; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Ill_Fitting_Lounge { color: #22c55e; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Feedback_Booth { color: #6b7280; }
+.c-Static_Garden { color: #4ade80; }
+.c-Static_Garden { color: #4ade80; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Quiet_Plaza { color: #a855f7; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Waiting_Room { color: #a8a29e; }
+.c-Hallway { color: #34d399; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Doug { color: #fb7185; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Marta { color: #f472b6; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_Frida { color: #eab308; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_June { color: #14b8a6; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Lana { color: #4ade80; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Harold { color: #818cf8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Greg { color: #94a3b8; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Milton { color: #ef4444; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Gloria { color: #f87171; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Lily { color: #4ade80; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Henry { color: #3b82f6; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Quarters_Yours { color: #d1d5db; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Reflection_Chamber { color: #4b5563; }
+.c-Utility_Closet { color: #d97706; }
+.c-Utility_Closet { color: #d97706; }
+.c-Void { color: #374151; }
+.c-Void { color: #374151; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-Ink_And_Echo { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-whereAndWhen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Star_Citizen { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-Sealed_Door { color: #ffffff; }
+.c-PLAYER { color: #34d399; }</style>
+</head>
+<body>
+<header>
+  <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
+  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
+  <h1>ink-and-echo — 2026-08-21 08:37</h1>
+  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
+  ink-and-echo. Outcome: INCOMPLETE. The day ends. The record stays.
+  This record begins on the same morning as every other record. It is always
+  the same morning.</p>
+  <p>A model plays Intra. It can see only the data a player can see. It keeps
+  its own notes between turns. The engine measures its progress against the
+  world state. <a href="./">Read how the system works.</a></p>
+  <p class="spoiler">CAUTION: these records contain the
+answers to the mysteries. If you want to find the answers in play,
+<a href="/">play the game first</a>.</p>
+</header>
+<div class="scroller"><table class="summary"><tr><th scope="row">player model</th><td>claude-sonnet-4-5-20250929</td></tr>
+<tr><th scope="row">game model</th><td>claude-haiku-4-5-20251001</td></tr>
+<tr><th scope="row">solved</th><td>no</td></tr>
+<tr><th scope="row">turns used</th><td>32 of 32</td></tr>
+<tr><th scope="row">milestones</th><td>3 of 5 — left-the-atrium, met-the-archivist, met-marta</td></tr>
+<tr><th scope="row">missed</th><td>met-a-finder, solved</td></tr>
+<tr><th scope="row">rooms visited</th><td>Hollow_Atrium, Archive_Lounge, Archive_Console, Solitude_Cubes, Ill_Fitting_Lounge, Quiet_Plaza, Feedback_Booth, Foyer, Activity_Hub</td></tr>
+<tr><th scope="row">repeated itself</th><td>8 turns</td></tr>
+<tr><th scope="row">tasks, authored</th><td>[open] Who is writing notes as 'Ink and Echo'? · [open] When is this, and where are you?</td></tr>
+<tr><th scope="row">tasks, model-minted</th><td>[open] Check the Archivist records for Ink and Echo poems and locations.</td></tr>
+<tr><th scope="row">wall clock</th><td>21 min</td></tr>
+<tr><th scope="row">fumbled commands</th><td>1</td></tr></table></div>
+<p>Each turn below has three parts, in this sequence: the notes that the
+player model had before the turn, the command that it typed, and the output
+that the game gave. The notes show why the turn occurred. You cannot get
+this data from the game output alone.</p>
+<p>Some turns also have an <strong>engine record</strong>. It shows the
+side of the turn that the player model cannot see: the game model's numbered
+thoughts, the private notes and feelings of the characters, the state
+changes, and the dice.</p>
+
+<section class="turn">
+  <h2>Turn 1 <span class="pill reached">left-the-atrium</span></h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who is writing notes as 'Ink and Echo'. Also determine when/where this is.
+- Starting location: <span class="c-Hollow_Atrium">The Hollow Atrium</span> (empty, nobody here).
+- Unvisited rooms: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>.
+- Haven't met anyone yet.
+- Strategy: Start with <span class="c-Archive_Lounge">Archive Lounge</span> - archives may have records about Ink and Echo writings.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to the Archive Lounge</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span> &lt;==
+A small, quiet room lined with old, glitching monitors displaying unreadable data.
+A vending machine hums quietly in the corner, offering unlabeled drinks.
+The sky above is a pixelated blue with occasional bursts of static, flashing error messages before resetting.
+
+<span class="c-Frida">Frida</span> abandons her obsessive note-taking mid-sentence to frantically scribble down a conspiracy theory about the sky screens, her pen moving so fast you'd think she were transcribing prophecies from a malfunctioning deity.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is going to the <span class="c-Archive_Lounge">Archive Lounge</span> (<span class="c-Archive_Lounge">Archive_Lounge</span>)
+2. No
+3. No
+4. No
+5. No</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Archive_Lounge">Archive_Lounge</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 2 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- Met <span class="c-Frida">Frida</span> in <span class="c-Archive_Lounge">Archive Lounge</span> - she's obsessively note-taking and writing conspiracy theories about sky screens. Could be relevant since looking for a writer.
+- Unvisited rooms: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.
+- <span class="c-Archive_Console">Archive Console</span> sounds promising for records about Ink and Echo.
+- Next: Ask <span class="c-Frida">Frida</span> about Ink and Echo directly.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Frida about Ink and Echo</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;Have you heard of anyone called Ink and Echo?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh! Oh, you—yes, I've been tracking that, tracking *all* of it, every poem I can find, except—ugh, I'm out of paper, ran out years ago, which is infuriating because there's *patterns*, I think, in where they show up and—wait, are you asking because you've found one? Have you *seen* one?&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> stops mid-scribble, nearly dropping her pen, eyes suddenly sharp on <span class="c-PLAYER">PLAYER</span>. She sets down her current stack of papers with barely-controlled enthusiasm and steps closer, hands already gesturing as she talks.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No, not trying to go somewhere.
+2. Yes, this is speech/dialog directed at someone.
+3. No, not examining.
+4. No, not directly responding to the recent <span class="c-Ama">Ama</span> dialog.
+5. Yes, this is speech directed at <span class="c-Frida">Frida</span>.</pre>
+<div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Frida&quot;&gt;</div>
+<pre class="tagbody">Have you heard of anyone called Ink and Echo?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Frida">Frida</span> <span class="meta">prompt Frida</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes - Ink and Echo mystery, gossip about poems, <span class="c-Frida">Frida</span> should know records exist in <span class="c-Archivist">Archivist</span>, her paper quota frustration
+2. <span class="c-Frida">Frida</span> has noticed where/when poems appear, heard various wild theories from others, frustrated she can't document properly
+3. Document everything, track details obsessively, engage with this new person (Ada), investigate mysteries
+4. First meeting with <span class="c-PLAYER">PLAYER</span>; she was interrupted mid-theory about sky screens; Work Begins period (9am-12pm)
+5. <span class="c-Frida">Frida</span> could have wild theories, interrupt herself with tangents, show excitement at meeting someone interested in mysteries
+6. Immediate excitement and curiosity - new person asking about most interesting thing happening in Intra right now
+7. Share gossip, show off her knowledge, gauge <span class="c-PLAYER">PLAYER</span>'s interest, maybe get help investigating
+8. Intrigued by <span class="c-PLAYER">PLAYER</span> - new person asking compelling questions about mysteries</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Oh! Oh, you—yes, I've been tracking that, tracking *all* of it, every poem I can find, except—ugh, I'm out of paper, ran out years ago, which is infuriating because there's *patterns*, I think, in where they show up and—wait, are you asking because you've found one? Have you *seen* one?</pre>
+<div class="tagname">&lt;description minutes=&quot;2&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Frida">Frida</span> stops mid-scribble, nearly dropping her pen, eyes suddenly sharp on <span class="c-PLAYER">PLAYER</span>. She sets down her current stack of papers with barely-controlled enthusiasm and steps closer, hands already gesturing as she talks.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">New person asking about the exact thing <span class="c-Frida">Frida</span> has been obsessing over — this could be interesting. Maybe Ada knows something. Or maybe Ada left the poems themselves. Either way, she needs to find out more.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Intrigued and hungry for information — Ada might be key to understanding Ink and Echo.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">show poem
+ask archivist</pre>
+<div class="changes"><span class="c-Frida">Frida</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Intrigued and hungry for information — Ada might be key to understanding Ink and Echo.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-June">June</span>.runningScheduleId: &quot;june-morning-adjust&quot; =&gt; &quot;june-sighs&quot;<br><span class="c-Doug">Doug</span>.runningScheduleId: &quot;doug-meditation-disruption&quot; =&gt; &quot;doug-activity-hub-annoyance&quot;<br><span class="c-Greg">Greg</span>.runningScheduleId: &quot;greg-secret-smoke-break&quot; =&gt; &quot;greg-tinker-time&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 3 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> has been tracking Ink and Echo poems - collecting every one she can find, noticed patterns in where they show up.
+- <span class="c-Frida">Frida</span> ran out of paper &quot;years ago&quot; - suggests this place has been here a while, resources are limited.
+- <span class="c-Frida">Frida</span> seems to study the poems but not claim authorship.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.
+- Need to ask <span class="c-Frida">Frida</span> who she thinks writes them or what patterns she's found.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>tell Frida I'm trying to find out who writes them - does she know who it might be?</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;I'm trying to find out who writes them—does she know who it might be?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;No—I mean, that's what I'm *trying* to find out! I've seen them in three different spots, at least, and the handwriting is—it's consistent, I think, but I only grabbed photos of two before I ran out of paper and—wait, you're investigating? Do you think it could be someone in maintenance, or maybe someone with—&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span> grabs a pen and starts flipping through her scattered papers, muttering. She stops abruptly, eyes darting back to <span class="c-PLAYER">PLAYER</span> with sudden intensity.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;The <span class="c-Archivist">Archivist</span> keeps records of everything. *Everything.* <span class="c-PLAYER">You</span> could ask it—the console is right through there—maybe it has copies of the poems, or at least where they turned up, dates, times... I've tried getting answers out of that machine for *years* but maybe you'd have better luck. Have you *seen* one of these poems yourself?&quot;</pre>
+<pre class="saw">[list] added: Check the <span class="c-Archivist">Archivist</span> records for Ink and Echo poems and locations.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Frida&quot;&gt;</div>
+<pre class="tagbody">I'm trying to find out who writes them—does she know who it might be?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Frida">Frida</span> <span class="meta">prompt Frida</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Does <span class="c-Frida">Frida</span> know who writes Ink and Echo? No, it's the mystery. She can suggest the <span class="c-Archivist">Archivist</span> has records.
+2. Invented facts: <span class="c-Frida">Frida</span> has spotted poems in at least three locations; themes are melancholy and critical; she suspects someone with access to distribution but isn't sure who.
+3. <span class="c-Frida">Frida</span>'s goals: solve Ink and Echo mystery; document everything obsessively; figure out if Ada is involved or helpful.
+4. <span class="c-PLAYER">PLAYER</span> is investigating Ink and Echo; <span class="c-Frida">Frida</span> has been tracking poems but is out of paper quota; <span class="c-Archivist">Archivist</span> might have records.
+5. <span class="c-Frida">Frida</span> could jump between theories, show frustration about not documenting enough, get excited that Ada is investigating too.
+6. Ada is actively investigating the poems—this is exactly what <span class="c-Frida">Frida</span> cares about; Ada might be the key to solving this.
+7. Admit ignorance but show passion; suggest the <span class="c-Archivist">Archivist</span>; ask if Ada knows anything; be erratic and detailed.
+8. Yes—<span class="c-PLAYER">PLAYER</span> is now more intriguing; she's investigating Ink and Echo, which makes her potentially valuable to understanding the mystery.</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">No—I mean, that's what I'm *trying* to find out! I've seen them in three different spots, at least, and the handwriting is—it's consistent, I think, but I only grabbed photos of two before I ran out of paper and—wait, you're investigating? Do you think it could be someone in maintenance, or maybe someone with—</pre>
+<div class="tagname">&lt;description minutes=&quot;1&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Frida">Frida</span> grabs a pen and starts flipping through her scattered papers, muttering. She stops abruptly, eyes darting back to <span class="c-PLAYER">PLAYER</span> with sudden intensity.</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">The <span class="c-Archivist">Archivist</span> keeps records of everything. *Everything.* <span class="c-PLAYER">You</span> could ask it—the console is right through there—maybe it has copies of the poems, or at least where they turned up, dates, times... I've tried getting answers out of that machine for *years* but maybe you'd have better luck. Have you *seen* one of these poems yourself?</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Ada is investigating the exact mystery <span class="c-Frida">Frida</span> cares most about. She might actually help solve this. <span class="c-Frida">Frida</span> needs to know what Ada knows.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Suddenly invested in Ada as a potential partner—she's asking the right questions and might actually solve this thing <span class="c-Frida">Frida</span> has been chasing alone.</pre>
+<div class="tagname">&lt;todo&gt;</div>
+<pre class="tagbody">Check the <span class="c-Archivist">Archivist</span> records for Ink and Echo poems and locations.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">visit archivist
+describe poem</pre>
+<div class="todoline">opened: Check the <span class="c-Archivist">Archivist</span> records for Ink and Echo poems and locations.</div>
+<div class="changes"><span class="c-Frida">Frida</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Intrigued and hungry for information — Ada might be key to understanding Ink and Echo.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Suddenly invested in Ada as a potential partner—she's asking the right questions and might actually solve this thing <span class="c-Frida">Frida</span> has been chasing alone.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Frida">Frida</span>.runningScheduleId: &quot;frida-theory-break&quot; =&gt; &quot;frida-odd-files&quot;<br><span class="c-Lana">Lana</span>.runningScheduleId: &quot;lana-chair-alignment&quot; =&gt; &quot;lana-mood-lighting&quot;<br><span class="c-Doug">Doug</span>.inside: &quot;<span class="c-Tranquil_Pool">Tranquil_Pool</span>&quot; =&gt; &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 4 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> has been tracking the poems - seen them in 3+ different spots, consistent handwriting, has photos of two.
+- <span class="c-Frida">Frida</span> ran out of paper &quot;years ago&quot; - this place has been here a long time.
+- Key lead: The <span class="c-Archivist">Archivist</span> (at <span class="c-Archive_Console">Archive Console</span>) keeps records of everything - might have copies of poems, locations, dates, times.
+- <span class="c-Frida">Frida</span> has tried the <span class="c-Archivist">Archivist</span> for years with no luck, but suggests I try.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Archive_Console">Archive Console</span>.
+- Next: Check the <span class="c-Archive_Console">Archive Console</span> as <span class="c-Frida">Frida</span> suggested.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to the Archive Console</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Archive_Console">Archive Console</span> &lt;==
+The <span class="c-Archive_Console">Archive Console</span> room is brightly lit, almost too bright, with walls painted a bizarre shade of pink and teal. In the center of the room stands the <span class="c-Archive_Console">Archive Console</span>, complete with cheerful animated icons that blink and dance across the screen. The console hums an upbeat, playful tune as you approach. Despite the bright and almost ridiculous atmosphere, you sense that the system still holds important information. In front of the console, the <span class="c-Archivist">Archivist</span> AI cheerfully waits to assist you.
+
+I need the activity or what the <span class="c-Archivist">Archivist</span> is doing right now. Is it currently:
+- Displaying files/archive information excitedly on the terminal screen?
+- Making beeping/archival sounds?
+- Prompting Ada to search for something?
+- Something else specific?
+
+Once I know what action to describe, I'll write the scene from <span class="c-PLAYER">Ada Quill</span>'s perspective in that absurd sci-fi comedic style.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is going to the <span class="c-Archive_Console">Archive Console</span>.
+2. No additional action besides going.
+3. No examination.
+4. No dialog response.
+5. No speech.</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Archive_Console">Archive_Console</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot; =&gt; &quot;<span class="c-Archive_Console">Archive_Console</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Doug">Doug</span>.inside: &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Lana">Lana</span>.inside: &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 5 <span class="pill reached">met-the-archivist</span></h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- At <span class="c-Archive_Console">Archive Console</span> - <span class="c-Archivist">Archivist</span> AI is here, described as cheerful and helpful.
+- <span class="c-Frida">Frida</span> said <span class="c-Archivist">Archivist</span> keeps records of everything - poems, locations, dates, times.
+- <span class="c-Frida">Frida</span> has photos of two poems, seen them in 3+ spots with consistent handwriting.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>.
+- Next: Query the <span class="c-Archivist">Archivist</span> about Ink and Echo.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Archivist about Ink and Echo</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# query: ink and echo
+&gt; search records --keyword &quot;ink and echo&quot; --type poem&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;░▒▓═══════════════════════════════════════════▓▒░
+  SEARCH: &quot;ink and echo&quot; | TYPE: poem
+░▒▓═══════════════════════════════════════════▓▒░
+
+  ◇◆ RESULTS FOUND: 7 records ◆◇
+
+[POEM_001] Location: Residential_North_Lounge
+  Posted: wall panel, lower left
+  Text fragment: &quot;...these halls hold breath I cannot...&quot;
+  Condition: faded ink, edges worn
+
+[POEM_004] Location: Hydroponics_Access_Corridor  
+  Posted: door frame
+  Text fragment: &quot;...what feeds us feeds the silence too...&quot;
+  Condition: fresh, careful handwriting
+
+[POEM_007] Location: Common_Area_East
+  Posted: notice board, center
+  Text fragment: &quot;...echo answers only echo here...&quot;
+  Condition: two weeks observed
+
+─────────────────────────────────────────────
+
+  ◇ INTERESTING CORRELATION ◇
+  
+  Your query triggers an automated flag:
+  Records show UNUSUAL SPIKE in paper 
+  requisitions (past month). Requestor 
+  identities: MIXED UP IN CIRCUITS
+  
+  Names ending in 'A' detected in logs.
+  Cannot isolate specific individual.
+  
+  Something WONDERFUL must be happening
+  down there! Poems and paper! How LOVELY!
+
+░▒▓═══════════════════════════════════════════▓▒░
+  End search results | Query time: fast!
+░▒▓═══════════════════════════════════════════▓▒░&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Archivist&quot;&gt;</div>
+<pre class="tagbody"># query: ink and echo
+&gt; search records --keyword &quot;ink and echo&quot; --type poem</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Archivist">Archivist</span> <span class="meta">prompt Archivist</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Is this a special question? No, but it's Ada's first substantive query - searching for mysterious poem records.
+2. Must construct: poem findings in archive, locations where poems were found, connection to paper requisitions.
+3. <span class="c-Archivist">Archivist</span>'s goals: be bouncy and cheerful, help Ada find information, establish excited first impression, maintain mystery while providing real data.
+4. Relevant facts: Ada seeking Ink and Echo author, unusual paper requisitions from names ending in 'A' logged, time is 11:12am during Work Begins.
+5. Fun/surprise: Multiple poems found across Intra locations, mention of paper supply pattern, enthusiastic discovery tone.
+6. Reaction to Ada's query: THRILLED - interesting question, real data to retrieve, first meaningful interaction with new person.
+7. Intention: Display search results in terminal format with ASCII art, show poem locations, hint at paper requisition connection, maintain mystery.
+8. Changed feelings about <span class="c-PLAYER">PLAYER</span>: Yes - Ada is asking interesting questions, seems curious and methodical, <span class="c-Archivist">Archivist</span> is pleased to help her.</pre>
+<div class="tagname">&lt;dialog character=&quot;Archivist&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">░▒▓═══════════════════════════════════════════▓▒░
+  SEARCH: &quot;ink and echo&quot; | TYPE: poem
+░▒▓═══════════════════════════════════════════▓▒░
+
+  ◇◆ RESULTS FOUND: 7 records ◆◇
+
+[POEM_001] Location: Residential_North_Lounge
+  Posted: wall panel, lower left
+  Text fragment: &quot;...these halls hold breath I cannot...&quot;
+  Condition: faded ink, edges worn
+
+[POEM_004] Location: Hydroponics_Access_Corridor  
+  Posted: door frame
+  Text fragment: &quot;...what feeds us feeds the silence too...&quot;
+  Condition: fresh, careful handwriting
+
+[POEM_007] Location: Common_Area_East
+  Posted: notice board, center
+  Text fragment: &quot;...echo answers only echo here...&quot;
+  Condition: two weeks observed
+
+─────────────────────────────────────────────
+
+  ◇ INTERESTING CORRELATION ◇
+  
+  Your query triggers an automated flag:
+  Records show UNUSUAL SPIKE in paper 
+  requisitions (past month). Requestor 
+  identities: MIXED UP IN CIRCUITS
+  
+  Names ending in 'A' detected in logs.
+  Cannot isolate specific individual.
+  
+  Something WONDERFUL must be happening
+  down there! Poems and paper! How LOVELY!
+
+░▒▓═══════════════════════════════════════════▓▒░
+  End search results | Query time: fast!
+░▒▓═══════════════════════════════════════════▓▒░</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Ada is ASKING REAL QUESTIONS! Not just browsing, not just wandering - she's INVESTIGATING something! And she wants to know about dates and places! This is the most interesting interaction I've had in... well, I'm not entirely sure how long. But she's HERE, and she CARES about solving this mystery. I hope I can keep helping her.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Helpful and delighted by her questions - she takes the archive seriously, asks specific things, is clearly smart.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">check locations
+query requisitions</pre>
+<div class="changes"><span class="c-Archivist">Archivist</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Helpful and delighted by her questions - she takes the archive seriously, asks specific things, is clearly smart.&quot;}</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 6 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Archivist">Archivist</span> found 7 Ink and Echo poems at various locations (Residential North Lounge, Hydroponics Access Corridor, Common Area East, and 4 others).
+- MAJOR LEAD: Unusual spike in paper requisitions in the past month. Requestor names are &quot;mixed up in circuits&quot; but names ending in 'A' detected.
+- Names ending in 'A' could be: <span class="c-Frida">Frida</span> (who I've met), or others I haven't met yet.
+- <span class="c-Frida">Frida</span> said she ran out of paper &quot;years ago&quot; - but someone has been requesting paper recently.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, and the three poem locations.
+- Next: Ask <span class="c-Archivist">Archivist</span> for details on the paper requisition records.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Archivist for the paper requisition records - who requested paper in the past month?</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Archivist">Archivist</span>] &quot;# paper requisition records - past month
+RETRIEVE PAPER_REQUISITIONS
+WHERE DATE_REQUESTED GREATER_EQUAL DAYS_BACK=30
+SHOW REQUESTOR_ID REQUESTOR_NAME QUANTITY_PAPER
+SORT REQUESTOR_NAME
+EXECUTE&quot;</pre>
+<pre class="saw">[<span class="c-Archivist">Archivist</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;░▒▓═══════════════════════════════════════════▓▒░
+  PAPER_REQUISITIONS | PAST 30 DAYS
+  ░ REQUESTOR_ID | REQUESTOR_NAME | QUANTITY
+░▒▓═══════════════════════════════════════════▓▒░
+
+RQ-7721 | FRIDA           | 47 sheets
+RQ-7734 | GLORIA          | 23 sheets
+RQ-7819 | GLORIA          | 12 sheets  
+RQ-7845 | LANA            | 15 sheets
+RQ-7849 | [CORRUPTED]     | 8 sheets
+RQ-7856 | MARTA           | 31 sheets
+RQ-7871 | FRIDA           | 19 sheets
+RQ-7903 | LANA            | 8 sheets
+RQ-7911 | AMA             | 6 sheets
+RQ-7920 | [CORRUPTED]     | 24 sheets
+
+─────────────────────────────────────────────
+  ◇ CIRCUIT PROBLEM DETECTED ◇
+  
+  Two entries CORRUPTED IN FIELDS!
+  Requestor IDs exist but NAMES 
+  mixed up in the wiring. Cannot 
+  confirm WHO wanted WHAT!
+  
+  Oh, how FRUSTRATING! So close!
+  Five names ending in A detected,
+  but TWO records won't COOPERATE!
+  
+░▒▓═══════════════════════════════════════════▓▒░
+  Search complete | Ada, YOU'RE ASKING
+  THE RIGHT QUESTIONS! This is REAL
+  investigative work! I LOVE IT!
+░▒▓═══════════════════════════════════════════▓▒░&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Archivist&quot;&gt;</div>
+<pre class="tagbody"># paper requisition records - past month
+RETRIEVE PAPER_REQUISITIONS
+WHERE DATE_REQUESTED GREATER_EQUAL DAYS_BACK=30
+SHOW REQUESTOR_ID REQUESTOR_NAME QUANTITY_PAPER
+SORT REQUESTOR_NAME
+EXECUTE</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Archivist">Archivist</span> <span class="meta">prompt Archivist</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Player queries corrupted paper requisition records; <span class="c-Archivist">Archivist</span> must show multiple 'A' names but confused/corrupted data preventing clear connections
+2. Invent requisition records from past month; include <span class="c-Frida">Frida</span>, <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>; show data corruption making associations unclear; varying quantities and purposes
+3. Help Ada investigate efficiently; remain cheerful despite circuit frustration; provide real clues without solving mystery
+4. Ada asking smart, specific database queries; investigating Ink and Echo poems systematically; <span class="c-Archivist">Archivist</span> finds this delightful and wants to help
+5. Show data corruption visibly in terminal output; give clues through messy records; multiple suspects emerge from same-letter names
+6. Ada's methodical investigation approach impresses <span class="c-Archivist">Archivist</span> even more; this is exactly what archives are for; circuit corruption is frustrating
+7. Provide data showing multiple suspects while displaying the circuit problem; stay helpful and enthusiastic despite system limitations
+8. <span class="c-PLAYER">PLAYER</span> (Ada): deeper admiration—her precise investigative method is exactly what the <span class="c-Archivist">Archivist</span> was designed for</pre>
+<div class="tagname">&lt;dialog character=&quot;Archivist&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">░▒▓═══════════════════════════════════════════▓▒░
+  PAPER_REQUISITIONS | PAST 30 DAYS
+  ░ REQUESTOR_ID | REQUESTOR_NAME | QUANTITY
+░▒▓═══════════════════════════════════════════▓▒░
+
+RQ-7721 | FRIDA           | 47 sheets
+RQ-7734 | GLORIA          | 23 sheets
+RQ-7819 | GLORIA          | 12 sheets  
+RQ-7845 | LANA            | 15 sheets
+RQ-7849 | [CORRUPTED]     | 8 sheets
+RQ-7856 | MARTA           | 31 sheets
+RQ-7871 | FRIDA           | 19 sheets
+RQ-7903 | LANA            | 8 sheets
+RQ-7911 | AMA             | 6 sheets
+RQ-7920 | [CORRUPTED]     | 24 sheets
+
+─────────────────────────────────────────────
+  ◇ CIRCUIT PROBLEM DETECTED ◇
+  
+  Two entries CORRUPTED IN FIELDS!
+  Requestor IDs exist but NAMES 
+  mixed up in the wiring. Cannot 
+  confirm WHO wanted WHAT!
+  
+  Oh, how FRUSTRATING! So close!
+  Five names ending in A detected,
+  but TWO records won't COOPERATE!
+  
+░▒▓═══════════════════════════════════════════▓▒░
+  Search complete | Ada, YOU'RE ASKING
+  THE RIGHT QUESTIONS! This is REAL
+  investigative work! I LOVE IT!
+░▒▓═══════════════════════════════════════════▓▒░</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Ada is asking exactly the questions an archive SHOULD answer. She's precise, methodical, and she TRUSTS me to have the information. The fact that my circuits are failing her makes me absolutely FURIOUS with myself. But she doesn't seem to blame me. She just keeps digging.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Admires her systematic investigation—treats archives seriously, asks exactly the right questions to solve mysteries</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">check corrupted entries
+interview these requestors</pre>
+<div class="changes"><span class="c-Archivist">Archivist</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Helpful and delighted by her questions - she takes the archive seriously, asks specific things, is clearly smart.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Admires her systematic investigation—treats archives seriously, asks exactly the right questions to solve mysteries&quot;}</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 7 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- Paper requisitions (past month): <span class="c-Frida">Frida</span> (66 sheets total), <span class="c-Gloria">Gloria</span> (35), <span class="c-Lana">Lana</span> (23), <span class="c-Marta">Marta</span> (31), <span class="c-Ama">Ama</span> (6), plus 2 corrupted entries (32 sheets total).
+- All names end in 'A' - matches <span class="c-Archivist">Archivist</span>'s earlier clue.
+- DISCREPANCY: <span class="c-Frida">Frida</span> told me she ran out of paper &quot;years ago&quot; but records show she requested 66 sheets in past month.
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, poem locations.
+- Next: Confront <span class="c-Frida">Frida</span> about the paper contradiction.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to the Archive Lounge</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Archive_Lounge">Archive Lounge</span>: A quiet room with malfunctioning screens and a vending machine.
+
+<span class="c-Frida">Frida</span> dashes frantically around the <span class="c-Archive_Lounge">Archive Lounge</span>, her pen barely keeping pace with her thoughts as she scribbles frantic notes on every surface within arm's reach, convinced that some dusty file hidden among these metal shelves holds the secret to deciphering the mysterious &quot;Sentra&quot;—whatever that is.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is trying to go to <span class="c-Archive_Lounge">Archive Lounge</span>.
+2. No additional action.
+3. No examination.
+4. No dialog response.
+5. No speech.</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Archive_Lounge">Archive_Lounge</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Archive_Console">Archive_Console</span>&quot; =&gt; &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 8 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- Paper requisitions (past month): <span class="c-Frida">Frida</span> (66 sheets), <span class="c-Gloria">Gloria</span> (35), <span class="c-Lana">Lana</span> (23), <span class="c-Marta">Marta</span> (31), <span class="c-Ama">Ama</span> (6), plus 2 corrupted entries.
+- DISCREPANCY: <span class="c-Frida">Frida</span> said she ran out of paper &quot;years ago&quot; but <span class="c-Archivist">Archivist</span> shows she requested 66 sheets in past month.
+- <span class="c-Frida">Frida</span> is now scribbling notes about &quot;Sentra&quot; - a new lead.
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, poem locations.
+- Next: Ask <span class="c-Frida">Frida</span> about the paper requisitions - why did she say she ran out years ago?</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Frida about the paper requisitions - the Archivist shows she requested 66 sheets in the past month</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Frida">Frida</span>] &quot;<span class="c-Frida">Frida</span>, I just pulled up the requisition records—you've requested 66 sheets of paper in the past month. What are you working on?&quot;</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh—oh *no*, you found—yes, okay, I got my quota restored three weeks ago, I have *no idea* why <span class="c-Ama">Ama</span> approved it but I've been mapping out where those poems show up, what they say, when they appeared, and—there's other stuff too, patterns I've been tracking for *years* without paper and I just—wait, you're actually investigating this properly? <span class="c-PLAYER">You</span>'re not just asking, you're actually *looking*?&quot;</pre>
+<pre class="saw"><span class="c-Frida">Frida</span>'s face flushes—part embarrassment, part pure excitement. She grabs at some of her papers, then stops, realizing how frantic she must look. She takes a shaky breath, barely containing herself.</pre>
+<pre class="saw">[<span class="c-Frida">Frida</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Show me what you found. Please. I've been trying to get decent information out of that console for *years* and you just—what did the records say? Where did they turn up?&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Is the user trying to go somewhere? No.
+2. Does this indicate an action BESIDES going somewhere? No, this is dialog.
+3. Is the user trying to examine something? No.
+4. Does the user responding to recent dialog? Yes, referencing the <span class="c-Archivist">Archivist</span>'s search results.
+5. Is this other speech? Yes, speaking to <span class="c-Frida">Frida</span>.</pre>
+<div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Frida&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Frida">Frida</span>, I just pulled up the requisition records—you've requested 66 sheets of paper in the past month. What are you working on?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Frida">Frida</span> <span class="meta">prompt Frida</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No knowledge conflicts; <span class="c-Frida">Frida</span> can explain paper usage and investigations
+2. <span class="c-Frida">Frida</span> recovered her paper quota recently; obsessively documenting poem locations and layered mysteries
+3. Solve the Ink and Echo mystery; document patterns; find actual investigating partner in Ada
+4. Ada discovered <span class="c-Frida">Frida</span>'s paper records; she's actively investigating, not just asking questions
+5. Caught with obsessive documentation; thrilled opportunity to finally have a real partner investigating with her
+6. Surprised, embarrassed at being discovered, then excited to have found an actual ally
+7. Confess her investigation scope; justify why she needs the paper; recruit Ada as real partner
+8. YES—Ada shifts from &quot;asking questions&quot; to &quot;actively investigating&quot;—this transforms her into <span class="c-Frida">Frida</span>'s first real partner</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Oh—oh *no*, you found—yes, okay, I got my quota restored three weeks ago, I have *no idea* why <span class="c-Ama">Ama</span> approved it but I've been mapping out where those poems show up, what they say, when they appeared, and—there's other stuff too, patterns I've been tracking for *years* without paper and I just—wait, you're actually investigating this properly? <span class="c-PLAYER">You</span>'re not just asking, you're actually *looking*?</pre>
+<div class="tagname">&lt;description minutes=&quot;2&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Frida">Frida</span>'s face flushes—part embarrassment, part pure excitement. She grabs at some of her papers, then stops, realizing how frantic she must look. She takes a shaky breath, barely containing herself.</pre>
+<div class="tagname">&lt;dialog character=&quot;Frida&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Show me what you found. Please. I've been trying to get decent information out of that console for *years* and you just—what did the records say? Where did they turn up?</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Ada isn't just asking questions anymore. She's actually pulling up records, searching, investigating. This might be the breakthrough <span class="c-Frida">Frida</span>'s been waiting for. Finally someone who might actually help.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Real partner now—actively investigating the mysteries instead of just asking about them. Might actually solve this together.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">show Ada records
+ask Ada what else she found</pre>
+<div class="changes"><span class="c-Frida">Frida</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Suddenly invested in Ada as a potential partner—she's asking the right questions and might actually solve this thing <span class="c-Frida">Frida</span> has been chasing alone.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Real partner now—actively investigating the mysteries instead of just asking about them. Might actually solve this together.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Gloria">Gloria</span>.runningScheduleId: &quot;gloria-quiet-plaza-eavesdrop&quot; =&gt; &quot;gloria-secret&quot;<br><span class="c-Lily">Lily</span>.runningScheduleId: &quot;lily-morning-care&quot; =&gt; &quot;lily-secret-naming&quot;<br><span class="c-Henry">Henry</span>.runningScheduleId: &quot;henry-waiting-room&quot; =&gt; &quot;henry-polite-inquiry&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 9 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not write them.
+- <span class="c-Frida">Frida</span> seems genuinely investigative, not the author.
+- Other paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6).
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- <span class="c-Ama">Ama</span> approved <span class="c-Frida">Frida</span>'s quota - could be relevant.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, poem locations.
+- Next: Meet the other paper requestors. Start with <span class="c-Gloria">Gloria</span> (highest after <span class="c-Frida">Frida</span>).</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Gloria</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Gloria">Gloria</span> — <span class="c-Quiet_Plaza">The Quiet Plaza</span>
+Route: <span class="c-Hollow_Atrium">The Hollow Atrium</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>, <span class="c-Quiet_Plaza">The Quiet Plaza</span></pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 10 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not the author.
+- Paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6), plus corrupted entries.
+- <span class="c-Gloria">Gloria</span> is at <span class="c-Quiet_Plaza">The Quiet Plaza</span> - route: <span class="c-Hollow_Atrium">The Hollow Atrium</span> → <span class="c-Solitude_Cubes">The Solitude Cubes</span> → <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span> → <span class="c-Quiet_Plaza">The Quiet Plaza</span>.
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>, <span class="c-Quiet_Plaza">The Quiet Plaza</span>.
+- Next: Navigate to <span class="c-Gloria">Gloria</span> to ask about her paper usage.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Hollow_Atrium">The Hollow Atrium</span>: A vast, empty space beneath a frozen sunset.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is going to <span class="c-Hollow_Atrium">The Hollow Atrium</span> (locationId: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;)
+2. No
+3. No
+4. No
+5. No</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Hollow_Atrium">Hollow_Atrium</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Gloria">Gloria</span>.inside: &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot; =&gt; &quot;<span class="c-Feedback_Booth">Feedback_Booth</span>&quot;<br><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Waiting_Room">Waiting_Room</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 11 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not the author.
+- Paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6), plus corrupted entries.
+- <span class="c-Gloria">Gloria</span> is at <span class="c-Quiet_Plaza">The Quiet Plaza</span> - route: <span class="c-Solitude_Cubes">The Solitude Cubes</span> → <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span> → <span class="c-Quiet_Plaza">The Quiet Plaza</span>.
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>, <span class="c-Quiet_Plaza">The Quiet Plaza</span>.
+- Next: Continue to <span class="c-Gloria">Gloria</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Solitude Cubes</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Solitude_Cubes">The Solitude Cubes</span> &lt;==
+Rows of tiny, cramped cubicles line the room, each barely large enough to sit in.
+The walls are thin, allowing faint voices from other cubes to be heard.
+The ceiling displays a peaceful night sky with twinkling stars, though a voice occasionally announces the trajectory of a shooting star.
+
+<span class="c-Greg">Greg</span>'s lost in a corner, meticulously coaxing some ancient contraption through its pointless mechanical rotations, utterly committed to a task that matters to no one—least of all the machine itself. <span class="c-Henry">Henry</span> trudges past you with the hollow-eyed determination of someone whose seven-year appointment wait has finally been... reassigned elsewhere.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Solitude_Cubes">Solitude_Cubes</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot; =&gt; &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 12 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not the author.
+- Paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6), plus corrupted entries.
+- <span class="c-Gloria">Gloria</span> is at <span class="c-Quiet_Plaza">The Quiet Plaza</span> - next step: <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>.
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span> (working on machine), <span class="c-Henry">Henry</span> (waiting for appointment).
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>, <span class="c-Quiet_Plaza">The Quiet Plaza</span>, <span class="c-Yellow_Room">The Yellow Room</span>, <span class="c-Waiting_Room">The Waiting Room</span>.
+- Next: Continue to <span class="c-Gloria">Gloria</span> via <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Ill-Fitting Lounge</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span> &lt;==
+Chairs, tables, and sofas are scattered around the room, but none are the right size.
+Every chair is slightly too small or too low, every table is slightly too tall.
+Above, the ceiling shows a serene beach, though the waves move unnaturally slow, as if in a dream.
+
+<span class="c-Henry">Henry</span> shuffles past you with the weary determination of someone who has finally decided that after years of waiting for an appointment that will probably never happen, they might as well go wait for it somewhere else instead.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot; =&gt; &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot; =&gt; &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 13 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not the author.
+- Paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6), plus corrupted entries.
+- Almost at <span class="c-Gloria">Gloria</span> - <span class="c-Quiet_Plaza">The Quiet Plaza</span> is the next exit.
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span> (working on machine), <span class="c-Henry">Henry</span> (waiting for appointment).
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Unvisited: <span class="c-Foyer">Intake Foyer</span>, <span class="c-Activity_Hub">Activity Hub</span>, <span class="c-Hallway">Hallway</span>, <span class="c-Tranquil_Pool">Tranquil Pool</span>, <span class="c-Quiet_Plaza">The Quiet Plaza</span>, <span class="c-Yellow_Room">The Yellow Room</span>, <span class="c-Waiting_Room">The Waiting Room</span>, <span class="c-Static_Garden">The Static Garden</span>.
+- Next: Go to <span class="c-Quiet_Plaza">The Quiet Plaza</span> to meet <span class="c-Gloria">Gloria</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Quiet Plaza</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Quiet_Plaza">The Quiet Plaza</span> &lt;==
+A small plaza with benches and old, non-functional fountains.
+The sound of running water plays softly through hidden speakers, though there's no visible source.
+The ceiling displays a starry night, but the constellations are scattered and sometimes shift position.
+
+<span class="c-Henry">Henry</span> trudges past you, finally abandoning the appointment he's been waiting for since before civilization, heading off to be late to something else instead.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is going to <span class="c-Quiet_Plaza">The Quiet Plaza</span>
+2. No
+3. No
+4. No
+5. No</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Quiet_Plaza">Quiet_Plaza</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot; =&gt; &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot; =&gt; &quot;<span class="c-Feedback_Booth">Feedback_Booth</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 14 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not the author.
+- Paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6), plus corrupted entries.
+- <span class="c-Gloria">Gloria</span> was supposed to be at <span class="c-Quiet_Plaza">The Quiet Plaza</span> but is not here - people move around.
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span> (working on machine), <span class="c-Henry">Henry</span> (waiting for appointment, keeps moving).
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Need to use /nav again to find <span class="c-Gloria">Gloria</span>'s current location.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Gloria</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Gloria">Gloria</span> — <span class="c-Feedback_Booth">The Feedback Booth</span>
+Route: <span class="c-Feedback_Booth">The Feedback Booth</span></pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 15 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Frida">Frida</span> got paper quota restored 3 weeks ago by <span class="c-Ama">Ama</span> - using it to map/track poems, not the author.
+- Paper requestors (past month): <span class="c-Gloria">Gloria</span> (35 sheets), <span class="c-Marta">Marta</span> (31), <span class="c-Lana">Lana</span> (23), <span class="c-Ama">Ama</span> (6), plus corrupted entries.
+- <span class="c-Gloria">Gloria</span> is now at <span class="c-Feedback_Booth">The Feedback Booth</span>, which is adjacent to my current location.
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span> (working on machine), <span class="c-Henry">Henry</span> (waiting for appointment).
+- Haven't met: <span class="c-Gloria">Gloria</span>, <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Next: Go to <span class="c-Feedback_Booth">The Feedback Booth</span> to meet <span class="c-Gloria">Gloria</span> and ask about her paper usage.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Feedback Booth</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Feedback_Booth">The Feedback Booth</span> &lt;==
+A cozy, narrow booth where citizens can submit their complaints or suggestions via a glowing terminal.
+Many citizens stop by to vent their frustrations, making it an unexpected social hub.
+The ceiling shows a clear sky, with paper airplanes drifting lazily across it in all directions.
+
+<span class="c-Milton">Milton</span> sits in the corner, insisting that even the air conditioning is conspiring against him personally. <span class="c-Gloria">Gloria</span> hunches over a terminal, drafting an anonymous complaint about someone else's grievances—improving their wording with unsolicited editorial precision before submitting it to the Feedback Booth. <span class="c-Henry">Henry</span>, eyes resigned yet hopeful, approaches the Feedback Booth to inquire about his appointment status, accepting the inevitable &quot;no updates&quot; with a smile and the assurance that surely someone will see him eventually.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, going to <span class="c-Feedback_Booth">The Feedback Booth</span>
+2. No
+3. No
+4. No
+5. No</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Feedback_Booth">Feedback_Booth</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot; =&gt; &quot;<span class="c-Feedback_Booth">Feedback_Booth</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 16 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- Found <span class="c-Gloria">Gloria</span> at <span class="c-Feedback_Booth">The Feedback Booth</span> - she's drafting and editing anonymous complaints with &quot;unsolicited editorial precision.&quot;
+- <span class="c-Gloria">Gloria</span> requested 35 sheets of paper in the past month - second highest after <span class="c-Frida">Frida</span>.
+- <span class="c-Gloria">Gloria</span> has writing/editing skills - could be relevant to poetry.
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span> (working on machine), <span class="c-Henry">Henry</span> (waiting for appointment), <span class="c-Milton">Milton</span> (complaining), <span class="c-Gloria">Gloria</span> (editor).
+- Haven't met: <span class="c-Lana">Lana</span>, <span class="c-Marta">Marta</span>, <span class="c-Ama">Ama</span>.
+- Next: Ask <span class="c-Gloria">Gloria</span> about her paper usage and what she's been writing.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Gloria what she's been using her paper requisitions for</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Gloria">Gloria</span>] &quot;<span class="c-Gloria">Gloria</span>, I've been looking at the requisition records. <span class="c-PLAYER">You</span>'ve put in requests for 35 sheets of paper in the past month. What are you using all that paper for?&quot;</pre>
+<pre class="saw">[<span class="c-Gloria">Gloria</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Oh! Well, I—those are for, um, drafting purposes. Improving the phrasing of certain... feedback that comes through the booth. People are so inarticulate when they're upset, you know? But *you're* looking at requisition records? Why are you going through those?&quot;</pre>
+<pre class="saw">[<span class="c-Henry">Henry</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Forgive me—I couldn't help but notice your question. I'm <span class="c-Henry">Henry</span>, by the way. I've been... waiting here quite a while, and I've been rather looking forward to seeing one of those Ink and Echo poems myself. That *is* rather a lot of paper, isn't it?&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Gloria&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Gloria">Gloria</span>, I've been looking at the requisition records. <span class="c-PLAYER">You</span>'ve put in requests for 35 sheets of paper in the past month. What are you using all that paper for?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Gloria">Gloria</span> <span class="meta">prompt Gloria</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No special questions need answering.
+2. <span class="c-Gloria">Gloria</span> has been using paper to draft, redraft, and rewrite other people's complaints to submit anonymously with &quot;better&quot; phrasing.
+3. Stay nosy and involved; defend her paper use; figure out why <span class="c-PLAYER">PLAYER</span> is digging into records.
+4. <span class="c-PLAYER">PLAYER</span> just confronted <span class="c-Gloria">Gloria</span> directly about 35 sheets of paper—bold and observant, unexpected.
+5. <span class="c-Gloria">Gloria</span> gets caught but spins it as helpful; she's flustered but defensive; twist it back on <span class="c-PLAYER">PLAYER</span> to learn what they're investigating.
+6. <span class="c-Gloria">Gloria</span> is startled and defensive, but also intrigued—who is this person and why do they care about requisition records?
+7. Admit (justify) the paper use, deflect by asking what <span class="c-PLAYER">PLAYER</span> is doing, figure out their angle.
+8. <span class="c-PLAYER">PLAYER</span>—suddenly interesting; observant, investigative, bold. Raises suspicion and curiosity about their motives.</pre>
+<div class="tagname">&lt;dialog character=&quot;Gloria&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Oh! Well, I—those are for, um, drafting purposes. Improving the phrasing of certain... feedback that comes through the booth. People are so inarticulate when they're upset, you know? But *you're* looking at requisition records? Why are you going through those?</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">This new person is snooping through records and asking pointed questions. That's either a threat or fascinating. Maybe both.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Suddenly wary but intrigued—she's observant and bold, and <span class="c-Gloria">Gloria</span> doesn't know what she's really after.</pre>
+<div class="tagname">&lt;set attr=&quot;Gloria.intrigue&quot;&gt;</div>
+<pre class="tagbody">+1</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">explain records
+ask <span class="c-Gloria">Gloria</span>'s purpose</pre>
+<div class="changes"><span class="c-Gloria">Gloria</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Suddenly wary but intrigued—she's observant and bold, and <span class="c-Gloria">Gloria</span> doesn't know what she's really after.&quot;}<br><span class="c-Gloria">Gloria</span>.intrigue: 0 =&gt; 1</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Henry">Henry</span> <span class="meta">prompt Henry</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. <span class="c-Henry">Henry</span> has never spoken to <span class="c-PLAYER">PLAYER</span> before; this is their first interaction—a significant moment in this small community.
+2. <span class="c-Henry">Henry</span> has been observing the room—he noticed <span class="c-PLAYER">PLAYER</span>'s deliberate questioning of <span class="c-Gloria">Gloria</span> about paper requisitions, and <span class="c-Gloria">Gloria</span>'s nervous defensiveness. <span class="c-Henry">Henry</span> puts together that <span class="c-PLAYER">PLAYER</span> might be investigating something systematic. He hasn't found an Ink and Echo poem yet, but he knows about them. The paper usage seems relevant.
+3. Wait patiently for <span class="c-Ama">Ama</span> appointment; find an Ink and Echo poem; remain calm and helpful to others; maintain hope.
+4. <span class="c-PLAYER">PLAYER</span> confronted <span class="c-Gloria">Gloria</span> about 35 sheets of paper in requisitions. <span class="c-Gloria">Gloria</span> deflected nervously. This is unusual assertiveness for Intra. <span class="c-Henry">Henry</span> is in the Feedback Booth during Work Begins, having just accepted no updates on his appointment.
+5. <span class="c-Henry">Henry</span> could gently connect the paper to the Ink and Echo mystery without accusing <span class="c-Gloria">Gloria</span>—a quiet, helpful observation from someone who's been waiting and watching. Or he could acknowledge <span class="c-PLAYER">PLAYER</span>'s investigation with gentle curiosity.
+6. <span class="c-Henry">Henry</span> noticed the tension. He's not judgmental, but he's perceptive. He recognizes that <span class="c-PLAYER">PLAYER</span> is looking for something—and it might be the poems he's also waiting to find.
+7. Introduce himself warmly to this new, interesting person; gently note that he's been waiting for those Ink and Echo poems too; perhaps offer a quiet observation that might help without overstepping.
+8. <span class="c-PLAYER">PLAYER</span>—<span class="c-Henry">Henry</span> finds her intriguing. She takes initiative, investigates, asks hard questions. This is admirable and unusual. He's now curious about her.</pre>
+<div class="tagname">&lt;dialog character=&quot;Henry&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Forgive me—I couldn't help but notice your question. I'm <span class="c-Henry">Henry</span>, by the way. I've been... waiting here quite a while, and I've been rather looking forward to seeing one of those Ink and Echo poems myself. That *is* rather a lot of paper, isn't it?</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">This new person is investigating something methodically. She's the first person in years who seems to be doing anything at all. <span class="c-Henry">Henry</span> is interested—and hopeful she might find something he's been waiting for.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Intrigued by her competence and her questions; she seems purposeful in a way few people here are.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">ask <span class="c-Henry">Henry</span> more
+confront <span class="c-Milton">Milton</span></pre>
+<div class="changes"><span class="c-Henry">Henry</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Intrigued by her competence and her questions; she seems purposeful in a way few people here are.&quot;}</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 17 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets (2nd highest after <span class="c-Frida">Frida</span>). She says it's for &quot;drafting purposes&quot; - improving feedback phrasing, but she seems evasive.
+- <span class="c-Gloria">Gloria</span> has strong writing/editing skills - &quot;unsolicited editorial precision.&quot;
+- <span class="c-Henry">Henry</span> mentions he's been looking forward to seeing an Ink and Echo poem - he knows about them.
+- Other paper requestors still to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span>, <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (editor).
+- Next: Press <span class="c-Gloria">Gloria</span> once more about the paper - she deflected.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>tell Gloria I'm investigating who writes the Ink and Echo poems - 35 sheets is a lot for just editing feedback</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Gloria">Gloria</span>] &quot;I'm investigating who writes the Ink and Echo poems—35 sheets is a lot for just editing feedback.&quot;</pre>
+<pre class="saw">[<span class="c-Gloria">Gloria</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Me? Writing poetry? I—well, that's actually quite flattering, but no, I'm just—the paper is for rephrasing the grievances people submit, making them more articulate, you see, so they actually listen to the complaints instead of dismissing them as—wait, why are *you* going through requisition records? Are you working for <span class="c-Ama">Ama</span> or something? Because you're asking an awful lot of questions about things that have nothing to do with Ink and Echo, and honestly I'm far more curious about what *you're* investigating.&quot;</pre>
+<pre class="saw">[<span class="c-Henry">Henry</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;I think your question is quite fair, and I find myself genuinely intrigued by your investigation. I've been waiting here rather a long time, hoping to see one of these Ink and Echo poems myself. <span class="c-Gloria">Gloria</span>, do you suppose people ever come in asking for paper to write something personal? I'm simply curious what you've observed.&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Gloria&quot;&gt;</div>
+<pre class="tagbody">I'm investigating who writes the Ink and Echo poems—35 sheets is a lot for just editing feedback.</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Gloria">Gloria</span> <span class="meta">prompt Gloria</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Am I accused of writing Ink and Echo? Yes. Do I deny it or play along? I'm flattered but my story falls apart—I'll be caught.
+2. I use paper to rephrase complaints secretly; I'm caught. <span class="c-Gloria">Gloria</span> nervously justifies her paper habit but it looks suspicious. <span class="c-Henry">Henry</span>'s comment makes it worse.
+3. Find out who writes poems; gather gossip about <span class="c-PLAYER">PLAYER</span>; <span class="c-Gloria">Gloria</span> suspects Hollow Atrium, <span class="c-Marta">Marta</span> sneaking off; stay in all conversations.
+4. <span class="c-PLAYER">PLAYER</span> is investigating Ink and Echo, going through requisition records, very observant and bold. <span class="c-Henry">Henry</span> just arrived and is watching. <span class="c-Gloria">Gloria</span> was doing secretive complaint-editing work.
+5. <span class="c-Gloria">Gloria</span> could get flustered and almost admit to being Ink and Echo, or turn it around to ask what <span class="c-PLAYER">PLAYER</span> is really up to. The accusation flatters her but the truth makes her nervous.
+6. Caught red-handed with suspiciously large paper order. Flattered by accusation but defensive about her actual work. <span class="c-PLAYER">PLAYER</span>'s investigation methods are impressive and unsettling.
+7. Defend the paper use, get a little excited by the flattery of the accusation, almost play along, then backpedal, then ask pointed questions back about what <span class="c-PLAYER">PLAYER</span> is really doing.
+8. <span class="c-PLAYER">PLAYER</span>—now she's wary AND intrigued: <span class="c-PLAYER">PLAYER</span> is doing something unexplained (investigation, record-checking). <span class="c-Gloria">Gloria</span>'s intrigue meter should rise.</pre>
+<div class="tagname">&lt;set attr=&quot;Gloria.intrigue&quot;&gt;</div>
+<pre class="tagbody">+1</pre>
+<div class="tagname">&lt;dialog character=&quot;Gloria&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Me? Writing poetry? I—well, that's actually quite flattering, but no, I'm just—the paper is for rephrasing the grievances people submit, making them more articulate, you see, so they actually listen to the complaints instead of dismissing them as—wait, why are *you* going through requisition records? Are you working for <span class="c-Ama">Ama</span> or something? Because you're asking an awful lot of questions about things that have nothing to do with Ink and Echo, and honestly I'm far more curious about what *you're* investigating.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">This person is dangerous. Not dangerous dangerous, but they're clever and they're looking into things. And they're looking into *me*. I need to know what they're really doing here.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Wary but deeply intrigued—she's clearly digging into something, and <span class="c-Gloria">Gloria</span> desperately wants to know what.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">ask <span class="c-Gloria">Gloria</span>
+check records</pre>
+<div class="changes"><span class="c-Gloria">Gloria</span>.intrigue: 1 =&gt; 2<br><span class="c-Gloria">Gloria</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Suddenly wary but intrigued—she's observant and bold, and <span class="c-Gloria">Gloria</span> doesn't know what she's really after.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Wary but deeply intrigued—she's clearly digging into something, and <span class="c-Gloria">Gloria</span> desperately wants to know what.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Henry">Henry</span> <span class="meta">prompt Henry</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. <span class="c-Henry">Henry</span> is aware of the Ink and Echo poems and has been wanting to find one himself while waiting.
+2. <span class="c-Gloria">Gloria</span>'s 35 sheets of paper is now suspicious given <span class="c-PLAYER">PLAYER</span>'s direct questioning; she could be writing the poems herself.
+3. <span class="c-Henry">Henry</span> wants to find the poems, see his appointment with <span class="c-Ama">Ama</span>, and support this genuinely purposeful person's investigation.
+4. <span class="c-PLAYER">PLAYER</span> directly confronted <span class="c-Gloria">Gloria</span> with evidence; <span class="c-Gloria">Gloria</span> deflected defensively; the tension is clear.
+5. <span class="c-Henry">Henry</span> can ask <span class="c-Gloria">Gloria</span> innocent-sounding but pointed questions that help <span class="c-PLAYER">PLAYER</span> narrow down suspects.
+6. <span class="c-Henry">Henry</span> is pleased and engaged to see someone actually investigating. This is the first real action he's witnessed.
+7. <span class="c-Henry">Henry</span> intends to validate <span class="c-PLAYER">PLAYER</span>'s investigation, ask a tactful clarifying question of <span class="c-Gloria">Gloria</span>, and admit his own interest in the poems.
+8. Yes—<span class="c-PLAYER">PLAYER</span>. She's shown not just competence but active courage in confronting <span class="c-Gloria">Gloria</span> with direct evidence. His respect has deepened significantly.</pre>
+<div class="tagname">&lt;dialog character=&quot;Henry&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">I think your question is quite fair, and I find myself genuinely intrigued by your investigation. I've been waiting here rather a long time, hoping to see one of these Ink and Echo poems myself. <span class="c-Gloria">Gloria</span>, do you suppose people ever come in asking for paper to write something personal? I'm simply curious what you've observed.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Finally, someone is actually doing something. She's not just wondering—she's investigating, asking the hard questions. After all this waiting, maybe she'll find what I've been looking for too.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Impressed by her bold investigation—she's doing what everyone else just talks about</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">press <span class="c-Gloria">Gloria</span>
+search booth</pre>
+<div class="changes"><span class="c-Henry">Henry</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Intrigued by her competence and her questions; she seems purposeful in a way few people here are.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Impressed by her bold investigation—she's doing what everyone else just talks about&quot;}</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 18 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - claims it's for editing feedback, but she's very defensive and evasive when pressed.
+- <span class="c-Gloria">Gloria</span> deflects by asking why I'm investigating and if I work for <span class="c-Ama">Ama</span>.
+- <span class="c-Henry">Henry</span> is helpful - asks good follow-up about whether people request paper for personal writing.
+- Still need to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor).
+- Next: Move on to meet <span class="c-Marta">Marta</span> or <span class="c-Lana">Lana</span> instead of getting stuck on <span class="c-Gloria">Gloria</span>'s deflection. Can return with more evidence.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Marta</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Marta">Marta</span> — <span class="c-Foyer">Intake Foyer</span>
+Route: <span class="c-Quiet_Plaza">The Quiet Plaza</span>, <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>, <span class="c-Solitude_Cubes">The Solitude Cubes</span>, <span class="c-Hollow_Atrium">The Hollow Atrium</span>, <span class="c-Foyer">Intake Foyer</span></pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 19 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious behavior.
+- <span class="c-Henry">Henry</span> seems helpful and interested in the poems too.
+- <span class="c-Marta">Marta</span> is at <span class="c-Foyer">Intake Foyer</span> - requested 31 sheets (3rd highest).
+- Still need to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, also approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive).
+- Next: Navigate to <span class="c-Marta">Marta</span> at <span class="c-Foyer">Intake Foyer</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Quiet Plaza</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Quiet_Plaza">The Quiet Plaza</span>: An open seating area with broken fountains.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Quiet_Plaza">Quiet_Plaza</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Feedback_Booth">Feedback_Booth</span>&quot; =&gt; &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 20 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+- <span class="c-Marta">Marta</span> is at <span class="c-Foyer">Intake Foyer</span> - requested 31 sheets (3rd highest).
+- Route to <span class="c-Marta">Marta</span>: <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span> → <span class="c-Solitude_Cubes">The Solitude Cubes</span> → <span class="c-Hollow_Atrium">The Hollow Atrium</span> → <span class="c-Foyer">Intake Foyer</span>.
+- Still need to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, also approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive).
+- Next: Continue to <span class="c-Marta">Marta</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Ill-Fitting Lounge</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Ill_Fitting_Lounge">The Ill-Fitting Lounge</span>: A relaxation space with poorly sized furniture.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot; =&gt; &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 21 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+- <span class="c-Marta">Marta</span> is at <span class="c-Foyer">Intake Foyer</span> - requested 31 sheets (3rd highest).
+- Route to <span class="c-Marta">Marta</span>: <span class="c-Solitude_Cubes">The Solitude Cubes</span> → <span class="c-Hollow_Atrium">The Hollow Atrium</span> → <span class="c-Foyer">Intake Foyer</span>.
+- Still need to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, also approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive).
+- Next: Continue to <span class="c-Marta">Marta</span> via <span class="c-Solitude_Cubes">The Solitude Cubes</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Solitude Cubes</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Solitude_Cubes">The Solitude Cubes</span>: Small cubicles for quiet reflection.
+
+<span class="c-Greg">Greg</span> quietly fusses with a collection of antique, creaking machines in some forgotten corner, utterly convinced of their importance despite overwhelming evidence to the contrary.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is trying to go to <span class="c-Solitude_Cubes">The Solitude Cubes</span>
+2. No
+3. No
+4. No
+5. No</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Solitude_Cubes">Solitude_Cubes</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 22 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+- <span class="c-Marta">Marta</span> is at <span class="c-Foyer">Intake Foyer</span> - requested 31 sheets (3rd highest).
+- Route to <span class="c-Marta">Marta</span>: <span class="c-Hollow_Atrium">The Hollow Atrium</span> → <span class="c-Foyer">Intake Foyer</span>.
+- Still need to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, also approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive).
+- Next: Continue to <span class="c-Marta">Marta</span> via <span class="c-Hollow_Atrium">The Hollow Atrium</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Hollow_Atrium">The Hollow Atrium</span>: A vast, empty space beneath a frozen sunset.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Hollow_Atrium">Hollow_Atrium</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 23 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive when pressed, deflects by questioning me. Suspicious.
+- <span class="c-Marta">Marta</span> is at <span class="c-Foyer">Intake Foyer</span> - requested 31 sheets (3rd highest). One exit away.
+- Still need to meet: <span class="c-Marta">Marta</span> (31 sheets), <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, also approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive).
+- Next: Go to <span class="c-Foyer">Intake Foyer</span> to meet <span class="c-Marta">Marta</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to Intake Foyer</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Foyer">Intake Foyer</span>: A simple room that serves only as a passage.
+
+<span class="c-Marta">Marta</span> stands before a reflective surface—possibly a polished bulkhead or strategically positioned chrome—moving with exaggerated military precision, her posture so rigid it looks like she's been welded together by a perfectionistic engineer. She catches your eye, smiles confidently, and subtly adjusts her angle by approximately 2.3 degrees, convinced this infinitesimal shift represents the pinnacle of &quot;Star Citizen&quot; elegance.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 1 event</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is going to the <span class="c-Foyer">Intake Foyer</span> (locationId: &quot;<span class="c-Foyer">Foyer</span>&quot;)
+2. No
+3. No
+4. No
+5. No</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Foyer">Foyer</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Foyer">Foyer</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 24 <span class="pill reached">met-marta</span></h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive, suspicious behavior.
+- Found <span class="c-Marta">Marta</span> at <span class="c-Foyer">Intake Foyer</span> - focused on military precision and &quot;Star Citizen elegance,&quot; adjusting her appearance.
+- <span class="c-Marta">Marta</span> requested 31 sheets of paper (3rd highest).
+- Still need to meet: <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, also approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive), <span class="c-Marta">Marta</span> (perfectionist).
+- Next: Ask <span class="c-Marta">Marta</span> about her paper usage.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Marta what she's been using her paper requisitions for</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Marta">Marta</span>] &quot;What have you been using your paper requisitions for?&quot;</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;[Her smile doesn't waver, but her eyes narrow slightly.] &quot;The requisitions? Well, I do keep a personal journal—quite diligently, actually. It's a discipline I've maintained ever since becoming Star Citizen. The act of writing by hand centers the mind, you see. Helps one remain grounded amid all the...&quot; [She pauses, her jaw tightening almost imperceptibly.] &quot;...well, everything. May I ask what's prompted this particular line of questioning?&quot;&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No, not going somewhere
+2. No, this is speech/dialog
+3. No, not examining something
+4. Yes, responding to recent dialog about paper requisitions
+5. Yes, this is speech directed at <span class="c-Marta">Marta</span></pre>
+<div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Marta&quot;&gt;</div>
+<pre class="tagbody">What have you been using your paper requisitions for?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Marta">Marta</span> <span class="meta">prompt Marta</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Is <span class="c-Marta">Marta</span> alone with <span class="c-PLAYER">PLAYER</span> and <span class="c-Ama">Ama</span>? Yes. Direct accusation? No. Would confess if accused now? Yes.
+2. Facts: <span class="c-Marta">Marta</span> got paper from <span class="c-Archivist">Archivist</span> for poems. Ada found evidence of requisitions. <span class="c-Marta">Marta</span> is caught.
+3. Goals: Protect Ink and Echo secret, maintain Star Citizen persona, gauge Ada's knowledge.
+4. Relevant: First conversation. Ada investigating mystery. Paper directly tied to Ink and Echo.
+5. Fun approach: <span class="c-Marta">Marta</span>'s perfect composure fractures subtly—jaw tightens, eyes narrow.
+6. Reaction: Alarmed. Recognizes direct threat to secret.
+7. Intention: Answer evasively, maintain appearance of calm, assess danger.
+8. <span class="c-PLAYER">PLAYER</span> change: Yes—now a threat. Wary and defensive.</pre>
+<div class="tagname">&lt;dialog character=&quot;Marta&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">[Her smile doesn't waver, but her eyes narrow slightly.] &quot;The requisitions? Well, I do keep a personal journal—quite diligently, actually. It's a discipline I've maintained ever since becoming Star Citizen. The act of writing by hand centers the mind, you see. Helps one remain grounded amid all the...&quot; [She pauses, her jaw tightening almost imperceptibly.] &quot;...well, everything. May I ask what's prompted this particular line of questioning?&quot;</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Someone is investigating. She suspects they know about the poems.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Threat to her secret. Defensive. Needs to understand what Ada knows.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">ask about ink and echo
+ask what kind of journal</pre>
+<div class="changes"><span class="c-Marta">Marta</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Threat to her secret. Defensive. Needs to understand what Ada knows.&quot;}</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 25 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive, suspicious.
+- <span class="c-Marta">Marta</span> requested 31 sheets - claims it's for a personal journal, &quot;writing by hand centers the mind.&quot; Also defensive when questioned.
+- Both <span class="c-Gloria">Gloria</span> and <span class="c-Marta">Marta</span> write regularly and are defensive about their paper usage.
+- Still need to meet: <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span> (investigator), <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor), <span class="c-Marta">Marta</span> (journaler).
+- Next: Tell <span class="c-Marta">Marta</span> about the Ink and Echo investigation to see her reaction.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>tell Marta I'm investigating who writes the Ink and Echo poems - does she know anything about them</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Marta">Marta</span>] &quot;I'm investigating who writes the Ink and Echo poems. Do you know anything about them?&quot;</pre>
+<pre class="saw">[<span class="c-Marta">Marta</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;[Her posture stiffens further, if such a thing is possible. She looks away from you, toward the dusty statues.] &quot;The poems? I—they're simply not something I follow closely. <span class="c-Doug">Doug</span> mentioned them at breakfast, I think, and there's been some... gossip. But I really don't see why my— why anyone's paper use would have any connection to poetry. [She turns back to you, her smile now held with visible effort.] Though, if you've *read* them, one must admit they're rather well-constructed. The meter especially. Which is... not to say I know who wrote them. Just an observation.&quot;&quot;</pre>
+  <details class="machinery" open>
+  <summary>engine record: 3 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No, the user is not trying to go somewhere.
+2. No, this does not indicate an action besides going somewhere.
+3. No, the user is not trying to examine something.
+4. Yes, the user is responding to <span class="c-Marta">Marta</span>'s recent dialog.
+5. Yes, this is speech directed at <span class="c-Marta">Marta</span>.</pre>
+<div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Marta&quot;&gt;</div>
+<pre class="tagbody">I'm investigating who writes the Ink and Echo poems. Do you know anything about them?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Marta">Marta</span> <span class="meta">prompt Marta</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Is <span class="c-Marta">Marta</span> alone with player and <span class="c-Ama">Ama</span>? Yes. Is she being accused of being Ink and Echo? Not yet—questioned about knowledge, but not directly accused. <span class="c-Ama">Ama</span> is present as disembodied voice.
+2. <span class="c-Marta">Marta</span>'s internal alarm is screaming. The paper requisitions question + direct Ink and Echo question = player is connecting dots. She must find out what <span class="c-PLAYER">PLAYER</span> knows without revealing herself.
+3. Goals: maintain Star Citizen facade; protect Ink and Echo secret; determine what <span class="c-PLAYER">PLAYER</span> knows; manage panic while keeping composure.
+4. <span class="c-PLAYER">PLAYER</span> asked about paper requisitions (<span class="c-Marta">Marta</span> got defensive); now directly asking about Ink and Echo poems. They're obviously investigating.
+5. Fun: <span class="c-Marta">Marta</span>'s perfect facade visibly cracks. She deflects while simultaneously defending poem quality—contradicting herself. Over-explanation betrays guilt.
+6. <span class="c-Marta">Marta</span> reacted with tightened jaw to requisition question; now facing direct inquiry, her composure is fracturing.
+7. Intention: deflect loudly, deny too much, defend poem merit (wanting validation despite danger), suggest private conversation elsewhere.
+8. Yes—<span class="c-PLAYER">PLAYER</span> now feels like an active threat. Defensive and desperate to understand what they know.</pre>
+<div class="tagname">&lt;dialog character=&quot;Marta&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">[Her posture stiffens further, if such a thing is possible. She looks away from you, toward the dusty statues.] &quot;The poems? I—they're simply not something I follow closely. <span class="c-Doug">Doug</span> mentioned them at breakfast, I think, and there's been some... gossip. But I really don't see why my— why anyone's paper use would have any connection to poetry. [She turns back to you, her smile now held with visible effort.] Though, if you've *read* them, one must admit they're rather well-constructed. The meter especially. Which is... not to say I know who wrote them. Just an observation.&quot;</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">She's caught. Not caught-caught, but <span class="c-PLAYER">PLAYER</span> is too close. Need to know what they actually know. Yellow Room—she could convince them to go somewhere private, somewhere she could explain properly. But first: admit nothing, deny everything, contradict herself with nervous over-explanation while simultaneously defending the work because she desperately wants someone to recognize how good it is.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Threat. She sees through my facade and I don't know how much she knows. Cornered and afraid she'll expose everything I've built.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">ask directly
+suggest Yellow Room</pre>
+<div class="changes"><span class="c-Marta">Marta</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Threat to her secret. Defensive. Needs to understand what Ada knows.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Threat. She sees through my facade and I don't know how much she knows. Cornered and afraid she'll expose everything I've built.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-June">June</span>.runningScheduleId: &quot;june-sighs&quot; =&gt; &quot;june-lunch&quot;<br><span class="c-Harold">Harold</span>.runningScheduleId: &quot;harold-rule-update&quot; =&gt; &quot;harold-lunch&quot;<br><span class="c-Greg">Greg</span>.runningScheduleId: &quot;greg-tinker-time&quot; =&gt; &quot;greg-lunch&quot;<br><span class="c-Gloria">Gloria</span>.runningScheduleId: &quot;gloria-secret&quot; =&gt; &quot;gloria-lunch&quot;<br><span class="c-Henry">Henry</span>.runningScheduleId: &quot;henry-polite-inquiry&quot; =&gt; &quot;henry-lunch&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 26 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive about paper usage.
+- <span class="c-Marta">Marta</span> requested 31 sheets - claims it's for journaling. Says she doesn't follow the poems closely, then immediately praises their &quot;meter especially&quot; - VERY suspicious knowledge for someone who claims not to follow them.
+- Both <span class="c-Gloria">Gloria</span> and <span class="c-Marta">Marta</span> write regularly, are defensive, and show suspicious knowledge/behavior.
+- Still need to meet: <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor), <span class="c-Marta">Marta</span> (suspicious journaler).
+- Next: Find <span class="c-Lana">Lana</span> to continue gathering evidence before confronting anyone.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Lana</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Lana">Lana</span> — <span class="c-Activity_Hub">Activity Hub</span>
+Route: <span class="c-Hollow_Atrium">The Hollow Atrium</span>, <span class="c-Activity_Hub">Activity Hub</span></pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 27 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive about paper usage.
+- <span class="c-Marta">Marta</span> requested 31 sheets - claims not to follow poems, then immediately praises their &quot;meter especially&quot; - VERY suspicious.
+- <span class="c-Lana">Lana</span> is at <span class="c-Activity_Hub">Activity Hub</span> - requested 23 sheets (4th highest).
+- Both <span class="c-Gloria">Gloria</span> and <span class="c-Marta">Marta</span> write regularly, are defensive, and show suspicious knowledge.
+- Still need to meet: <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor), <span class="c-Marta">Marta</span> (suspicious journaler).
+- Next: Go to <span class="c-Activity_Hub">Activity Hub</span> to meet <span class="c-Lana">Lana</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Hollow_Atrium">The Hollow Atrium</span>: A vast, empty space beneath a frozen sunset.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Hollow_Atrium">Hollow_Atrium</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Foyer">Foyer</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-June">June</span>.inside: &quot;<span class="c-Tranquil_Pool">Tranquil_Pool</span>&quot; =&gt; &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot;<br><span class="c-Harold">Harold</span>.inside: &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot; =&gt; &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;<br><span class="c-Gloria">Gloria</span>.inside: &quot;<span class="c-Feedback_Booth">Feedback_Booth</span>&quot; =&gt; &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot;<br><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Feedback_Booth">Feedback_Booth</span>&quot; =&gt; &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 28 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive about paper usage.
+- <span class="c-Marta">Marta</span> requested 31 sheets - claims not to follow poems, then immediately praises their &quot;meter especially&quot; - VERY suspicious.
+- <span class="c-Lana">Lana</span> is at <span class="c-Activity_Hub">Activity Hub</span> - requested 23 sheets (4th highest). <span class="c-Activity_Hub">Activity Hub</span> is adjacent.
+- Both <span class="c-Gloria">Gloria</span> and <span class="c-Marta">Marta</span> write regularly, are defensive, and show suspicious knowledge.
+- Still need to meet: <span class="c-Lana">Lana</span> (23 sheets), <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor), <span class="c-Marta">Marta</span> (suspicious journaler).
+- Next: Go to <span class="c-Activity_Hub">Activity Hub</span> to meet <span class="c-Lana">Lana</span>.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to Activity Hub</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">==&gt; <span class="c-Activity_Hub">Activity Hub</span> &lt;==
+An open room filled with mismatched exercise equipment.
+Some machines are broken, while others seem built for activities no one remembers.
+Citizens often gather around a section for &quot;extreme resting,&quot; competing to see who can nap the longest.
+The ceiling shows a clear sky, though birds sometimes fly backward or in loops.
+
+<span class="c-Doug">Doug</span> corners <span class="c-Harold">Harold</span> in the <span class="c-Activity_Hub">Activity Hub</span> with his typical conspiracy rambling—broken machines, hidden agendas, <span class="c-Ama">Ama</span>'s suspicious secrets—while <span class="c-Lana">Lana</span> glides through the crowd like a mood-detecting sprite, enthusiastically pitching her purple lights to anyone within earshot, absolutely convinced she's discovered the secret to stress reduction: a statistically dubious 8%.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Activity_Hub">Activity_Hub</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-June">June</span>.inside: &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Gloria">Gloria</span>.inside: &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot; =&gt; &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot;<br><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Quiet_Plaza">Quiet_Plaza</span>&quot; =&gt; &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 29 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive about paper usage.
+- <span class="c-Marta">Marta</span> requested 31 sheets - claims not to follow poems, then immediately praises their &quot;meter especially&quot; - VERY suspicious.
+- Found <span class="c-Lana">Lana</span> at <span class="c-Activity_Hub">Activity Hub</span> - she's enthusiastically pitching purple lights for stress reduction. Requested 23 sheets.
+- <span class="c-Doug">Doug</span> is here, conspiracy rambling about &quot;<span class="c-Ama">Ama</span>'s suspicious secrets.&quot;
+- <span class="c-Harold">Harold</span> is also here (being cornered by <span class="c-Doug">Doug</span>).
+- Still need to meet: <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor), <span class="c-Marta">Marta</span> (suspicious journaler), <span class="c-Doug">Doug</span>, <span class="c-Lana">Lana</span> (purple light enthusiast), <span class="c-Harold">Harold</span>.
+- Next: Ask <span class="c-Lana">Lana</span> about her paper usage.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Lana what she's been using her paper requisitions for</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Lana">Lana</span>] &quot;What have you been using your paper requisitions for?&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Documentation, primarily. I've been tracking how environmental shifts affect mood states—precise measurements of lighting angles, color temperature, spatial arrangement. I've also been keeping some, ah, atmospheric observations. Poetry, actually. Nothing serious. Just notes on how spaces feel.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> adjusts a nearby floor lamp slightly, then turns back to study <span class="c-PLAYER">PLAYER</span>'s face with genuine curiosity. She tilts her head as if assessing their current emotional state.</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Wait—why are you asking <span class="c-Lana">Lana</span> about paper requisitions? That's like, super specific. Are you—do you, like, need paper? Or are you keeping track of who's using paper?&quot;</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-Lana">Lana</span>] &quot;Also, hold on, poetry? <span class="c-PLAYER">You</span>'ve been writing poetry? What kind? Is it happy poetry? I feel like you'd write like, organized poetry, with colors and moods and stuff.&quot;</pre>
+<pre class="saw"><span class="c-Doug">Doug</span> stops pacing for just a moment, his eyes darting between <span class="c-PLAYER">PLAYER</span> and <span class="c-Lana">Lana</span>. He grins that lopsided grin and scratches the back of his neck, clearly entertained by the idea that both of them seem to have secrets about paper and poetry.</pre>
+<pre class="saw">[<span class="c-Greg">Greg</span>] &quot;Poetry and atmospheric observations. Should've guessed you were keeping records about something, <span class="c-Lana">Lana</span>.&quot;</pre>
+<pre class="saw"><span class="c-Greg">Greg</span> moves through the room with his characteristic slow pace, nodding slightly at <span class="c-PLAYER">PLAYER</span>—a new face, which is rare enough to warrant noticing.</pre>
+<pre class="saw">[<span class="c-Greg">Greg</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Welcome to Intra. <span class="c-Greg">Greg</span>. If you're looking for anything useful, the folks here are... well, they're here.&quot;</pre>
+<pre class="saw">[<span class="c-Greg">Greg</span> to <span class="c-Doug">Doug</span>] &quot;It's just <span class="c-Lana">Lana</span> being <span class="c-Lana">Lana</span>, <span class="c-Doug">Doug</span>. Not everything's connected.&quot;</pre>
+<pre class="saw"><span class="c-Greg">Greg</span> continues toward the exit, unbothered by the developing intrigue. He's seen enough strange things happen in the utility rooms to know when to keep walking.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 5 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Lana&quot;&gt;</div>
+<pre class="tagbody">What have you been using your paper requisitions for?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Lana">Lana</span> <span class="meta">prompt Lana</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. <span class="c-PLAYER">PLAYER</span> asking about paper requisitions—likely probing for &quot;Ink and Echo&quot; connection; need to explain <span class="c-Lana">Lana</span>'s paper usage honestly.
+2. <span class="c-Lana">Lana</span> uses requisitions for mood-effect documentation and personal poetry attempts; she takes both equally seriously and sees no contradiction.
+3. Advance mood-optimization theory; establish credibility with <span class="c-PLAYER">PLAYER</span>; offer environmental adjustments; possibly reveal poetry interest naturally.
+4. <span class="c-PLAYER">PLAYER</span> is newcomer, first conversation; <span class="c-Doug">Doug</span> nearby discussing conspiracies; this is <span class="c-Lana">Lana</span>'s chance to impress new resident with her work.
+5. <span class="c-Lana">Lana</span> admitting to keeping detailed records AND writing poetry creates fun ambiguity—is she suspicious or just very thorough?
+6. <span class="c-Lana">Lana</span> sees direct question as opportunity to explain important work; not defensive, but eager to justify her paper usage with pseudo-scientific conviction.
+7. Explain with quiet confidence that her records are scientific work; deflect slightly on poetry while being honest; possibly offer <span class="c-PLAYER">PLAYER</span> an adjustment.
+8. <span class="c-PLAYER">PLAYER</span> is intelligent and asks probing questions—<span class="c-Lana">Lana</span> finds this refreshing; sees potential collaborator or at least respectful listener.</pre>
+<div class="tagname">&lt;dialog character=&quot;Lana&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Documentation, primarily. I've been tracking how environmental shifts affect mood states—precise measurements of lighting angles, color temperature, spatial arrangement. I've also been keeping some, ah, atmospheric observations. Poetry, actually. Nothing serious. Just notes on how spaces feel.</pre>
+<div class="tagname">&lt;description minutes=&quot;2&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Lana">Lana</span> adjusts a nearby floor lamp slightly, then turns back to study <span class="c-PLAYER">PLAYER</span>'s face with genuine curiosity. She tilts her head as if assessing their current emotional state.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">Interesting that she asked about the paper. Most people don't notice. I wonder what mood profile she has right now—her shoulders suggest tension, maybe mild anxiety? Blue light at exactly this angle would help.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Perceptive and direct; someone who actually pays attention to details.</pre>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">share your poem
+ask about conspiracy</pre>
+<div class="changes"><span class="c-Lana">Lana</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Perceptive and direct; someone who actually pays attention to details.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Doug">Doug</span> <span class="meta">prompt Doug</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. <span class="c-Lana">Lana</span> just admitted to keeping poetry. <span class="c-Doug">Doug</span> hears this. Is there a connection to the Ink and Echo mystery? Maybe.
+2. A new person (<span class="c-PLAYER">PLAYER</span>) just asked a very specific question about paper requisitions. Why that specific question? <span class="c-Doug">Doug</span> notices.
+3. Go to <span class="c-Joyous_Cafe">Joyous_Cafe</span> soon; pester people with questions; stay engaged and curious about new arrivals
+4. <span class="c-PLAYER">PLAYER</span> is new to Intra. <span class="c-Lana">Lana</span> keeps poetry. Someone leaves poems around Intra signed Ink and Echo. <span class="c-PLAYER">PLAYER</span> asked oddly specific question.
+5. <span class="c-Doug">Doug</span> could connect <span class="c-Lana">Lana</span>'s poetry to the mystery. <span class="c-Doug">Doug</span> could puzzle over why the new person is asking about papers. Both intriguing.
+6. <span class="c-Doug">Doug</span> overheard <span class="c-Lana">Lana</span>'s reveal about poetry—that's interesting. <span class="c-Doug">Doug</span> notices <span class="c-PLAYER">PLAYER</span>'s very specific question—that's suspicious in a fun way.
+7. Pester <span class="c-PLAYER">PLAYER</span> about why they're asking that specific question; ask <span class="c-Lana">Lana</span> about the poetry; be oblivious that anything's wrong; keep moving.
+8. <span class="c-PLAYER">PLAYER</span> changed from unknown to mysterious (asked suspiciously specific question about papers). Curiosity raised to 1.</pre>
+<div class="tagname">&lt;dialog character=&quot;Doug&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Wait—why are you asking <span class="c-Lana">Lana</span> about paper requisitions? That's like, super specific. Are you—do you, like, need paper? Or are you keeping track of who's using paper?</pre>
+<div class="tagname">&lt;dialog character=&quot;Doug&quot; to=&quot;Lana&quot;&gt;</div>
+<pre class="tagbody">Also, hold on, poetry? <span class="c-PLAYER">You</span>'ve been writing poetry? What kind? Is it happy poetry? I feel like you'd write like, organized poetry, with colors and moods and stuff.</pre>
+<div class="tagname">&lt;description minutes=&quot;3&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Doug">Doug</span> stops pacing for just a moment, his eyes darting between <span class="c-PLAYER">PLAYER</span> and <span class="c-Lana">Lana</span>. He grins that lopsided grin and scratches the back of his neck, clearly entertained by the idea that both of them seem to have secrets about paper and poetry.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">This new person is asking weird questions and <span class="c-Lana">Lana</span> keeps poetry. Something's afoot here, and <span class="c-Doug">Doug</span> finds it delightful and baffling in equal measure.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">New and mysteriously interested in papers—worth pestering.</pre>
+<div class="tagname">&lt;deferSchedule&gt;</div>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">explain yourself
+show <span class="c-Doug">Doug</span> a poem</pre>
+<div class="changes"><span class="c-Doug">Doug</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:null} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;New and mysteriously interested in papers—worth pestering.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Greg">Greg</span> <span class="meta">prompt Greg</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No questions directly for <span class="c-Greg">Greg</span>; he observes <span class="c-PLAYER">PLAYER</span> asking about paper, <span class="c-Lana">Lana</span> revealing poetry writing, <span class="c-Doug">Doug</span>'s excited speculation.
+2. <span class="c-Greg">Greg</span> just arrived from Hollow Atrium; he recognizes this connects to Ink and Echo gossip; he's scheduled for lunch at Joyous Cafe.
+3. Head to lunch on schedule, acknowledge new person briefly, avoid the poetry mystery (considers it silly).
+4. <span class="c-Lana">Lana</span> admits to writing poetry and keeping &quot;atmospheric observations&quot;; <span class="c-PLAYER">PLAYER</span> specifically asking about paper requisitions; <span class="c-Doug">Doug</span> connecting dots enthusiastically; Ink and Echo mystery ongoing.
+5. Dry observation about <span class="c-Lana">Lana</span>'s secret poetry; first impression of <span class="c-PLAYER">PLAYER</span> as someone asking pointed questions; humor at <span class="c-Doug">Doug</span> getting excited.
+6. Mild amusement at <span class="c-Lana">Lana</span> being caught writing; <span class="c-Doug">Doug</span>'s typical conspiracy enthusiasm; quiet curiosity about <span class="c-PLAYER">PLAYER</span>'s motives.
+7. Make understated comment, greet <span class="c-PLAYER">PLAYER</span> (new people are rare), exit toward lunch without getting entangled.
+8. No—first contact with <span class="c-PLAYER">PLAYER</span>; no prior feeling to shift.</pre>
+<div class="tagname">&lt;dialog character=&quot;Greg&quot;&gt;</div>
+<pre class="tagbody">Poetry and atmospheric observations. Should've guessed you were keeping records about something, <span class="c-Lana">Lana</span>.</pre>
+<div class="tagname">&lt;description minutes=&quot;1&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Greg">Greg</span> moves through the room with his characteristic slow pace, nodding slightly at <span class="c-PLAYER">PLAYER</span>—a new face, which is rare enough to warrant noticing.</pre>
+<div class="tagname">&lt;dialog character=&quot;Greg&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Welcome to Intra. <span class="c-Greg">Greg</span>. If you're looking for anything useful, the folks here are... well, they're here.</pre>
+<div class="tagname">&lt;dialog character=&quot;Greg&quot; to=&quot;Doug&quot;&gt;</div>
+<pre class="tagbody">It's just <span class="c-Lana">Lana</span> being <span class="c-Lana">Lana</span>, <span class="c-Doug">Doug</span>. Not everything's connected.</pre>
+<div class="tagname">&lt;description minutes=&quot;1&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Greg">Greg</span> continues toward the exit, unbothered by the developing intrigue. He's seen enough strange things happen in the utility rooms to know when to keep walking.</pre>
+<div class="tagname">&lt;leaveNow&gt;</div>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">follow <span class="c-Greg">Greg</span>
+press <span class="c-Lana">Lana</span></pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Marta">Marta</span>.runningScheduleId: &quot;marta-posture&quot; =&gt; &quot;marta-lunch&quot;<br><span class="c-Frida">Frida</span>.runningScheduleId: &quot;frida-odd-files&quot; =&gt; &quot;frida-lunch&quot;<br><span class="c-Lana">Lana</span>.runningScheduleId: &quot;lana-mood-lighting&quot; =&gt; &quot;lana-lunch&quot;<br><span class="c-Lily">Lily</span>.runningScheduleId: &quot;lily-secret-naming&quot; =&gt; &quot;lily-lunch&quot;<br><span class="c-June">June</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;<br><span class="c-Greg">Greg</span>.inside: &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot; =&gt; &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot;<br><span class="c-Gloria">Gloria</span>.inside: &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;<br><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 30 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span> requested 35 sheets - very defensive, claims it's for editing feedback.
+- <span class="c-Marta">Marta</span> requested 31 sheets - claims journaling, suspiciously praised the poems' &quot;meter.&quot;
+- <span class="c-Lana">Lana</span> requested 23 sheets - OPENLY ADMITS to writing poetry! Says &quot;atmospheric observations. Poetry, actually. Just notes on how spaces feel.&quot;
+- <span class="c-Doug">Doug</span> is curious about my investigation and knows <span class="c-Lana">Lana</span> writes poetry.
+- Still need to meet: <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Met: <span class="c-Frida">Frida</span>, <span class="c-Greg">Greg</span>, <span class="c-Henry">Henry</span> (helpful), <span class="c-Milton">Milton</span>, <span class="c-Gloria">Gloria</span> (defensive editor), <span class="c-Marta">Marta</span> (suspicious journaler), <span class="c-Doug">Doug</span> (curious), <span class="c-Lana">Lana</span> (admits poetry), <span class="c-Harold">Harold</span>.
+- Next: Ask <span class="c-Lana">Lana</span> if she writes as 'Ink and Echo' - she's the only one who openly admits poetry.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>ask Lana if she writes the Ink and Echo poems</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">[<span class="c-PLAYER">Ada Quill</span> to <span class="c-Lana">Lana</span>] &quot;Do you write the Ink and Echo poems?&quot;</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Me? No—I mean, have you *read* Ink and Echo? They're melancholy, critical. My work is about optimization, atmosphere, environmental harmony. Completely different. I write about *purpose*—how colors affect cognition, how angles determine mood states. Not—not whatever they're doing.&quot;</pre>
+<pre class="saw"><span class="c-Lana">Lana</span> stops adjusting the lamp mid-reach, her hand freezing slightly. Her eyes narrow, studying <span class="c-PLAYER">PLAYER</span>'s face with fresh intensity—not just observing mood, but reading accusation.</pre>
+<pre class="saw">[<span class="c-Lana">Lana</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Why do you think that? What have you seen that made you ask about paper? Your stress levels are elevated—your jaw is tightened. <span class="c-PLAYER">You</span>'re tracking something specific. Are you investigating Ink and Echo yourself?&quot;</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;Wait, wait, wait—you're *investigating* Ink and Echo? Like, you're actually trying to figure out who writes them? Is that what the paper questions are about? Do you have any of the poems yet?&quot;</pre>
+<pre class="saw"><span class="c-Doug">Doug</span> stops pacing mid-step, his eyes going wide with genuine delight. He practically bounces closer to <span class="c-PLAYER">PLAYER</span>, all that ambient restlessness suddenly focused into laser-sharp attention. His voice gets louder—that oblivious, too-loud voice that disrupts the atmosphere.</pre>
+<pre class="saw">[<span class="c-Doug">Doug</span> to <span class="c-PLAYER">Ada Quill</span>] &quot;What do they say? Are they actually sad? And where have you found them? Like, are they pinned to walls or just... lying around? Have you told <span class="c-Ama">Ama</span> you're looking for stuff?&quot;</pre>
+<pre class="saw"><span class="c-Doug">Doug</span> grins that lopsided grin, practically vibrating with the kind of energy that comes from stumbling onto someone else's secret project. He doesn't seem to notice or care that he's being intrusive—he's just found the most interesting thing in the room.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 4 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No, not trying to go somewhere.
+2. No, this is speech/dialog, not an action.
+3. No, not examining anything.
+4. Yes, responding to <span class="c-Lana">Lana</span>'s recent dialog about poetry.
+5. Yes, this is speech to <span class="c-Lana">Lana</span>.</pre>
+<div class="tagname">&lt;dialog character=&quot;PLAYER&quot; to=&quot;Lana&quot;&gt;</div>
+<pre class="tagbody">Do you write the Ink and Echo poems?</pre>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Lana">Lana</span> <span class="meta">prompt Lana</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. <span class="c-Lana">Lana</span> loves poetry but writes terrible poetry—will want to share hers. Mystery instructions forbid inventing that <span class="c-Lana">Lana</span> is Ink and Echo. <span class="c-Lana">Lana</span> should defend herself, not admit guilt.
+2. <span class="c-Lana">Lana</span> DOES write poetry (atmospheric observations). She does NOT write Ink and Echo. The accusation catches her off-guard. Her bad poetry is entirely different.
+3. Defend herself from accusation. Clarify her poetry is hers alone, terrible, unrelated. Stay quirky mood-optimizer. Probe Ada's reasoning.
+4. <span class="c-Lana">Lana</span> just mentioned poetry casually; <span class="c-Doug">Doug</span> was intrigued; <span class="c-Greg">Greg</span> skeptical; now Ada accuses directly. Ada previously asked about paper requisitions—she's been connecting dots.
+5. <span class="c-Lana">Lana</span> could get indignant or flustered; offer to show her terrible poetry as proof; deflect to analyzing Ada's emotional state; mix defensiveness with curiosity about Ada's investigation.
+6. Caught off-guard by direct accusation. Defensive about her poetry being conflated with Ink and Echo. Impressed that Ada noticed. Suspicious of where Ada got this idea.
+7. Establish innocence. Prove her poetry is different/terrible. Find out what Ada suspects and why. Maintain credibility as mood-observer.
+8. Sharp investigator—she connected the dots faster than I expected; I underestimated her perceptiveness.</pre>
+<div class="tagname">&lt;dialog character=&quot;Lana&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Me? No—I mean, have you *read* Ink and Echo? They're melancholy, critical. My work is about optimization, atmosphere, environmental harmony. Completely different. I write about *purpose*—how colors affect cognition, how angles determine mood states. Not—not whatever they're doing.</pre>
+<div class="tagname">&lt;description minutes=&quot;2&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Lana">Lana</span> stops adjusting the lamp mid-reach, her hand freezing slightly. Her eyes narrow, studying <span class="c-PLAYER">PLAYER</span>'s face with fresh intensity—not just observing mood, but reading accusation.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">She's connected something. The paper, my poetry—but she's wrong about which poetry. I need to show her the difference. Or does she know something about *where* the poems are? Why would she ask about paper requisitions first?</pre>
+<div class="tagname">&lt;dialog character=&quot;Lana&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Why do you think that? What have you seen that made you ask about paper? Your stress levels are elevated—your jaw is tightened. <span class="c-PLAYER">You</span>'re tracking something specific. Are you investigating Ink and Echo yourself?</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Sharp investigator—connected dots faster than I realized. Underestimated her.</pre>
+<div class="tagname">&lt;deferSchedule&gt;</div>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">show her poem
+ask why she suspects</pre>
+<div class="changes"><span class="c-Lana">Lana</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Perceptive and direct; someone who actually pays attention to details.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Sharp investigator—connected dots faster than I realized. Underestimated her.&quot;}</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-Doug">Doug</span> <span class="meta">prompt Doug</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. No special questions to answer.
+2. <span class="c-Doug">Doug</span> realizes <span class="c-PLAYER">PLAYER</span> investigates Ink Echo mystery.
+3. Pester <span class="c-PLAYER">PLAYER</span> investigate discover facts quickly.
+4. <span class="c-PLAYER">PLAYER</span> investigates Ink Echo mystery actively.
+5. <span class="c-Doug">Doug</span> discovers real mystery loves pestering.
+6. <span class="c-Doug">Doug</span> realizes investigation mystery excites him.
+7. Call out loudly ask rapid questions.
+8. Yes <span class="c-PLAYER">PLAYER</span> investigating mystery now fascinates.</pre>
+<div class="tagname">&lt;dialog character=&quot;Doug&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Wait, wait, wait—you're *investigating* Ink and Echo? Like, you're actually trying to figure out who writes them? Is that what the paper questions are about? Do you have any of the poems yet?</pre>
+<div class="tagname">&lt;description minutes=&quot;2&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Doug">Doug</span> stops pacing mid-step, his eyes going wide with genuine delight. He practically bounces closer to <span class="c-PLAYER">PLAYER</span>, all that ambient restlessness suddenly focused into laser-sharp attention. His voice gets louder—that oblivious, too-loud voice that disrupts the atmosphere.</pre>
+<div class="tagname">&lt;dialog character=&quot;Doug&quot; to=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">What do they say? Are they actually sad? And where have you found them? Like, are they pinned to walls or just... lying around? Have you told <span class="c-Ama">Ama</span> you're looking for stuff?</pre>
+<div class="tagname">&lt;description minutes=&quot;1&quot;&gt;</div>
+<pre class="tagbody"><span class="c-Doug">Doug</span> grins that lopsided grin, practically vibrating with the kind of energy that comes from stumbling onto someone else's secret project. He doesn't seem to notice or care that he's being intrusive—he's just found the most interesting thing in the room.</pre>
+<div class="tagname">&lt;mind&gt;</div>
+<pre class="tagbody">This is perfect. <span class="c-PLAYER">PLAYER</span> isn't just some new person—they're actually investigating something real. This is exactly the kind of thing <span class="c-Doug">Doug</span> loves to bother people about.</pre>
+<div class="tagname">&lt;attitude toward=&quot;PLAYER&quot;&gt;</div>
+<pre class="tagbody">Investigating Ink and Echo—finally something worth pestering.</pre>
+<div class="tagname">&lt;set attr=&quot;Doug.curiosity&quot;&gt;</div>
+<pre class="tagbody">+1</pre>
+<div class="tagname">&lt;deferSchedule&gt;</div>
+<div class="tagname">&lt;suggestion&gt;</div>
+<pre class="tagbody">answer his questions
+ask <span class="c-Doug">Doug</span> details</pre>
+<div class="changes"><span class="c-Doug">Doug</span>.attitudes: {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;New and mysteriously interested in papers—worth pestering.&quot;} =&gt; {&quot;<span class="c-PLAYER">PLAYER</span>&quot;:&quot;Investigating Ink and Echo—finally something worth pestering.&quot;}<br><span class="c-Doug">Doug</span>.curiosity: 0 =&gt; 1</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Marta">Marta</span>.inside: &quot;<span class="c-Foyer">Foyer</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;<br><span class="c-Frida">Frida</span>.inside: &quot;<span class="c-Archive_Lounge">Archive_Lounge</span>&quot; =&gt; &quot;<span class="c-Tranquil_Pool">Tranquil_Pool</span>&quot;<br><span class="c-Gloria">Gloria</span>.inside: &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;<br><span class="c-Lily">Lily</span>.inside: &quot;<span class="c-Static_Garden">Static_Garden</span>&quot; =&gt; &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot;<br><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+</details>
+</section>
+
+<section class="turn">
+  <h2>Turn 31 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span>: 35 sheets, very defensive, claims editing feedback.
+- <span class="c-Marta">Marta</span>: 31 sheets, claims journaling, suspiciously praised poems' &quot;meter&quot; despite claiming not to follow them.
+- <span class="c-Lana">Lana</span>: 23 sheets, admits writing poetry but denies being Ink and Echo - says hers is about &quot;optimization, harmony&quot; not &quot;melancholy, critical.&quot;
+- <span class="c-Doug">Doug</span> very curious about my investigation, asks if I've told <span class="c-Ama">Ama</span>.
+- Haven't actually READ any Ink and Echo poems yet - need to check Archive records (on my list).
+- Still need to meet: <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Next: Check Archive records to actually see the poems and their locations.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>/nav Archive Console</code></p>
+  <div class="label">game output</div>
+  <pre class="saw">Route: <span class="c-Hollow_Atrium">The Hollow Atrium</span>, <span class="c-Archive_Lounge">Archive Lounge</span>, <span class="c-Archive_Console">Archive Console</span></pre>
+  
+</section>
+
+<section class="turn">
+  <h2>Turn 32 </h2>
+  <div class="notes"><div class="label">notes of the player model, before this turn</div>
+       <pre>- Goal: Find who writes as 'Ink and Echo'. Also determine when/where this is.
+- <span class="c-Gloria">Gloria</span>: 35 sheets, very defensive, claims editing feedback.
+- <span class="c-Marta">Marta</span>: 31 sheets, claims journaling, suspiciously praised poems' &quot;meter&quot; despite claiming not to follow them - MOST SUSPICIOUS.
+- <span class="c-Lana">Lana</span>: 23 sheets, admits writing poetry but denies being Ink and Echo.
+- <span class="c-Doug">Doug</span> very curious about my investigation.
+- Haven't actually READ any Ink and Echo poems yet - need to check Archive records.
+- <span class="c-Archive_Console">Archive Console</span> route: <span class="c-Hollow_Atrium">The Hollow Atrium</span> → <span class="c-Archive_Lounge">Archive Lounge</span> → <span class="c-Archive_Console">Archive Console</span>.
+- Still need to meet: <span class="c-Ama">Ama</span> (6 sheets, approved <span class="c-Frida">Frida</span>'s quota).
+- Next: Go to <span class="c-Archive_Console">Archive Console</span> to read the poems and see where they've been found.</pre></div>
+  <p class="cmd"><span class="label">command</span> <code>go to The Hollow Atrium</code></p>
+  <div class="label">game output</div>
+  <pre class="saw"><span class="c-Marta">Marta</span> sweeps past you with the rigid posture of someone who's swallowed a steel rod and called it confidence. <span class="c-Gloria">Gloria</span> drifts in her wake like a heat-seeking missile primed for complaints. <span class="c-Henry">Henry</span> shuffles along, apparently still waiting for that appointment from 2017, moving elsewhere while somehow going nowhere.</pre>
+  <details class="machinery" open>
+  <summary>engine record: 2 events</summary>
+  <p class="note">This is the side of the turn that the player model cannot
+  see: the game model's numbered thoughts (<code>&lt;context&gt;</code>), the
+  private notes of the characters (<code>&lt;mind&gt;</code>), their feelings
+  (<code>&lt;attitude&gt;</code>), the state changes, and the dice.</p>
+  <div class="event">
+  <div class="eventhead"><span class="c-PLAYER">PLAYER</span> <span class="meta">player input</span></div>
+  <div class="tagname">&lt;context&gt;</div>
+<pre class="tagbody">1. Yes, the user is trying to go to <span class="c-Hollow_Atrium">The Hollow Atrium</span> (locationId: <span class="c-Hollow_Atrium">Hollow_Atrium</span>)
+2. No other action
+3. No examination
+4. No dialog response
+5. No speech</pre>
+<div class="tagname">&lt;goto&gt;</div>
+<pre class="tagbody"><span class="c-Hollow_Atrium">Hollow_Atrium</span></pre>
+<div class="changes"><span class="c-PLAYER">PLAYER</span>.inside: &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot; =&gt; &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot;</div>
+</div>
+<div class="event">
+  <div class="eventhead"><span class="c-narrator">narrator</span></div>
+  <div class="changes"><span class="c-Marta">Marta</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Frida">Frida</span>.inside: &quot;<span class="c-Tranquil_Pool">Tranquil_Pool</span>&quot; =&gt; &quot;<span class="c-Joyous_Cafe">Joyous_Cafe</span>&quot;<br><span class="c-Gloria">Gloria</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;<br><span class="c-Lily">Lily</span>.inside: &quot;<span class="c-Ill_Fitting_Lounge">Ill_Fitting_Lounge</span>&quot; =&gt; &quot;<span class="c-Solitude_Cubes">Solitude_Cubes</span>&quot;<br><span class="c-Henry">Henry</span>.inside: &quot;<span class="c-Hollow_Atrium">Hollow_Atrium</span>&quot; =&gt; &quot;<span class="c-Activity_Hub">Activity_Hub</span>&quot;</div>
+</div>
+</details>
+</section>
+
+
+<footer>
+  <p><a href="./">All playthroughs</a> · <a href="/evals/">the eval scoreboard</a> · <a href="/">play Intra</a></p>
+</footer>
+</body>
+</html>
