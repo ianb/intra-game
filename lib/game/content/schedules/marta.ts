@@ -104,12 +104,12 @@ export const martaSchedule: PersonScheduleTemplateType[] = [
     time: time("3:00 PM"),
     activity: "Secret Self-Doubt Session",
     description:
-      "In a rare moment of vulnerability, Marta slips into a private corner and practices smiling alone, wondering if anyone truly notices her efforts.",
-    inside: ["Hallway", "Foyer"],
+      "In a rare moment of vulnerability, Marta slips into the Yellow Room alone and practices smiling, wondering if anyone truly notices her efforts.",
+    inside: ["Yellow_Room"],
     attentive: false,
     early: 5,
     late: 15,
-    minuteLength: 30,
+    minuteLength: 45,
     secret: true,
     secretReason:
       "Marta struggles with self-worth, despite her confident exterior.",
