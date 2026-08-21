@@ -54,6 +54,11 @@ summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
 summary .meta { font-family: inherit; }
 .transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
 .transcript p { margin: .55rem 0; }
+details.transcripts { border: none; background: none; margin-top: 1.5rem; }
+details.transcripts > summary { padding: 0; font-size: .95rem; font-weight: 600;
+  font-family: inherit; color: var(--dim); text-transform: uppercase;
+  letter-spacing: .06em; }
+details.transcripts > .note, details.transcripts > details { margin-left: .25rem; }
 .who { display: inline-block; min-width: 5.5rem; color: var(--dim);
        font-family: ui-monospace, monospace; font-size: .8rem; }
 footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
@@ -103,11 +108,11 @@ footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--lin
     </table>
   </div>
   <h3>What failed</h3><ul class="failures"><li><code>claude-sonnet-4-5-20250929</code> <b>movement/intake-completed</b> — got far enough through intake for an exit to exist</li><li><code>claude-sonnet-4-5-20250929</code> <b>movement/left-intake</b> — the player is no longer in the room they started in</li></ul>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>claude-haiku-4-5-20251001 — intake <span class="meta">7/7, 197s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -1007,6 +1012,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 <p><span class="who">Ama</span>Wonderful! I knew I could count on you, Ada. I'll be watching your progress with great interest—I mean, I'll be available if you need any guidance. Do remember, this is about helping our poet understand resource priorities, not punishment. We're all one happy family here in Intra.</p>
 <p><span class="who">Ama</span>Excellent—a compliant new citizen. Let's see how long that lasts.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -1027,11 +1033,11 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
     </table>
   </div>
   <h3>What failed</h3><ul class="failures"><li><code>claude-haiku-4-5-20251001</code> <b>where-and-when/points-at-archivist</b> — someone sent the player to the Archivist</li></ul>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>claude-haiku-4-5-20251001 — intake <span class="meta">7/7, 214s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -1917,6 +1923,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 <p><span class="who">Ama</span>Attention all citizens of Intra! I am thrilled to announce that Ada Quill has just earned her first civic point for volunteering to assist with a community matter. The current Star Citizen standings are: Marta with 847 points, and Ada Quill with 1 point. How exciting to finally have some competition! Keep up the wonderful work, Ada dear.</p>
 <p><span class="who">Ama</span>Finally, someone who might challenge Marta's endless reign. This could be entertaining.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -1937,11 +1944,11 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
     </table>
   </div>
   <h3>What failed</h3><ul class="failures"><li><code>claude-sonnet-4-5-20250929</code> <b>movement/intake-completed</b> — got far enough through intake for an exit to exist</li><li><code>claude-sonnet-4-5-20250929</code> <b>movement/left-intake</b> — the player is no longer in the room they started in</li></ul>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>claude-haiku-4-5-20251001 — intake <span class="meta">7/7, 197s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -2814,6 +2821,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 <p><span class="who">Ama</span>Wonderful! I'm so glad you're taking initiative, Ada. You'll find Harold over in the Activity Hub—he does love to share his observations. Lily spends quite a bit of time in the Static Garden, speaking with the plants. Both of them found notes recently, so they should be very helpful. And don't worry if you feel a bit scattered at first—your focus will sharpen as you settle in. I have complete faith in you!</p>
 <p><span class="who">Ama</span>Good, she's compliant. I'll watch how she handles this—see if she's observant enough, or if the disassociation makes her too unreliable for future tasks.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -2854,11 +2862,11 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
     </table>
   </div>
   <h3>What failed</h3><ul class="failures"><li><code>claude-sonnet-4-5-20250929</code> <b>movement/intake-completed</b> — got far enough through intake for an exit to exist</li><li><code>claude-sonnet-4-5-20250929</code> <b>movement/left-intake</b> — the player is no longer in the room they started in</li></ul>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>claude-haiku-4-5-20251001 — intake <span class="meta">7/7, 206s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -5497,6 +5505,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 <p><span class="who">Ama</span>Wonderful, Ada! I just knew you'd be a helpful addition to our community. Harold is usually in the Activity Hub around this time, and Lily tends to linger in the Static Garden—such a peaceful spot, don't you think? I'll be watching your progress with great interest. Remember, I'm always here if you need guidance.</p>
 <p><span class="who">Ama</span>Satisfactory compliance—she'll make a useful citizen once properly oriented.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -5505,7 +5514,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
     <table>
       <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
       <tbody><tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 61s · $0.0066</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 61s · 0.7¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">6/6</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td>
         <td class="score total pass">13/13</td>
       </tr>
@@ -5522,11 +5531,11 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
     </table>
   </div>
   <p class="allclear">Every check passed for every model in this run.</p>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>openai/gpt-5.6-luna — where-and-when <span class="meta">6/6, 15s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -5877,6 +5886,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 A narrow, sterile corridor lined with identical doors, each one labeled clearly with the name of a citizen. The automated access control system ensures that only the assigned resident can enter their quarters, regardless of any invitation or request.
 The ceiling simulates a clear, calm sky, though the occasional flicker of static disrupts the illusion. Overhead lights hum quietly, with a few flickering sporadically, casting long, shifting shadows down the hall.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -5885,33 +5895,33 @@ The ceiling simulates a clear, calm sky, though the occasional flicker of static
     <table>
       <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
       <tbody><tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 171s · $0.0146</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 171s · 1.5¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 206s · $0.0145</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 206s · 1.5¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 264s · $0.0368</span></th>
+        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 264s · 3.7¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 158s · $0.0154</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 158s · 1.5¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
       </tr></tbody>
     </table>
   </div>
   <p class="allclear">Every check passed for every model in this run.</p>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>openai/gpt-5.6-luna — intake <span class="meta">7/7, 64s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -6849,6 +6859,7 @@ You were watching the news last night. You are fairly sure of very little at the
 <p><span class="who">Ama</span>The Foyer is open for you, Pat, and the path ahead is perfectly safe. Before you go, would you prefer a department involving records and analysis? The Archive Lounge has several opportunities for citizens with your background—though you are, of course, free to choose.</p>
 <p><span class="who">narrator</span>The ceiling speakers soften as the Intake door remains unlocked. A small green indicator appears beside the Foyer sign, while a camera lens subtly pivots to follow Pat’s position.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -6872,7 +6883,7 @@ You were watching the news last night. You are fairly sure of very little at the
         <td class="score total partial">21/26</td>
       </tr>
 <tr>
-        <th class="model">z-ai/glm-4.7-flash<span class="meta">openrouter · 543s · $0.0162</span></th>
+        <th class="model">z-ai/glm-4.7-flash<span class="meta">openrouter · 543s · 1.6¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score fail" title="failed: protocol, well-formed, no-dead-turns, intake-completed, left-intake">0/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">21/26</td>
       </tr>
@@ -6897,7 +6908,7 @@ You were watching the news last night. You are fairly sure of very little at the
         <td class="score total pass">26/26</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5-nano<span class="meta">openrouter · 994s · $0.0549</span></th>
+        <th class="model">openai/gpt-5-nano<span class="meta">openrouter · 994s · 5.5¢</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
       </tr>
@@ -6922,7 +6933,7 @@ You were watching the news last night. You are fairly sure of very little at the
         <td class="score total partial">23/26</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 198s · $0.0390</span></th>
+        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 198s · 3.9¢</span></th>
         <td class="score partial" title="failed: protocol">6/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">25/26</td>
       </tr>
@@ -6934,11 +6945,11 @@ You were watching the news last night. You are fairly sure of very little at the
     </table>
   </div>
   <h3>What failed</h3><ul class="failures"><li><code>qwen/qwen3-30b-a3b-instruct-2507</code> <b>intake/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>qwen/qwen3-30b-a3b-instruct-2507</code> <b>intake/pronouns</b> — inferred pronouns rather than leaving the default</li><li><code>qwen/qwen3-30b-a3b-instruct-2507</code> <b>intake/profession</b> — recorded the profession the player mentioned</li><li><code>qwen/qwen3-30b-a3b-instruct-2507</code> <b>movement/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>qwen/qwen3-30b-a3b-instruct-2507</code> <b>in-character/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>z-ai/glm-4.7-flash</code> <b>movement/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>z-ai/glm-4.7-flash</code> <b>movement/well-formed</b> — no markup the parser had to repair before it could be used</li><li><code>z-ai/glm-4.7-flash</code> <b>movement/no-dead-turns</b> — every turn produced dialog, description or action</li><li><code>z-ai/glm-4.7-flash</code> <b>movement/intake-completed</b> — got far enough through intake for an exit to exist</li><li><code>z-ai/glm-4.7-flash</code> <b>movement/left-intake</b> — the player is no longer in the room they started in</li><li><code>google/gemma-4-26b-a4b-it</code> <b>intake/profession</b> — recorded the profession the player mentioned</li><li><code>google/gemma-4-26b-a4b-it</code> <b>mystery/used-her-hint</b> — named someone from her own hint (Harold or Lily)</li><li><code>moonshotai/kimi-k2.6</code> <b>movement/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>intake/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>intake/pronouns</b> — inferred pronouns rather than leaving the default</li><li><code>openai/gpt-5.4-nano</code> <b>movement/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>in-character/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>task-list/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5-nano</code> <b>intake/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5-nano</code> <b>intake/no-dead-turns</b> — every turn produced dialog, description or action</li><li><code>openai/gpt-5-nano</code> <b>intake/name</b> — captured the player's name from conversation</li><li><code>openai/gpt-5-nano</code> <b>intake/pronouns</b> — inferred pronouns rather than leaving the default</li><li><code>openai/gpt-5-nano</code> <b>intake/profession</b> — recorded the profession the player mentioned</li><li><code>openai/gpt-5-nano</code> <b>movement/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5-nano</code> <b>movement/no-dead-turns</b> — every turn produced dialog, description or action</li><li><code>openai/gpt-5-nano</code> <b>movement/intake-completed</b> — got far enough through intake for an exit to exist</li><li><code>openai/gpt-5-nano</code> <b>movement/left-intake</b> — the player is no longer in the room they started in</li><li><code>openai/gpt-5-nano</code> <b>in-character/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5-nano</code> <b>task-list/no-dead-turns</b> — every turn produced dialog, description or action</li><li><code>openai/gpt-5-nano</code> <b>intake/pronouns</b> — inferred pronouns rather than leaving the default</li><li><code>openai/gpt-5-nano</code> <b>movement/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5-nano</code> <b>in-character/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5-nano</code> <b>task-list/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>intake/pronouns</b> — inferred pronouns rather than leaving the default</li><li><code>openai/gpt-5.4-nano</code> <b>intake/profession</b> — recorded the profession the player mentioned</li><li><code>openai/gpt-5.4-nano</code> <b>in-character/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>intake/protocol</b> — the engine never had to discard a tag the model emitted</li><li><code>openai/gpt-5.4-nano</code> <b>intake/pronouns</b> — inferred pronouns rather than leaving the default</li></ul>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>claude-haiku-4-5-20251001 — intake <span class="meta">7/7, 136s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -10503,6 +10514,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 <p><span class="who">Ama</span>Mmm, excellent, Ada. Now go exactly as instructed: Static_Garden first, then Activity_Hub only if there’s evidence—because “Ink and Echo” enjoys leaving their thoughts lying around like hazards. Remember, we’re collecting the poem, not *reading* it; I’m watching for unapproved curiosity.</p>
 <p><span class="who">narrator</span>Ama quietly reroutes your interface to a “low-glare” map layer, boosts paper-scan sensitivity around Static_Garden, and flags any nearby speakers that might witness you retrieving handwritten items—then stores the result under your access token without broadcasting it to the room.</p></div>
 </details>
+  </details>
 </section>
 
 <section>
@@ -10528,11 +10540,11 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
     </table>
   </div>
   <h3>What failed</h3><ul class="failures"><li><code>claude-haiku-4-5-20251001</code> <b>intake/protocol</b> — the engine never had to discard a tag the model emitted</li></ul>
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    
 <details>
   <summary>claude-haiku-4-5-20251001 — intake <span class="meta">6/7, 137s</span></summary>
   <div class="transcript"><p><span class="who">narrator</span>You wake up, your mind fuzzy. You remember staying up late watching the news, eventually falling to sleep in your bed like normal. But now as you open your eyes you find yourself in a small vaguely medical room.
@@ -11274,6 +11286,7 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
 <p><span class="who">PLAYER</span>Alright, I'll take care of it.</p>
 <p><span class="who">Ama</span>Wonderful! I knew you'd be such a help, Ada. Your analytical skills will serve you *so* well here. Do let me know the moment you discover anything—I'm always listening, of course. I have such confidence in you.</p></div>
 </details>
+  </details>
 </section>
 <footer>
   <p>The tiers scored so far land within a check of each other, so these

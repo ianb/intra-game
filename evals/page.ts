@@ -48,6 +48,11 @@ export function esc(text: string): string {
   return text.replace(/[&<>"]/g, (c) => escapeMap[c]!);
 }
 
+/** Sub-dollar suite costs read better in cents: "1.5\u00a2" not "$0.0145". */
+function dollars(cost: number): string {
+  return cost < 1 ? `${(cost * 100).toFixed(1)}\u00a2` : `$${cost.toFixed(2)}`;
+}
+
 function scoreClass(passed: number, total: number): string {
   if (total === 0) return "none";
   if (passed === total) return "pass";
@@ -103,7 +108,7 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
       // as $0.0000 would claim the run was free — unreported shows as
       // nothing instead.
       const cost = run.scenarios.reduce((a, s) => a + (s.usage?.cost ?? 0), 0);
-      const costText = cost > 0 ? ` · $${cost.toFixed(4)}` : "";
+      const costText = cost > 0 ? ` · ${dollars(cost)}` : "";
       return `<tr>
         <th class="model">${esc(run.model)}<span class="meta">${run.flashModel ? `+ ${esc(run.flashModel)} (flash) · ` : ""}${esc(run.backend)} · ${seconds}s${costText}</span></th>
         ${cells}
@@ -148,11 +153,12 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
       ? `<h3>What failed</h3><ul class="failures">${failures.join("")}</ul>`
       : `<p class="allclear">Every check passed for every model in this run.</p>`
   }
-  <h3>Transcripts</h3>
-  <p class="note">What the characters actually said, so a failing check can be
-  checked. A text check that can't be audited after the fact is a claim, not a
-  measurement.</p>
-  ${transcripts}
+  <details class="transcripts">
+    <summary>Transcripts</summary>
+    <p class="note">What the characters said in each run, so a failed text
+    check can be compared with the text it judged.</p>
+    ${transcripts}
+  </details>
 </section>`;
 }
 
@@ -251,6 +257,11 @@ summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
 summary .meta { font-family: inherit; }
 .transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
 .transcript p { margin: .55rem 0; }
+details.transcripts { border: none; background: none; margin-top: 1.5rem; }
+details.transcripts > summary { padding: 0; font-size: .95rem; font-weight: 600;
+  font-family: inherit; color: var(--dim); text-transform: uppercase;
+  letter-spacing: .06em; }
+details.transcripts > .note, details.transcripts > details { margin-left: .25rem; }
 .who { display: inline-block; min-width: 5.5rem; color: var(--dim);
        font-family: ui-monospace, monospace; font-size: .8rem; }
 footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);

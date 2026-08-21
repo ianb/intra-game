@@ -113,7 +113,7 @@ export function writeReports() {
         ? ` \`${run.scenarios[0]?.promptFingerprint ?? "?"}\``
         : "";
       lines.push(
-        `| ${name}${prompts} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | ${cost > 0 ? `$${cost.toFixed(4)}` : "–"} |`,
+        `| ${name}${prompts} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | ${cost > 0 ? (cost < 1 ? `${(cost * 100).toFixed(1)}¢` : `$${cost.toFixed(2)}`) : "–"} |`,
       );
     }
     lines.push("");
