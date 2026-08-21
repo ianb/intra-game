@@ -28,7 +28,7 @@ export class InkAndEchoMystery extends Mystery {
               trustsPlayer: true,
               attitudes: {
                 PLAYER:
-                  "Settled the Ink and Echo matter for me. Someone I can hand things to.",
+                  "Settled the Ink and Echo matter, and so tidily. Such a helpful citizen. One to give little jobs to.",
               },
             },
           },
