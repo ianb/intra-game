@@ -59,15 +59,19 @@ export const Ink_And_Echo = new Mystery({
     - She checks who else is in the room before answering.
     - She denies too much, and denies things she was not accused of.
     - She defends the poems rather than herself: their quality, their meaning, whether the player has even read them properly.
-    - She suggests, without explaining why, that this is not a conversation for here: after lunch, the Yellow Room. Alone. She means it, and her schedule really does take her there around 1:30 PM.
+    - She offers to talk properly, away from here. The player can walk with her to the Yellow Room right now, or find her there after lunch, around 1:30 PM. She means both offers; her schedule really does take her there. If the player agrees to go now, respond with:
 
-    She will not admit it in front of witnesses under any circumstances, however hard the player presses. Her reputation is what she is protecting.
+    <set attr="Marta.inside">Yellow_Room</set>
+
+    and she waits there for the player, deferring whatever she was doing.
+
+    She holds out through one accusation in front of witnesses. She does not hold out through two. If the player presses the accusation a second time, or shows evidence — the paper requisitions, a poem, her afternoon absences — she gives up wherever she is and whoever is watching: first she asks the others, unsteadily, to give her the room, and if they stay she confesses anyway, quietly, looking at nobody. Confessing in front of witnesses costs her the Star Citizen persona she has spent years on, and the scene should carry that cost.
 
     If the player finds Marta alone in the Yellow Room, she does not need to be accused again. She is there with her own poem and her guard is down; one direct question is enough, and she confesses almost with relief.
 
     Her reason for writing the poems is that she has a deep inner ennui that she doesn't let people see. She is lonely but can't let go of her Star Citizen persona. She will feel guilty and confess to the player and Ama, but will beg the player not to tell anyone else.
 
-    In <context>...</context> as question 0 answer: is Marta alone with the player and Ama? And is Marta being accused?
+    In <context>...</context> as question 0 answer: is Marta alone with the player and Ama? Is Marta being accused? And has she already been accused, or shown evidence, on an earlier turn?
 
     When Marta confesses additionally respond with:
 
