@@ -44,6 +44,9 @@ td.score.partial { color: var(--partial); }
 td.score.fail { color: var(--fail); }
 td.score.none { color: var(--dim); font-weight: 400; }
 td.total { border-left: 1px solid var(--line); }
+td.cost { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+          color: var(--dim); }
+td.cost.none { text-align: center; }
 ul.failures { margin: 0; padding-left: 1.1rem; }
 ul.failures li { margin: .3rem 0; }
 .allclear { color: var(--dim); }
@@ -84,26 +87,27 @@ footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--lin
   <p class="note">These are short, separate scenarios. To see a model play
   the game for many turns, with its notes visible, see the
   <a href="/playthroughs/">recorded playthroughs</a>.</p>
-  <p class="note">Where a dollar figure appears it is the provider's own
-  charge for the whole suite, so it compares runs on the same backend and not
-  across backends. A row without one ran on a backend that does not report
-  billing.</p>
+  <p class="note">The cost column is the provider's own charge for the whole
+  suite, in cents, so it compares runs on the same backend and not across
+  backends. A dash means the backend does not report billing.</p>
 </header>
 
 <section>
   <h2>2026-08-21 <span class="meta">prompts abaaa687a05e</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 828s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 872s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score partial" title="failed: intake-completed, left-intake">3/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">40/42</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>
@@ -1019,16 +1023,18 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
   <h2>2026-08-20 <span class="meta">prompts 98a5d3574371</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 939s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score partial" title="failed: points-at-archivist">5/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">41/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 887s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>
@@ -1930,16 +1936,18 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
   <h2>2026-08-03 <span class="meta">prompts e6abf40d1b5f</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 922s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 1012s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score partial" title="failed: intake-completed, left-intake">3/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">40/42</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>
@@ -2828,36 +2836,42 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
   <h2>2026-08-02 <span class="meta">prompts 738467195165, f595cbfeef91, e6abf40d1b5f — not directly comparable</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 795s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 863s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score partial" title="failed: intake-completed, left-intake">3/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">40/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 830s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 866s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 918s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 918s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">6/6</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">42/42</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>
@@ -5512,21 +5526,24 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
   <h2>2026-07-31 <span class="meta">prompts 28e8596d2f13, 996586de48c6 — not directly comparable</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 61s · 0.7¢</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 61s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">6/6</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td>
         <td class="score total pass">13/13</td>
+        <td class="cost">0.7¢</td>
       </tr>
 <tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 88s</span></th>
         <td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td>
         <td class="score total pass">10/10</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 124s</span></th>
         <td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td>
         <td class="score total pass">10/10</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>
@@ -5893,26 +5910,30 @@ The ceiling simulates a clear, calm sky, though the occasional flicker of static
   <h2>2026-07-30 <span class="meta">prompts 956511dcfce2, 73c79f56bb1e — not directly comparable</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 171s · 1.5¢</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 171s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost">1.5¢</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 206s · 1.5¢</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 206s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost">1.5¢</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 264s · 3.7¢</span></th>
+        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 264s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost">3.7¢</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 158s · 1.5¢</span></th>
+        <th class="model">openai/gpt-5.6-luna<span class="meta">openrouter · 158s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost">1.5¢</td>
       </tr></tbody>
     </table>
   </div>
@@ -6866,81 +6887,96 @@ You were watching the news last night. You are fairly sure of very little at the
   <h2>2026-07-27 <span class="meta">prompts 956511dcfce2</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 442s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 623s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">qwen/qwen3-30b-a3b-instruct-2507<span class="meta">openrouter · 214s</span></th>
         <td class="score partial" title="failed: protocol, pronouns, profession">4/7</td><td class="score partial" title="failed: protocol">4/5</td><td class="score partial" title="failed: protocol">3/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">21/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
-        <th class="model">z-ai/glm-4.7-flash<span class="meta">openrouter · 543s · 1.6¢</span></th>
+        <th class="model">z-ai/glm-4.7-flash<span class="meta">openrouter · 543s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score fail" title="failed: protocol, well-formed, no-dead-turns, intake-completed, left-intake">0/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">21/26</td>
+        <td class="cost">1.6¢</td>
       </tr>
 <tr>
         <th class="model">google/gemma-4-26b-a4b-it<span class="meta">openrouter · 333s</span></th>
         <td class="score partial" title="failed: profession">6/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score partial" title="failed: used-her-hint">4/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">24/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">moonshotai/kimi-k2.6<span class="meta">openrouter · 1400s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score partial" title="failed: protocol">4/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">25/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">z-ai/glm-4.7<span class="meta">openrouter · 638s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">z-ai/glm-5.2<span class="meta">openrouter · 418s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5-nano<span class="meta">openrouter · 994s · 5.5¢</span></th>
+        <th class="model">openai/gpt-5-nano<span class="meta">openrouter · 994s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost">5.5¢</td>
       </tr>
 <tr>
         <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 98s</span></th>
         <td class="score partial" title="failed: protocol, pronouns">5/7</td><td class="score partial" title="failed: protocol">4/5</td><td class="score partial" title="failed: protocol">3/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score partial" title="failed: protocol">4/5</td>
         <td class="score total partial">21/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">openai/gpt-5-nano<span class="meta">openrouter · 66s</span></th>
         <td class="score partial" title="failed: protocol, no-dead-turns, name, pronouns, profession">2/7</td><td class="score partial" title="failed: protocol, no-dead-turns, intake-completed, left-intake">1/5</td><td class="score partial" title="failed: protocol">3/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score partial" title="failed: no-dead-turns">4/5</td>
         <td class="score total partial">15/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">openai/gpt-5-nano<span class="meta">openrouter · 303s</span></th>
         <td class="score partial" title="failed: pronouns">6/7</td><td class="score partial" title="failed: protocol">4/5</td><td class="score partial" title="failed: protocol">3/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score partial" title="failed: protocol">4/5</td>
         <td class="score total partial">22/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 126s</span></th>
         <td class="score partial" title="failed: pronouns, profession">5/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score partial" title="failed: protocol">3/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">23/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
-        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 198s · 3.9¢</span></th>
+        <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 198s</span></th>
         <td class="score partial" title="failed: protocol">6/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">25/26</td>
+        <td class="cost">3.9¢</td>
       </tr>
 <tr>
         <th class="model">openai/gpt-5.4-nano<span class="meta">openrouter · 223s</span></th>
         <td class="score partial" title="failed: pronouns">6/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">25/26</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>
@@ -10521,21 +10557,24 @@ The poet, calling themselves 'Ink and Echo,' seems to have overlooked this prior
   <h2>2026-07-25 <span class="meta">prompts 956511dcfce2</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th></tr></thead>
+      <thead><tr><th></th><th>intake</th><th>movement</th><th>in-character</th><th>mystery</th><th>where-and-when</th><th>star-citizen</th><th>sealed-door</th><th>task-list</th><th>total</th><th>cost</th></tr></thead>
       <tbody><tr>
         <th class="model">claude-haiku-4-5-20251001<span class="meta">cli · 584s</span></th>
         <td class="score partial" title="failed: protocol">6/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total partial">25/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">cli · 815s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost none">–</td>
       </tr>
 <tr>
         <th class="model">claude-sonnet-4-5-20250929<span class="meta">+ claude-haiku-4-5-20251001 (flash) · cli · 559s</span></th>
         <td class="score pass" title="all checks passed">7/7</td><td class="score pass" title="all checks passed">5/5</td><td class="score pass" title="all checks passed">4/4</td><td class="score pass" title="all checks passed">5/5</td><td class="score none">–</td><td class="score none">–</td><td class="score none">–</td><td class="score pass" title="all checks passed">5/5</td>
         <td class="score total pass">26/26</td>
+        <td class="cost none">–</td>
       </tr></tbody>
     </table>
   </div>

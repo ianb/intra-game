@@ -48,9 +48,13 @@ export function esc(text: string): string {
   return text.replace(/[&<>"]/g, (c) => escapeMap[c]!);
 }
 
-/** Sub-dollar suite costs read better in cents: "1.5\u00a2" not "$0.0145". */
-function dollars(cost: number): string {
-  return cost < 1 ? `${(cost * 100).toFixed(1)}\u00a2` : `$${cost.toFixed(2)}`;
+/**
+ * Suite costs in cents, always: "1.5\u00a2", "245.0\u00a2". One unit and one
+ * decimal place so the column lines up for comparison, which is the only
+ * reason the number is on the page.
+ */
+function cents(cost: number): string {
+  return `${(cost * 100).toFixed(1)}\u00a2`;
 }
 
 function scoreClass(passed: number, total: number): string {
@@ -103,16 +107,20 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
       const seconds = Math.round(
         run.scenarios.reduce((a, s) => a + s.ms, 0) / 1000,
       );
-      // Provider-reported dollars for the whole suite. Zero means the backend
+      // Provider-reported cost for the whole suite. Zero means the backend
       // did not report billing (the Claude CLI does not), and rendering that
-      // as $0.0000 would claim the run was free — unreported shows as
-      // nothing instead.
+      // as 0.0¢ would claim the run was free — unreported shows a dash
+      // instead.
       const cost = run.scenarios.reduce((a, s) => a + (s.usage?.cost ?? 0), 0);
-      const costText = cost > 0 ? ` · ${dollars(cost)}` : "";
+      const costCell =
+        cost > 0
+          ? `<td class="cost">${cents(cost)}</td>`
+          : `<td class="cost none">–</td>`;
       return `<tr>
-        <th class="model">${esc(run.model)}<span class="meta">${run.flashModel ? `+ ${esc(run.flashModel)} (flash) · ` : ""}${esc(run.backend)} · ${seconds}s${costText}</span></th>
+        <th class="model">${esc(run.model)}<span class="meta">${run.flashModel ? `+ ${esc(run.flashModel)} (flash) · ` : ""}${esc(run.backend)} · ${seconds}s</span></th>
         ${cells}
         <td class="score total ${scoreClass(passed, total)}">${passed}/${total}</td>
+        ${costCell}
       </tr>`;
     })
     .join("\n");
@@ -144,7 +152,7 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
   <h2>${esc(data.date)} <span class="meta">${provenance}</span></h2>
   <div class="scroller">
     <table>
-      <thead><tr><th></th>${header}<th>total</th></tr></thead>
+      <thead><tr><th></th>${header}<th>total</th><th>cost</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>
@@ -187,10 +195,9 @@ export function renderPage(
   <p class="note">These are short, separate scenarios. To see a model play
   the game for many turns, with its notes visible, see the
   <a href="/playthroughs/">recorded playthroughs</a>.</p>
-  <p class="note">Where a dollar figure appears it is the provider's own
-  charge for the whole suite, so it compares runs on the same backend and not
-  across backends. A row without one ran on a backend that does not report
-  billing.</p>
+  <p class="note">The cost column is the provider's own charge for the whole
+  suite, in cents, so it compares runs on the same backend and not across
+  backends. A dash means the backend does not report billing.</p>
 </header>
 ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
 <footer>
@@ -247,6 +254,9 @@ td.score.partial { color: var(--partial); }
 td.score.fail { color: var(--fail); }
 td.score.none { color: var(--dim); font-weight: 400; }
 td.total { border-left: 1px solid var(--line); }
+td.cost { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+          color: var(--dim); }
+td.cost.none { text-align: center; }
 ul.failures { margin: 0; padding-left: 1.1rem; }
 ul.failures li { margin: .3rem 0; }
 .allclear { color: var(--dim); }

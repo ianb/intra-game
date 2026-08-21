@@ -11,7 +11,7 @@ checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
 Prompts `abaaa687a05e`.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 828s | 0 | – |
 | `claude-sonnet-4-5-20250929` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 872s | 0 | – |
@@ -27,7 +27,7 @@ What failed:
 
 Prompts `98a5d3574371`.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 5/6 | 5/5 | 5/5 | 5/5 | **41/42** | 939s | 0 | – |
 | `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 887s | 0 | – |
@@ -42,7 +42,7 @@ What failed:
 
 Prompts `e6abf40d1b5f`.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 922s | 0 | – |
 | `claude-sonnet-4-5-20250929` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 1012s | 0 | – |
@@ -58,7 +58,7 @@ What failed:
 
 Prompts `738467195165`, `f595cbfeef91`, `e6abf40d1b5f` — rows here were measured against different prompts and aren't directly comparable.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` `738467195165` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **42/42** | 795s | 0 | – |
 | `claude-sonnet-4-5-20250929` `738467195165` | 7/7 | 3/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/5 | **40/42** | 863s | 0 | – |
@@ -78,7 +78,7 @@ What failed:
 
 Prompts `28e8596d2f13`, `996586de48c6` — rows here were measured against different prompts and aren't directly comparable.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `openai/gpt-5.6-luna` `28e8596d2f13` | 7/7 | – | – | – | 6/6 | – | – | – | **13/13** | 61s | 2477 | 0.7¢ |
 | `claude-haiku-4-5-20251001` `996586de48c6` | – | – | – | – | – | 5/5 | 5/5 | – | **10/10** | 88s | 0 | – |
@@ -90,7 +90,7 @@ Time and cost are the provider's, for the whole suite (16 player turns). Cost is
 
 Prompts `956511dcfce2`, `73c79f56bb1e` — rows here were measured against different prompts and aren't directly comparable.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `openai/gpt-5.6-luna` `956511dcfce2` | 7/7 | 5/5 | 4/4 | 5/5 | – | – | – | 5/5 | **26/26** | 171s | 4953 | 1.5¢ |
 | `openai/gpt-5.6-luna` `medium` `956511dcfce2` | 7/7 | 5/5 | 4/4 | 5/5 | – | – | – | 5/5 | **26/26** | 206s | 5139 | 1.5¢ |
@@ -103,7 +103,7 @@ Time and cost are the provider's, for the whole suite (16 player turns). Cost is
 
 Prompts `956511dcfce2`.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` | 7/7 | 5/5 | 4/4 | 5/5 | – | – | – | 5/5 | **26/26** | 442s | 0 | – |
 | `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | – | – | – | 5/5 | **26/26** | 623s | 0 | – |
@@ -168,7 +168,7 @@ What failed:
 
 Prompts `956511dcfce2`.
 
-| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | $ |
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-haiku-4-5-20251001` | 6/7 | 5/5 | 4/4 | 5/5 | – | – | – | 5/5 | **25/26** | 584s | 0 | – |
 | `claude-sonnet-4-5-20250929` | 7/7 | 5/5 | 4/4 | 5/5 | – | – | – | 5/5 | **26/26** | 815s | 0 | – |

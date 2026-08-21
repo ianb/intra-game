@@ -78,7 +78,7 @@ export function writeReports() {
       new Set(data.runs.map((r) => r.scenarios[0]?.promptFingerprint ?? ""))
         .size > 1;
     lines.push(
-      `| model | ${scenarioNames.join(" | ")} | total | time | thinking | $ |`,
+      `| model | ${scenarioNames.join(" | ")} | total | time | thinking | ¢ |`,
     );
     lines.push(
       `| --- | ${scenarioNames.map(() => "---").join(" | ")} | --- | --- | --- | --- |`,
@@ -113,7 +113,7 @@ export function writeReports() {
         ? ` \`${run.scenarios[0]?.promptFingerprint ?? "?"}\``
         : "";
       lines.push(
-        `| ${name}${prompts} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | ${cost > 0 ? (cost < 1 ? `${(cost * 100).toFixed(1)}¢` : `$${cost.toFixed(2)}`) : "–"} |`,
+        `| ${name}${prompts} | ${cells.join(" | ")} | **${passed}/${total}** | ${seconds.toFixed(0)}s | ${thinking} | ${cost > 0 ? `${(cost * 100).toFixed(1)}¢` : "–"} |`,
       );
     }
     lines.push("");
