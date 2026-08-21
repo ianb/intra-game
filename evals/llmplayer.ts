@@ -102,6 +102,11 @@ Time passes as you act, and you can spend it deliberately: if you have an
 appointment, a command like "wait here until 1:30" is valid and cheap. Do not
 burn turns pacing between rooms to make time pass.
 
+When your notes hold several pieces of evidence against one person, stop
+corroborating and confront them, and if they deflect once, press again.
+Gathering has diminishing returns; mysteries in games end through
+confrontation, and a deflection is usually the second-to-last scene.
+
 It is a computer, not a person: it does not answer questions, cannot be asked
 anything else, and using it is free. Use it whenever you are not certain where
 someone is. Some rooms are private and it will not route to them, and someone it
