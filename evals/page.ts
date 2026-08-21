@@ -98,8 +98,14 @@ function runSection(data: ResultsFile, scenarioNames: string[]): string {
       const seconds = Math.round(
         run.scenarios.reduce((a, s) => a + s.ms, 0) / 1000,
       );
+      // Provider-reported dollars for the whole suite. Zero means the backend
+      // did not report billing (the Claude CLI does not), and rendering that
+      // as $0.0000 would claim the run was free — unreported shows as
+      // nothing instead.
+      const cost = run.scenarios.reduce((a, s) => a + (s.usage?.cost ?? 0), 0);
+      const costText = cost > 0 ? ` · $${cost.toFixed(4)}` : "";
       return `<tr>
-        <th class="model">${esc(run.model)}<span class="meta">${run.flashModel ? `+ ${esc(run.flashModel)} (flash) · ` : ""}${esc(run.backend)} · ${seconds}s</span></th>
+        <th class="model">${esc(run.model)}<span class="meta">${run.flashModel ? `+ ${esc(run.flashModel)} (flash) · ` : ""}${esc(run.backend)} · ${seconds}s${costText}</span></th>
         ${cells}
         <td class="score total ${scoreClass(passed, total)}">${passed}/${total}</td>
       </tr>`;
@@ -175,6 +181,10 @@ export function renderPage(
   <p class="note">These are short, separate scenarios. To see a model play
   the game for many turns, with its notes visible, see the
   <a href="/playthroughs/">recorded playthroughs</a>.</p>
+  <p class="note">Where a dollar figure appears it is the provider's own
+  charge for the whole suite, so it compares runs on the same backend and not
+  across backends. A row without one ran on a backend that does not report
+  billing.</p>
 </header>
 ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
 <footer>
