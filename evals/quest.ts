@@ -168,7 +168,11 @@ export const INK_AND_ECHO_QUEST: Quest = {
   describe: "find out who is writing the Ink and Echo poems",
   seed: 8080,
   from: "briefed",
-  maxTurns: 20,
+  // Raised from 20 after a run ended mid-question to Marta with the whole
+  // trail assembled: the funnel now fits, the budget didn't. The confession
+  // route runs through her mid-afternoon window, hours of game time from the
+  // morning start, so the cap needs room for the wait as well as the walk.
+  maxTurns: 32,
   solved: (model) => model.world.entities.Ink_And_Echo.state === "solved",
   milestones: [
     {
