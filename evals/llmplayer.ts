@@ -94,6 +94,10 @@ never wrong, because it reads the map rather than remembering it. Characters
 describing a route are doing it from memory and will confidently send you to
 rooms that do not exist.
 
+If your notes say you need to find a person, your next command should be
+/nav with their name — searching rooms by walking is what the cuff exists to
+replace, and people move while you walk.
+
 It is a computer, not a person: it does not answer questions, cannot be asked
 anything else, and using it is free. Use it whenever you are not certain where
 someone is. Some rooms are private and it will not route to them, and someone it
