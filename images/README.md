@@ -41,6 +41,15 @@ them with `image-rendering: pixelated`, so the chunky pixels stay crisp at any
 display size. `app/assets/` is copied to `dist/assets/` by the normal build, so
 no build step is specific to images.
 
+## The social-preview image
+
+`pnpm og` renders the link-preview card (Open Graph / Twitter) to
+`app/assets/og.png` at 1200x630, served at `/assets/og.png` and referenced by
+the `og:image` tags in [app/index.html](../app/index.html). It is drawn with a
+headless browser, not the image model, so the title uses the game's own bundled
+pixel font over a real room (`Hollow_Atrium`); see [og.ts](./og.ts). Re-run it
+if the title art or the background room changes. No API key needed.
+
 ## Regeneration is a prompt-hash diff
 
 An image is regenerated when its file is missing or when
