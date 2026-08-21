@@ -80,13 +80,20 @@ export function esc(text: string): string {
  * no measurements or defined terms inside an `archivist()` line.
  */
 
-/** A boxed, shaded title banner in the Archive's terminal style. */
+/**
+ * A shaded title banner in the Archive's terminal style: a title line with
+ * ░▒▓█ end-caps over a subtitle.
+ *
+ * The frame is a CSS double border, not box-drawing characters. An ASCII box
+ * only joins its corners cleanly at line-height 1.0, which crushes the two
+ * text lines together; the CSS border stays connected at a readable line
+ * spacing. The ░▒▓█ end-caps keep the terminal flourish.
+ */
 export function archiveBanner(title: string, subtitle: string): string {
-  const body = [`░▒▓█ ${title} █▓▒░`, subtitle];
-  const inner = Math.max(...body.map((line) => line.length)) + 2;
-  const bar = "═".repeat(inner);
-  const rows = body.map((line) => `║ ${line.padEnd(inner - 2)} ║`).join("\n");
-  return `<pre class="artbanner">${esc(`╔${bar}╗\n${rows}\n╚${bar}╝`)}</pre>`;
+  return `<div class="artbanner">
+  <div class="artbanner-title">░▒▓█ ${esc(title)} █▓▒░</div>
+  <div class="artbanner-sub">${esc(subtitle)}</div>
+</div>`;
 }
 
 /** A full-width decorative rule of shade blocks; clips at the page edge. */
@@ -283,10 +290,13 @@ export const STYLE = `
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-             color: #facc15; font-size: .8rem; line-height: 1.05;
-             letter-spacing: 0; white-space: pre; overflow-x: auto;
-             margin: 0 0 1rem; }
+.artbanner { display: inline-block; max-width: 100%;
+             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; border: 3px double #facc15; border-radius: 4px;
+             padding: .55rem 1.1rem; margin: 0 0 1.25rem; overflow-x: auto; }
+.artbanner-title { font-size: 1rem; letter-spacing: .1em; white-space: nowrap; }
+.artbanner-sub { font-size: .8rem; letter-spacing: .04em; opacity: .85;
+                 margin-top: .35rem; white-space: nowrap; }
 .shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: var(--line); white-space: nowrap; overflow: hidden;
              opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }

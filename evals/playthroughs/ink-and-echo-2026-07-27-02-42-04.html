@@ -11,10 +11,13 @@
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-             color: #facc15; font-size: .8rem; line-height: 1.05;
-             letter-spacing: 0; white-space: pre; overflow-x: auto;
-             margin: 0 0 1rem; }
+.artbanner { display: inline-block; max-width: 100%;
+             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; border: 3px double #facc15; border-radius: 4px;
+             padding: .55rem 1.1rem; margin: 0 0 1.25rem; overflow-x: auto; }
+.artbanner-title { font-size: 1rem; letter-spacing: .1em; white-space: nowrap; }
+.artbanner-sub { font-size: .8rem; letter-spacing: .04em; opacity: .85;
+                 margin-top: .35rem; white-space: nowrap; }
 .shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: var(--line); white-space: nowrap; overflow: hidden;
              opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }
@@ -205,10 +208,10 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
 <body>
 <header>
   <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
-  <pre class="artbanner">╔═════════════════════════╗
-║ ░▒▓█ INTRA ARCHIVE █▓▒░ ║
-║ PLAYBACK RECORD         ║
-╚═════════════════════════╝</pre>
+  <div class="artbanner">
+  <div class="artbanner-title">░▒▓█ INTRA ARCHIVE █▓▒░</div>
+  <div class="artbanner-sub">PLAYBACK RECORD</div>
+</div>
   <h1>ink-and-echo — 2026-07-27 02:42</h1>
   <p class="archivist">▓▒░ RECORD RETRIEVED! ░▒▓ Subject: one (1) citizen. Task: <b>ink-and-echo</b>. Outcome: INCOMPLETE. The day ends. The record stays. I keep the incomplete ones TOO. ►► This record begins on the same morning as every other record. It is always the same morning. The citizen does not know. I know ◄◄</p>
   <p>A model plays Intra. It can see only the data a player can see. It keeps
