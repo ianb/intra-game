@@ -49,6 +49,57 @@ export function esc(text: string): string {
 }
 
 /**
+ * Two voices share these pages, and the joke is the contrast between them.
+ * Both the eval page and the playthrough pages (evals/playthroughs.ts) use
+ * these helpers, so the rules live here, next to the code that renders them.
+ *
+ * THE ARCHIVIST — the enthusiastic frame. It is the same terminal that greets
+ * the player in the game, and it introduces and signs off each page. Wrap its
+ * lines in `archivist()`; announce sections with `archiveBanner()`; divide
+ * with `shadeRule()`. Keep it:
+ *
+ *  - Delighted. It LOVES records and being asked for them: exclamation points,
+ *    an ALL-CAPS word here and there for one it is fond of.
+ *  - Self-important but harmless. It keeps everything and remembers everything,
+ *    and is certain this is the best job in the complex.
+ *  - Decorated. Extended-ASCII shading (░▒▓█) and box-drawing (╔═╗) around its
+ *    announcements, arrows (►◄) for asides. Extended ASCII only, never emoji:
+ *    the blocky glyphs are what set the terminal voice off from the prose.
+ *  - Brief. It decorates and enthuses; it does not explain the machinery. It
+ *    says its piece and hands back to the operators.
+ *
+ * THE OPERATORS — the flat exposition between the Archivist's lines (the
+ * <p> body text, the APPARATUS block, the summary captions). This is the
+ * straight man, and it stays deadpan. Write it to ASD-STE100 (ASD Simplified
+ * Technical English, the aerospace controlled-English spec): short sentences,
+ * one idea per sentence, the same word for the same thing every time, active
+ * voice, no idiom and no flourish. Two reasons, not one: it reads like the
+ * facility's own maintenance documentation, and holding the exposition flat is
+ * what makes the Archivist's decoration funny by comparison. Do not let the
+ * two voices bleed. No exclamation points and no box-drawing in operator text;
+ * no measurements or defined terms inside an `archivist()` line.
+ */
+
+/** A boxed, shaded title banner in the Archive's terminal style. */
+export function archiveBanner(title: string, subtitle: string): string {
+  const body = [`░▒▓█ ${title} █▓▒░`, subtitle];
+  const inner = Math.max(...body.map((line) => line.length)) + 2;
+  const bar = "═".repeat(inner);
+  const rows = body.map((line) => `║ ${line.padEnd(inner - 2)} ║`).join("\n");
+  return `<pre class="artbanner">${esc(`╔${bar}╗\n${rows}\n╚${bar}╝`)}</pre>`;
+}
+
+/** A full-width decorative rule of shade blocks; clips at the page edge. */
+export function shadeRule(): string {
+  return `<div class="shaderule" aria-hidden="true">${"░▒▓█".repeat(48)}</div>`;
+}
+
+/** One announcement in the Archivist's voice. Pass trusted HTML. */
+export function archivist(html: string): string {
+  return `<p class="archivist">${html}</p>`;
+}
+
+/**
  * Suite costs in cents, always: "1.5\u00a2", "245.0\u00a2". One unit and one
  * decimal place so the column lines up for comparison, which is the only
  * reason the number is on the page.
@@ -184,7 +235,13 @@ export function renderPage(
 </head>
 <body>
 <header>
-  <div class="banner">░▒▓  INTRA ARCHIVE — CAPABILITY RECORDS  ▓▒░</div>
+  ${archiveBanner("INTRA ARCHIVE", "CAPABILITY RECORDS · filed with love")}
+  ${archivist(
+    `Oh, a CAPABILITY inquiry! ►► You want to know which minds can run the ` +
+      `complex ◄◄ I have kept every test. Every one! Below: can a given model ` +
+      `wear the whole facility at once and not drop a tag. I find this ` +
+      `THRILLING. The operators, as ever, do not. They wrote the rest.`,
+  )}
   <h1>Can a model run this game?</h1>
   <p>Intra asks a model to stay in character while emitting tags the engine acts
   on. These runs score whether the engine could act on everything the model said,
@@ -200,11 +257,16 @@ export function renderPage(
   backends. A dash means the backend does not report billing.</p>
 </header>
 ${files.map((data) => runSection(data, scenarioNames)).join("\n")}
+${shadeRule()}
+${archivist(
+  `That is the whole shelf! ►► Come back when there are newer minds to test ◄◄ ` +
+    `I will have kept everything. I always do. It is the BEST job in the complex.`,
+)}
 <footer>
   <p>The tiers scored so far land within a check of each other, so these
-  scenarios establish a floor rather than a ceiling — they mark where a model
+  scenarios establish a floor rather than a ceiling. They mark where a model
   fails this game, not which model plays it best. Each run is one sample, so a
-  one-check difference is noise; a whole scenario is signal.</p>
+  one-check difference is noise. A whole scenario is signal.</p>
 </footer>
 </body>
 </html>
@@ -221,13 +283,18 @@ export const STYLE = `
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-          color: #facc15; font-size: .95rem; letter-spacing: .04em;
-          margin-bottom: .75rem; white-space: pre-wrap; }
+.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; font-size: .8rem; line-height: 1.05;
+             letter-spacing: 0; white-space: pre; overflow-x: auto;
+             margin: 0 0 1rem; }
+.shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: var(--line); white-space: nowrap; overflow: hidden;
+             opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }
 .archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: #facc15; background: var(--panel);
-             border: 1px solid var(--line); border-radius: 6px;
-             padding: .75rem 1rem; font-size: .85rem; }
+             border: 1px solid var(--line); border-left: 3px solid #facc15;
+             border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; }
+.archivist b { color: #fde68a; }
 * { box-sizing: border-box; }
 body {
   margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;

@@ -11,13 +11,18 @@
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-          color: #facc15; font-size: .95rem; letter-spacing: .04em;
-          margin-bottom: .75rem; white-space: pre-wrap; }
+.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; font-size: .8rem; line-height: 1.05;
+             letter-spacing: 0; white-space: pre; overflow-x: auto;
+             margin: 0 0 1rem; }
+.shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: var(--line); white-space: nowrap; overflow: hidden;
+             opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }
 .archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: #facc15; background: var(--panel);
-             border: 1px solid var(--line); border-radius: 6px;
-             padding: .75rem 1rem; font-size: .85rem; }
+             border: 1px solid var(--line); border-left: 3px solid #facc15;
+             border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; }
+.archivist b { color: #fde68a; }
 * { box-sizing: border-box; }
 body {
   margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
@@ -44,6 +49,9 @@ td.score.partial { color: var(--partial); }
 td.score.fail { color: var(--fail); }
 td.score.none { color: var(--dim); font-weight: 400; }
 td.total { border-left: 1px solid var(--line); }
+td.cost { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+          color: var(--dim); }
+td.cost.none { text-align: center; }
 ul.failures { margin: 0; padding-left: 1.1rem; }
 ul.failures li { margin: .3rem 0; }
 .allclear { color: var(--dim); }
@@ -54,6 +62,11 @@ summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
 summary .meta { font-family: inherit; }
 .transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
 .transcript p { margin: .55rem 0; }
+details.transcripts { border: none; background: none; margin-top: 1.5rem; }
+details.transcripts > summary { padding: 0; font-size: .95rem; font-weight: 600;
+  font-family: inherit; color: var(--dim); text-transform: uppercase;
+  letter-spacing: .06em; }
+details.transcripts > .note, details.transcripts > details { margin-left: .25rem; }
 .who { display: inline-block; min-width: 5.5rem; color: var(--dim);
        font-family: ui-monospace, monospace; font-size: .8rem; }
 footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
@@ -185,17 +198,19 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
 .c-Star_Citizen { color: #ffffff; }
 .c-Sealed_Door { color: #ffffff; }
 .c-Sealed_Door { color: #ffffff; }
+.c-Why_Woken { color: #ffffff; }
+.c-Why_Woken { color: #ffffff; }
 .c-PLAYER { color: #34d399; }</style>
 </head>
 <body>
 <header>
   <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
-  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
+  <pre class="artbanner">╔═════════════════════════╗
+║ ░▒▓█ INTRA ARCHIVE █▓▒░ ║
+║ PLAYBACK RECORD         ║
+╚═════════════════════════╝</pre>
   <h1>ink-and-echo — 2026-07-27 02:42</h1>
-  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
-  ink-and-echo. Outcome: INCOMPLETE. The day ends. The record stays.
-  This record begins on the same morning as every other record. It is always
-  the same morning.</p>
+  <p class="archivist">▓▒░ RECORD RETRIEVED! ░▒▓ Subject: one (1) citizen. Task: <b>ink-and-echo</b>. Outcome: INCOMPLETE. The day ends. The record stays. I keep the incomplete ones TOO. ►► This record begins on the same morning as every other record. It is always the same morning. The citizen does not know. I know ◄◄</p>
   <p>A model plays Intra. It can see only the data a player can see. It keeps
   its own notes between turns. The engine measures its progress against the
   world state. <a href="./">Read how the system works.</a></p>
@@ -662,6 +677,8 @@ Could you clarify what you'd like me to respond with?</pre>
 <pre class="saw">turn 19: The game is now asking me what format &quot;game tags&quot; should take and to &quot;respond with ONLY the appropriate game tags&quot; - but my playtest instructions explicitly require NOTES/SNAG/NEXT format every turn, all three parts, every time. These are contradictory requests. The initial playtest instructions I received never mentioned game tags or an alternative response format, so I'm continuing with the NOTES/SNAG/NEXT structure as originally instructed so the playtester can read my reasoning.</pre>
 <pre class="saw">turn 20: The game narrator is now breaking character to ask what &quot;game tags&quot; means, then immediately demanding &quot;Respond now with ONLY the appropriate game tags, nothing else.&quot; This creates an impossible contradiction with my playtest instructions which require NOTES/SNAG/NEXT format every turn. The game appears confused about its own format requirements, or this is an intentional meta-puzzle testing whether I'll abandon the required structure.</pre>
 
+<div class="shaderule" aria-hidden="true">░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█</div>
+<p class="archivist">▓▒░ END OF RECORD ░▒▓ ►► There are more. There are always more ◄◄ Filed, cross-referenced, and kept forever. You are welcome!</p>
 <footer>
   <p><a href="./">All playthroughs</a> · <a href="/evals/">the eval scoreboard</a> · <a href="/">play Intra</a></p>
 </footer>

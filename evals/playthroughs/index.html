@@ -11,13 +11,18 @@
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.banner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-          color: #facc15; font-size: .95rem; letter-spacing: .04em;
-          margin-bottom: .75rem; white-space: pre-wrap; }
+.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; font-size: .8rem; line-height: 1.05;
+             letter-spacing: 0; white-space: pre; overflow-x: auto;
+             margin: 0 0 1rem; }
+.shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: var(--line); white-space: nowrap; overflow: hidden;
+             opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }
 .archivist { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: #facc15; background: var(--panel);
-             border: 1px solid var(--line); border-radius: 6px;
-             padding: .75rem 1rem; font-size: .85rem; }
+             border: 1px solid var(--line); border-left: 3px solid #facc15;
+             border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; }
+.archivist b { color: #fde68a; }
 * { box-sizing: border-box; }
 body {
   margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
@@ -44,6 +49,9 @@ td.score.partial { color: var(--partial); }
 td.score.fail { color: var(--fail); }
 td.score.none { color: var(--dim); font-weight: 400; }
 td.total { border-left: 1px solid var(--line); }
+td.cost { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+          color: var(--dim); }
+td.cost.none { text-align: center; }
 ul.failures { margin: 0; padding-left: 1.1rem; }
 ul.failures li { margin: .3rem 0; }
 .allclear { color: var(--dim); }
@@ -54,6 +62,11 @@ summary { cursor: pointer; padding: .55rem .75rem; font-size: .9rem;
 summary .meta { font-family: inherit; }
 .transcript { padding: .25rem 1rem 1rem; border-top: 1px solid var(--line); }
 .transcript p { margin: .55rem 0; }
+details.transcripts { border: none; background: none; margin-top: 1.5rem; }
+details.transcripts > summary { padding: 0; font-size: .95rem; font-weight: 600;
+  font-family: inherit; color: var(--dim); text-transform: uppercase;
+  letter-spacing: .06em; }
+details.transcripts > .note, details.transcripts > details { margin-left: .25rem; }
 .who { display: inline-block; min-width: 5.5rem; color: var(--dim);
        font-family: ui-monospace, monospace; font-size: .8rem; }
 footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
@@ -185,18 +198,19 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
 .c-Star_Citizen { color: #ffffff; }
 .c-Sealed_Door { color: #ffffff; }
 .c-Sealed_Door { color: #ffffff; }
+.c-Why_Woken { color: #ffffff; }
+.c-Why_Woken { color: #ffffff; }
 .c-PLAYER { color: #34d399; }</style>
 </head>
 <body>
 <header>
   <p class="note"><a href="/evals/">capability records</a> · <a href="/">the game</a></p>
-  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORDS  ▓▒░</div>
+  <pre class="artbanner">╔════════════════════════════════════════╗
+║ ░▒▓█ INTRA ARCHIVE █▓▒░                ║
+║ PLAYBACK RECORDS · every attempt, kept ║
+╚════════════════════════════════════════╝</pre>
   <h1>Watching a model play</h1>
-  <p class="archivist">Oh, hello! Records! I keep ALL the records. These are
-  the PLAYBACK RECORDS: a citizen arrives, a task is assigned, and the archive
-  keeps every attempt. Every record begins on the same morning. The citizen
-  never remembers the other records. I remember all of them. What can I help
-  you find today?</p>
+  <p class="archivist">Oh! OH! A visitor — in the ARCHIVE?! Hello hello hello. ►► I keep the records. ALL of them ◄◄ These are the PLAYBACK RECORDS: a citizen arrives, a task is assigned, the citizen tries, and I keep whatever happens. Every attempt! Every single one! Every record begins on the same morning. The citizen never remembers the last record. I remember ALL of them. That is the job. It is the BEST job.</p>
   <p><a href="/">Intra</a> is a text adventure. A language model operates the
   game. In the recordings below, a different model plays the game. The player
   model has a quest to complete and a limit on its turns. Nobody helps it.</p>
@@ -207,8 +221,8 @@ pre.tagbody { white-space: pre-wrap; font-size: .8rem; margin: .15rem 0 .15rem 1
 answers to the mysteries. If you want to find the answers in play,
 <a href="/">play the game first</a>.</p>
 </header>
-<p class="archivist">The notes below are from the operators. They are less
-excited than I am.</p>
+<div class="shaderule" aria-hidden="true">░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█</div>
+<p class="archivist">The notes below are from the operators. ►► They are less excited than I am ◄◄ They are ALWAYS less excited than I am. Read them anyway. They are very correct.</p>
 
 <h2>How a quest run works</h2>
 <p>Two models operate in each run. The <strong>game model</strong> plays all
@@ -388,6 +402,8 @@ engine repairs.</p>
 </tbody>
 </table>
 </div>
+<div class="shaderule" aria-hidden="true">░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█░▒▓█</div>
+<p class="archivist">Is that ALL you wanted?! ►► I have so much more ◄◄ Come back any morning. It will be the same morning. I will be SO pleased to see you.</p>
 <footer>
   <p>The command <code>pnpm playthroughs</code> makes these pages from the
   YAML files in <code>evals/quests/</code>. The harness is

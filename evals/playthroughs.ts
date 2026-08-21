@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import { entities } from "../lib/game/content";
 import { parseTags, serializeAttrs } from "../lib/parsetags";
-import { esc, STYLE } from "./page";
+import { archiveBanner, archivist, esc, shadeRule, STYLE } from "./page";
 
 /**
  * The game's entity colors, carried onto these pages: every character and
@@ -360,12 +360,14 @@ function runPage(named: NamedRun): string {
 <body>
 <header>
   <p class="note"><a href="./">all records</a> · <a href="/evals/">capability records</a> · <a href="/">the game</a></p>
-  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORD  ▓▒░</div>
+  ${archiveBanner("INTRA ARCHIVE", "PLAYBACK RECORD")}
   <h1>${esc(run.quest)} — ${esc(date)}</h1>
-  <p class="archivist">RECORD RETRIEVED! Subject: one (1) citizen. Task:
-  ${esc(run.quest)}. Outcome: ${run.solved ? "TASK COMPLETE! Wonderful!" : "INCOMPLETE. The day ends. The record stays."}
-  This record begins on the same morning as every other record. It is always
-  the same morning.</p>
+  ${archivist(
+    `▓▒░ RECORD RETRIEVED! ░▒▓ Subject: one (1) citizen. Task: <b>${esc(run.quest)}</b>. ` +
+      `Outcome: ${run.solved ? "TASK COMPLETE! Oh, WELL done, little citizen!" : "INCOMPLETE. The day ends. The record stays. I keep the incomplete ones TOO."} ` +
+      `►► This record begins on the same morning as every other record. It is ` +
+      `always the same morning. The citizen does not know. I know ◄◄`,
+  )}
   <p>A model plays Intra. It can see only the data a player can see. It keeps
   its own notes between turns. The engine measures its progress against the
   world state. <a href="./">Read how the system works.</a></p>
@@ -388,6 +390,11 @@ do not have engine records.</p>`
 ${run.log.map(turnBlock).join("\n")}
 ${snags}
 ${error}
+${shadeRule()}
+${archivist(
+  `▓▒░ END OF RECORD ░▒▓ ►► There are more. There are always more ◄◄ ` +
+    `Filed, cross-referenced, and kept forever. You are welcome!`,
+)}
 <footer>
   <p><a href="./">All playthroughs</a> · <a href="/evals/">the eval scoreboard</a> · <a href="/">play Intra</a></p>
 </footer>
@@ -421,13 +428,16 @@ function indexPage(runs: NamedRun[]): string {
 <body>
 <header>
   <p class="note"><a href="/evals/">capability records</a> · <a href="/">the game</a></p>
-  <div class="banner">░▒▓  INTRA ARCHIVE — PLAYBACK RECORDS  ▓▒░</div>
+  ${archiveBanner("INTRA ARCHIVE", "PLAYBACK RECORDS · every attempt, kept")}
   <h1>Watching a model play</h1>
-  <p class="archivist">Oh, hello! Records! I keep ALL the records. These are
-  the PLAYBACK RECORDS: a citizen arrives, a task is assigned, and the archive
-  keeps every attempt. Every record begins on the same morning. The citizen
-  never remembers the other records. I remember all of them. What can I help
-  you find today?</p>
+  ${archivist(
+    `Oh! OH! A visitor — in the ARCHIVE?! Hello hello hello. ►► I keep the ` +
+      `records. ALL of them ◄◄ These are the PLAYBACK RECORDS: a citizen ` +
+      `arrives, a task is assigned, the citizen tries, and I keep whatever ` +
+      `happens. Every attempt! Every single one! Every record begins on the ` +
+      `same morning. The citizen never remembers the last record. I remember ` +
+      `ALL of them. That is the job. It is the BEST job.`,
+  )}
   <p><a href="/">Intra</a> is a text adventure. A language model operates the
   game. In the recordings below, a different model plays the game. The player
   model has a quest to complete and a limit on its turns. Nobody helps it.</p>
@@ -436,8 +446,12 @@ function indexPage(runs: NamedRun[]): string {
   together with the good runs, because the failed runs show more.</p>
   ${SPOILERS}
 </header>
-<p class="archivist">The notes below are from the operators. They are less
-excited than I am.</p>
+${shadeRule()}
+${archivist(
+  `The notes below are from the operators. ►► They are less excited than I ` +
+    `am ◄◄ They are ALWAYS less excited than I am. Read them anyway. They are ` +
+    `very correct.`,
+)}
 ${APPARATUS}
 <h2>The runs</h2>
 <p>The table shows all the recorded runs. A failed run has value. One 20-turn
@@ -452,6 +466,11 @@ ${rows}
 </tbody>
 </table>
 </div>
+${shadeRule()}
+${archivist(
+  `Is that ALL you wanted?! ►► I have so much more ◄◄ Come back any morning. ` +
+    `It will be the same morning. I will be SO pleased to see you.`,
+)}
 <footer>
   <p>The command <code>pnpm playthroughs</code> makes these pages from the
   YAML files in <code>evals/quests/</code>. The harness is
