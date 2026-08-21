@@ -149,7 +149,7 @@ export const Why_Woken = new WhyWokenMystery({
     "PLAYER.profession",
   ],
   introduction: `
-  2370. Three hundred years asleep. Then on one particular morning somebody decided you were done sleeping.
+  2370. You went to sleep in 2038. To you it was one night. Then somebody decided this was the morning you'd wake up.
 
   Why you? Why now?
   `,

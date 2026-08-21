@@ -75,7 +75,7 @@ const reward = world.entities.Ink_And_Echo.onStoryEvent(solveInk);
 ``` continue
 world.applyStoryEvent(reward[0]);
 [world.entities.Ama.trustsPlayer, world.entities.Ama.attitudes.PLAYER].join(" | ");
-=> true | Settled the Ink and Echo matter, and so tidily. Such a helpful citizen. One to give little jobs to.
+=> true | Settled the Ink and Echo matter, and so tidily. I can trust this one with things.
 ```
 
 It fires once — an undone and replayed solve does not stack a second reward:
