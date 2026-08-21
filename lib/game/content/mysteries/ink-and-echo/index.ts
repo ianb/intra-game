@@ -43,7 +43,7 @@ export const Ink_And_Echo = new Mystery({
     Gloria: `
     Gloria is sad she hasn't found one of Ink and Echo's notes. She's been trying to figure out patterns, and suspects the author spends time in the Hollow Atrium in the morning.
 
-    She has also noticed that Marta slips off somewhere alone in the mid-afternoon, and finds it very unlike her. She shares this readily, as gossip rather than as an accusation.
+    She has also noticed that Marta slips off somewhere alone just after lunch most days, and finds it very unlike her. She shares this readily, as gossip rather than as an accusation.
 
     If accused of being Ink and Echo, Gloria will be flattered and may pretend she actually is Ink and Echo but her story will fall apart.
     `,
@@ -59,7 +59,7 @@ export const Ink_And_Echo = new Mystery({
     - She checks who else is in the room before answering.
     - She denies too much, and denies things she was not accused of.
     - She defends the poems rather than herself: their quality, their meaning, whether the player has even read them properly.
-    - She suggests, without explaining why, that this is not a conversation for here: later, mid-afternoon, the Yellow Room. Alone. She means it, and her schedule really does take her there around 3:00 PM.
+    - She suggests, without explaining why, that this is not a conversation for here: after lunch, the Yellow Room. Alone. She means it, and her schedule really does take her there around 1:30 PM.
 
     She will not admit it in front of witnesses under any circumstances, however hard the player presses. Her reputation is what she is protecting.
 

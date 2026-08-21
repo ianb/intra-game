@@ -76,32 +76,8 @@ export const martaSchedule: PersonScheduleTemplateType[] = [
     minuteLength: 90,
   },
   {
-    id: "marta-afternoon-activity",
-    time: time("1:30 PM"),
-    activity: "Inspire Others in the Solitude Cubes",
-    description:
-      "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
-    inside: ["Solitude_Cubes"],
-    attentive: true,
-    early: 5,
-    late: 10,
-    minuteLength: 30,
-  },
-  {
-    id: "marta-late-afternoon-activity",
-    time: time("2:00 PM"),
-    activity: "Inspire Others in the Solitude Cubes",
-    description:
-      "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
-    inside: ["Ill_Fitting_Lounge"],
-    attentive: true,
-    early: 5,
-    late: 10,
-    minuteLength: 60,
-  },
-  {
     id: "marta-secret-self-doubt",
-    time: time("3:00 PM"),
+    time: time("1:30 PM"),
     activity: "Secret Self-Doubt Session",
     description:
       "In a rare moment of vulnerability, Marta slips into the Yellow Room alone and practices smiling, wondering if anyone truly notices her efforts.",
@@ -115,8 +91,32 @@ export const martaSchedule: PersonScheduleTemplateType[] = [
       "Marta struggles with self-worth, despite her confident exterior.",
   },
   {
+    id: "marta-afternoon-activity",
+    time: time("2:15 PM"),
+    activity: "Inspire Others in the Solitude Cubes",
+    description:
+      "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
+    inside: ["Solitude_Cubes"],
+    attentive: true,
+    early: 5,
+    late: 10,
+    minuteLength: 30,
+  },
+  {
+    id: "marta-late-afternoon-activity",
+    time: time("2:45 PM"),
+    activity: "Inspire Others in the Solitude Cubes",
+    description:
+      "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
+    inside: ["Ill_Fitting_Lounge"],
+    attentive: true,
+    early: 5,
+    late: 10,
+    minuteLength: 60,
+  },
+  {
     id: "marta-later-afternoon-activity",
-    time: time("3:30 PM"),
+    time: time("3:45 PM"),
     activity: "Inspire Others in the Solitude Cubes",
     description:
       "Marta offers advice to those 'reflecting' in the Solitude Cubes, suggesting they aim for 'Star Citizen' levels of self-improvement.",
