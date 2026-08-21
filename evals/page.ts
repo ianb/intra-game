@@ -307,10 +307,14 @@ a { color: #67e8f9; }
 .archivist b { color: #fde68a; }
 * { box-sizing: border-box; }
 body {
-  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 66rem;
   background: var(--bg); color: var(--fg);
   font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+/* Keep running prose at a readable measure even though the page is wider to
+   give the score tables room. Paragraphs cap; tables, .scroller, and the
+   <pre> transcript blocks keep the full width. */
+p { max-width: 48rem; }
 h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
 h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
 h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
@@ -320,7 +324,7 @@ header p { max-width: 46rem; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
 .scroller { overflow-x: auto; margin: .5rem 0 1rem; }
 table { width: 100%; border-collapse: collapse; min-width: 30rem; }
-th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+th, td { padding: .45rem .5rem; border-bottom: 1px solid var(--line); text-align: left; }
 thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
            color: var(--dim); font-weight: 600; }
 th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
