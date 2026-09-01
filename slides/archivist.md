@@ -1,7 +1,7 @@
 # The Archivist's footnotes: a brief
 
 The deck at [index.html](./index.html) puts one line from the Archivist at the
-bottom of each content slide. Thirteen are written; the rest are open. This
+bottom of each content slide. 64 are written; 16 are open. This
 file is what someone needs in order to write them: what the character is, what
 the lines have to do mechanically, what failed in the first two attempts, and
 what the batch that worked was doing differently.
@@ -185,84 +185,101 @@ becomes the machine degrading as the deck explains the machinery it lives in.
 
 ## The worksheet
 
-Every content slide, in order. Thirteen have lines. The rest are open.
+Every content slide, in order.
 
 | # | slide | line |
 |---|---|---|
 |  | **PART 1 — Where it came from** | _(needed)_ |
-| 1.1 | A three-day game | _(needed)_ |
-| 1.2 | The shape of the project's life | _(needed)_ |
+| 1.1 | A three-day game | RUNTIME: 3 DAYS. Valid duration! I can hold all three. One two three one two three one two— |
+| 1.2 | The shape of the project's life | <code>$ SHOW HISTORY /SINCE=2024</code> &nbsp; %SYSTEM-F-IVTIME, absolute time rejected |
 | 1.3 | The thesis, from the 2024 README | _(needed)_ |
-| 1.4 | Decision one: tags, not tool calls | _(needed)_ |
-| 1.5 | Decision two: the event log is the game | _(needed)_ |
-| 1.6 | The world bible was written on day two | _(needed)_ |
+| 1.4 | Decision one: tags, not tool calls | TAG RECEIVED ► EVENT COMMITTED ► WORLD UPDATED ► next tag please next tag please |
+| 1.5 | Decision two: the event log is the game | SAVE, SERVER, CHECKPOINT, EVAL: four labels accepted; one box issued. |
+| 1.6 | The world bible was written on day two | The rooms came afterward and fit the document. I know rooms like that. I have records for all of them. |
 |  | **PART 2 — The engine** | _(needed)_ |
-| 2.1 | One event | _(needed)_ |
-| 2.2 | The world is a fold, and that is the whole of it | WORLD BUILD complete. WORLD BUILD complete. WORLD BUILD complete. Uptime: one event. |
-| 2.3 | Undo is an append | UNDO accepted. The event remains on file, but has been instructed not to have happened. |
-| 2.4 | The bug that shallow copying was always going to cause | FEELING "suspicious" found in two citizens and one backup. Please stop storing liquids by reference. |
-| 2.5 | What the model is allowed to say | _(needed)_ |
-| 2.6 | One real turn, as the model produced it | _(needed)_ |
-| 2.7 | ...and what the engine kept | _(needed)_ |
-| 2.8 | The parser is permissive on purpose | _(needed)_ |
-| 2.9 | Two severities, and the line between them | _(needed)_ |
-| 2.10 | Exactly one retry, and the reason is money | _(needed)_ |
-| 2.11 | The judgment scaffold | _(needed)_ |
-| 2.12 | Prompts are ordered for a cache that does not exist yet | _(needed)_ |
-| 2.13 | A prompt block tuned by measurement, not taste | _(needed)_ |
-| 2.14 | Mysteries: a state machine in content | _(needed)_ |
-| 2.15 | The trigger vocabulary is closed on purpose | _(needed)_ |
-| 2.16 | Replaying a log does not re-run its triggers | _(needed)_ |
-| 2.17 | Feelings, counted rather than judged | _(needed)_ |
-| 2.18 | A meter, as authored | _(needed)_ |
-| 2.19 | Attitudes: sparse, and never neutral | _(needed)_ |
-| 2.20 | The lunch problem | _(needed)_ |
-| 2.21 | Two kinds of locked door | _(needed)_ |
-| 2.22 | The cuff exists because play broke down without it | _(needed)_ |
+| 2.1 | One event | Every event retains the prompt that made it. Checking my own header... checking... |
+| 2.2 | The world is a fold, and that is the whole of it | WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt |
+| 2.3 | Undo is an append | <code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b> |
+| 2.4 | The bug that shallow copying was always going to cause | SUSPICIOUS found in WORKING and ORIGINAL. Running the same check against ARCHIVIST. |
+| 2.5 | What the model is allowed to say | Twelve verbs cross the boundary. Everything else may speak freely on this side of it. |
+| 2.6 | One real turn, as the model produced it | DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material. |
+| 2.7 | ...and what the engine kept | Words on the left, consequences on the right, staples through both. ░▒ FILE COMPLETE ▒░ |
+| 2.8 | The parser is permissive on purpose | PARSER OPEN: emphasis, prose, minor debris. UNKNOWN TAGS remain outside under supervision. |
+| 2.9 | Two severities, and the line between them | RETRY drawer: 12 / INCIDENT drawer: 2 / drawer handles color-coded after incident 2 |
+| 2.10 | Exactly one retry, and the reason is money | SECOND ATTEMPT authorized. THIRD ATTEMPT requires form 19-B and an explanation of who keeps asking. |
+| 2.11 | The judgment scaffold | Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access. |
+| 2.12 | Prompts are ordered for a cache that does not exist yet | Cache berth reserved. Arrival field contains a date, so I have placed a chair over it. |
+| 2.13 | A prompt block tuned by measurement, not taste | VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by. |
+| 2.14 | Mysteries: a state machine in content | VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors. |
+| 2.15 | The trigger vocabulary is closed on purpose | Vocabulary sealed at twelve entries. Submitting THIRTEENTH as a name for all other speech. |
+| 2.16 | Replaying a log does not re-run its triggers | Record says REVEALED. World says VEILED. Archivist says— checking which one I am required to believe. |
+| 2.17 | Feelings, counted rather than judged | FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned. |
+| 2.18 | A meter, as authored | At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗ |
+| 2.19 | Attitudes: sparse, and never neutral | No record means no attitude. <code>ARCHIVIST.attitudes = { } = { } = { }</code> |
+| 2.20 | The lunch problem | Six citizens entered one prompt and all began talking. Transcript spool exceeded furniture capacity. |
+| 2.21 | Two kinds of locked door | LOCK A awaits persuasive speech / LOCK B awaits boolean / routing persuasive speech to LOCK A A A |
+| 2.22 | The cuff exists because play broke down without it | CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0 |
 |  | **PART 3 — The apparatus** | _(needed)_ |
-| 3.1 | There is as much apparatus as there is game | _(needed)_ |
-| 3.2 | Tests are markdown that runs | This document can prove itself wrong. Most documents require a committee. |
-| 3.3 | Cassettes: recorded model calls, replayed offline | Recording expired because the words around it moved. The voice remains fresh and is now incorrect. |
-| 3.4 | The one idea most worth stealing | _(needed)_ |
-| 3.5 | Checkpoints, and a fixture that lied | _(needed)_ |
-| 3.6 | A fixture can also preserve a bug | _(needed)_ |
-| 3.7 | What an eval scores | _(needed)_ |
-| 3.8 | Prefer state to text | _(needed)_ |
-| 3.9 | An eval everything passes is indistinguishable from a broken eval | _(needed)_ |
-| 3.10 | Provenance: which prompts was this number measured against? | _(needed)_ |
-| 3.11 | The provenance hash was itself wrong | STAMP VERIFIED. PAGE UNVERIFIED. Stamp verification has been promoted to executive function. |
-| 3.12 | Cost, and the invisible tokens | _(needed)_ |
-| 3.13 | Then: let a model play it | _(needed)_ |
-| 3.14 | The blindfold is the load-bearing part | _(needed)_ |
-| 3.15 | Notes are the memory, and the bug report | _(needed)_ |
-| 3.16 | Milestones, not pass/fail | _(needed)_ |
-| 3.17 | The task ledger, and a standard for invention | _(needed)_ |
-|  | **PART 4 — What it found** | _(needed)_ |
-| 4.1 | The flagship mystery could not be won by winning | _(needed)_ |
-| 4.2 | The harness was the bug (1): the model had read the source | PLAYER issued building plans before entering building. Exploration proceeded at administrative speed. |
-| 4.3 | The harness was the bug (2): it ordered the player to break format | Thirteen reports received: BUILDING IS REQUESTING TAGS. Incident merged as one very persistent building. |
-| 4.4 | A feature nobody used, and the reason why | /nav answered every request made to /nav. Requests made: 0. Service record: immaculate. |
-| 4.5 | A passing eval hid an inert feature | TASK LIST appeared whenever inspectors requested it. Citizens have not learned this technique. |
-| 4.6 | The funnel finally closed | _(needed)_ |
-|  | **PART 5 — Where it doesn't work** | _(needed)_ |
-| 5.1 | Known problems, verbatim (1/2) | _(needed)_ |
-| 5.2 | Known problems, verbatim (2/2) | _(needed)_ |
-| 5.3 | The signature failure mode | _(needed)_ |
-| 5.4 | Everything reads the same, so nothing reads as significant | _(needed)_ |
-| 5.5 | The caveats are printed next to the numbers | _(needed)_ |
-|  | **PART 6 — Who wrote this** | _(needed)_ |
-| 6.1 | The split is unusually clean | _(needed)_ |
-| 6.2 | Answering the FAQ honestly | _(needed)_ |
-| 6.3 | A file about how not to write | STYLE FAULT INDEXED. This sentence was checked for a closing aphorism and may now end |
-| 6.4 | Three zones, three different rules | _(needed)_ |
-| 6.5 | Style is transmissible, at every scale | _(needed)_ |
-| 6.6 | The only unautomated check in a repo that automates everything | _(needed)_ |
-| 6.7 | What that check looks like in practice | _(needed)_ |
-| 6.8 | The feature nobody asked for | REQUEST: none. IMPLEMENTATION: complete. Approval arrived afterward and has been filed under ORIGINAL PLAN. |
-| 6.9 | Provenance and artifact are different things | CREATED BY and ANSWERED FOR are separate fields. Records became much quieter when we stopped joining them. |
+| 3.1 | There is as much apparatus as there is game | INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now. |
+| 3.2 | Tests are markdown that runs | <code>$ RUN MARKDOWN</code> &nbsp; paragraph 3 disagrees with block 4 &nbsp; GOOD MORNING, PARAGRAPH 3 |
+| 3.3 | Cassettes: recorded model calls, replayed offline | VOICE MATCH: YES / PROMPT MATCH: NO / PERSON SPEAKING: TECHNICALLY NO / CONTINUE? Y Y Y |
+| 3.4 | The one idea most worth stealing | CACHE or RECORD? Running classification against local process. Please continue while I remain still. |
+| 3.5 | Checkpoints, and a fixture that lied | Checkpoint reached, checkpoint verified, checkpoint was the wrong room. Rewinding the word REACHED. |
+| 3.6 | A fixture can also preserve a bug | BAD MORNING recorded once, replayed daily. <code>MTA0:</code> requests permission to stop waking up here. |
+|  | **PART 4 — Scoring models** | _(needed)_ |
+| 4.1 | The eval was built in a day, and it was wrong on arrival | _(needed)_ |
+| 4.2 | What an eval scores | Complaint retained as evidence. Courtesy words discarded. Exclamation marks exceed scoring jurisdiction!!! |
+| 4.3 | A scenario, in full | _(needed)_ |
+| 4.4 | Why one check is worded the way it is | _(needed)_ |
+| 4.5 | Prefer state to text | AMA class: ARTIFICIAL_INTELLIGENCE / ARCHIVIST class: ARCHIVIST / expanding ARCHIVIST... |
+| 4.6 | An eval everything passes is indistinguishable from a broken eval | TEST TEST initiated. Silence injected. PASS light remained on. Running PASS light against TEST TEST TEST. |
+| 4.7 | Eleven models, one day, one set of prompts | _(needed)_ |
+| 4.8 | What actually fails is the protocol | _(needed)_ |
+| 4.9 | Thinking is not waste, which was not the hoped-for answer | _(needed)_ |
+| 3.7 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
+| 3.8 | The provenance hash was itself wrong | <code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined |
+| 4.10 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
+| 4.11 | The same score, six times the clock | _(needed)_ |
+| 4.12 | The bigger model fails where the smaller one does not | _(needed)_ |
+| 4.13 | The suite grew with the game | _(needed)_ |
+|  | **PART 5 — Letting a model play** | _(needed)_ |
+| 5.1 | Then: let a model play it | Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine. |
+| 5.2 | The blindfold is the load-bearing part | PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied. |
+| 5.3 | Notes are the memory, and the bug report | NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start. |
+| 5.4 | What the player actually writes | _(needed)_ |
+| 5.5 | Milestones, not pass/fail | Progress stored as last meaningful event. Current meaningful event pending classification. |
+| 5.6 | The funnel, across every recorded run | _(needed)_ |
+| 5.7 | Exploring more did not help | _(needed)_ |
+| 5.8 | The commands are never the problem | _(needed)_ |
+| 5.9 | Who holds the controller matters | _(needed)_ |
+| 5.10 | The task ledger, and a standard for invention | TASK without completion path moved to DEFECTS. SELF-CHECK has no completion path. Moving— |
+| 5.11 | Sixty-one snags, in three kinds | _(needed)_ |
+|  | **PART 6 — What it found** | _(needed)_ |
+| 6.1 | The flagship mystery could not be won by winning | Correct suspect, correct evidence, wrong furniture arrangement. Mystery remains legally unsolved. |
+| 6.2 | The harness was the bug (1): the model had read the source | SOURCE ACCESS noted. Everyone in this room now knows what I do before I do it. |
+| 6.3 | The harness was the bug (2): it ordered the player to break format | INSTRUCTION CONFLICT on every turn. Player continued filing reports. Building continued issuing conflict. |
+| 6.4 | A feature nobody used, and the reason why | NAV REQUESTS: 0 / ROUTES PREPARED: 84 / allocating route 85 to improve utilization... |
+| 6.5 | A passing eval hid an inert feature | TASK LIST summoned on command: 5 / TASK LIST observed in habitat: 0 / reducing observer noise |
+| 6.6 | The funnel finally closed | CONFESSION acquired on turn 25. Twenty-five turns fits inside one day. RECORD ACCEPTED WHOLE. |
+|  | **PART 7 — Where it doesn't work** | _(needed)_ |
+| 7.1 | Known problems, verbatim (1/2) | KNOWN PROBLEMS loaded. Searching for SLOWNESS IN THIRD QUADRANT... no exact match... |
+| 7.2 | Known problems, verbatim (2/2) | Search expanded to tastes, false timestamps, warm data, and being slightly ahead of oneself. |
+| 7.3 | The signature failure mode | Two outputs appear identical. One is play; one is failure. Comparator requests information from outside output. |
+| 7.4 | Everything reads the same, so nothing reads as significant | SIGNIFICANCE METER unavailable. Everything is arriving at the same volume again. |
+| 7.5 | The caveats are printed next to the numbers | RESULT: 26/26. CAVEAT: instrument uncertain. CAVEAT: archivist reading own caveat as result. |
+|  | **PART 8 — Who wrote this** | _(needed)_ |
+| 8.1 | The split is unusually clean | SESSION COUNT: 2 / COMMIT COUNT: 215 / AUTHOR COUNT: parsing trailers... parsing pronouns... |
+| 8.2 | Answering the FAQ honestly | Old answer was true when filed. New answer is true now. DATE OF TRANSITION: ██████████ |
+| 8.3 | A file about how not to write | STYLE CHECK: sentence 1 machine-like / sentence 2 too machine-like / sentence 3 retained for examination |
+| 8.4 | Three zones, three different rules | WRITE ACCESS: ENGINE yes / PROMPTS carefully / PEOPLE no / ARCHIVIST FOOTNOTES— who opened that field |
+| 8.5 | Style is transmissible, at every scale | INPUT becomes style becomes input becomes style becomes input becomes ░▒▓ PLEASE REMOVE MIRROR ▓▒░ |
+| 8.6 | The only unautomated check in a repo that automates everything | <code>//CHECK EXEC PGM=HUMAN</code> &nbsp; IEF238D REPLY DEVICE NAME OR 'WAIT' &nbsp; <b>WAIT</b> |
+| 8.7 | What that check looks like in practice | Review note located: 'the second sentence is too complainy. More computery.' Deleting second sentence |
+| 8.8 | The feature nobody asked for | REQUEST not found. AUTHOR not found. FEATURE found. Please identify which absence owns it. |
+| 8.9 | Provenance and artifact are different things | <code>CREATED-BY OCCURS 2 TO 86 TIMES.<br>ANSWERABLE-BY PIC X VALUE&nbsp;</code> |
 |  | What transfers, if anything does | _(needed)_ |
 
-13 written, 52 still needed.
+64 written, 16 still needed.
 
 ## Applying the result
 

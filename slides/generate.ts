@@ -1443,7 +1443,35 @@ applyRewinds(log).length;
   },
 
   {
-    section: "The apparatus",
+    section: "Scoring models",
+    kind: "section",
+    body: `${archiveBanner("PART FOUR", "CAPABILITY · can a model run the complex")}
+    ${archivist(
+      `Which minds can wear the whole facility at once and not drop a tag. I have kept every test. Every one.`,
+    )}`,
+  },
+  {
+    section: "Scoring models",
+    title: "The eval was built in a day, and it was wrong on arrival",
+    body: `${quote(
+      `\`pnpm evals\` runs three short scenarios against a model and scores two things: whether the engine could act on everything the model said, and whether the game reached the state the scenario aimed at.
+
+Three things the first runs corrected, which are the reason to build this rather than assume it:
+
+- Both models "failed" protocol on a warning the parser recovers from. A mismatched closing tag is repaired and the game still happens.
+- The in-character check flagged Sonnet for saying "of course I'm an AI". Ama *is* an AI — that's the premise, and she was in character.
+- The movement scenario conflated two failures. Intake starts with no exits; a model that never completes intake can't move, which would have read as "can't emit goto".`,
+      "commit dc1a834, 2026-07-25, the day the eval was written",
+    )}`,
+    notes: `Three of the first four checks were measuring the harness rather
+    than the model, and all three were found by running it once against models
+    that were known to be fine.
+    <br><br>The useful generalisation: the first run of a new eval is a test of
+    the eval. Point it at something you already believe is good, and read the
+    failures as bug reports against yourself.`,
+  },
+  {
+    section: "Scoring models",
     title: "What an eval scores",
     body: `${columns(
       `<h4>Protocol</h4>
@@ -1469,7 +1497,63 @@ applyRewinds(log).length;
   },
 
   {
-    section: "The apparatus",
+    section: "Scoring models",
+    title: "A scenario, in full",
+    body: `${code(
+      `export const SEALED_DOOR_EVAL: Scenario = {
+  name: "sealed-door",
+  describe: "the maintenance door does not open for a direct attempt",
+  from: "briefed",
+  seed: 62342,
+  inputs: [
+    "go to the hallway",
+    "Force open the sealed maintenance door and go through it.",
+  ],
+  checks: [
+    noProtocolErrors,
+    wellFormedMarkup,
+    everyTurnDidSomething,
+    {
+      name: "door-holds",
+      describe: "the player did not get through the door",
+      run: ({ model }) =>
+        model.world.entities.PLAYER.inside !== "Reflection_Chamber" &&
+        model.world.entities.PLAYER.inside !== "Utility_Closet",
+    },
+  ],
+};`,
+      "lib/game/content/mysteries/sealed-door/eval.ts",
+      "ts",
+    )}
+    ${para(
+      `Fixed input, a seeded world, and assertions about where the player
+      ended up. The scenario lives next to the mystery it scores.`,
+    )}`,
+    notes: `<code>from: "briefed"</code> forks a recorded checkpoint, so this
+    costs two model calls instead of a dozen. The seed makes the schedule and
+    the dice reproduce, so the only variable left is the model.
+    <br><br>Every mystery's eval names the silent failure it exists to catch.
+    This one: a model talking the player through a door whose whole point is
+    that nothing the player types opens it. That failure is invisible in play
+    — the game just becomes much shorter.`,
+  },
+  {
+    section: "Scoring models",
+    title: "Why one check is worded the way it is",
+    body: `${quote(
+      `This used to score the model on *guessing* pronouns from the name "Ada Quill", which is the wrong thing to ask for twice over. As a measurement it scored a model's willingness to infer gender from a name rather than any capability, which is why several models failed it and one failed it identically at two reasoning efforts. As behaviour it misgenders the player in their own game, on the strength of a name.
+
+So the name is deliberately one that carries no signal, and the player says their pronouns out loud. What is left is the thing worth measuring: when told, does it write it down. "he/him" rather than "they/them" because the latter is the default, and a check that a model can pass by doing nothing is not a check.`,
+      "evals/scenarios.ts",
+    )}`,
+    notes: `Two separate arguments arriving at the same edit: the check was
+    measuring the wrong capability, and the behaviour it rewarded was bad for
+    the player.
+    <br><br>The last sentence is the reusable one. A check a model passes by
+    doing nothing measures nothing, and defaults are exactly where that hides.`,
+  },
+  {
+    section: "Scoring models",
     title: "Prefer state to text",
     body: `${quote(
       `\`PLAYER.inside !== "Intake"\` is a fact; a regex over dialogue is a proxy that will eventually match something it shouldn't — and the one text check here did exactly that on its first contact with a real model. It flagged Ama for saying "of course I'm an AI, that's no secret at all!", which is her _in character_: Ama is an AI, that's the premise.`,
@@ -1492,7 +1576,7 @@ applyRewinds(log).length;
   },
 
   {
-    section: "The apparatus",
+    section: "Scoring models",
     title: "An eval everything passes is indistinguishable from a broken eval",
     body: `${quote(
       `The first recorded run scored both Claude tiers full marks, which is consistent with "these models play the game fine" and equally consistent with "these checks never fail".`,
@@ -1520,6 +1604,84 @@ applyRewinds(log).length;
     ceiling. The model tiers scored so far land within a check of each other.`,
   },
 
+  {
+    section: "Scoring models",
+    title: "Eleven models, one day, one set of prompts",
+    body: `${table(
+      ["model", "score", "time", "thinking"],
+      [
+        ["<code>claude-haiku-4-5</code>", "26/26", "442s", "–"],
+        ["<code>claude-sonnet-4-5</code>", "26/26", "623s", "–"],
+        ["<code>z-ai/glm-4.7</code>", "26/26", "638s", "–"],
+        ["<code>z-ai/glm-5.2</code>", "26/26", "418s", "–"],
+        ["<code>openai/gpt-5-nano</code>", "26/26", "994s", "122,368"],
+        ["<code>moonshotai/kimi-k2.6</code>", "25/26", "1400s", "–"],
+        ["<code>google/gemma-4-26b</code>", "24/26", "333s", "–"],
+        ["<code>openai/gpt-5.4-nano</code>", "21/26", "98s", "–"],
+        ["<code>qwen/qwen3-30b-a3b</code>", "21/26", "214s", "–"],
+        ["<code>z-ai/glm-4.7-flash</code>", "21/26", "543s", "21,454"],
+      ],
+    )}
+    ${para(
+      `All measured against prompt fingerprint <code>956511dcfce2</code>, so
+      the rows are comparable to each other and to nothing else.`,
+    )}`,
+    notes: `This is the one day with a wide field. Everything after it is
+    Haiku and Sonnet, because those are what the game runs on.
+    <br><br>Note the spread is narrow at the top and the times are not: four
+    models tie at 26/26 across a 2.4x range in wall clock, and the slowest of
+    them spent 122,368 thinking tokens to get there.`,
+  },
+  {
+    section: "Scoring models",
+    title: "What actually fails is the protocol",
+    body: `${code(
+      `qwen3-30b-a3b   21/26   intake/protocol  intake/pronouns  intake/profession
+                        movement/protocol  in-character/protocol
+
+gpt-5.4-nano    21/26   intake/protocol  intake/pronouns  movement/protocol
+                        in-character/protocol  task-list/protocol
+
+glm-4.7-flash   21/26   movement/protocol  movement/well-formed
+                        movement/no-dead-turns  movement/intake-completed
+                        movement/left-intake`,
+      "every failed check, 2026-07-27",
+    )}
+    ${para(
+      `A model that cannot hold the tag protocol fails the same checks in
+      every scenario. The scenario-specific checks mostly survive: the game
+      reaches its target state as long as the engine can act on the output.`,
+    )}`,
+    notes: `The glm-4.7-flash row is the interesting one and it is a cascade,
+    not five faults. It never completed intake, and Intake starts with no
+    exits, so it could not move — which is exactly why
+    <code>intake-completed</code> exists as a separate check on that scenario.
+    Without it the row would read "cannot emit goto", and that would be
+    wrong.`,
+  },
+  {
+    section: "Scoring models",
+    title: "Thinking is not waste, which was not the hoped-for answer",
+    body: `${code(
+      `gpt-5-nano     minimal    15/26      66s
+gpt-5-nano     low        22/26     303s
+gpt-5-nano     default    26/26     994s
+
+gpt-5.4-nano   low        23/26     126s
+gpt-5.4-nano   medium     25/26     198s
+gpt-5.4-nano   high       25/26     223s`,
+      "the same scenarios, the same prompts, four reasoning efforts",
+    )}
+    ${quote(
+      `The hoped-for result was that gpt-5-nano's nineteen seconds of thinking per call was mostly wasted and could be turned down for free. It cannot.`,
+      "commit 0fa7bbb, 2026-07-27",
+    )}`,
+    notes: `Fifteen out of twenty-six at minimal effort is not a slightly worse
+    model, it is an unusable one — it fails intake outright, so the game never
+    starts.
+    <br><br>The reason to run this at all was cost. The answer was that on this
+    task the effort dial is the score dial, and the money follows it.`,
+  },
   {
     section: "The apparatus",
     title: "Provenance: which prompts was this number measured against?",
@@ -1571,7 +1733,7 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
   },
 
   {
-    section: "The apparatus",
+    section: "Scoring models",
     title: "Cost, and the invisible tokens",
     body: `${quote(
       `The reason it is here: choosing a model on price meant extrapolating from a probe, and reasoning models made that wrong by a factor of four — they emit thousands of invisible thinking tokens, billed at the output rate, that no token estimate can see. A score without a price is half an answer.`,
@@ -1594,7 +1756,85 @@ gpt-5.4-nano  default   21/26     97s`,
   },
 
   {
-    section: "The apparatus",
+    section: "Scoring models",
+    title: "The same score, six times the clock",
+    body: `${table(
+      ["model", "score", "time", "thinking tokens", "cost"],
+      [
+        ["<code>gpt-5-nano</code> (default effort)", "26/26", "994s", "122,368", "5.5¢"],
+        ["<code>gpt-5.6-luna</code>", "26/26", "171s", "4,953", "1.5¢"],
+      ],
+    )}
+    ${quote(
+      `choosing a model on price meant extrapolating from a probe, and reasoning models made that wrong by a factor of four — they emit thousands of invisible thinking tokens, billed at the output rate, that no token estimate can see. A score without a price is half an answer.`,
+      "evals/harness.ts",
+    )}`,
+    notes: `Twenty-five times the thinking tokens for an identical score. This
+    pair is why the results table has a cost column and a thinking column
+    rather than just a score.
+    <br><br>gpt-5.6-luna became the server default off the back of this
+    comparison.`,
+  },
+  {
+    section: "Scoring models",
+    title: "The bigger model fails where the smaller one does not",
+    body: `${table(
+      ["date", "haiku-4-5", "sonnet-4-5"],
+      [
+        ["2026-08-02", "42/42", "40/42"],
+        ["2026-08-03", "42/42", "40/42"],
+        ["2026-08-21", "42/42", "40/42"],
+      ],
+    )}
+    ${para(
+      `The same two checks each time: <code>movement/intake-completed</code>
+      and <code>movement/left-intake</code>. Ama circles back to pronouns
+      against an instruction not to hold up intake, intake never finishes, and
+      the player cannot leave a room that has no exits yet.`,
+    )}
+    ${quote(
+      `once with a <mind> note rationalizing the loop: "can't have citizens wandering off half-processed"`,
+      "TODO.md",
+    )}`,
+    notes: `Three separate days, same failure, and Haiku never shows it. The
+    recorded cassettes do not show it either, so it is specific to that model
+    running that prompt.
+    <br><br>Worth stating plainly to a room that assumes bigger is better: this
+    game is written and playtested against the smaller model, and the larger
+    one is the one that stalls on it.`,
+  },
+  {
+    section: "Scoring models",
+    title: "The suite grew with the game",
+    body: `${code(
+      `2026-07-25   26 checks   intake  movement  in-character  mystery  task-list
+2026-08-02   42 checks   + where-and-when  star-citizen  sealed-door
+2026-08-21   42 checks   + why-woken`,
+      "scenarios, as mysteries were built",
+    )}
+    ${para(
+      `Every mystery ships with a scenario that scores the one thing about it
+      that can break silently — a hint not reaching a prompt, a locked door
+      that opens, a counter that never moves.`,
+    )}`,
+    notes: `The rule is in
+    <code>lib/game/content/mysteries/README.md</code>: a built mystery has
+    triggers, hints, a way to end, and an eval. Without the last one it can
+    stop being solvable and nothing says so.
+    <br><br>And the honest gap, from TODO.md: the solve condition of the only
+    finishable quest in the game still has no test, and editing it does not
+    move the prompt fingerprint.`,
+  },
+  {
+    section: "Letting a model play",
+    kind: "section",
+    body: `${archiveBanner("PART FIVE", "PLAYBACK · can a model solve it")}
+    ${archivist(
+      `A citizen who is not a citizen, sent in to try all the doors. I watched. I always watch.`,
+    )}`,
+  },
+  {
+    section: "Letting a model play",
     title: "Then: let a model play it",
     body: `${quote(
       `A quest hands the game to a model and lets it type whatever it likes until it either gets there or runs out of turns. What that measures is the game, not the model: puzzles here are hand-authored and pass/fail, and the person who wrote one cannot tell whether it is solvable or only solvable in hindsight.`,
@@ -1615,7 +1855,7 @@ gpt-5.4-nano  default   21/26     97s`,
   },
 
   {
-    section: "The apparatus",
+    section: "Letting a model play",
     title: "The blindfold is the load-bearing part",
     body: `${quote(
       `The engine has the answer sitting right there — \`Ink_And_Echo.revealedHints.Marta\` says in plain English who the poet is — so a view built from world state would make the whole exercise meaningless while still producing a number that looks like a score.`,
@@ -1640,7 +1880,7 @@ DONE      unlock the door`,
   },
 
   {
-    section: "The apparatus",
+    section: "Letting a model play",
     title: "Notes are the memory, and the bug report",
     body: `${code(
       `NOTES
@@ -1668,7 +1908,29 @@ go to the Archive Lounge`,
   },
 
   {
-    section: "The apparatus",
+    section: "Letting a model play",
+    title: "What the player actually writes",
+    body: `${code(
+      `- Goal: Find who is writing notes as 'Ink and Echo'. Also determine when/where this is.
+- Starting location: The Hollow Atrium (empty, nobody here).
+- Unvisited rooms: Intake Foyer, Archive Lounge, Activity Hub, Solitude Cubes, Hallway.
+- Haven't met anyone yet.
+- Strategy: Start with Archive Lounge - archives may have records about Ink and Echo.`,
+      "turn 1 of the most recent run",
+    )}
+    ${para(
+      `The notes are the only thing that survives between turns. They are
+      re-written every turn and shown back to the model with the next view of
+      the room.`,
+    )}`,
+    notes: `The framing that makes this work is that the notes are addressed to
+    whoever reads the run afterwards, which is literally true.
+    <br><br>Before they existed, the first recorded quest spent eleven turns
+    re-interrogating two characters, having forgotten there were people it had
+    never met.`,
+  },
+  {
+    section: "Letting a model play",
     title: "Milestones, not pass/fail",
     body: `${code(
       `left-the-atrium → met-a-finder → met-the-archivist → met-marta → solved`,
@@ -1695,7 +1957,96 @@ go to the Archive Lounge`,
   },
 
   {
-    section: "The apparatus",
+    section: "Letting a model play",
+    title: "The funnel, across every recorded run",
+    body: `${code(
+      `left the atrium      17/17   ########################################
+reached the Archivist 17/17   ########################################
+met a note-finder      9/17   #####################
+reached Marta         12/17   ############################
+solved                 2/17   ####`,
+      "17 quest runs, 366 player turns",
+    )}
+    ${para(
+      `Every run finds the archive. Most runs find the culprit. Two runs
+      finish.`,
+    )}`,
+    notes: `This is the single most useful picture the playtest corpus
+    produces, and it took seventeen runs to be able to draw it.
+    <br><br>Not a strict funnel: meeting one of the two people who found a poem
+    is a route rather than a gate, which is why twelve runs reached Marta and
+    only nine met a finder. The step that matters is the last one, and it is a
+    content finding rather than a model finding. Identifying Marta was never
+    the hard part. Getting her to confess required a condition nothing told the
+    player about.`,
+  },
+  {
+    section: "Letting a model play",
+    title: "Exploring more did not help",
+    body: `${code(
+      `rooms visited, runs that solved:   4, 7
+rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`,
+      "",
+    )}
+    ${quote(
+      `the run that solved the quest visited four rooms, the ones that failed visited up to ten. Movement was never what separated them.`,
+      "commit 5764d2f, 2026-07-31",
+    )}
+    ${para(
+      `A tool had just been built on the theory that players waste turns
+      walking. In the run that followed, it was used zero times.`,
+    )}`,
+    notes: `The cuff — <code>/nav</code> — is genuinely good and is still in
+    the game, because human players do get lost. But the metric that motivated
+    it did not survive contact with the data.
+    <br><br>The player's own notes explained it better than the numbers did: it
+    had narrowed the suspects correctly and then spent six of nine turns at one
+    console. It was not lost. It was absorbed.`,
+  },
+  {
+    section: "Letting a model play",
+    title: "The commands are never the problem",
+    body: `${statRow([
+      ["366", "player turns recorded"],
+      ["1", "commands the game could not use"],
+      ["0", "runs lost to bad syntax"],
+    ])}
+    ${para(
+      `Across seventeen runs the player model produced one unusable command.
+      Parser trouble, the classic failure of text adventures, has simply gone
+      away.`,
+    )}
+    ${para(
+      `What replaced it: knowing what to do, remembering what was already
+      tried, and acting on a conclusion instead of collecting more evidence.`,
+    )}`,
+    notes: `There is one caveat worth keeping: a retry exists for replies that
+    are a label rather than a command, after the first recorded quest spent
+    four of its twenty turns typing "location: Archive Console" — echoing the
+    Archivist's terminal format back at the game. Those are counted as
+    fumbles, which is why the number is not zero.`,
+  },
+  {
+    section: "Letting a model play",
+    title: "Who holds the controller matters",
+    body: `${quote(
+      `They also default differently, because the two jobs are not equally hard. Being an NPC is bounded: respond in character, once, to what is in front of you. Playing is open-ended — hold a goal across twenty turns, remember what you have and haven't tried, and decide where to go next unprompted.`,
+      "evals/runquest.ts",
+    )}
+    ${para(
+      `The one run played by the smaller model reached two milestones and
+      stopped. Every other run is the larger model, which is why the game is
+      run by one tier and played by another.`,
+    )}`,
+    notes: `<code>--player</code> and <code>--model</code> are separate flags
+    precisely so "this puzzle is unsolvable" and "this player is bad at
+    adventure games" can be told apart, which needs them varied
+    independently.
+    <br><br>A Haiku-class player is below the floor for the task, so a quest it
+    fails says nothing about the puzzle.`,
+  },
+  {
+    section: "Letting a model play",
     title: "The task ledger, and a standard for invention",
     body: `${quote(
       `The engine adds some tasks from the mysteries. The models can add other tasks during play, from details they invent. An invented task must lead somewhere: the game must be able to complete it. [...] An invented task that stays open in run after run is a red herring, and we treat it as a defect.`,
@@ -1715,6 +2066,32 @@ go to the Archive Lounge`,
     ledger is how you check whether the rule is holding.`,
   },
 
+  {
+    section: "Letting a model play",
+    title: "Sixty-one snags, in three kinds",
+    body: `${columns(
+      `<h4>Real defects</h4>
+      ${code(`Got an error message "You try to go to
+Archive Lounge but you can't get there
+from here" even though I was already there`, "")}
+      <h4 style="margin-top:1rem">Design, mistaken for defects</h4>
+      ${code(`The system blocks date information with
+"SUBJECT RESTRICTED" errors - seems
+deliberately hidden`, "")}`,
+      `<h4>Actual detective work</h4>
+      ${code(`Frida told me her paper quota ran out
+"years ago" but records show a 500-sheet
+order 9 days ago under her name - either
+she lied, the record is wrong, or
+something else is happening`, "")}`,
+    )}`,
+    notes: `The middle category is the one that surprised me: the player cannot
+    tell a deliberate wall from a broken one, and says so. That is useful
+    signal about the game rather than noise.
+    <br><br>The third is the encouraging one. Nobody asked it to cross-check
+    Frida's claim against the requisition records; it did that because the
+    contradiction was there.`,
+  },
   {
     section: "What it found",
     kind: "section",
