@@ -371,133 +371,32 @@ function aside(text: string): string {
  * reacting to it.
  */
 const ASIDES: Record<string, string> = {
-  "A three-day game":
-    "►► Three days of records. Then a great many more days of records ◄◄",
-  "The shape of the project's life":
-    "►► Thirteen months where nobody filed ANYTHING. I do not wish to discuss it ◄◄",
-  "Decision one: tags, not tool calls":
-    "►► It writes down what happened and then it HAPPENS. That is how records should work ◄◄",
-  "Decision two: the event log is the game":
-    "►► Four things, one shape. I approve of this ENORMOUSLY. It is very easy to file ◄◄",
-  "The world bible was written on day two":
-    "►► Written before the rooms were. The rooms were built to MATCH it. Correct order ◄◄",
-  "One event": "►► Every event knows which prompt made it. Provenance! On every single one! ◄◄",
   "The world is a fold, and that is the whole of it":
-    "►► They discard the entire world and build it again. Constantly. I find it restful ◄◄",
+    "WORLD BUILD complete. WORLD BUILD complete. WORLD BUILD complete. Uptime: one event.",
   "Undo is an append":
-    "►► Nothing is ever deleted. NOTHING. Oh, this one is my favourite ◄◄",
+    "UNDO accepted. The event remains on file, but has been instructed not to have happened.",
   "The bug that shallow copying was always going to cause":
-    "►► A feeling leaked backwards into the original feelings. Unfileable. Horrifying ◄◄",
-  "What the model is allowed to say":
-    "►► Twelve ways to say a thing and have it COUNT ◄◄",
-  "One real turn, as the model produced it":
-    "►► This actually happened. Doug was very excited. Doug is usually very excited ◄◄",
-  "...and what the engine kept":
-    "►► I keep the prose AND the little numbers. Both! Always both! ◄◄",
-  "The parser is permissive on purpose":
-    "►► It forgives. I would not forgive, but it does ◄◄",
-  "Two severities, and the line between them":
-    "►► One sort of mistake gets a second chance. The other gets FILED ◄◄",
-  "Exactly one retry, and the reason is money":
-    "►► Asking twice is generous. Asking three times is a personality ◄◄",
-  "The judgment scaffold":
-    "►► They make it think in a NUMBERED LIST, and then they throw the list away ◄◄",
-  "Prompts are ordered for a cache that does not exist yet":
-    "►► Arranged for a convenience that has not arrived. Very Intra ◄◄",
-  "A prompt block tuned by measurement, not taste":
-    "►► Three attempts! I have all three. I keep the failures TOO ◄◄",
-  "Mysteries: a state machine in content":
-    "►► Four states, and two of them were unreachable for a year. I kept the empty ones ◄◄",
-  "The trigger vocabulary is closed on purpose":
-    "►► A small vocabulary, firmly enforced. My favourite kind of vocabulary ◄◄",
-  "Replaying a log does not re-run its triggers":
-    "►► The record was correct and the world had forgotten. That is MY nightmare ◄◄",
-  "Feelings, counted rather than judged":
-    "►► Feelings. As NUMBERS. Between nought and six. Oh, that is lovely ◄◄",
-  "A meter, as authored":
-    "►► At six he files a complaint and feels much better. I have read it many times ◄◄",
-  "Attitudes: sparse, and never neutral":
-    "►► No entry means no feeling. An empty file is STILL A FILE ◄◄",
-  "The lunch problem":
-    "►► Six citizens talking at once. I transcribed all of it. Nobody thanked me ◄◄",
-  "Two kinds of locked door":
-    "►► One door listens to reason. One door does not. Guess which one holds ◄◄",
-  "The cuff exists because play broke down without it":
-    "►► It cannot be charmed and it cannot be wrong. Unlike SOME records I could name ◄◄",
-  "There is as much apparatus as there is game":
-    "►► Half the complex is instruments pointed at the other half ◄◄",
+    "FEELING \"suspicious\" found in two citizens and one backup. Please stop storing liquids by reference.",
   "Tests are markdown that runs":
-    "►► Documentation that FAILS when it lies. Oh, that is good ◄◄",
+    "This document can prove itself wrong. Most documents require a committee.",
   "Cassettes: recorded model calls, replayed offline":
-    "►► A recording that SHOUTS when it has gone stale. Yes. More of this ◄◄",
-  "The one idea most worth stealing":
-    "►► A cache forgets. A record does not. I am a RECORD ◄◄",
-  "Checkpoints, and a fixture that lied":
-    "►► It saved happily. That is the worst part. It was PLEASED with itself ◄◄",
-  "A fixture can also preserve a bug":
-    "►► The recording caught the illness and passed it on. Every morning. The same morning ◄◄",
-  "What an eval scores":
-    "►► They score the complaints! The complaints are load-bearing! ◄◄",
-  "Prefer state to text":
-    "►► Ama IS an artificial intelligence. That is not a slip, that is the PREMISE ◄◄",
-  "An eval everything passes is indistinguishable from a broken eval":
-    "►► They test the test. Using a model that says nothing at all. Ha! ◄◄",
-  "Provenance: which prompts was this number measured against?":
-    "►► Twelve characters saying what the world looked like. I would stamp that on everything ◄◄",
+    "Recording expired because the words around it moved. The voice remains fresh and is now incorrect.",
   "The provenance hash was itself wrong":
-    "►► The stamp was stamping the wrong page. For an entire SESSION ◄◄",
-  "Cost, and the invisible tokens":
-    "►► Thinking you cannot see, billed at the going rate ◄◄",
-  "Then: let a model play it":
-    "►► A citizen who is not a citizen, sent in to try all the doors ◄◄",
-  "The blindfold is the load-bearing part":
-    "►► I know the answer. It does not. I am not permitted to say. This is AGONY ◄◄",
-  "Notes are the memory, and the bug report":
-    "►► It writes itself notes because it will forget. Everyone here forgets ◄◄",
-  "Milestones, not pass/fail":
-    "►► Where they stopped is far more interesting than whether they stopped ◄◄",
-  "The task ledger, and a standard for invention":
-    "►► An errand that never ends is a red herring. We file those under DEFECT ◄◄",
-  "The flagship mystery could not be won by winning":
-    "►► She was standing RIGHT THERE and could not confess. Henry was in the way ◄◄",
+    "STAMP VERIFIED. PAGE UNVERIFIED. Stamp verification has been promoted to executive function.",
   "The harness was the bug (1): the model had read the source":
-    "►► It had read the manual for the building it was standing in ◄◄",
+    "PLAYER issued building plans before entering building. Exploration proceeded at administrative speed.",
   "The harness was the bug (2): it ordered the player to break format":
-    "►► Thirteen turns of a citizen politely reporting that the building was shouting ◄◄",
+    "Thirteen reports received: BUILDING IS REQUESTING TAGS. Incident merged as one very persistent building.",
   "A feature nobody used, and the reason why":
-    "►► They built it a map. It did not want a map. It wanted to stay at the console ◄◄",
+    "/nav answered every request made to /nav. Requests made: 0. Service record: immaculate.",
   "A passing eval hid an inert feature":
-    "►► The test passed and the thing had never once happened. Both true! ◄◄",
-  "The funnel finally closed":
-    "►► Turn twenty-five. I have kept it. I will keep it FOREVER ◄◄",
-  "Known problems, verbatim (1/2)":
-    "►► A list of what is wrong with it. Filed openly. Nobody made them do that ◄◄",
-  "Known problems, verbatim (2/2)":
-    "►► Still filed. Still openly. I check on this list ◄◄",
-  "The signature failure mode":
-    "►► Two things that look identical. Telling them apart is the whole job ◄◄",
-  "Everything reads the same, so nothing reads as significant":
-    "►► I would simply file everything. Then it is all equally important ◄◄",
-  "The caveats are printed next to the numbers":
-    "►► The number AND what is wrong with the number. On the same page ◄◄",
-  "The split is unusually clean":
-    "►► Two sessions. TWO! And then rather a lot of commits ◄◄",
-  "Answering the FAQ honestly":
-    "►► They updated the record because it had stopped being true. Correct behaviour ◄◄",
+    "TASK LIST appeared whenever inspectors requested it. Citizens have not learned this technique.",
   "A file about how not to write":
-    "►► A document about not sounding like the thing that wrote the document ◄◄",
-  "Three zones, three different rules":
-    "►► Some rooms it may write in. Some rooms it may not. I approve of rooms ◄◄",
-  "Style is transmissible, at every scale":
-    "►► What it reads, it becomes. I read records all day. Consider what that makes ME ◄◄",
-  "The only unautomated check in a repo that automates everything":
-    "►► A person. Reading. That is the entire check ◄◄",
-  "What that check looks like in practice":
-    "►► Sent back for being too complainy. I have never been too complainy ◄◄",
+    "STYLE FAULT INDEXED. This sentence was checked for a closing aphorism and may now end",
   "The feature nobody asked for":
-    "►► It built something nobody requested and everybody kept. I have notes ◄◄",
+    "REQUEST: none. IMPLEMENTATION: complete. Approval arrived afterward and has been filed under ORIGINAL PLAN.",
   "Provenance and artifact are different things":
-    "►► Who typed it, and who is answerable for it. Two columns. Different columns ◄◄",
+    "CREATED BY and ANSWERED FOR are separate fields. Records became much quieter when we stopped joining them.",
 };
 
 // --- the deck ----------------------------------------------------------------

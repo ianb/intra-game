@@ -1,10 +1,10 @@
 # The Archivist's footnotes: a brief
 
 The deck at [index.html](./index.html) puts one line from the Archivist at the
-bottom of each content slide. The lines that are in there now were written by
-Claude, they are bad, and they should be replaced. This file is what someone
-else needs in order to write them: what the character is, what the lines have
-to do mechanically, what was tried, and why it failed.
+bottom of each content slide. Thirteen are written; the rest are open. This
+file is what someone needs in order to write them: what the character is, what
+the lines have to do mechanically, what failed in the first two attempts, and
+what the batch that worked was doing differently.
 
 ## What the line is
 
@@ -142,85 +142,127 @@ a punchline in a fixed metrical position, and a closing beat of ironic
 understatement. If the lines can be read down the table below and the endings
 sound interchangeable, it has happened again.
 
+## The register that worked
+
+The first batch that landed was written elsewhere, and the difference is
+structural rather than a matter of word choice. Worth holding onto, because the
+hard part now is keeping fifty more lines in the same register.
+
+**They are terminal output, not commentary.** This is the canon instruction
+that the rejected batches ignored: the Archivist "formats all its output as
+though it is a computer command line and interactive program." A status line
+cannot carry a punchline in final position, so the failure mode described above
+becomes structurally unavailable.
+
+    STAMP VERIFIED. PAGE UNVERIFIED. Stamp verification has been promoted to
+    executive function.
+
+    REQUEST: none. IMPLEMENTATION: complete. Approval arrived afterward and has
+    been filed under ORIGINAL PLAN.
+
+**The joke is a bureaucratic category error, not a closing beat.** Undo becomes
+an event "instructed not to have happened." Thirteen separate bug reports are
+"merged as one very persistent building." A memory-aliasing bug becomes "please
+stop storing liquids by reference." The record-keeping frame misapplies itself
+to reality, which is the Brazil and Paranoia register the dossier asks for.
+
+**Self-implication is institutional and passive.** "Service record: immaculate."
+"Records became much quieter when we stopped joining them." No first-person wry
+aside, no "I have a list."
+
+**Hedberg shows up as a reframe, not as a voice.** "/nav answered every request
+made to /nav. Requests made: 0. Service record: immaculate." Total non-use
+recast as perfect service is the escalator-becomes-stairs move.
+
+**One line breaks off mid-sentence**, on the slide about writing tells:
+
+    STYLE FAULT INDEXED. This sentence was checked for a closing aphorism and
+    may now end
+
+That is the angst-register behaviour where output stops mid-token, used as a
+joke. It is also the strongest available seed for the B plot, if the thread
+becomes the machine degrading as the deck explains the machinery it lives in.
+
 ## The worksheet
 
-Every content slide, in order, with its part number and the line currently
-sitting on it. The current text is here to be replaced, not extended.
+Every content slide, in order. Thirteen have lines. The rest are open.
 
-| # | slide | current line (to be replaced) |
+| # | slide | line |
 |---|---|---|
-|  | **PART 1 — Where it came from** |  |
-| 1.1 | A three-day game | Three days of records. Then a great many more days of records |
-| 1.2 | The shape of the project's life | Thirteen months where nobody filed ANYTHING. I do not wish to discuss it |
-| 1.3 | The thesis, from the 2024 README |  |
-| 1.4 | Decision one: tags, not tool calls | It writes down what happened and then it HAPPENS. That is how records should work |
-| 1.5 | Decision two: the event log is the game | Four things, one shape. I approve of this ENORMOUSLY. It is very easy to file |
-| 1.6 | The world bible was written on day two | Written before the rooms were. The rooms were built to MATCH it. Correct order |
-|  | **PART 2 — The engine** |  |
-| 2.1 | One event | Every event knows which prompt made it. Provenance! On every single one! |
-| 2.2 | The world is a fold, and that is the whole of it | They discard the entire world and build it again. Constantly. I find it restful |
-| 2.3 | Undo is an append | Nothing is ever deleted. NOTHING. Oh, this one is my favourite |
-| 2.4 | The bug that shallow copying was always going to cause | A feeling leaked backwards into the original feelings. Unfileable. Horrifying |
-| 2.5 | What the model is allowed to say | Twelve ways to say a thing and have it COUNT |
-| 2.6 | One real turn, as the model produced it | This actually happened. Doug was very excited. Doug is usually very excited |
-| 2.7 | ...and what the engine kept | I keep the prose AND the little numbers. Both! Always both! |
-| 2.8 | The parser is permissive on purpose | It forgives. I would not forgive, but it does |
-| 2.9 | Two severities, and the line between them | One sort of mistake gets a second chance. The other gets FILED |
-| 2.10 | Exactly one retry, and the reason is money | Asking twice is generous. Asking three times is a personality |
-| 2.11 | The judgment scaffold | They make it think in a NUMBERED LIST, and then they throw the list away |
-| 2.12 | Prompts are ordered for a cache that does not exist yet | Arranged for a convenience that has not arrived. Very Intra |
-| 2.13 | A prompt block tuned by measurement, not taste | Three attempts! I have all three. I keep the failures TOO |
-| 2.14 | Mysteries: a state machine in content | Four states, and two of them were unreachable for a year. I kept the empty ones |
-| 2.15 | The trigger vocabulary is closed on purpose | A small vocabulary, firmly enforced. My favourite kind of vocabulary |
-| 2.16 | Replaying a log does not re-run its triggers | The record was correct and the world had forgotten. That is MY nightmare |
-| 2.17 | Feelings, counted rather than judged | Feelings. As NUMBERS. Between nought and six. Oh, that is lovely |
-| 2.18 | A meter, as authored | At six he files a complaint and feels much better. I have read it many times |
-| 2.19 | Attitudes: sparse, and never neutral | No entry means no feeling. An empty file is STILL A FILE |
-| 2.20 | The lunch problem | Six citizens talking at once. I transcribed all of it. Nobody thanked me |
-| 2.21 | Two kinds of locked door | One door listens to reason. One door does not. Guess which one holds |
-| 2.22 | The cuff exists because play broke down without it | It cannot be charmed and it cannot be wrong. Unlike SOME records I could name |
-|  | **PART 3 — The apparatus** |  |
-| 3.1 | There is as much apparatus as there is game | Half the complex is instruments pointed at the other half |
-| 3.2 | Tests are markdown that runs | Documentation that FAILS when it lies. Oh, that is good |
-| 3.3 | Cassettes: recorded model calls, replayed offline | A recording that SHOUTS when it has gone stale. Yes. More of this |
-| 3.4 | The one idea most worth stealing | A cache forgets. A record does not. I am a RECORD |
-| 3.5 | Checkpoints, and a fixture that lied | It saved happily. That is the worst part. It was PLEASED with itself |
-| 3.6 | A fixture can also preserve a bug | The recording caught the illness and passed it on. Every morning. The same morning |
-| 3.7 | What an eval scores | They score the complaints! The complaints are load-bearing! |
-| 3.8 | Prefer state to text | Ama IS an artificial intelligence. That is not a slip, that is the PREMISE |
-| 3.9 | An eval everything passes is indistinguishable from a broken eval | They test the test. Using a model that says nothing at all. Ha! |
-| 3.10 | Provenance: which prompts was this number measured against? | Twelve characters saying what the world looked like. I would stamp that on everything |
-| 3.11 | The provenance hash was itself wrong | The stamp was stamping the wrong page. For an entire SESSION |
-| 3.12 | Cost, and the invisible tokens | Thinking you cannot see, billed at the going rate |
-| 3.13 | Then: let a model play it | A citizen who is not a citizen, sent in to try all the doors |
-| 3.14 | The blindfold is the load-bearing part | I know the answer. It does not. I am not permitted to say. This is AGONY |
-| 3.15 | Notes are the memory, and the bug report | It writes itself notes because it will forget. Everyone here forgets |
-| 3.16 | Milestones, not pass/fail | Where they stopped is far more interesting than whether they stopped |
-| 3.17 | The task ledger, and a standard for invention | An errand that never ends is a red herring. We file those under DEFECT |
-|  | **PART 4 — What it found** |  |
-| 4.1 | The flagship mystery could not be won by winning | She was standing RIGHT THERE and could not confess. Henry was in the way |
-| 4.2 | The harness was the bug (1): the model had read the source | It had read the manual for the building it was standing in |
-| 4.3 | The harness was the bug (2): it ordered the player to break format | Thirteen turns of a citizen politely reporting that the building was shouting |
-| 4.4 | A feature nobody used, and the reason why | They built it a map. It did not want a map. It wanted to stay at the console |
-| 4.5 | A passing eval hid an inert feature | The test passed and the thing had never once happened. Both true! |
-| 4.6 | The funnel finally closed | Turn twenty-five. I have kept it. I will keep it FOREVER |
-|  | **PART 5 — Where it doesn't work** |  |
-| 5.1 | Known problems, verbatim (1/2) | A list of what is wrong with it. Filed openly. Nobody made them do that |
-| 5.2 | Known problems, verbatim (2/2) | Still filed. Still openly. I check on this list |
-| 5.3 | The signature failure mode | Two things that look identical. Telling them apart is the whole job |
-| 5.4 | Everything reads the same, so nothing reads as significant | I would simply file everything. Then it is all equally important |
-| 5.5 | The caveats are printed next to the numbers | The number AND what is wrong with the number. On the same page |
-|  | **PART 6 — Who wrote this** |  |
-| 6.1 | The split is unusually clean | Two sessions. TWO! And then rather a lot of commits |
-| 6.2 | Answering the FAQ honestly | They updated the record because it had stopped being true. Correct behaviour |
-| 6.3 | A file about how not to write | A document about not sounding like the thing that wrote the document |
-| 6.4 | Three zones, three different rules | Some rooms it may write in. Some rooms it may not. I approve of rooms |
-| 6.5 | Style is transmissible, at every scale | What it reads, it becomes. I read records all day. Consider what that makes ME |
-| 6.6 | The only unautomated check in a repo that automates everything | A person. Reading. That is the entire check |
-| 6.7 | What that check looks like in practice | Sent back for being too complainy. I have never been too complainy |
-| 6.8 | The feature nobody asked for | It built something nobody requested and everybody kept. I have notes |
-| 6.9 | Provenance and artifact are different things | Who typed it, and who is answerable for it. Two columns. Different columns |
-|  | What transfers, if anything does |  |
+|  | **PART 1 — Where it came from** | _(needed)_ |
+| 1.1 | A three-day game | _(needed)_ |
+| 1.2 | The shape of the project's life | _(needed)_ |
+| 1.3 | The thesis, from the 2024 README | _(needed)_ |
+| 1.4 | Decision one: tags, not tool calls | _(needed)_ |
+| 1.5 | Decision two: the event log is the game | _(needed)_ |
+| 1.6 | The world bible was written on day two | _(needed)_ |
+|  | **PART 2 — The engine** | _(needed)_ |
+| 2.1 | One event | _(needed)_ |
+| 2.2 | The world is a fold, and that is the whole of it | WORLD BUILD complete. WORLD BUILD complete. WORLD BUILD complete. Uptime: one event. |
+| 2.3 | Undo is an append | UNDO accepted. The event remains on file, but has been instructed not to have happened. |
+| 2.4 | The bug that shallow copying was always going to cause | FEELING "suspicious" found in two citizens and one backup. Please stop storing liquids by reference. |
+| 2.5 | What the model is allowed to say | _(needed)_ |
+| 2.6 | One real turn, as the model produced it | _(needed)_ |
+| 2.7 | ...and what the engine kept | _(needed)_ |
+| 2.8 | The parser is permissive on purpose | _(needed)_ |
+| 2.9 | Two severities, and the line between them | _(needed)_ |
+| 2.10 | Exactly one retry, and the reason is money | _(needed)_ |
+| 2.11 | The judgment scaffold | _(needed)_ |
+| 2.12 | Prompts are ordered for a cache that does not exist yet | _(needed)_ |
+| 2.13 | A prompt block tuned by measurement, not taste | _(needed)_ |
+| 2.14 | Mysteries: a state machine in content | _(needed)_ |
+| 2.15 | The trigger vocabulary is closed on purpose | _(needed)_ |
+| 2.16 | Replaying a log does not re-run its triggers | _(needed)_ |
+| 2.17 | Feelings, counted rather than judged | _(needed)_ |
+| 2.18 | A meter, as authored | _(needed)_ |
+| 2.19 | Attitudes: sparse, and never neutral | _(needed)_ |
+| 2.20 | The lunch problem | _(needed)_ |
+| 2.21 | Two kinds of locked door | _(needed)_ |
+| 2.22 | The cuff exists because play broke down without it | _(needed)_ |
+|  | **PART 3 — The apparatus** | _(needed)_ |
+| 3.1 | There is as much apparatus as there is game | _(needed)_ |
+| 3.2 | Tests are markdown that runs | This document can prove itself wrong. Most documents require a committee. |
+| 3.3 | Cassettes: recorded model calls, replayed offline | Recording expired because the words around it moved. The voice remains fresh and is now incorrect. |
+| 3.4 | The one idea most worth stealing | _(needed)_ |
+| 3.5 | Checkpoints, and a fixture that lied | _(needed)_ |
+| 3.6 | A fixture can also preserve a bug | _(needed)_ |
+| 3.7 | What an eval scores | _(needed)_ |
+| 3.8 | Prefer state to text | _(needed)_ |
+| 3.9 | An eval everything passes is indistinguishable from a broken eval | _(needed)_ |
+| 3.10 | Provenance: which prompts was this number measured against? | _(needed)_ |
+| 3.11 | The provenance hash was itself wrong | STAMP VERIFIED. PAGE UNVERIFIED. Stamp verification has been promoted to executive function. |
+| 3.12 | Cost, and the invisible tokens | _(needed)_ |
+| 3.13 | Then: let a model play it | _(needed)_ |
+| 3.14 | The blindfold is the load-bearing part | _(needed)_ |
+| 3.15 | Notes are the memory, and the bug report | _(needed)_ |
+| 3.16 | Milestones, not pass/fail | _(needed)_ |
+| 3.17 | The task ledger, and a standard for invention | _(needed)_ |
+|  | **PART 4 — What it found** | _(needed)_ |
+| 4.1 | The flagship mystery could not be won by winning | _(needed)_ |
+| 4.2 | The harness was the bug (1): the model had read the source | PLAYER issued building plans before entering building. Exploration proceeded at administrative speed. |
+| 4.3 | The harness was the bug (2): it ordered the player to break format | Thirteen reports received: BUILDING IS REQUESTING TAGS. Incident merged as one very persistent building. |
+| 4.4 | A feature nobody used, and the reason why | /nav answered every request made to /nav. Requests made: 0. Service record: immaculate. |
+| 4.5 | A passing eval hid an inert feature | TASK LIST appeared whenever inspectors requested it. Citizens have not learned this technique. |
+| 4.6 | The funnel finally closed | _(needed)_ |
+|  | **PART 5 — Where it doesn't work** | _(needed)_ |
+| 5.1 | Known problems, verbatim (1/2) | _(needed)_ |
+| 5.2 | Known problems, verbatim (2/2) | _(needed)_ |
+| 5.3 | The signature failure mode | _(needed)_ |
+| 5.4 | Everything reads the same, so nothing reads as significant | _(needed)_ |
+| 5.5 | The caveats are printed next to the numbers | _(needed)_ |
+|  | **PART 6 — Who wrote this** | _(needed)_ |
+| 6.1 | The split is unusually clean | _(needed)_ |
+| 6.2 | Answering the FAQ honestly | _(needed)_ |
+| 6.3 | A file about how not to write | STYLE FAULT INDEXED. This sentence was checked for a closing aphorism and may now end |
+| 6.4 | Three zones, three different rules | _(needed)_ |
+| 6.5 | Style is transmissible, at every scale | _(needed)_ |
+| 6.6 | The only unautomated check in a repo that automates everything | _(needed)_ |
+| 6.7 | What that check looks like in practice | _(needed)_ |
+| 6.8 | The feature nobody asked for | REQUEST: none. IMPLEMENTATION: complete. Approval arrived afterward and has been filed under ORIGINAL PLAN. |
+| 6.9 | Provenance and artifact are different things | CREATED BY and ANSWERED FOR are separate fields. Records became much quieter when we stopped joining them. |
+|  | What transfers, if anything does | _(needed)_ |
+
+13 written, 52 still needed.
 
 ## Applying the result
 
