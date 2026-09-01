@@ -167,7 +167,18 @@ function copyCheckpoints() {
 }
 
 async function main() {
-  rmSync(outdir, { recursive: true, force: true });
+  // Emptying dist/ is right for a production build and wrong in watch mode,
+  // where this process starts *beside* a wrangler that serves the directory —
+  // `pnpm dev` builds once, then spawns the watcher and the Worker together,
+  // so wiping here deletes the site out from under the server while it is
+  // scanning for assets. Whatever has not been rewritten yet is missing from
+  // that scan, and the copy order decides what: the shell is written first and
+  // survives, so the game comes up fine and one late page 404s, differently on
+  // each run. Watch mode overwrites in place instead; dev.ts's first build
+  // already produced a clean directory.
+  if (!dev) {
+    rmSync(outdir, { recursive: true, force: true });
+  }
   mkdirSync(outdir, { recursive: true });
   buildCss();
   copyStatic();

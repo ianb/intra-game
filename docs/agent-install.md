@@ -137,7 +137,11 @@ Each of these has actually happened here:
   test says the player has no name. It now prints what to re-record.
 - **`DEV_FAKE_LLM` wins over real credentials**, so the server appears to work
   and costs nothing.
-- **`pnpm build` wipes `dist/`** out from under a running `wrangler dev`.
+- **`pnpm build` wipes `dist/`** out from under a running `wrangler dev`. Watch
+  mode no longer does — it used to, to itself, which showed up as one page
+  404ing on some `pnpm dev` runs and not others, depending on whether wrangler
+  scanned the directory before or after the watcher had rewritten that file.
+  A separate `pnpm build` in another terminal still empties it.
 - **A checkpoint can hold the wrong state and save happily.** The first
   recording of `briefed` walked into a locked door and stopped a room short.
   Checkpoints that anything depends on carry an `expect` predicate, and the
