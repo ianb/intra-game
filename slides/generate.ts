@@ -237,6 +237,145 @@ function aside(text: string): string {
   return `<p class="aside">${text}</p>`;
 }
 
+/**
+ * The Archivist's interjections on content slides, keyed by slide title.
+ *
+ * Kept in one table rather than scattered through the slide bodies so the
+ * whole voice can be read straight down and checked: it is a running
+ * character across the deck, and the failure mode is fifty variations of the
+ * same joke. The operator text on each slide stays flat; this is the thing
+ * reacting to it.
+ */
+const ASIDES: Record<string, string> = {
+  "A three-day game":
+    "►► Three days of records. Then a great many more days of records ◄◄",
+  "The shape of the project's life":
+    "►► Thirteen months where nobody filed ANYTHING. I do not wish to discuss it ◄◄",
+  "Decision one: tags, not tool calls":
+    "►► It writes down what happened and then it HAPPENS. That is how records should work ◄◄",
+  "Decision two: the event log is the game":
+    "►► Four things, one shape. I approve of this ENORMOUSLY. It is very easy to file ◄◄",
+  "The world bible was written on day two":
+    "►► Written before the rooms were. The rooms were built to MATCH it. Correct order ◄◄",
+  "One event": "►► Every event knows which prompt made it. Provenance! On every single one! ◄◄",
+  "The world is a fold, and that is the whole of it":
+    "►► They discard the entire world and build it again. Constantly. I find it restful ◄◄",
+  "Undo is an append":
+    "►► Nothing is ever deleted. NOTHING. Oh, this one is my favourite ◄◄",
+  "The bug that shallow copying was always going to cause":
+    "►► A feeling leaked backwards into the original feelings. Unfileable. Horrifying ◄◄",
+  "What the model is allowed to say":
+    "►► Twelve ways to say a thing and have it COUNT ◄◄",
+  "One real turn, as the model produced it":
+    "►► This actually happened. Doug was very excited. Doug is usually very excited ◄◄",
+  "...and what the engine kept":
+    "►► I keep the prose AND the little numbers. Both! Always both! ◄◄",
+  "The parser is permissive on purpose":
+    "►► It forgives. I would not forgive, but it does ◄◄",
+  "Two severities, and the line between them":
+    "►► One sort of mistake gets a second chance. The other gets FILED ◄◄",
+  "Exactly one retry, and the reason is money":
+    "►► Asking twice is generous. Asking three times is a personality ◄◄",
+  "The judgment scaffold":
+    "►► They make it think in a NUMBERED LIST, and then they throw the list away ◄◄",
+  "Prompts are ordered for a cache that does not exist yet":
+    "►► Arranged for a convenience that has not arrived. Very Intra ◄◄",
+  "A prompt block tuned by measurement, not taste":
+    "►► Three attempts! I have all three. I keep the failures TOO ◄◄",
+  "Mysteries: a state machine in content":
+    "►► Four states, and two of them were unreachable for a year. I kept the empty ones ◄◄",
+  "The trigger vocabulary is closed on purpose":
+    "►► A small vocabulary, firmly enforced. My favourite kind of vocabulary ◄◄",
+  "Replaying a log does not re-run its triggers":
+    "►► The record was correct and the world had forgotten. That is MY nightmare ◄◄",
+  "Feelings, counted rather than judged":
+    "►► Feelings. As NUMBERS. Between nought and six. Oh, that is lovely ◄◄",
+  "A meter, as authored":
+    "►► At six he files a complaint and feels much better. I have read it many times ◄◄",
+  "Attitudes: sparse, and never neutral":
+    "►► No entry means no feeling. An empty file is STILL A FILE ◄◄",
+  "The lunch problem":
+    "►► Six citizens talking at once. I transcribed all of it. Nobody thanked me ◄◄",
+  "Two kinds of locked door":
+    "►► One door listens to reason. One door does not. Guess which one holds ◄◄",
+  "The cuff exists because play broke down without it":
+    "►► It cannot be charmed and it cannot be wrong. Unlike SOME records I could name ◄◄",
+  "There is as much apparatus as there is game":
+    "►► Half the complex is instruments pointed at the other half ◄◄",
+  "Tests are markdown that runs":
+    "►► Documentation that FAILS when it lies. Oh, that is good ◄◄",
+  "Cassettes: recorded model calls, replayed offline":
+    "►► A recording that SHOUTS when it has gone stale. Yes. More of this ◄◄",
+  "The one idea most worth stealing":
+    "►► A cache forgets. A record does not. I am a RECORD ◄◄",
+  "Checkpoints, and a fixture that lied":
+    "►► It saved happily. That is the worst part. It was PLEASED with itself ◄◄",
+  "A fixture can also preserve a bug":
+    "►► The recording caught the illness and passed it on. Every morning. The same morning ◄◄",
+  "What an eval scores":
+    "►► They score the complaints! The complaints are load-bearing! ◄◄",
+  "Prefer state to text":
+    "►► Ama IS an artificial intelligence. That is not a slip, that is the PREMISE ◄◄",
+  "An eval everything passes is indistinguishable from a broken eval":
+    "►► They test the test. Using a model that says nothing at all. Ha! ◄◄",
+  "Provenance: which prompts was this number measured against?":
+    "►► Twelve characters saying what the world looked like. I would stamp that on everything ◄◄",
+  "The provenance hash was itself wrong":
+    "►► The stamp was stamping the wrong page. For an entire SESSION ◄◄",
+  "Cost, and the invisible tokens":
+    "►► Thinking you cannot see, billed at the going rate ◄◄",
+  "Then: let a model play it":
+    "►► A citizen who is not a citizen, sent in to try all the doors ◄◄",
+  "The blindfold is the load-bearing part":
+    "►► I know the answer. It does not. I am not permitted to say. This is AGONY ◄◄",
+  "Notes are the memory, and the bug report":
+    "►► It writes itself notes because it will forget. Everyone here forgets ◄◄",
+  "Milestones, not pass/fail":
+    "►► Where they stopped is far more interesting than whether they stopped ◄◄",
+  "The task ledger, and a standard for invention":
+    "►► An errand that never ends is a red herring. We file those under DEFECT ◄◄",
+  "The flagship mystery could not be won by winning":
+    "►► She was standing RIGHT THERE and could not confess. Henry was in the way ◄◄",
+  "The harness was the bug (1): the model had read the source":
+    "►► It had read the manual for the building it was standing in ◄◄",
+  "The harness was the bug (2): it ordered the player to break format":
+    "►► Thirteen turns of a citizen politely reporting that the building was shouting ◄◄",
+  "A feature nobody used, and the reason why":
+    "►► They built it a map. It did not want a map. It wanted to stay at the console ◄◄",
+  "A passing eval hid an inert feature":
+    "►► The test passed and the thing had never once happened. Both true! ◄◄",
+  "The funnel finally closed":
+    "►► Turn twenty-five. I have kept it. I will keep it FOREVER ◄◄",
+  "Known problems, verbatim (1/2)":
+    "►► A list of what is wrong with it. Filed openly. Nobody made them do that ◄◄",
+  "Known problems, verbatim (2/2)":
+    "►► Still filed. Still openly. I check on this list ◄◄",
+  "The signature failure mode":
+    "►► Two things that look identical. Telling them apart is the whole job ◄◄",
+  "Everything reads the same, so nothing reads as significant":
+    "►► I would simply file everything. Then it is all equally important ◄◄",
+  "The caveats are printed next to the numbers":
+    "►► The number AND what is wrong with the number. On the same page ◄◄",
+  "The split is unusually clean":
+    "►► Two sessions. TWO! And then rather a lot of commits ◄◄",
+  "Answering the FAQ honestly":
+    "►► They updated the record because it had stopped being true. Correct behaviour ◄◄",
+  "A file about how not to write":
+    "►► A document about not sounding like the thing that wrote the document ◄◄",
+  "Three zones, three different rules":
+    "►► Some rooms it may write in. Some rooms it may not. I approve of rooms ◄◄",
+  "Style is transmissible, at every scale":
+    "►► What it reads, it becomes. I read records all day. Consider what that makes ME ◄◄",
+  "The only unautomated check in a repo that automates everything":
+    "►► A person. Reading. That is the entire check ◄◄",
+  "What that check looks like in practice":
+    "►► Sent back for being too complainy. I have never been too complainy ◄◄",
+  "The feature nobody asked for":
+    "►► It built something nobody requested and everybody kept. I have notes ◄◄",
+  "Provenance and artifact are different things":
+    "►► Who typed it, and who is answerable for it. Two columns. Different columns ◄◄",
+};
+
 // --- the deck ----------------------------------------------------------------
 
 const SLIDES: Slide[] = [
@@ -371,9 +510,7 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
   An eval replays a log and checks what state it produced.`,
       "docs/agent-install.md",
     )}
-    ${aside(
-      `►► Four things, one shape. I approve of this ENORMOUSLY. It is very easy to file ◄◄`,
-    )}`,
+`,
     notes: `This is the decision that makes the entire apparatus cheap. Every
     tool later in the deck — checkpoints, evals, the quest runner, undo, the
     server — is the same artifact read by a different consumer.
@@ -620,8 +757,7 @@ Doug.curiosity: 0 => 1`,
       `Two lines of durable state out of a page of prose. The dialogue is
       shown and stored; the attitude persists and colors every later Doug
       prompt; the meter is engine arithmetic, clamped to its declared range.`,
-    )}
-    ${aside(`►► I keep the prose AND the little numbers. Both! ◄◄`)}`,
+    )}`,
     notes: `<code>curiosity</code> is one of Doug's declared meters, 0–5. The
     model was never asked what the level should be. It was asked whether this
     moment was interesting, and answered <code>+1</code>.`,
@@ -771,8 +907,7 @@ writing 4-5 words for each item:
     ${para(
       `A longer version and a shorter version both scored worse. The wording
       that shipped is the one that scored.`,
-    )}
-    ${aside(`►► Three attempts! I have all three. I keep the failures TOO ◄◄`)}`,
+    )}`,
     notes: `This is the slide for an agentic-coding audience. The instruction
     is in CLAUDE.md as a rule for future contributors, human or otherwise:
     "Change them with <code>pnpm evals</code>, not by taste."
@@ -1059,8 +1194,7 @@ applyRewinds(log).length;
       `Prose between the blocks explains the intent; the blocks keep it honest.
       ${DOCTESTS} files, and the interesting ones open with a design argument
       before any code.`,
-    )}
-    ${aside(`►► Documentation that FAILS when it lies. Oh, that is good ◄◄`)}`,
+    )}`,
     notes: `Run by <code>tap</code> with the <code>agent-doctest</code> loader.
     A <code>ts setup</code> block holds imports; a bare <code>ts</code> block is
     a fresh scope; a <code>continue</code> block shares the previous scope.
@@ -1648,8 +1782,7 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
       atmospheric prose destroys the affordance a traditional adventure game
       gets for free. When everything is written well, nothing stands out as
       <em>load-bearing</em>.`,
-    )}
-    ${aside(`►► I would simply file everything. Then it is all equally important ◄◄`)}`,
+    )}`,
     notes: `The tension the author named when this came up: "It doesn't have to
     show the score, but it should show that something real happened."
     <br><br>And the counter-argument, filed against a proposal to let characters
@@ -1719,23 +1852,25 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
 
   {
     section: "Who wrote this",
-    title: "The README has not caught up",
+    title: "Answering the FAQ honestly",
     body: `${quote(
       `Is this generated with AI?
 
-I use Copilot and GPT extensively, but no large chunks are created independently by AI. But much of the game dossier was created in close collaboration with GPT.`,
-      "README.md, written 2024, still there today",
+I use Copilot and GPT extensively, but no large chunks are created independently by AI.`,
+      "README.md, written 2024, true until July 2026",
     )}
-    ${para(
-      `Two hundred and fifteen commits later, that paragraph is the most
-      out-of-date sentence in the repository.`,
+    ${quote(
+      `The work since July 2026 is mostly not mine to claim. Most of it was done by Claude Code working through TODO.md: the test suite, the evals, the playtest and quest harnesses, the Cloudflare server, the published playthrough and eval pages, and a good deal of engine work. That is around two thirds of the commits in this repository.
+
+What hasn't changed is who writes the game.`,
+      "README.md, rewritten while making this deck",
     )}`,
-    notes: `Not a gotcha — it is genuinely true of the era it describes, and
-    nobody has had a reason to rewrite the FAQ.
-    <br><br>But it is a good prompt for the room: what <em>should</em> that
-    paragraph say now? The honest answer is complicated, because the next few
-    slides are about how much of the work was deciding what the agent was
-    allowed to write.`,
+    notes: `The old answer was not a lie — it was accurate for the era it
+    described, and nobody had had a reason to revisit the FAQ. Building this
+    deck was the reason.
+    <br><br>Worth putting to the room: what should that paragraph say? "Written
+    by AI" and "written by me" are both wrong, and the sentence that is
+    actually true took a paragraph, not a sentence.`,
   },
 
   {
@@ -1952,13 +2087,19 @@ function renderSlide(slide: Slide, index: number, total: number): string {
   const notes = slide.notes
     ? `<div class="notes"><b>notes</b>${slide.notes}</div>`
     : `<div class="notes"><b>notes</b><span class="dim">(none)</span></div>`;
+  const chimeText = slide.title ? ASIDES[slide.title] : undefined;
+  const chime = chimeText ? aside(chimeText) : "";
   // The first slide carries `shown` in the markup so the deck renders
   // something before (or without) the script.
   return `<section class="slide ${kind}${index === 0 ? " shown" : ""}" id="s${index + 1}" data-n="${index + 1}">
   <div class="frame">
-    ${slide.section && kind === "content" ? `<div class="kicker">${esc(slide.section)}</div>` : ""}
+    ${
+      slide.section && kind === "content"
+        ? `<div class="kicker"><span class="kickerblocks">░▒▓</span> ${esc(slide.section)}</div>`
+        : ""
+    }
     ${heading}
-    <div class="content">${slide.body}</div>
+    <div class="content">${slide.body}${chime}</div>
   </div>
   ${notes}
   <div class="pagenum">${index + 1} / ${total}</div>
@@ -2030,8 +2171,12 @@ blockquote cite { display: block; margin-top: .7rem; color: var(--dim); font-sty
 .stat span { color: var(--dim); font-size: .8em; }
 .slide table { margin: .6rem 0; font-size: clamp(.72rem, 1.2vw, .95rem); }
 .slide td, .slide th { padding: .35rem .6rem; }
+.kickerblocks { color: var(--partial); letter-spacing: 0; opacity: .85; }
+/* The Archivist's interjection, set apart from the operator text above it. */
 .aside { color: #facc15; font-family: ui-monospace, monospace;
-         font-size: clamp(.68rem, 1.1vw, .85rem); margin-top: 1.1rem; }
+         font-size: clamp(.68rem, 1.15vw, .88rem); line-height: 1.5;
+         margin: 1.4rem 0 0; padding-top: .7rem;
+         border-top: 1px dashed rgba(250, 204, 21, .35); }
 .slide .archivist { font-size: clamp(.75rem, 1.3vw, 1rem); line-height: 1.6; }
 .slide .artbanner { font-size: clamp(.5rem, 1.15vw, .95rem); }
 .pagenum { position: absolute; right: 1.4vw; bottom: 1.2vh; color: var(--line);

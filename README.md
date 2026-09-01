@@ -146,7 +146,13 @@ I've done other similar projects in the past, much of which I wrote about in [Ro
 
 ## Is this generated with AI?
 
-I use Copilot and GPT extensively, but no large chunks are created independently by AI. But much of the game [dossier](./docs/dossier.md) was created in close collaboration with GPT.
+Two different answers, depending on which part and which year.
+
+The 2024 game — the engine, the world, the characters, the mysteries — I wrote. I used Copilot and GPT extensively, but no large chunks were created independently by AI. Much of the [dossier](./docs/dossier.md) was written in close collaboration with GPT, as its own header says.
+
+The work since July 2026 is mostly not mine to claim. Most of it was done by Claude Code working through [TODO.md](./TODO.md): the test suite, the evals, the playtest and quest harnesses, the Cloudflare server, the published [playthrough](https://playintra.win/playthroughs/) and [eval](https://playintra.win/evals/) pages, and a good deal of engine work. That is around two thirds of the commits in this repository.
+
+What hasn't changed is who writes the game. [CLAUDE.md](./CLAUDE.md) keeps agents out of `lib/game/content/**` and the dossier, and asks for prompts to be written flat, because style is transmissible: a prompt written in someone else's voice makes every character speak in it. Nothing automated checks that. Someone reading the diff is the only check there is.
 
 ## Security?
 
