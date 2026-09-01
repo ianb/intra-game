@@ -189,9 +189,133 @@ interface Slide {
   notes?: string;
 }
 
-/** A block of verbatim source, escaped. `lang` only labels it. */
-function code(text: string, label?: string): string {
-  return `${label ? `<div class="codelabel">${esc(label)}</div>` : ""}<pre class="code">${esc(text.trim())}</pre>`;
+/**
+ * Syntax colouring, written here rather than pulled from a library.
+ *
+ * These pages are self-contained by rule — no scripts, no CDN, no fetches —
+ * so a highlighter has to be small enough to inline. It only needs to handle
+ * the two things this deck quotes: TypeScript, and the game's tag protocol.
+ *
+ * Tokenising runs over the raw source and escapes each piece as it is
+ * emitted, rather than escaping first and pattern-matching over the result,
+ * where `&quot;` and `&lt;` would be matched as content.
+ */
+type Lang = "ts" | "tags" | "plain";
+
+const TS_KEYWORDS = new Set([
+  "as", "async", "await", "boolean", "break", "case", "catch", "class",
+  "const", "continue", "default", "delete", "else", "export", "extends",
+  "false", "for", "function", "if", "import", "in", "interface", "let",
+  "new", "null", "number", "of", "return", "string", "switch", "this",
+  "throw", "true", "try", "type", "typeof", "undefined", "void", "while",
+]);
+
+function span(cls: string, text: string): string {
+  return `<span class="${cls}">${esc(text)}</span>`;
+}
+
+function highlightTs(src: string): string {
+  // Comments and strings first, so keywords inside them are left alone.
+  //
+  // The string arms are written unrolled — `[^"\\]*(?:\\.[^"\\]*)*` rather
+  // than `(?:[^"\\]|\\.)*` — because an alternation inside a quantifier
+  // backtracks exponentially on an unterminated quote, and a quoted line that
+  // never closes is exactly what a slide of pasted source might contain.
+  // Line comments only: every TypeScript block quoted in this deck uses `//`.
+  //
+  // The disable is for the string arms, and it is a false positive worth
+  // naming. `[^"\\]*(?:\\.[^"\\]*)*` is the unrolled loop — the standard
+  // rewrite *of* a catastrophic pattern, and linear, because at every
+  // position exactly one branch can match. safe-regex scores nested stars by
+  // shape rather than by whether the branches overlap, so it rejects the
+  // cure along with the disease. The alternative it would accept, `[^"]*`,
+  // is genuinely worse here: it ends a string at the first escaped quote,
+  // and these blocks contain them.
+  const pattern =
+    // eslint-disable-next-line security/detect-unsafe-regex -- unrolled loop, linear
+    /(\/\/[^\n]*)|(`[^`\\]*(?:\\.[^`\\]*)*`|"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)/g;
+  let out = "";
+  let last = 0;
+  for (const m of src.matchAll(pattern)) {
+    const at = m.index;
+    out += esc(src.slice(last, at));
+    last = at + m[0].length;
+    if (m[1]) {
+      out += span("c-com", m[1]);
+    } else if (m[2]) {
+      out += span("c-str", m[2]);
+    } else if (m[3]) {
+      out += span("c-num", m[3]);
+    } else {
+      const word = m[4]!;
+      const next = src[last];
+      if (TS_KEYWORDS.has(word)) {
+        out += span("c-key", word);
+      } else if (/^[A-Z]/.test(word)) {
+        out += span("c-type", word);
+      } else if (next === "(") {
+        out += span("c-fn", word);
+      } else {
+        out += esc(word);
+      }
+    }
+  }
+  return out + esc(src.slice(last));
+}
+
+/** The attribute run inside one tag, with the gaps between escaped. */
+function renderAttrs(src: string): string {
+  const pattern = /([\w-]+)(=)("[^"]*")/g;
+  let out = "";
+  let last = 0;
+  for (const m of src.matchAll(pattern)) {
+    out += esc(src.slice(last, m.index));
+    last = m.index + m[0].length;
+    out += span("c-attr", m[1]!) + esc(m[2]!) + span("c-str", m[3]!);
+  }
+  return out + esc(src.slice(last));
+}
+
+function highlightTags(src: string): string {
+  // Everything up to the closing bracket is taken in one linear `[^>]*` and
+  // picked apart afterwards, rather than repeating an attribute group inside
+  // the tag pattern, which nests quantifiers and backtracks badly.
+  const pattern = /(<\/?)([a-zA-Z][\w-]*)([^>]*)(>)/g;
+  let out = "";
+  let last = 0;
+  for (const m of src.matchAll(pattern)) {
+    out += esc(src.slice(last, m.index));
+    last = m.index + m[0].length;
+    let rest = m[3] ?? "";
+    let selfClose = "";
+    if (rest.endsWith("/")) {
+      selfClose = "/";
+      rest = rest.slice(0, -1);
+    }
+    out +=
+      span("c-punc", m[1]!) +
+      span("c-tag", m[2]!) +
+      renderAttrs(rest) +
+      span("c-punc", selfClose + m[4]!);
+  }
+  return out + esc(src.slice(last));
+}
+
+/**
+ * A block of verbatim source. `label` is the caption above it; `lang` decides
+ * colouring, and defaults to none — most blocks here are transcripts, records
+ * and readouts rather than code, and colouring those would be a lie about
+ * what they are.
+ */
+function code(text: string, label?: string, lang: Lang = "plain"): string {
+  const body = text.trim();
+  const rendered =
+    lang === "ts"
+      ? highlightTs(body)
+      : lang === "tags"
+        ? highlightTags(body)
+        : esc(body);
+  return `${label ? `<div class="codelabel">${esc(label)}</div>` : ""}<pre class="code">${rendered}</pre>`;
 }
 
 /** A verbatim quote from the repo, with where it came from. */
@@ -572,6 +696,7 @@ This is mostly written by ChatGPT over the course of many interactions and with 
   uiOnly?: boolean;          // shown to the player, invisible to characters
 }`,
       "lib/types.ts",
+      "ts",
     )}
     ${para(
       `The event carries its own audit trail. Every event knows which prompt
@@ -602,6 +727,7 @@ This is mostly written by ChatGPT over the course of many interactions and with 
   }
 }`,
       "lib/game/world.ts",
+      "ts",
     )}
     ${para(
       `Undo does not rewind state. It throws the world away and folds it
@@ -638,6 +764,7 @@ That keeps the log append-only (a reviewer can still see what the model produced
   return live;
 }`,
       "the entire implementation",
+      "ts",
     )}`,
     notes: `Rewinds compose: undoing twice walks back two turns, and a rewind
     can itself be rewound. The commit message notes that the one-turn limit
@@ -656,6 +783,7 @@ That keeps the log append-only (a reviewer can still see what the model produced
 // entities that undo and reload re-fold from.
 const merged = { ...(fieldsOf(this).attitudes as Record<string, unknown>) };`,
       "lib/game/classes.ts",
+      "ts",
     )}
     ${para(
       `<code>clone()</code> is <code>Object.assign</code>, so object-valued
@@ -735,6 +863,7 @@ need to know what she knows.</mind>
 <attitude toward="PLAYER">She's got secrets and she's actually talking to me
 about them—finally someone interesting.</attitude>`,
       "evals/quests/ink-and-echo-2026-08-20-22-51-19.yaml, turn 11",
+      "tags",
     )}`,
     notes: `This is a real recorded turn, not a mock-up. Worth pointing at
     item 3 in the context block: that is Doug's schedule, injected into the
@@ -851,6 +980,7 @@ writing 4-5 words for each item:
    Name the person and the change, or write "no"
 </context>`,
       "lib/game/classes.ts, every character prompt",
+      "tags",
     )}
     ${para(
       `Item 8 is wired to an output: if it named a person, write an
@@ -903,6 +1033,7 @@ writing 4-5 words for each item:
 // had been clean. Re-run \`pnpm evals --scenario task-list --scenario
 // movement\` after editing it.`,
       "lib/game/classes.ts",
+      "ts",
     )}
     ${para(
       `A longer version and a shorter version both scored worse. The wording
@@ -955,6 +1086,7 @@ reaches?: number;         // ...or crossed a threshold from below
 becomes: MysteryState;
 announcedBy?: EntityId;   // who reads the introduction out`,
       "the whole vocabulary",
+      "ts",
     )}`,
     notes: `The tension here is worth naming: content wants expressiveness,
     and expressiveness in content is a scripting language nobody designed. The
@@ -1026,6 +1158,7 @@ Keep it to one, two, at most three meters per character, in small ranges: the pl
   },
 }`,
       "lib/game/content/people.ts, Milton",
+      "ts",
     )}`,
     notes: `Two things to point at. The <code>down</code> criterion is a joke
     that is also a mechanic — nobody has ever done these things, so in practice
@@ -1262,6 +1395,7 @@ applyRewinds(log).length;
   model.world.entities.PLAYER.inside === "Hollow_Atrium" &&
   model.world.entities.Ink_And_Echo.state !== "veiled",`,
       "the predicate the recorder refuses to save without",
+      "ts",
     )}`,
     notes: `A checkpoint is just a log, so it needs no special serialisation —
     but a YAML file cannot carry a claim about what the state <em>means</em>.
@@ -1406,6 +1540,7 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
 // could be rewritten and this would report the same twelve characters,
 // which is the one thing it exists not to do.`,
       "playtest/fingerprint.ts",
+      "ts",
     )}
     ${para(
       `Found while chasing something else. A session's worth of prompt work had
@@ -1926,6 +2061,7 @@ The common tells, so this is checkable rather than vague:
 // them we don't encourage the LLM to use emoji unless it is directly inspired
 // to do so`,
       "lib/game/history.ts, written in 2024",
+      "ts",
     )}
     ${para(
       `The same observation as the CLAUDE.md prompt rule, caught two years
@@ -2079,7 +2215,44 @@ The common tells, so this is checkable rather than vague:
 
 // --- rendering ---------------------------------------------------------------
 
-function renderSlide(slide: Slide, index: number, total: number): string {
+/**
+ * "2.7" — the seventh slide of part two, shown top left so a slide can be
+ * named out loud and found again.
+ *
+ * Parts are the dividers, numbered in the order they appear. A slide in a
+ * section that has no divider (the close) gets no number rather than being
+ * counted into the part before it.
+ */
+function slideNumbers(slides: Slide[]): (string | undefined)[] {
+  const partOf = new Map<string, number>();
+  for (const slide of slides) {
+    if (slide.kind === "section" && slide.section) {
+      partOf.set(slide.section, partOf.size + 1);
+    }
+  }
+  const seen = new Map<string, number>();
+  return slides.map((slide) => {
+    // `kind` is omitted on ordinary slides, so normalise it the way
+    // renderSlide does rather than comparing against undefined.
+    if (!slide.section || (slide.kind ?? "content") !== "content") {
+      return undefined;
+    }
+    const part = partOf.get(slide.section);
+    if (part === undefined) {
+      return undefined;
+    }
+    const within = (seen.get(slide.section) ?? 0) + 1;
+    seen.set(slide.section, within);
+    return `${part}.${within}`;
+  });
+}
+
+function renderSlide(
+  slide: Slide,
+  index: number,
+  total: number,
+  number?: string,
+): string {
   const kind = slide.kind ?? "content";
   const heading = slide.title
     ? `<h2>${COLORS.tint(esc(slide.title))}</h2>`
@@ -2092,14 +2265,17 @@ function renderSlide(slide: Slide, index: number, total: number): string {
   // The first slide carries `shown` in the markup so the deck renders
   // something before (or without) the script.
   return `<section class="slide ${kind}${index === 0 ? " shown" : ""}" id="s${index + 1}" data-n="${index + 1}">
-  <div class="frame">
-    ${
-      slide.section && kind === "content"
-        ? `<div class="kicker"><span class="kickerblocks">░▒▓</span> ${esc(slide.section)}</div>`
-        : ""
-    }
-    ${heading}
-    <div class="content">${slide.body}${chime}</div>
+  <div class="main">
+    <div class="frame">
+      ${
+        slide.section && kind === "content"
+          ? `<div class="kicker">${number ? `<span class="slideno">${esc(number)}</span>` : ""}<span class="kickerblocks">░▒▓</span> ${esc(slide.section)}</div>`
+          : ""
+      }
+      ${heading}
+      <div class="content">${slide.body}</div>
+    </div>
+    ${chime}
   </div>
   ${notes}
   <div class="pagenum">${index + 1} / ${total}</div>
@@ -2108,6 +2284,7 @@ function renderSlide(slide: Slide, index: number, total: number): string {
 
 function page(): string {
   const total = SLIDES.length;
+  const numbers = slideNumbers(SLIDES);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2117,7 +2294,7 @@ function page(): string {
 <style>${STYLE}${DECK_STYLE}${COLORS.css}</style>
 </head>
 <body class="deck">
-${SLIDES.map((slide, i) => renderSlide(slide, i, total)).join("\n")}
+${SLIDES.map((slide, i) => renderSlide(slide, i, total, numbers[i])).join("\n")}
 <div class="helpbar" id="helpbar">
   ← → or space: move · <kbd>N</kbd>: notes · <kbd>Home</kbd>/<kbd>End</kbd>: ends · <kbd>?</kbd>: hide this
 </div>
@@ -2129,20 +2306,26 @@ ${SLIDES.map((slide, i) => renderSlide(slide, i, total)).join("\n")}
 
 const DECK_STYLE = `
 body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
-.slide { display: none; height: 100vh; padding: 3vh 4vw 6vh; box-sizing: border-box;
+.slide { display: none; height: 100vh; padding: 3vh 4vw 4.5vh; box-sizing: border-box;
          flex-direction: column; overflow: hidden; }
 .slide.shown { display: flex; }
-.frame { flex: 1; min-height: 0; overflow-y: auto; }
-.kicker { text-transform: uppercase; letter-spacing: .12em; font-size: clamp(.6rem, 1.1vw, .8rem);
-          color: var(--dim); margin-bottom: .6rem; }
-.slide h2 { font-size: clamp(1.3rem, 2.9vw, 2.1rem); margin: 0 0 1.2rem; line-height: 1.15;
-            letter-spacing: -.01em; color: var(--fg); }
-.slide .content { font-size: clamp(.85rem, 1.45vw, 1.15rem); }
+/* The slide body: content above, the Archivist's line pinned under it. */
+.main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+/* "safe center" centres a slide that fits and falls back to top-aligned when
+   one overflows, so a long slide scrolls from its first line rather than
+   from its middle. */
+.frame { flex: 1; min-height: 0; overflow-y: auto;
+         display: flex; flex-direction: column; justify-content: safe center; }
+.kicker { text-transform: uppercase; letter-spacing: .12em; font-size: clamp(.65rem, 1.2vw, .85rem);
+          color: var(--dim); margin-bottom: .7rem; flex: 0 0 auto; }
+.slideno { color: var(--partial); font-family: ui-monospace, monospace;
+           letter-spacing: .04em; margin-right: .6rem; }
+.slide h2 { font-size: clamp(1.45rem, 3.2vw, 2.4rem); margin: 0 0 1.1rem; line-height: 1.14;
+            letter-spacing: -.01em; color: var(--fg); flex: 0 0 auto; }
+.slide .content { font-size: clamp(.95rem, 1.7vw, 1.35rem); flex: 0 0 auto; }
 .slide p { max-width: 54em; }
-.slide.title { justify-content: center; text-align: center; }
-.slide.title .frame { flex: 0 0 auto; }
-.slide.section { justify-content: center; }
-.slide.section .frame { flex: 0 0 auto; }
+.slide.title { text-align: center; }
+.slide.section .main, .slide.title .main { justify-content: center; }
 .lead { font-size: clamp(1.1rem, 2.2vw, 1.6rem); color: var(--fg); max-width: 40em;
         margin-left: auto; margin-right: auto; }
 /* Title and divider slides center their blocks; content slides stay ragged-right.
@@ -2154,7 +2337,7 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
 .slide.title .archivist, .slide.section .archivist { text-align: left; }
 pre.code { background: #0b1220; border: 1px solid var(--line); border-radius: 6px;
            padding: .8rem 1rem; overflow-x: auto; white-space: pre; margin: .6rem 0;
-           font-size: clamp(.62rem, 1.02vw, .88rem); line-height: 1.45; color: #cbd5e1; }
+           font-size: clamp(.58rem, .95vw, .92rem); line-height: 1.4; color: #cbd5e1; }
 .codelabel { color: var(--dim); font-size: .8em; margin-top: .8rem; }
 blockquote { margin: .6rem 0; padding: .7rem 0 .7rem 1.1rem; border-left: 3px solid var(--partial);
              white-space: pre-wrap; color: var(--fg); max-width: 58em;
@@ -2172,11 +2355,22 @@ blockquote cite { display: block; margin-top: .7rem; color: var(--dim); font-sty
 .slide table { margin: .6rem 0; font-size: clamp(.72rem, 1.2vw, .95rem); }
 .slide td, .slide th { padding: .35rem .6rem; }
 .kickerblocks { color: var(--partial); letter-spacing: 0; opacity: .85; }
-/* The Archivist's interjection, set apart from the operator text above it. */
+/* The Archivist's interjection: a footnote, so it sits on the bottom rule of
+   the slide rather than wherever the operator text happened to stop. */
 .aside { color: #facc15; font-family: ui-monospace, monospace;
-         font-size: clamp(.68rem, 1.15vw, .88rem); line-height: 1.5;
-         margin: 1.4rem 0 0; padding-top: .7rem;
+         font-size: clamp(.72rem, 1.25vw, .95rem); line-height: 1.5;
+         flex: 0 0 auto; margin: 1.4rem 0 0; padding-top: .8rem;
          border-top: 1px dashed rgba(250, 204, 21, .35); }
+/* Syntax colouring; see highlightTs and highlightTags. */
+.c-com { color: #64748b; font-style: italic; }
+.c-str { color: #86efac; }
+.c-key { color: #c084fc; }
+.c-type { color: #7dd3fc; }
+.c-num { color: #fbbf24; }
+.c-fn { color: #93c5fd; }
+.c-tag { color: #f472b6; }
+.c-attr { color: #fbbf24; }
+.c-punc { color: var(--dim); }
 .slide .archivist { font-size: clamp(.75rem, 1.3vw, 1rem); line-height: 1.6; }
 .slide .artbanner { font-size: clamp(.5rem, 1.15vw, .95rem); }
 .pagenum { position: absolute; right: 1.4vw; bottom: 1.2vh; color: var(--line);
@@ -2189,12 +2383,10 @@ blockquote cite { display: block; margin-top: .7rem; color: var(--dim); font-sty
            color: var(--partial); margin-bottom: .4rem; }
 .notes .dim { color: var(--dim); }
 body.notes-on .slide.shown .notes { display: block; }
-body.notes-on .frame { max-height: 60vh; }
 /* On a wide screen the notes sit beside the slide instead of under it, so
    turning them on does not squash the content the audience is reading. */
 @media (min-width: 62rem) {
   body.notes-on .slide.shown { flex-direction: row; gap: 2rem; }
-  body.notes-on .frame { max-height: none; }
   body.notes-on .slide.shown .notes { flex: 0 0 22rem; max-height: none;
     border-top: none; border-left: 2px solid var(--partial); align-self: stretch; }
 }
