@@ -119,6 +119,15 @@ function copyStatic() {
     resolve(outdir, "playthroughs"),
     { recursive: true },
   );
+  // The talk about how this was built, served at /slides/. Generated and
+  // committed by `pnpm slides`, same contract again. Nothing links to it from
+  // the game or the README: it gives away every mystery, so it is for someone
+  // handed the URL rather than for someone browsing.
+  mkdirSync(resolve(outdir, "slides"), { recursive: true });
+  cpSync(
+    resolve(root, "slides/index.html"),
+    resolve(outdir, "slides/index.html"),
+  );
   copyCheckpoints();
 }
 
