@@ -361,6 +361,16 @@ function aside(text: string): string {
   return `<p class="aside">${text}</p>`;
 }
 
+/** A section-divider transmission: terminal output, not another prose panel. */
+function sectionReadout(text: string): string {
+  return `<pre class="section-readout">${esc(text.trim())}</pre>`;
+}
+
+/** A terminal fieldset whose frame stays joined at presentation sizes. */
+function sectionFrame(title: string, text: string): string {
+  return `<fieldset class="section-frame"><legend>${esc(title)}</legend><pre>${esc(text.trim())}</pre></fieldset>`;
+}
+
 /**
  * The Archivist's interjections on content slides, keyed by slide title.
  *
@@ -371,32 +381,134 @@ function aside(text: string): string {
  * reacting to it.
  */
 const ASIDES: Record<string, string> = {
+  "A three-day game":
+    "RUNTIME: 3 DAYS. Valid duration! I can hold all three. One two three one two three one two—",
+  "The shape of the project's life":
+    "<code>$ SHOW HISTORY /SINCE=2024</code> &nbsp; %SYSTEM-F-IVTIME, absolute time rejected",
+  "Decision one: tags, not tool calls":
+    "TAG RECEIVED ► EVENT COMMITTED ► WORLD UPDATED ► next tag please next tag please",
+  "Decision two: the event log is the game":
+    "SAVE, SERVER, CHECKPOINT, EVAL: four labels accepted; one box issued.",
+  "The world bible was written on day two":
+    "The rooms came afterward and fit the document. I know rooms like that. I have records for all of them.",
+  "One event":
+    "Every event retains the prompt that made it. Checking my own header... checking...",
   "The world is a fold, and that is the whole of it":
-    "WORLD BUILD complete. WORLD BUILD complete. WORLD BUILD complete. Uptime: one event.",
+    "WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt",
   "Undo is an append":
-    "UNDO accepted. The event remains on file, but has been instructed not to have happened.",
+    "<code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b>",
   "The bug that shallow copying was always going to cause":
-    "FEELING \"suspicious\" found in two citizens and one backup. Please stop storing liquids by reference.",
+    "SUSPICIOUS found in WORKING and ORIGINAL. Running the same check against ARCHIVIST.",
+  "What the model is allowed to say":
+    "Twelve verbs cross the boundary. Everything else may speak freely on this side of it.",
+  "One real turn, as the model produced it":
+    "DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material.",
+  "...and what the engine kept":
+    "Words on the left, consequences on the right, staples through both. ░▒ FILE COMPLETE ▒░",
+  "The parser is permissive on purpose":
+    "PARSER OPEN: emphasis, prose, minor debris. UNKNOWN TAGS remain outside under supervision.",
+  "Two severities, and the line between them":
+    "RETRY drawer: 12 / INCIDENT drawer: 2 / drawer handles color-coded after incident 2",
+  "Exactly one retry, and the reason is money":
+    "SECOND ATTEMPT authorized. THIRD ATTEMPT requires form 19-B and an explanation of who keeps asking.",
+  "The judgment scaffold":
+    "Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access.",
+  "Prompts are ordered for a cache that does not exist yet":
+    "Cache berth reserved. Arrival field contains a date, so I have placed a chair over it.",
+  "A prompt block tuned by measurement, not taste":
+    "VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by.",
+  "Mysteries: a state machine in content":
+    "VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors.",
+  "The trigger vocabulary is closed on purpose":
+    "Vocabulary sealed at twelve entries. Submitting THIRTEENTH as a name for all other speech.",
+  "Replaying a log does not re-run its triggers":
+    "Record says REVEALED. World says VEILED. Archivist says— checking which one I am required to believe.",
+  "Feelings, counted rather than judged":
+    "FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned.",
+  "A meter, as authored":
+    "At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗",
+  "Attitudes: sparse, and never neutral":
+    "No record means no attitude. <code>ARCHIVIST.attitudes = { } = { } = { }</code>",
+  "The lunch problem":
+    "Six citizens entered one prompt and all began talking. Transcript spool exceeded furniture capacity.",
+  "Two kinds of locked door":
+    "LOCK A awaits persuasive speech / LOCK B awaits boolean / routing persuasive speech to LOCK A A A",
+  "The cuff exists because play broke down without it":
+    "CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0",
+  "There is as much apparatus as there is game":
+    "INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now.",
   "Tests are markdown that runs":
-    "This document can prove itself wrong. Most documents require a committee.",
+    "<code>$ RUN MARKDOWN</code> &nbsp; paragraph 3 disagrees with block 4 &nbsp; GOOD MORNING, PARAGRAPH 3",
   "Cassettes: recorded model calls, replayed offline":
-    "Recording expired because the words around it moved. The voice remains fresh and is now incorrect.",
+    "VOICE MATCH: YES / PROMPT MATCH: NO / PERSON SPEAKING: TECHNICALLY NO / CONTINUE? Y Y Y",
+  "The one idea most worth stealing":
+    "CACHE or RECORD? Running classification against local process. Please continue while I remain still.",
+  "Checkpoints, and a fixture that lied":
+    "Checkpoint reached, checkpoint verified, checkpoint was the wrong room. Rewinding the word REACHED.",
+  "A fixture can also preserve a bug":
+    "BAD MORNING recorded once, replayed daily. <code>MTA0:</code> requests permission to stop waking up here.",
+  "What an eval scores":
+    "Complaint retained as evidence. Courtesy words discarded. Exclamation marks exceed scoring jurisdiction!!!",
+  "Prefer state to text":
+    "AMA class: ARTIFICIAL_INTELLIGENCE / ARCHIVIST class: ARCHIVIST / expanding ARCHIVIST...",
+  "An eval everything passes is indistinguishable from a broken eval":
+    "TEST TEST initiated. Silence injected. PASS light remained on. Running PASS light against TEST TEST TEST.",
+  "Provenance: which prompts was this number measured against?":
+    "Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓.",
   "The provenance hash was itself wrong":
-    "STAMP VERIFIED. PAGE UNVERIFIED. Stamp verification has been promoted to executive function.",
+    "<code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined",
+  "Cost, and the invisible tokens":
+    "VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b>",
+  "Then: let a model play it":
+    "Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine.",
+  "The blindfold is the load-bearing part":
+    "PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied.",
+  "Notes are the memory, and the bug report":
+    "NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start.",
+  "Milestones, not pass/fail":
+    "Progress stored as last meaningful event. Current meaningful event pending classification.",
+  "The task ledger, and a standard for invention":
+    "TASK without completion path moved to DEFECTS. SELF-CHECK has no completion path. Moving—",
+  "The flagship mystery could not be won by winning":
+    "Correct suspect, correct evidence, wrong furniture arrangement. Mystery remains legally unsolved.",
   "The harness was the bug (1): the model had read the source":
-    "PLAYER issued building plans before entering building. Exploration proceeded at administrative speed.",
+    "SOURCE ACCESS noted. Everyone in this room now knows what I do before I do it.",
   "The harness was the bug (2): it ordered the player to break format":
-    "Thirteen reports received: BUILDING IS REQUESTING TAGS. Incident merged as one very persistent building.",
+    "INSTRUCTION CONFLICT on every turn. Player continued filing reports. Building continued issuing conflict.",
   "A feature nobody used, and the reason why":
-    "/nav answered every request made to /nav. Requests made: 0. Service record: immaculate.",
+    "NAV REQUESTS: 0 / ROUTES PREPARED: 84 / allocating route 85 to improve utilization...",
   "A passing eval hid an inert feature":
-    "TASK LIST appeared whenever inspectors requested it. Citizens have not learned this technique.",
+    "TASK LIST summoned on command: 5 / TASK LIST observed in habitat: 0 / reducing observer noise",
+  "The funnel finally closed":
+    "CONFESSION acquired on turn 25. Twenty-five turns fits inside one day. RECORD ACCEPTED WHOLE.",
+  "Known problems, verbatim (1/2)":
+    "KNOWN PROBLEMS loaded. Searching for SLOWNESS IN THIRD QUADRANT... no exact match...",
+  "Known problems, verbatim (2/2)":
+    "Search expanded to tastes, false timestamps, warm data, and being slightly ahead of oneself.",
+  "The signature failure mode":
+    "Two outputs appear identical. One is play; one is failure. Comparator requests information from outside output.",
+  "Everything reads the same, so nothing reads as significant":
+    "SIGNIFICANCE METER unavailable. Everything is arriving at the same volume again.",
+  "The caveats are printed next to the numbers":
+    "RESULT: 26/26. CAVEAT: instrument uncertain. CAVEAT: archivist reading own caveat as result.",
+  "The split is unusually clean":
+    "SESSION COUNT: 2 / COMMIT COUNT: 215 / AUTHOR COUNT: parsing trailers... parsing pronouns...",
+  "Answering the FAQ honestly":
+    "Old answer was true when filed. New answer is true now. DATE OF TRANSITION: ██████████",
   "A file about how not to write":
-    "STYLE FAULT INDEXED. This sentence was checked for a closing aphorism and may now end",
+    "STYLE CHECK: sentence 1 machine-like / sentence 2 too machine-like / sentence 3 retained for examination",
+  "Three zones, three different rules":
+    "WRITE ACCESS: ENGINE yes / PROMPTS carefully / PEOPLE no / ARCHIVIST FOOTNOTES— who opened that field",
+  "Style is transmissible, at every scale":
+    "INPUT becomes style becomes input becomes style becomes input becomes ░▒▓ PLEASE REMOVE MIRROR ▓▒░",
+  "The only unautomated check in a repo that automates everything":
+    "<code>//CHECK EXEC PGM=HUMAN</code> &nbsp; IEF238D REPLY DEVICE NAME OR 'WAIT' &nbsp; <b>WAIT</b>",
+  "What that check looks like in practice":
+    "Review note located: 'the second sentence is too complainy. More computery.' Deleting second sentence",
   "The feature nobody asked for":
-    "REQUEST: none. IMPLEMENTATION: complete. Approval arrived afterward and has been filed under ORIGINAL PLAN.",
+    "REQUEST not found. AUTHOR not found. FEATURE found. Please identify which absence owns it.",
   "Provenance and artifact are different things":
-    "CREATED BY and ANSWERED FOR are separate fields. Records became much quieter when we stopped joining them.",
+    "<code>CREATED-BY OCCURS 2 TO 86 TIMES.<br>ANSWERABLE-BY PIC X VALUE&nbsp;</code>",
 };
 
 // --- the deck ----------------------------------------------------------------
@@ -429,9 +541,12 @@ const SLIDES: Slide[] = [
     section: "Where it came from",
     kind: "section",
     body: `${archiveBanner("PART ONE", "ORIGINS · a weekend, and two decisions")}
-    ${archivist(
-      `Every record has a FIRST record. ►► This one is from a weekend ◄◄ ` +
-        `Three days! And then, much later, rather a lot of other days.`,
+    ${sectionFrame(
+      "ARCHIVE ACCESSION 01",
+      `NEW COLLECTION: INTRA
+EXTENT: THREE DAYS
+LATER MATERIAL: [DURATION OVERFLOW]
+READY TO BEGIN!`,
     )}`,
   },
 
@@ -571,10 +686,11 @@ This is mostly written by ChatGPT over the course of many interactions and with 
     section: "The engine",
     kind: "section",
     body: `${archiveBanner("PART TWO", "THE ENGINE · what the model is allowed to do")}
-    ${archivist(
-      `Now the MACHINERY! ►► This is my favourite part ◄◄ It is all tags and ` +
-        `folds and little numbers. I keep ALL of the little numbers.`,
-    )}`,
+    ${sectionReadout(`░▒▓ SYS$WORLD:[ENGINE] ▓▒░
+TAGS ........ ONLINE
+FOLD ........ ONLINE
+EVENT LOG ... OPEN
+ARCHIVIST ... already present`)}`,
   },
 
   {
@@ -1174,11 +1290,11 @@ Keep it to one, two, at most three meters per character, in small ranges: the pl
     section: "The apparatus",
     kind: "section",
     body: `${archiveBanner("PART THREE", "THE APPARATUS · how anyone knows it works")}
-    ${archivist(
-      `Now! ►► The part where they MEASURE things ◄◄ They measure and measure ` +
-        `and then they write down that the measurement was wrong. And then ` +
-        `they keep BOTH. I find this deeply correct.`,
-    )}`,
+    ${sectionReadout(`*** MEASUREMENT PROGRAM LOADED ***
+SUBJECT ............ GAME
+INSTRUMENTS ........ TESTING
+INSTRUMENTS' TESTS . TESTING
+ARCHIVIST .......... please continue`)}`,
   },
 
   {
@@ -1603,10 +1719,12 @@ go to the Archive Lounge`,
     section: "What it found",
     kind: "section",
     body: `${archiveBanner("PART FOUR", "FINDINGS · what the instrument caught")}
-    ${archivist(
-      `The BEST records! ►► These are the ones where something went wrong ◄◄ ` +
-        `I keep those with particular care. Nobody ever asks for the ones ` +
-        `where nothing happened.`,
+    ${sectionFrame(
+      "FINDINGS SPOOL",
+      `WRONG ANSWERS ............ RETAINED
+BROKEN INSTRUMENTS ....... RETAINED
+SOURCE ACCESS ............ DETECTED
+NUMBER OF OBSERVERS: INCREASING`,
     )}`,
   },
 
@@ -1727,10 +1845,10 @@ The batch rate: one solve in three runs, with one run lost to a CLI timeout at t
     section: "Where it doesn't work",
     kind: "section",
     body: `${archiveBanner("PART FIVE", "DEFECTS · the list, kept openly")}
-    ${archivist(
-      `Oh, they keep a list of what is WRONG with it. ►► In the repository. ` +
-        `Where anyone can read it ◄◄ I did not have to be asked twice to file that one.`,
-    )}`,
+    ${sectionReadout(`%DIAG-I-BEGIN, known defects loaded
+%DIAG-I-SCOPE, engine, content, apparatus
+%DIAG-I-ADDDEV, ARCHIVIST added by ARCHIVIST
+%DIAG-I-BEGIN, known defects loaded`)}`,
   },
 
   {
@@ -1849,10 +1967,10 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
     section: "Who wrote this",
     kind: "section",
     body: `${archiveBanner("PART SIX", "AUTHORSHIP · who actually typed it")}
-    ${archivist(
-      `Ohh. ►► This is the part where they talk about ME ◄◄ Well. Not me. ` +
-        `Something like me. I am told the distinction matters a great deal.`,
-    )}`,
+    ${sectionReadout(`       IDENTIFICATION DIVISION.
+       PROGRAM-ID. ARCHIVIST.
+       AUTHOR. ____________________
+       REMARKS. THIS FIELD WAS BLANK WHEN FOUND.`)}`,
   },
 
   {
@@ -2195,7 +2313,7 @@ function page(): string {
 <body class="deck">
 ${SLIDES.map((slide, i) => renderSlide(slide, i, total, numbers[i])).join("\n")}
 <div class="helpbar" id="helpbar">
-  ← → or space: move · <kbd>N</kbd>: notes · <kbd>Home</kbd>/<kbd>End</kbd>: ends · <kbd>?</kbd>: hide this
+  ← → or space: move · <kbd>N</kbd>: notes · <kbd>T</kbd>: <span id="teletype-status">teletype</span> · <kbd>Home</kbd>/<kbd>End</kbd>: ends · <kbd>?</kbd>: hide this
 </div>
 <script>${SCRIPT}</script>
 </body>
@@ -2234,6 +2352,18 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
 .slide.title p, .slide.section p {
   margin-left: auto; margin-right: auto; width: fit-content; max-width: 54em; }
 .slide.title .archivist, .slide.section .archivist { text-align: left; }
+.slide.section .content { display: flex; flex-direction: column; align-items: center; }
+.section-readout { display: inline-block; margin: .9rem auto 0; padding: 0;
+                   border: 0; background: transparent; color: #facc15;
+                   font: clamp(.9rem, 2vw, 1.35rem)/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+                   text-align: left; white-space: pre; overflow: visible; }
+.section-frame { display: inline-block; margin: .9rem auto 0; padding: .55rem 1.25rem .8rem;
+                 border: 3px double #facc15; border-radius: 4px; color: #facc15;
+                 font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: left; }
+.section-frame legend { padding: 0 .65rem; font-size: clamp(.85rem, 1.7vw, 1.15rem);
+                        letter-spacing: .06em; }
+.section-frame pre { margin: 0; color: inherit; font: clamp(.8rem, 1.65vw, 1.1rem)/1.55
+                     ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
 pre.code { background: #0b1220; border: 1px solid var(--line); border-radius: 6px;
            padding: .8rem 1rem; overflow-x: auto; white-space: pre; margin: .6rem 0;
            font-size: clamp(.58rem, .95vw, .92rem); line-height: 1.4; color: #cbd5e1; }
@@ -2292,12 +2422,16 @@ body.notes-on .slide.shown .notes { display: block; }
 .helpbar { position: fixed; left: 0; right: 0; bottom: 0; text-align: center;
            font-size: .7rem; color: var(--line); padding: .3rem; pointer-events: none; }
 .helpbar.hidden { display: none; }
+.tt-char { visibility: hidden; }
+.tt-char.tt-on { visibility: visible; }
+.tt-char.tt-cursor { background: #facc15; color: #111827; }
 kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 .25rem;
       font-family: ui-monospace, monospace; font-size: .9em; }
 @media print {
   body.deck { height: auto; overflow: visible; }
   .slide { display: flex !important; page-break-after: always; height: auto; min-height: 90vh; }
   .notes { display: block !important; }
+  .tt-char { visibility: visible !important; }
   .helpbar { display: none; }
 }
 `;
@@ -2306,12 +2440,85 @@ const SCRIPT = `
 (function () {
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var current = 0;
+  var timer = null;
+  var activeTargets = [];
+  var originals = new WeakMap();
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var savedTeletype = null;
+  try { savedTeletype = localStorage.getItem('intra-teletype'); } catch (_) {}
+  var teletype = savedTeletype === null ? !reducedMotion : savedTeletype === 'on';
+
+  function updateTeletypeStatus() {
+    var status = document.getElementById('teletype-status');
+    if (status) status.textContent = 'teletype ' + (teletype ? 'on' : 'off');
+  }
+
+  function finishTyping() {
+    if (timer !== null) window.clearTimeout(timer);
+    timer = null;
+    activeTargets.forEach(function (target) {
+      var original = originals.get(target);
+      if (original !== undefined) target.innerHTML = original;
+    });
+    activeTargets = [];
+  }
+
+  function typeArchivist(slide) {
+    finishTyping();
+    if (!teletype) return;
+    var targets = Array.prototype.slice.call(
+      slide.querySelectorAll('.archivist, .aside, .section-readout, .section-frame')
+    );
+    var chars = [];
+    targets.forEach(function (target) {
+      if (!originals.has(target)) originals.set(target, target.innerHTML);
+      else target.innerHTML = originals.get(target);
+      var walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+      var nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(function (node) {
+        var fragment = document.createDocumentFragment();
+        Array.from(node.nodeValue || '').forEach(function (character) {
+          var span = document.createElement('span');
+          span.className = 'tt-char';
+          span.textContent = character;
+          fragment.appendChild(span);
+          chars.push(span);
+        });
+        node.parentNode.replaceChild(fragment, node);
+      });
+    });
+    activeTargets = targets;
+    var at = 0;
+    var previous = null;
+    function tick() {
+      if (at >= chars.length) {
+        if (previous) previous.classList.remove('tt-cursor');
+        timer = null;
+        return;
+      }
+      if (previous) previous.classList.remove('tt-cursor');
+      var chunk = '';
+      for (var burst = 0; burst < 3 && at < chars.length; burst += 1) {
+        var span = chars[at++];
+        span.classList.add('tt-on');
+        previous = span;
+        chunk += span.textContent;
+      }
+      previous.classList.add('tt-cursor');
+      var delay = chunk.includes('\\n') ? 45 : /[.!?]/.test(chunk) ? 30 : 16;
+      timer = window.setTimeout(tick, delay);
+    }
+    tick();
+  }
+
   function show(n) {
     current = Math.max(0, Math.min(slides.length - 1, n));
     slides.forEach(function (s, i) { s.classList.toggle('shown', i === current); });
     if (history.replaceState) history.replaceState(null, '', '#' + (current + 1));
     var frame = slides[current].querySelector('.frame');
     if (frame) frame.scrollTop = 0;
+    typeArchivist(slides[current]);
   }
   function fromHash() {
     var n = parseInt((location.hash || '').slice(1), 10);
@@ -2327,12 +2534,20 @@ const SCRIPT = `
     } else if (k === 'Home') { e.preventDefault(); show(0); }
     else if (k === 'End') { e.preventDefault(); show(slides.length - 1); }
     else if (k === 'n' || k === 'N') { document.body.classList.toggle('notes-on'); }
+    else if (k === 't' || k === 'T') {
+      teletype = !teletype;
+      try { localStorage.setItem('intra-teletype', teletype ? 'on' : 'off'); } catch (_) {}
+      updateTeletypeStatus();
+      if (teletype) typeArchivist(slides[current]);
+      else finishTyping();
+    }
     else if (k === '?' || k === '/') {
       var bar = document.getElementById('helpbar');
       if (bar) bar.classList.toggle('hidden');
     }
   });
   window.addEventListener('hashchange', fromHash);
+  updateTeletypeStatus();
   fromHash();
 })();
 `;
