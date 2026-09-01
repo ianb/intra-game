@@ -80,13 +80,20 @@ export function esc(text: string): string {
  * no measurements or defined terms inside an `archivist()` line.
  */
 
-/** A boxed, shaded title banner in the Archive's terminal style. */
+/**
+ * A shaded title banner in the Archive's terminal style: a title line with
+ * ░▒▓█ end-caps over a subtitle.
+ *
+ * The frame is a CSS double border, not box-drawing characters. An ASCII box
+ * only joins its corners cleanly at line-height 1.0, which crushes the two
+ * text lines together; the CSS border stays connected at a readable line
+ * spacing. The ░▒▓█ end-caps keep the terminal flourish.
+ */
 export function archiveBanner(title: string, subtitle: string): string {
-  const body = [`░▒▓█ ${title} █▓▒░`, subtitle];
-  const inner = Math.max(...body.map((line) => line.length)) + 2;
-  const bar = "═".repeat(inner);
-  const rows = body.map((line) => `║ ${line.padEnd(inner - 2)} ║`).join("\n");
-  return `<pre class="artbanner">${esc(`╔${bar}╗\n${rows}\n╚${bar}╝`)}</pre>`;
+  return `<div class="artbanner">
+  <div class="artbanner-title">░▒▓█ ${esc(title)} █▓▒░</div>
+  <div class="artbanner-sub">${esc(subtitle)}</div>
+</div>`;
 }
 
 /** A full-width decorative rule of shade blocks; clips at the page edge. */
@@ -283,10 +290,13 @@ export const STYLE = `
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-             color: #facc15; font-size: .8rem; line-height: 1.05;
-             letter-spacing: 0; white-space: pre; overflow-x: auto;
-             margin: 0 0 1rem; }
+.artbanner { display: inline-block; max-width: 100%;
+             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; border: 3px double #facc15; border-radius: 4px;
+             padding: .55rem 1.1rem; margin: 0 0 1.25rem; overflow-x: auto; }
+.artbanner-title { font-size: 1rem; letter-spacing: .1em; white-space: nowrap; }
+.artbanner-sub { font-size: .8rem; letter-spacing: .04em; opacity: .85;
+                 margin-top: .35rem; white-space: nowrap; }
 .shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: var(--line); white-space: nowrap; overflow: hidden;
              opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }
@@ -297,10 +307,14 @@ a { color: #67e8f9; }
 .archivist b { color: #fde68a; }
 * { box-sizing: border-box; }
 body {
-  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 66rem;
   background: var(--bg); color: var(--fg);
   font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+/* Keep running prose at a readable measure even though the page is wider to
+   give the score tables room. Paragraphs cap; tables, .scroller, and the
+   <pre> transcript blocks keep the full width. */
+p { max-width: 48rem; }
 h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
 h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
 h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
@@ -310,7 +324,7 @@ header p { max-width: 46rem; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
 .scroller { overflow-x: auto; margin: .5rem 0 1rem; }
 table { width: 100%; border-collapse: collapse; min-width: 30rem; }
-th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+th, td { padding: .45rem .5rem; border-bottom: 1px solid var(--line); text-align: left; }
 thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
            color: var(--dim); font-weight: 600; }
 th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
