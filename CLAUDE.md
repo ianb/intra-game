@@ -12,6 +12,7 @@ Orientation:
 - [docs/deploying.md](./docs/deploying.md) — the Cloudflare setup
 - [playtest/README.md](./playtest/README.md) — driving the engine with a real model
 - [evals/README.md](./evals/README.md) — scoring whether a model can run the game
+- [slides/README.md](./slides/README.md) — a talk about how all of this was built
 
 Run `pnpm typecheck`, `pnpm typecheck:worker`, `pnpm lint` and `pnpm test`
 before committing. Prompt changes also invalidate the cassettes; see
