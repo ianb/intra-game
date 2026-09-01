@@ -9,7 +9,7 @@
     "dev:client": "tsx build.ts --serve",
     "smoke": "tsx smoke.ts",
     "build": "tsx build.ts",
-    "lint": "eslint .",
+    "lint": "node --import tsx ./node_modules/eslint/bin/eslint.js .",
     "typecheck": "tsc --noEmit",
     "test": "tap",
     "test:watch": "tap --watch",

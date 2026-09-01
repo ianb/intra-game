@@ -93,7 +93,14 @@ export default [
     // directory, and the image generator writes assets by path; flagging that as
     // a filesystem risk isn't meaningful for code that only ever runs on a
     // developer's machine or the builder.
-    files: ["playtest/**", "evals/**", "images/**", "build.ts", "dev.ts"],
+    files: [
+      "playtest/**",
+      "evals/**",
+      "images/**",
+      "slides/**",
+      "build.ts",
+      "dev.ts",
+    ],
     rules: { "security/detect-non-literal-fs-filename": "off" },
   },
 ];

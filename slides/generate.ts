@@ -163,7 +163,11 @@ function nameColors(): { css: string; tint: (html: string) => string } {
   const css = spans
     .map((s) => `.n-${s.name.replace(/\W/g, "")} { color: ${s.hex}; }`)
     .join("\n");
-  const pattern = new RegExp(`\\b(${spans.map((s) => s.name).join("|")})\\b`, "g");
+  // eslint-disable-next-line security/detect-non-literal-regexp -- fixed list
+  const pattern = new RegExp(
+    `\\b(${spans.map((s) => s.name).join("|")})\\b`,
+    "g",
+  );
   return {
     css,
     tint: (html: string) =>

@@ -49,4 +49,8 @@ pnpm install
 
 # Note: the first `pnpm test` in a fresh container can under-count / spuriously
 # fail while tsx+esbuild compile cold (tap spawns doctest files in parallel).
-# It is not a real failure; re-run and you get a stable 316/316.
+# It is not a real failure; re-run and the count is stable and complete.
+#
+# If callback-box is missing above, it is a repo of Ian's and can be cloned as a
+# sibling: git clone --depth 1 https://github.com/ianb/callback-box \
+#   "$(dirname "$PROJECT_DIR")/callback-box", then re-run this script.
