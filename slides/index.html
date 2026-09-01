@@ -11,10 +11,13 @@
   --pass: #4ade80; --partial: #facc15; --fail: #f87171; --panel: #1f2937;
 }
 a { color: #67e8f9; }
-.artbanner { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-             color: #facc15; font-size: .8rem; line-height: 1.05;
-             letter-spacing: 0; white-space: pre; overflow-x: auto;
-             margin: 0 0 1rem; }
+.artbanner { display: inline-block; max-width: 100%;
+             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: #facc15; border: 3px double #facc15; border-radius: 4px;
+             padding: .55rem 1.1rem; margin: 0 0 1.25rem; overflow-x: auto; }
+.artbanner-title { font-size: 1rem; letter-spacing: .1em; white-space: nowrap; }
+.artbanner-sub { font-size: .8rem; letter-spacing: .04em; opacity: .85;
+                 margin-top: .35rem; white-space: nowrap; }
 .shaderule { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
              color: var(--line); white-space: nowrap; overflow: hidden;
              opacity: .7; margin: 2rem 0 1.25rem; user-select: none; }
@@ -25,10 +28,14 @@ a { color: #67e8f9; }
 .archivist b { color: #fde68a; }
 * { box-sizing: border-box; }
 body {
-  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 60rem;
+  margin: 0 auto; padding: 2.5rem 1.25rem 4rem; max-width: 66rem;
   background: var(--bg); color: var(--fg);
   font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+/* Keep running prose at a readable measure even though the page is wider to
+   give the score tables room. Paragraphs cap; tables, .scroller, and the
+   <pre> transcript blocks keep the full width. */
+p { max-width: 48rem; }
 h1 { font-size: 1.6rem; margin: 0 0 .75rem; letter-spacing: -.01em; }
 h2 { font-size: 1.15rem; margin: 2.5rem 0 .75rem; font-variant-numeric: tabular-nums; }
 h3 { font-size: .95rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600;
@@ -38,7 +45,7 @@ header p { max-width: 46rem; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
 .scroller { overflow-x: auto; margin: .5rem 0 1rem; }
 table { width: 100%; border-collapse: collapse; min-width: 30rem; }
-th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: left; }
+th, td { padding: .45rem .5rem; border-bottom: 1px solid var(--line); text-align: left; }
 thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em;
            color: var(--dim); font-weight: 600; }
 th.model { font-weight: 600; font-family: ui-monospace, monospace; font-size: .85rem; }
@@ -95,11 +102,13 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
 .slide.section .frame { flex: 0 0 auto; }
 .lead { font-size: clamp(1.1rem, 2.2vw, 1.6rem); color: var(--fg); max-width: 40em;
         margin-left: auto; margin-right: auto; }
-/* Title and divider slides center their blocks; content slides stay ragged-right. */
-.slide.title p, .slide.section p,
-.slide.title .artbanner, .slide.section .artbanner {
+/* Title and divider slides center their blocks; content slides stay ragged-right.
+   The banner is an inline-block, so it centers by text-align rather than by
+   auto margins. */
+.slide.section .frame { text-align: center; }
+.slide.title p, .slide.section p {
   margin-left: auto; margin-right: auto; width: fit-content; max-width: 54em; }
-.slide.section .archivist { text-align: left; }
+.slide.title .archivist, .slide.section .archivist { text-align: left; }
 pre.code { background: #0b1220; border: 1px solid var(--line); border-radius: 6px;
            padding: .8rem 1rem; overflow-x: auto; white-space: pre; margin: .6rem 0;
            font-size: clamp(.62rem, 1.02vw, .88rem); line-height: 1.45; color: #cbd5e1; }
@@ -172,10 +181,10 @@ kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 .25rem;
     
     
     <div class="content">
-    <pre class="artbanner">╔══════════════════════════════════════════╗
-║ ░▒▓█ INTRA █▓▒░                          ║
-║ SYSTEM RECORDS · how the thing was built ║
-╚══════════════════════════════════════════╝</pre>
+    <div class="artbanner">
+  <div class="artbanner-title">░▒▓█ INTRA █▓▒░</div>
+  <div class="artbanner-sub">SYSTEM RECORDS · how the thing was built</div>
+</div>
     <p class="archivist">Oh! A PRESENTATION! ►► Somebody wants to know how the complex works ◄◄ I have kept every record of every part of it. Every one! Sit down, sit down. The operators wrote most of what follows. They are less excited than I am. They are always less excited than I am.</p>
     <p class="lead">An LLM text adventure, and the apparatus that was built to
     find out whether it works.</p>
@@ -195,10 +204,10 @@ kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 .25rem;
   <div class="frame">
     
     
-    <div class="content"><pre class="artbanner">╔════════════════════════════════════════╗
-║ ░▒▓█ PART ONE █▓▒░                     ║
-║ ORIGINS · a weekend, and two decisions ║
-╚════════════════════════════════════════╝</pre>
+    <div class="content"><div class="artbanner">
+  <div class="artbanner-title">░▒▓█ PART ONE █▓▒░</div>
+  <div class="artbanner-sub">ORIGINS · a weekend, and two decisions</div>
+</div>
     <p class="archivist">Every record has a FIRST record. ►► This one is from a weekend ◄◄ Three days! And then, much later, rather a lot of other days.</p></div>
   </div>
   <div class="notes"><b>notes</b><span class="dim">(none)</span></div>
@@ -209,7 +218,7 @@ kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 .25rem;
     <div class="kicker">Where it came from</div>
     <h2>A three-day game</h2>
     <div class="content"><blockquote>This is a game written from September 27-29, 2024, for the Text Adventure Hack.<cite>README.md, line 3, still the first line today</cite></blockquote>
-    <div class="stats"><div class="stat"><b>342</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
+    <div class="stats"><div class="stat"><b>347</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
     <p>The game was built in a weekend for a hackathon. Everything after is a
       long argument with it.</p></div>
   </div>
@@ -317,10 +326,10 @@ This is mostly written by ChatGPT over the course of many interactions and with 
   <div class="frame">
     
     
-    <div class="content"><pre class="artbanner">╔══════════════════════════════════════════════╗
-║ ░▒▓█ PART TWO █▓▒░                           ║
-║ THE ENGINE · what the model is allowed to do ║
-╚══════════════════════════════════════════════╝</pre>
+    <div class="content"><div class="artbanner">
+  <div class="artbanner-title">░▒▓█ PART TWO █▓▒░</div>
+  <div class="artbanner-sub">THE ENGINE · what the model is allowed to do</div>
+</div>
     <p class="archivist">Now the MACHINERY! ►► This is my favourite part ◄◄ It is all tags and folds and little numbers. I keep ALL of the little numbers.</p></div>
   </div>
   <div class="notes"><b>notes</b><span class="dim">(none)</span></div>
@@ -808,10 +817,10 @@ Keep it to one, two, at most three meters per character, in small ranges: the pl
   <div class="frame">
     
     
-    <div class="content"><pre class="artbanner">╔═══════════════════════════════════════════╗
-║ ░▒▓█ PART THREE █▓▒░                      ║
-║ THE APPARATUS · how anyone knows it works ║
-╚═══════════════════════════════════════════╝</pre>
+    <div class="content"><div class="artbanner">
+  <div class="artbanner-title">░▒▓█ PART THREE █▓▒░</div>
+  <div class="artbanner-sub">THE APPARATUS · how anyone knows it works</div>
+</div>
     <p class="archivist">Now! ►► The part where they MEASURE things ◄◄ They measure and measure and then they write down that the measurement was wrong. And then they keep BOTH. I find this deeply correct.</p></div>
   </div>
   <div class="notes"><b>notes</b><span class="dim">(none)</span></div>
@@ -821,7 +830,7 @@ Keep it to one, two, at most three meters per character, in small ranges: the pl
   <div class="frame">
     <div class="kicker">The apparatus</div>
     <h2>There is as much apparatus as there is game</h2>
-    <div class="content"><div class="stats"><div class="stat"><b>11,117</b><span>lines: engine + content</span></div><div class="stat"><b>10,315</b><span>lines: tests, evals, playtest</span></div><div class="stat"><b>40</b><span>doctest files</span></div><div class="stat"><b>17</b><span>recorded playthroughs</span></div></div>
+    <div class="content"><div class="stats"><div class="stat"><b>11,117</b><span>lines: engine + content</span></div><div class="stat"><b>10,329</b><span>lines: tests, evals, playtest</span></div><div class="stat"><b>40</b><span>doctest files</span></div><div class="stat"><b>17</b><span>recorded playthroughs</span></div></div>
     <table><thead><tr><th>question</th><th>command</th></tr></thead><tbody><tr><td>Did I break the engine?</td><td><code>pnpm test</code></td></tr><tr><td>What does the game feel like?</td><td><code>pnpm playtest</code></td></tr><tr><td>...starting later in the game?</td><td><code>pnpm playtest --from briefed -i</code></td></tr><tr><td>Can this model run the game at all?</td><td><code>pnpm evals</code></td></tr><tr><td>Can a <em>small</em> model handle some prompts?</td><td><code>pnpm evals --flash &lt;model&gt;</code></td></tr><tr><td>Can a model <em>solve</em> the game?</td><td><code>pnpm evals:play</code></td></tr><tr><td>What do the prompts cost in cache terms?</td><td><code>pnpm playtest:cache</code></td></tr></tbody></table></div>
   </div>
   <div class="notes"><b>notes</b>The line counts are computed when this deck is generated, so they
@@ -1158,10 +1167,10 @@ go to the Archive Lounge</pre>
   <div class="frame">
     
     
-    <div class="content"><pre class="artbanner">╔═══════════════════════════════════════╗
-║ ░▒▓█ PART FOUR █▓▒░                   ║
-║ FINDINGS · what the instrument caught ║
-╚═══════════════════════════════════════╝</pre>
+    <div class="content"><div class="artbanner">
+  <div class="artbanner-title">░▒▓█ PART FOUR █▓▒░</div>
+  <div class="artbanner-sub">FINDINGS · what the instrument caught</div>
+</div>
     <p class="archivist">The BEST records! ►► These are the ones where something went wrong ◄◄ I keep those with particular care. Nobody ever asks for the ones where nothing happened.</p></div>
   </div>
   <div class="notes"><b>notes</b><span class="dim">(none)</span></div>
@@ -1275,10 +1284,10 @@ The batch rate: one solve in three runs, with one run lost to a CLI timeout at t
   <div class="frame">
     
     
-    <div class="content"><pre class="artbanner">╔═════════════════════════════════╗
-║ ░▒▓█ PART FIVE █▓▒░             ║
-║ DEFECTS · the list, kept openly ║
-╚═════════════════════════════════╝</pre>
+    <div class="content"><div class="artbanner">
+  <div class="artbanner-title">░▒▓█ PART FIVE █▓▒░</div>
+  <div class="artbanner-sub">DEFECTS · the list, kept openly</div>
+</div>
     <p class="archivist">Oh, they keep a list of what is WRONG with it. ►► In the repository. Where anyone can read it ◄◄ I did not have to be asked twice to file that one.</p></div>
   </div>
   <div class="notes"><b>notes</b><span class="dim">(none)</span></div>
@@ -1383,10 +1392,10 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
   <div class="frame">
     
     
-    <div class="content"><pre class="artbanner">╔════════════════════════════════════╗
-║ ░▒▓█ PART SIX █▓▒░                 ║
-║ AUTHORSHIP · who actually typed it ║
-╚════════════════════════════════════╝</pre>
+    <div class="content"><div class="artbanner">
+  <div class="artbanner-title">░▒▓█ PART SIX █▓▒░</div>
+  <div class="artbanner-sub">AUTHORSHIP · who actually typed it</div>
+</div>
     <p class="archivist">Ohh. ►► This is the part where they talk about ME ◄◄ Well. Not me. Something like me. I am told the distinction matters a great deal.</p></div>
   </div>
   <div class="notes"><b>notes</b><span class="dim">(none)</span></div>

@@ -2000,11 +2000,13 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
 .slide.section .frame { flex: 0 0 auto; }
 .lead { font-size: clamp(1.1rem, 2.2vw, 1.6rem); color: var(--fg); max-width: 40em;
         margin-left: auto; margin-right: auto; }
-/* Title and divider slides center their blocks; content slides stay ragged-right. */
-.slide.title p, .slide.section p,
-.slide.title .artbanner, .slide.section .artbanner {
+/* Title and divider slides center their blocks; content slides stay ragged-right.
+   The banner is an inline-block, so it centers by text-align rather than by
+   auto margins. */
+.slide.section .frame { text-align: center; }
+.slide.title p, .slide.section p {
   margin-left: auto; margin-right: auto; width: fit-content; max-width: 54em; }
-.slide.section .archivist { text-align: left; }
+.slide.title .archivist, .slide.section .archivist { text-align: left; }
 pre.code { background: #0b1220; border: 1px solid var(--line); border-radius: 6px;
            padding: .8rem 1rem; overflow-x: auto; white-space: pre; margin: .6rem 0;
            font-size: clamp(.62rem, 1.02vw, .88rem); line-height: 1.45; color: #cbd5e1; }
