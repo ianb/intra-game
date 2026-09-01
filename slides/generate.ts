@@ -2433,10 +2433,6 @@ const SCRIPT = `
       if (bar) bar.classList.toggle('hidden');
     }
   });
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('a') || e.target.closest('.notes')) return;
-    show(current + (e.clientX < window.innerWidth * 0.25 ? -1 : 1));
-  });
   window.addEventListener('hashchange', fromHash);
   fromHash();
 })();

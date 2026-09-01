@@ -244,7 +244,7 @@ kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 .25rem;
       <div class="kicker"><span class="slideno">1.1</span><span class="kickerblocks">░▒▓</span> Where it came from</div>
       <h2>A three-day game</h2>
       <div class="content"><blockquote>This is a game written from September 27-29, 2024, for the Text Adventure Hack.<cite>README.md, line 3, still the first line today</cite></blockquote>
-    <div class="stats"><div class="stat"><b>352</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
+    <div class="stats"><div class="stat"><b>353</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
     <p>The game was built in a weekend for a hackathon. Everything after is a
       long argument with it.</p></div>
     </div>
@@ -1882,10 +1882,6 @@ The common tells, so this is checkable rather than vague:
       var bar = document.getElementById('helpbar');
       if (bar) bar.classList.toggle('hidden');
     }
-  });
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('a') || e.target.closest('.notes')) return;
-    show(current + (e.clientX < window.innerWidth * 0.25 ? -1 : 1));
   });
   window.addEventListener('hashchange', fromHash);
   fromHash();
