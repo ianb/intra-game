@@ -25,6 +25,10 @@ Everything else — the slide text, the quotes, the notes — is written by hand
 
 ## Voice
 
+The Archivist's footnote lines have their own brief:
+[archivist.md](./archivist.md), which carries the character references, the
+inspirations, and a per-slide worksheet.
+
 The two voices are the ones defined in [evals/page.ts](../evals/page.ts), and
 this deck follows the same split: the Archivist introduces each part and
 enthuses, the operators explain the machinery flatly. Section dividers are the
