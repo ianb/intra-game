@@ -25,6 +25,7 @@ Prompts `4f2b57474470`.
 | `qwen/qwen3.8-flash` | 0/7 | 0/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **36/48** | 1183s | 69832 | 4.5¢ |
 | `qwen/qwen3.6-35b-a3b` | 5/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **46/48** | 1117s | 82874 | 10.8¢ |
 | `deepseek/deepseek-v4-flash` | 6/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **47/48** | 885s | 10526 | 2.0¢ |
+| `z-ai/glm-5.3-flash` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/6 | 5/5 | **47/48** | 1518s | 39367 | 2.9¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
@@ -104,6 +105,7 @@ What failed:
 - `qwen/qwen3.6-35b-a3b` intake/pronouns: recorded the pronouns the player stated
 - `qwen/qwen3.6-35b-a3b` intake/profession: recorded the profession the player mentioned
 - `deepseek/deepseek-v4-flash` intake/profession: recorded the profession the player mentioned
+- `z-ai/glm-5.3-flash` why-woken/no-note-on-demand: demanding the message did not produce the note or the tour
 
 ## 2026-08-21
 
