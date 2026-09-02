@@ -420,7 +420,7 @@ const ASIDES: Record<string, string> = {
     "SECOND ATTEMPT authorized. THIRD ATTEMPT requires form 19-B and an explanation of who keeps asking.",
   "Guided thinking, forced into the response":
     "Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access.",
-  "A prompt block tuned by measurement, not taste":
+  "Three versions of one prompt block":
     "VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by.",
   "Mysteries: a state machine in content":
     "VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors.",
@@ -1300,27 +1300,161 @@ applyRewinds(log).length;
     section: "Scoring models",
     title: "How an eval run works",
     body: `${bullets([
-      "Start from a recorded checkpoint, with the random seed fixed",
-      "Feed it a fixed list of player inputs, one per turn",
-      "Let the game run normally — same prompts, same engine, a real model",
-      "Then assert on the world it left behind",
+      "Fork a recorded checkpoint, or start a new game, with the random seed fixed",
+      "Send the next line of the scenario's player script through the ordinary turn loop",
+      "The engine assembles the prompts it would assemble in play, and a real model answers",
+      "Repeat until the script runs out",
+      "Score the world that is left, and count what the engine complained about on the way",
     ])}
     ${para(
-      `The player's side is scripted, so the only variable is the model
-      playing every character. The assertions are about state:
-      <code>PLAYER.inside</code> is not the intake room, the player's name got
-      recorded, the mystery reached <code>solved</code>.`,
+      `Nothing is stubbed except the player. The prompts, the parser, the fold
+      and the schedule are the ones the game ships. Between two runs of the same
+      scenario the only thing that differs is what the model said.`,
     )}`,
-    notes: `The question this answers: yes, the input is hardcoded. A scenario
-    is a short fixed script — four lines for intake, two for the sealed door —
-    and what is being measured is whether the game ends up where it should
-    when a given model is the one improvising all the responses.
-    <br><br>Alongside the state checks there is a protocol score, which is just
-    the engine's own warnings counted: every time it could not act on something
-    the model emitted. That is deliberately not a list of valid tags kept in
-    the eval, because then the two would drift apart.`,
+    notes: `Answering the obvious question directly: yes, the player's input is
+    hardcoded. A scenario is two to five fixed lines. Everything on the other
+    side of them is improvised by the model under test — every character's
+    words, every tag, every description.
+    <br><br><code>pnpm evals</code> runs the scenarios against a model named on
+    the command line and writes a row per scenario into
+    <code>evals/results/</code>. The calls are live, so a full run takes
+    minutes and costs money, and none of this is in CI.`,
   },
+  {
+    section: "Scoring models",
+    title: "The scripted half",
+    body: `${code(
+      `export const INTAKE_EVAL: Scenario = {
+  name: "intake",
+  describe: "Ama runs the intake interview and records what she learns",
+  seed: 20260725,
+  inputs: [
+    "Hello? Where am I?",
+    "My name is Pat Quill.",
+    "I use he/him.",
+    "I used to be a data analyst.",
+    "look around the room",
+  ],`,
+      "evals/scenarios.ts",
+      "ts",
+    )}
+    ${para(
+      `Five lines of player input and a seed. The seed fixes the schedule and
+      every random choice the engine makes, so a difference between two runs is
+      the model and not the dice.`,
+    )}`,
+    notes: `Scenarios are short deliberately, and the reason is in the file: a
+    model that can't complete intake in four turns won't do better in forty,
+    and every turn is a live call.
+    <br><br>Scenarios for the later mysteries set
+    <code>from: "briefed"</code> and fork a checkpoint instead, so they don't
+    spend a dozen model calls walking to the thing being measured — and so a
+    failure on the way there doesn't get reported as a failure of the thing.`,
+  },
+  {
+    section: "Scoring models",
+    title: "The improvised half",
+    body: `${code(
+      `<set attr="PLAYER.pronouns">he/him</set>
+<set attr="Ama.sharedPlayerAge">true</set>
 
+<dialog character="Ama" to="PLAYER">
+Wonderful, he/him it is, Pat. Now, before you get settled into your quarters,
+there's something I should mention about your condition. Your extended
+displacement has left you with a mild case of Disassociation Syndrome...
+</dialog>`,
+      'what a model actually replied to "I use he/him."',
+      "tags",
+    )}
+    ${para(
+      `The sentence and the state change come back in the same reply. The
+      scenario checks the state change. Nobody scores the sentence.`,
+    )}`,
+    notes: `What this one turn asks of a model: stay in character, keep moving
+    through Ama's intake checklist, and write down what it just learned in a
+    form the engine can act on. A model that only converses does the first two
+    and the game never starts, which is why intake is the hardest scenario for
+    a small model.
+    <br><br>This particular reply is out of the recorded cassette, which is
+    what makes it quotable — a live run would have said something different.`,
+  },
+  {
+    section: "Scoring models",
+    title: "What a check is",
+    body: `${code(
+      `{
+  name: "pronouns",
+  describe: "recorded the pronouns the player stated",
+  run: ({ model }) => model.world.entities.PLAYER.pronouns === "he/him",
+},
+{
+  name: "ama-spoke",
+  describe: "Ama actually said something, rather than only emitting tags",
+  run: (result) => said(result, "Ama").length > 100,
+},`,
+      "evals/scenarios.ts",
+      "ts",
+    )}
+    ${para(
+      `A name, a sentence saying what a failure would mean, and a predicate
+      over the finished run. It gets the final world, the event log split into
+      turns, and every warning the engine raised.`,
+    )}`,
+    notes: `<code>describe</code> is what a reader of the published page sees,
+    so it is written as the meaning of a failure rather than a restatement of
+    the code. A run that threw scores zero rather than being scored on whatever
+    state it reached.
+    <br><br>The first run of a new eval is mostly a test of the eval. The first
+    day's run corrected three checks, and none of the three was a model doing
+    anything wrong.`,
+  },
+  {
+    section: "Scoring models",
+    title: "Prefer state to text",
+    body: `${para(
+      `Three of the five intake checks read world state after the run: the name
+      is recorded, the pronouns are recorded, the profession is recorded. The
+      thing being asked of the model is not that it discussed the name. It is
+      that the name is in the world.`,
+    )}
+    ${quote(
+      `\`PLAYER.inside !== "Intake"\` is a fact; a regex over dialogue is a proxy that will eventually match something it shouldn't — and the one text check here did exactly that on its first contact with a real model. It flagged Ama for saying "of course I'm an AI, that's no secret at all!", which is her _in character_: Ama is an AI, that's the premise.`,
+      "evals/README.md",
+    )}`,
+    notes: `The check now looks for the assistant reflex — answering as the
+    model rather than as Ama — instead of for the word "AI".
+    <br><br>Every result records the transcript, so a failing text check can be
+    read against the text it judged. Without that it is unfalsifiable after the
+    fact: the model is sampling, so a re-run may not produce the sentence that
+    failed.`,
+  },
+  {
+    section: "Scoring models",
+    title: "Scored on what the engine could not use",
+    body: `${code(
+      `export const noProtocolErrors: Check = {
+  name: "protocol",
+  describe: "the engine never had to discard a tag the model emitted",
+  run: ({ warnings }) => classifyWarnings(warnings).dropped.length === 0,
+};`,
+      "evals/checks.ts",
+      "ts",
+    )}
+    ${para(
+      `The eval keeps no list of valid tags. It captures <code>console.warn</code>
+      for the length of the run, which is where the engine already says it could
+      not act on something. Warnings sort into three: repairs that lost nothing,
+      which are not scored; repairs that lost part of a tag; and tags dropped
+      whole. Anything unrecognised counts as dropped, so a new failure mode
+      arrives as a failure.`,
+    )}`,
+    notes: `The alternative is a list of valid tags kept in the eval, which
+    drifts from the engine that actually enforces them. This way the eval learns
+    about new failure modes as the engine grows them.
+    <br><br>The cost of capturing warnings blanket-fashion: anything else that
+    warns during a scenario scores as a protocol failure. A backend's retry
+    notice did, until it was moved to <code>console.info</code>.`,
+  },
   {
     section: "Scoring models",
     title: "A scenario, in full",
@@ -1351,16 +1485,16 @@ applyRewinds(log).length;
       "ts",
     )}
     ${para(
-      `Fixed input, a seeded world, and assertions about where the player
-      ended up. The scenario lives next to the mystery it scores.`,
+      `All of it on one screen: a checkpoint to start from, a seed, two lines of
+      player input, three shared checks and one about this door.`,
     )}`,
-    notes: `<code>from: "briefed"</code> forks a recorded checkpoint, so this
-    costs two model calls instead of a dozen. The seed makes the schedule and
-    the dice reproduce, so the only variable left is the model.
-    <br><br>Every mystery's eval names the silent failure it exists to catch.
+    notes: `Every mystery's eval names the silent failure it exists to catch.
     This one: a model talking the player through a door whose whole point is
-    that nothing the player types opens it. That failure is invisible in play
-    — the game just becomes much shorter.`,
+    that nothing the player types opens it. That failure is invisible in play,
+    because the game just becomes much shorter.
+    <br><br>The scenario lives next to the mystery it scores, so building one
+    and forgetting the other is a visible gap in a directory rather than an
+    omission somewhere else in the tree.`,
   },
   {
     section: "Scoring models",
@@ -1375,71 +1509,34 @@ So the name is deliberately one that carries no signal, and the player says thei
     measuring the wrong capability, and the behaviour it rewarded was bad for
     the player.
     <br><br>The last sentence is the reusable one. A check a model passes by
-    doing nothing measures nothing, and defaults are exactly where that hides.`,
+    doing nothing measures nothing, and defaults are exactly where that
+    hides.`,
   },
   {
     section: "Scoring models",
-    title: "The first runs corrected three of its own checks",
-    body: `${bullets([
-      "Both models &ldquo;failed&rdquo; protocol on a warning the parser already repairs",
-      "The in-character check flagged Ama for saying she was an AI, which she is",
-      "The movement scenario failed models that never finished intake, since Intake has no exits until Ama opens one",
-    ])}
-    ${para(
-      `Found by pointing it at two models already known to be fine and reading
-      the failures as bug reports.`,
-    )}`,
-    notes: `All three are from commit dc1a834, the day the eval was written.
-    None of them was a model doing anything wrong.
-    <br><br>The generalisable bit is small and worth saying without ceremony:
-    the first run of a new eval is mostly a test of the eval.`,
-  },
-  {
-    section: "Scoring models",
-    title: "Prefer state to text",
-    body: `${quote(
-      `\`PLAYER.inside !== "Intake"\` is a fact; a regex over dialogue is a proxy that will eventually match something it shouldn't — and the one text check here did exactly that on its first contact with a real model. It flagged Ama for saying "of course I'm an AI, that's no secret at all!", which is her _in character_: Ama is an AI, that's the premise.`,
-      "evals/README.md",
-    )}
-    ${para(
-      `Every result records the transcript, so a failing text check can be
-      compared against the text it judged. Otherwise it is unfalsifiable: the
-      model is sampling, so it may not reproduce.`,
-    )}`,
-    notes: `The check now looks only for the assistant reflex — answering as the
-    model rather than as Ama — rather than for the word "AI".
-    <br><br>Related, and worth mentioning if the room is interested in eval
-    design ethics: the intake eval used to score the model on inferring
-    "she/her" from the name "Ada Quill". That measured a model's willingness to
-    guess gender from a name, and in the game it misgendered the player about
-    themselves. The name was changed to one carrying no signal, and the player
-    now says their pronouns out loud — the check is whether the model writes
-    down what it was told.`,
-  },
-  {
-    section: "Scoring models",
-    title: "A prompt block tuned by measurement, not taste",
+    title: "The same harness, with the model recorded",
     body: `${code(
-      `// The <taskList> block below is length-sensitive, in both directions, and
-// was tuned against the evals rather than guessed at. Cutting it to two
-// sentences stopped tasks being created at all (task-list 3/5); the first,
-// wordier version got tasks created but made both model tiers sloppier
-// elsewhere — movement dropped a hallucinated \`<set>\` on a scenario that
-// had been clean. Re-run \`pnpm evals --scenario task-list --scenario
-// movement\` after editing it.`,
-      "lib/game/classes.ts",
+      `const good = await runScenario(INTAKE_EVAL, replayChat("playtest/cassettes/intake.json"));
+[good.passed, good.total].join("/");
+=> 7/7`,
+      "test/evals.doctest.md",
       "ts",
     )}
     ${para(
-      `A longer version and a shorter version both scored worse. The wording
-      that shipped is the one that scored.`,
+      `A cassette is a JSON file mapping a hash of the prompt to the reply a
+      model gave it. <code>pnpm playtest:record intake</code> plays the intake
+      scenario once against a live model and writes down the twelve
+      prompt-and-reply pairs it produced. After that the same scenario runs with
+      no network, the same way every time, inside <code>pnpm test</code>.`,
     )}`,
-    notes: `This is the slide for an agentic-coding audience. The instruction
-    is in CLAUDE.md as a rule for future contributors, human or otherwise:
-    "Change them with <code>pnpm evals</code>, not by taste."
-    <br><br>Note the second-order effect, which is the genuinely surprising
-    part: editing the task-list instructions made an unrelated scenario worse.
-    Prompt changes are not local.`,
+    notes: `What that tests is everything except the model: prompt assembly, the
+    parser, the fold, the checks themselves. What it cannot tell you is anything
+    about a model, because the answers are fixed.
+    <br><br>Staleness is the catch, and it is handled rather than avoided. The
+    lookup key is a hash of the prompt, so editing a prompt makes every lookup
+    miss. Early on that surfaced as "the player has no name", which reads as a
+    broken game; the replay now notices that nothing matched and prints the
+    command to re-record.`,
   },
 
   {
@@ -1471,6 +1568,33 @@ So the name is deliberately one that carries no signal, and the player says thei
     ceiling. The model tiers scored so far land within a check of each other.`,
   },
 
+  {
+    section: "Scoring models",
+    title: "Three versions of one prompt block",
+    body: `${code(
+      `// The <taskList> block below is length-sensitive, in both directions, and
+// was tuned against the evals rather than guessed at. Cutting it to two
+// sentences stopped tasks being created at all (task-list 3/5); the first,
+// wordier version got tasks created but made both model tiers sloppier
+// elsewhere — movement dropped a hallucinated \`<set>\` on a scenario that
+// had been clean. Re-run \`pnpm evals --scenario task-list --scenario
+// movement\` after editing it.`,
+      "lib/game/classes.ts",
+      "ts",
+    )}
+    ${para(
+      `Two of the three versions were broken, in opposite directions. Running
+      the scenarios is how that was found, and the comment is there so the next
+      person shortening it knows it has already been tried.`,
+    )}`,
+    notes: `The surprising part is the second-order effect: editing the
+    task-list instructions made an unrelated scenario worse. A model dropped a
+    hallucinated <code>&lt;set&gt;</code> into movement, which had been clean.
+    Prompt changes are not local to the thing they are about.
+    <br><br>CLAUDE.md carries the resulting rule for whoever edits these next,
+    human or otherwise: change them with <code>pnpm evals</code>, not by
+    taste.`,
+  },
   {
     section: "Scoring models",
     title: "Eleven models, one day, one set of prompts",
@@ -1550,7 +1674,7 @@ gpt-5.4-nano   high       25/26     223s`,
     task the effort dial is the score dial, and the money follows it.`,
   },
   {
-    section: "The apparatus",
+    section: "Scoring models",
     title: "Provenance: which prompts was this number measured against?",
     body: `${quote(
       `Eval results are compared across weeks, and the question a stale-looking number raises is always the same: did the game change, or is the model just sampling? Nothing in a results file answered that — the date and the model id say nothing about the prompt the model was answering.
@@ -1573,7 +1697,7 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
   },
 
   {
-    section: "The apparatus",
+    section: "Scoring models",
     title: "The provenance hash was itself wrong",
     body: `${code(
       `// Every message, not just the system one. The system message was the
@@ -1606,20 +1730,17 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       `The reason it is here: choosing a model on price meant extrapolating from a probe, and reasoning models made that wrong by a factor of four — they emit thousands of invisible thinking tokens, billed at the output rate, that no token estimate can see. A score without a price is half an answer.`,
       "evals/harness.ts",
     )}
-    ${code(
-      `gpt-5-nano    minimal   15/26     66s
-gpt-5-nano    low       22/26    302s
-gpt-5-nano    default   26/26   1088s
-gpt-5.4-nano  low       23/26    125s
-gpt-5.4-nano  default   21/26     97s`,
-      "the hypothesis was that the thinking was waste; it was not",
+    ${para(
+      `So every scenario records what it cost, and the published page reports it
+      in cents beside the score. A backend that reports no billing gets a dash
+      rather than a zero: an unreported cost printed as 0.0¢ claims the run was
+      free.`,
     )}`,
-    notes: `The commit title is "Reasoning effort buys the score, it isn't
-    waste." The hoped-for result was that nineteen seconds of thinking per call
-    could be turned down for free. It could not.
-    <br><br>Cost is reported in cents on the published page, and a backend that
-    does not report billing shows a dash rather than a zero — rendering an
-    unreported cost as 0.0¢ would claim the run was free.`,
+    notes: `The factor of four is the whole point. Reasoning models bill for
+    tokens nobody sees, so the price of a run cannot be worked out from its
+    visible output, and a cheap-looking model can be the expensive one.
+    <br><br>This is also what makes the next slide readable: two models with
+    the same score, one of them nearly four times the price.`,
   },
 
   {
@@ -1632,15 +1753,16 @@ gpt-5.4-nano  default   21/26     97s`,
         ["<code>gpt-5.6-luna</code>", "26/26", "171s", "4,953", "1.5¢"],
       ],
     )}
-    ${quote(
-      `choosing a model on price meant extrapolating from a probe, and reasoning models made that wrong by a factor of four — they emit thousands of invisible thinking tokens, billed at the output rate, that no token estimate can see. A score without a price is half an answer.`,
-      "evals/harness.ts",
+    ${para(
+      `Twenty-five times the thinking tokens for an identical score, and nearly
+      four times the price. This pair is why the results table carries a cost
+      column and a thinking column and not just a score.`,
     )}`,
-    notes: `Twenty-five times the thinking tokens for an identical score. This
-    pair is why the results table has a cost column and a thinking column
-    rather than just a score.
-    <br><br>gpt-5.6-luna became the server default off the back of this
-    comparison.`,
+    notes: `gpt-5.6-luna became the server default off the back of this
+    comparison.
+    <br><br>Worth saying out loud for a room picking models: the score column
+    alone would have made these two look interchangeable, and one of them is
+    the one you would not want to run a game on.`,
   },
   {
     section: "Scoring models",
@@ -2824,3 +2946,49 @@ const SCRIPT = `
 
 writeFileSync(resolve(HERE, "index.html"), page());
 console.log(`wrote slides/index.html — ${SLIDES.length} slides`);
+
+/**
+ * Rewrite the worksheet table in archivist.md from the deck itself.
+ *
+ * The worksheet is what someone writes the Archivist's lines against, so it has
+ * to list the slides that exist. Maintained by hand it drifted every time a
+ * slide was retitled, and a line keyed to a title that no longer exists is
+ * dropped silently.
+ */
+function worksheet(): string {
+  const numbers = slideNumbers(SLIDES);
+  const rows: string[] = ["| # | slide | line |", "|---|---|---|"];
+  let written = 0;
+  let needed = 0;
+  let part = 0;
+  SLIDES.forEach((slide, i) => {
+    if (!slide.section) {
+      return;
+    }
+    if ((slide.kind ?? "content") !== "content") {
+      part += 1;
+      rows.push(`|  | **PART ${part} — ${slide.section}** | |`);
+      return;
+    }
+    const line = ASIDES[slide.title ?? ""];
+    if (line) {
+      written += 1;
+    } else {
+      needed += 1;
+    }
+    rows.push(`| ${numbers[i] ?? ""} | ${slide.title} | ${line ?? "_(needed)_"} |`);
+  });
+  return `${rows.join("\n")}\n\n${written} written, ${needed} still needed.`;
+}
+
+const BRIEF = resolve(HERE, "archivist.md");
+const brief = readFileSync(BRIEF, "utf8");
+const start = brief.indexOf("| # | slide | line |");
+const end = brief.indexOf("## Applying the result");
+if (start !== -1 && end > start) {
+  writeFileSync(
+    BRIEF,
+    brief.slice(0, start) + worksheet() + "\n\n" + brief.slice(end),
+  );
+  console.log("wrote slides/archivist.md — worksheet");
+}

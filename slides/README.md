@@ -27,7 +27,9 @@ Everything else — the slide text, the quotes, the notes — is written by hand
 
 The Archivist's footnote lines have their own brief:
 [archivist.md](./archivist.md), which carries the character references, the
-inspirations, and a per-slide worksheet.
+inspirations, and a per-slide worksheet. The worksheet is rewritten by
+`pnpm slides` from the deck and the `ASIDES` table, so it lists the slides that
+exist and cannot drift after a retitle.
 
 The two voices are the ones defined in [evals/page.ts](../evals/page.ts), and
 this deck follows the same split: the Archivist introduces each part and
@@ -35,9 +37,8 @@ enthuses, the operators explain the machinery flatly. Section dividers are the
 Archivist's; content slides are not. Character names are tinted with the game's
 own entity colors, built from the entity list so they cannot drift.
 
-## Not published
+## Where it is served
 
-`slides/index.html` is committed but not copied into `dist/` by
-[build.ts](../build.ts), unlike the eval and playthrough pages. It contains
-spoilers and it is a talk rather than a page about the game. Serving it at
-`/slides/` is three lines in `build.ts` if that changes.
+[build.ts](../build.ts) copies `slides/index.html` into `dist/slides/`, so a
+deploy serves it at `/slides/`. Nothing links to it from the game or the README:
+it gives away every mystery, so it is for someone handed the URL.
