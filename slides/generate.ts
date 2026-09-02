@@ -2469,11 +2469,13 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
 .slide.shown { display: flex; }
 /* The slide body: content above, the Archivist's line pinned under it. */
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-/* "safe center" centres a slide that fits and falls back to top-aligned when
-   one overflows, so a long slide scrolls from its first line rather than
-   from its middle. */
+/* Content slides start at the top, so the kicker and heading sit in the same
+   place on every slide and the body flows down from them. Title and section
+   slides centre; "safe center" falls back to top-aligned when one overflows,
+   so it scrolls from its first line rather than its middle. */
 .frame { flex: 1; min-height: 0; overflow-y: auto;
-         display: flex; flex-direction: column; justify-content: safe center; }
+         display: flex; flex-direction: column; justify-content: flex-start; }
+.slide.section .frame, .slide.title .frame { justify-content: safe center; }
 .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: clamp(.65rem, 1.2vw, .85rem);
           color: var(--dim); margin-bottom: .7rem; flex: 0 0 auto; }
 .slideno { color: var(--partial); font-family: ui-monospace, monospace;

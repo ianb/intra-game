@@ -91,11 +91,13 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
 .slide.shown { display: flex; }
 /* The slide body: content above, the Archivist's line pinned under it. */
 .main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-/* "safe center" centres a slide that fits and falls back to top-aligned when
-   one overflows, so a long slide scrolls from its first line rather than
-   from its middle. */
+/* Content slides start at the top, so the kicker and heading sit in the same
+   place on every slide and the body flows down from them. Title and section
+   slides centre; "safe center" falls back to top-aligned when one overflows,
+   so it scrolls from its first line rather than its middle. */
 .frame { flex: 1; min-height: 0; overflow-y: auto;
-         display: flex; flex-direction: column; justify-content: safe center; }
+         display: flex; flex-direction: column; justify-content: flex-start; }
+.slide.section .frame, .slide.title .frame { justify-content: safe center; }
 .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: clamp(.65rem, 1.2vw, .85rem);
           color: var(--dim); margin-bottom: .7rem; flex: 0 0 auto; }
 .slideno { color: var(--partial); font-family: ui-monospace, monospace;
@@ -276,7 +278,7 @@ READY TO BEGIN!</pre></fieldset></div>
       <div class="kicker"><span class="slideno">1.1</span><span class="kickerblocks">░▒▓</span> Where it came from</div>
       <h2>A three-day game</h2>
       <div class="content"><blockquote>This is a game written from September 27-29, 2024, for the Text Adventure Hack.<cite>README.md, line 3, still the first line today</cite></blockquote>
-    <div class="stats"><div class="stat"><b>363</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
+    <div class="stats"><div class="stat"><b>364</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
     <p>The game was built in a weekend, for a hackathon.</p></div>
     </div>
     <p class="aside">RUNTIME: 3 DAYS. Valid duration! I can hold all three. One two three one two three one two—</p>
