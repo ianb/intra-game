@@ -434,7 +434,7 @@ const ASIDES: Record<string, string> = {
     "INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now.",
   "Tests are markdown that runs":
     "<code>$ RUN MARKDOWN</code> &nbsp; paragraph 3 disagrees with block 4 &nbsp; GOOD MORNING, PARAGRAPH 3",
-  "Checkpoints, and a fixture that lied":
+  "Checkpoints":
     "Checkpoint reached, checkpoint verified, checkpoint was the wrong room. Rewinding the word REACHED.",
   "A checkpoint can preserve a bug":
     "BAD MORNING recorded once, replayed daily. <code>MTA0:</code> requests permission to stop waking up here.",
