@@ -232,26 +232,28 @@ Every content slide, in order.
 | 4.11 | Three versions of one prompt block | VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by. |
 | 4.12 | Eleven models, one day, one set of prompts | _(needed)_ |
 | 4.13 | What actually fails is the protocol | _(needed)_ |
-| 4.14 | Reasoning effort buys the score | _(needed)_ |
+| 4.14 | Thinking matters | _(needed)_ |
 | 4.15 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
-| 4.16 | The provenance hash was itself wrong | <code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined |
-| 4.17 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
-| 4.18 | The same score, six times the clock | _(needed)_ |
-| 4.19 | The bigger model fails where the smaller one does not | _(needed)_ |
+| 4.16 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
+| 4.17 | The same score, six times the clock | _(needed)_ |
+| 4.18 | What the small models did wrong, specifically | _(needed)_ |
+| 4.19 | The bigger model stalls in intake | _(needed)_ |
 | 4.20 | The suite grew with the game | _(needed)_ |
 |  | **PART 5 — Letting a model play** | |
 | 5.1 | Then: let a model play it | Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine. |
-| 5.2 | The player model is blindfolded | PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied. |
-| 5.3 | Notes are the memory, and the bug report | NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start. |
-| 5.4 | What the player actually writes | _(needed)_ |
-| 5.5 | Milestones, not pass/fail | Progress stored as last meaningful event. Current meaningful event pending classification. |
-| 5.6 | The funnel, across every recorded run | _(needed)_ |
-| 5.7 | Why there is a cuff | CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0 |
-| 5.8 | Exploring more did not help | _(needed)_ |
-| 5.9 | The commands are never the problem | _(needed)_ |
-| 5.10 | Who holds the controller matters | _(needed)_ |
-| 5.11 | The task ledger, and a standard for invention | TASK without completion path moved to DEFECTS. SELF-CHECK has no completion path. Moving— |
-| 5.12 | Sixty-one snags, in three kinds | _(needed)_ |
+| 5.2 | What the player model sees | PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied. |
+| 5.3 | Two models and a reviewer | _(needed)_ |
+| 5.4 | Notes are the memory, and the bug report | NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start. |
+| 5.5 | What the player actually writes | _(needed)_ |
+| 5.6 | The player's instructions were written knowing the answer | _(needed)_ |
+| 5.7 | Milestones, not pass/fail | Progress stored as last meaningful event. Current meaningful event pending classification. |
+| 5.8 | The funnel, across every recorded run | _(needed)_ |
+| 5.9 | /nav | CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0 |
+| 5.10 | Exploring more did not help | _(needed)_ |
+| 5.11 | The commands are never the problem | _(needed)_ |
+| 5.12 | Who holds the controller matters | _(needed)_ |
+| 5.13 | Invented tasks | TASK without completion path moved to DEFECTS. SELF-CHECK has no completion path. Moving— |
+| 5.14 | Sixty-one snags, in three kinds | _(needed)_ |
 |  | **PART 6 — What it found** | |
 | 6.1 | The flagship mystery could not be won by winning | Correct suspect, correct evidence, wrong furniture arrangement. Mystery remains legally unsolved. |
 | 6.2 | The harness was the bug (1): the model had read the source | SOURCE ACCESS noted. Everyone in this room now knows what I do before I do it. |
@@ -278,7 +280,7 @@ Every content slide, in order.
 |  | What transfers | _(needed)_ |
 |  | **PART 9 — Close** | |
 
-54 written, 25 still needed.
+53 written, 28 still needed.
 
 ## Applying the result
 

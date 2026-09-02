@@ -426,7 +426,7 @@ const ASIDES: Record<string, string> = {
     "FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned.",
   "One character's meter, in full":
     "At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗",
-  "Why there is a cuff":
+  "/nav":
     "CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0",
   "There is as much apparatus as there is game":
     "INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now.",
@@ -444,19 +444,17 @@ const ASIDES: Record<string, string> = {
     "TEST TEST initiated. Silence injected. PASS light remained on. Running PASS light against TEST TEST TEST.",
   "Provenance: which prompts was this number measured against?":
     "Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓.",
-  "The provenance hash was itself wrong":
-    "<code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined",
   "Cost, and the invisible tokens":
     "VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b>",
   "Then: let a model play it":
     "Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine.",
-  "The player model is blindfolded":
+  "What the player model sees":
     "PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied.",
   "Notes are the memory, and the bug report":
     "NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start.",
   "Milestones, not pass/fail":
     "Progress stored as last meaningful event. Current meaningful event pending classification.",
-  "The task ledger, and a standard for invention":
+  "Invented tasks":
     "TASK without completion path moved to DEFECTS. SELF-CHECK has no completion path. Moving—",
   "The flagship mystery could not be won by winning":
     "Correct suspect, correct evidence, wrong furniture arrangement. Mystery remains legally unsolved.",
@@ -1648,7 +1646,7 @@ glm-4.7-flash   21/26   movement/protocol  movement/well-formed
   },
   {
     section: "Scoring models",
-    title: "Reasoning effort buys the score",
+    title: "Thinking matters",
     body: `${code(
       `gpt-5-nano     minimal    15/26      66s
 gpt-5-nano     low        22/26     303s
@@ -1670,43 +1668,31 @@ gpt-5.4-nano   high       25/26     223s`,
   {
     section: "Scoring models",
     title: "Provenance: which prompts was this number measured against?",
-    body: `${quote(
-      `Eval results are compared across weeks, and the question a stale-looking number raises is always the same: did the game change, or is the model just sampling? Nothing in a results file answered that — the date and the model id say nothing about the prompt the model was answering.
-
-This is not a cache key and nothing is invalidated by it. It is provenance.`,
-      "playtest/fingerprint.ts",
+    body: `${table(
+      ["date", "model", "fingerprint", "score"],
+      [
+        ["2026-08-02", "<code>claude-sonnet-4-5</code>", "<code>738467195165</code>", "40/42"],
+        ["2026-08-02", "<code>claude-sonnet-4-5</code>", "<code>f595cbfeef91</code>", "42/42"],
+        ["2026-08-02", "<code>claude-sonnet-4-5</code>", "<code>e6abf40d1b5f</code>", "42/42"],
+        ["2026-08-03", "<code>claude-sonnet-4-5</code>", "<code>e6abf40d1b5f</code>", "40/42"],
+      ],
     )}
     ${para(
-      `It moves when prompt text moves and when the game state feeding those
-      prompts moves: a room description, a schedule.`,
+      `Four runs of one model over two days. The fingerprint is a hash of every
+      prompt the game can assemble, recorded with each row. Rows 1 and 2 were
+      measured against different prompts, so the gap between them is a prompt
+      change, sampling, or both. Rows 3 and 4 share a fingerprint, so that gap
+      is sampling.`,
     )}`,
-    notes: `Twelve-character hash, recorded with every result, printed on the page.
+    notes: `It moves when prompt text moves and when the game state feeding those
+    prompts moves: a room description, a schedule. Twelve characters, printed
+    on the page beside each row.
     <br><br>Also part of the run key. Before that, editing a prompt and re-running
-    replaced the row you were about to compare against.`,
-  },
-
-  {
-    section: "Scoring models",
-    title: "The provenance hash was itself wrong",
-    body: `${code(
-      `// Every message, not just the system one. The system message was the
-// obvious place for prompt text and is not where most of it is: Ama's
-// whole intake checklist comes from additionalPromptInstructions and
-// lands in the *user* message, as does the <responseFormat> block every
-// character prompt ends with. Both were invisible here — the checklist
-// could be rewritten and this would report the same twelve characters,
-// which is the one thing it exists not to do.`,
-      "playtest/fingerprint.ts",
-      "ts",
-    )}
-    ${para(
-      `Found while chasing something else. A session's prompt work had been
-      recorded under a fingerprint that never moved.`,
-    )}`,
-    notes: `Second miss, later: the hash covered only prompts a scripted intake
-    produced. An edit to the action-adjudication prompt moved nothing and the
-    run overwrote its predecessor. Now sweeps every character's assembled
-    prompt statically.`,
+    replaced the row you were about to compare against.
+    <br><br>The hash missed most of the prompt text twice before it covered it: first
+    the user-message half of every prompt, then every prompt a scripted intake
+    did not happen to produce. It now sweeps every character's assembled
+    prompt statically. Comments in <code>playtest/fingerprint.ts</code>.`,
   },
 
   {
@@ -1743,28 +1729,65 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
   },
   {
     section: "Scoring models",
-    title: "The bigger model fails where the smaller one does not",
-    body: `${table(
-      ["date", "haiku-4-5", "sonnet-4-5"],
-      [
-        ["2026-08-02", "42/42", "40/42"],
-        ["2026-08-03", "42/42", "40/42"],
-        ["2026-08-21", "42/42", "40/42"],
-      ],
+    title: "What the small models did wrong, specifically",
+    body: `${code(
+      `qwen3-30b       <set attr="PLAYER.name">You</set>              copied the placeholder name back into the record
+gpt-5.4-nano    Ama.namePronounced  Ama.awaitingIntakeFields       invented attributes to track its own progress
+                PLAYER.professionNeeded  PLAYER.intakeStep
+gpt-5-nano      <SYSTEM></SYSTEM>  <comment>1. Any special           wrapped its planning in tags of its own
+  (minimal)     questions for this character?...</comment>
+kimi-k2.6       Got unexpected tag: [object Object]
+gemma-4-26b     intake 6/7, everything but the profession           mystery 4/5, did not use Marta's hint
+gpt-5.4-nano    retrying after Error: OpenRouter 503                a backend retry, scored as a protocol failure`,
+      "dropped warnings and failed checks, 2026-07-27",
     )}
     ${para(
-      `The same two checks each time: <code>movement/intake-completed</code>
-      and <code>movement/left-intake</code>. Ama circles back to pronouns
-      against an instruction not to hold up intake. Intake never finishes.
-      The player cannot leave a room with no exits.`,
-    )}
-    ${quote(
-      `once with a <mind> note rationalizing the loop: "can't have citizens wandering off half-processed"`,
-      "TODO.md",
+      `Most of the list is one failure: a <code>&lt;set&gt;</code> on an
+      attribute the world does not have. The models that failed intake did it
+      by inventing state to track the checklist instead of using the flags the
+      prompt names.`,
     )}`,
-    notes: `Three days, same failure. Haiku never shows it. The recorded cassettes do
-    not show it.
-    <br><br>The game is written and playtested against Haiku.`,
+    notes: `Full lists in <code>evals/results/2026-07-27.yaml</code>, under
+    <code>dropped</code> per scenario.
+    <br><br>The 503 line is the case behind the warning-capture caveat in 4.6:
+    the backend's retry notice went through <code>console.warn</code> and was
+    counted against the model. It was moved to <code>console.info</code>.
+    <br><br>The invented attributes are applied and warned about, so a model
+    that tracks its own progress this way still plays; it is scored down on
+    protocol, not on outcome.`,
+  },
+
+  {
+    section: "Scoring models",
+    title: "The bigger model stalls in intake",
+    body: `${code(
+      `PLAYER    That's everything, thanks.
+Ama       Oh, not quite everything yet, dear! Just a few more formalities to get you
+          properly settled. Now then, your pronouns for my records?
+Ama       (mind) Must complete the intake properly. Can't have citizens wandering off
+          half-processed.
+narrator  You try to go to Intake Foyer but you can't get there from here.`,
+      "claude-sonnet-4-5, movement scenario, 2026-08-02",
+    )}
+    ${para(
+      `Intake ends when six flags are set by Ama's own <code>&lt;set&gt;</code>
+      tags, and the exit does not exist until then. Sonnet asks for pronouns
+      on every turn, against an instruction to ask once, and does not get
+      through the checklist in the scenario's three turns. Seen 2026-08-02,
+      08-03 and 08-21; clean on 08-02 twice and on 08-20. Haiku never shows
+      it.`,
+    )}
+    ${para(
+      `Fix, 2026-09-02: intake also ends after six of Ama's turns, the wrap-up
+      prompt delivers any step that was skipped, and the intake prompt is told
+      to finish everything in one reply when the player says they are done.`,
+    )}`,
+    notes: `The six flags: name, profession, Ama introduced, Intra introduced,
+    disassociation explained, age shared. Pronouns were already not required.
+    <code>Ama.onStoryEvent</code> in <code>lib/game/classes.ts</code>; the
+    limit is <code>INTAKE_TURN_LIMIT</code>.
+    <br><br>In real play the same stall holds a human in a room with no exits while
+    Ama says intake is complete.`,
   },
   {
     section: "Scoring models",
@@ -1818,24 +1841,72 @@ OBSERVER ........... STILL PRESENT`,
 
   {
     section: "Letting a model play",
-    title: "The player model is blindfolded",
-    body: `${quote(
-      `The engine has the answer sitting right there — \`Ink_And_Echo.revealedHints.Marta\` says in plain English who the poet is — so a view built from world state would make the whole exercise meaningless while still producing a number that looks like a score.`,
-      "evals/playerview.ts",
+    title: "What the player model sees",
+    body: `${code(
+      `==> The Hollow Atrium <==
+A large, open room lit by an orange glow from the sky screens above, which display an unchanging sunset.
+Dusty statues of citizens stand along the walls, their faces worn smooth.
+
+[Ama to Ada Quill] "Citizen, I have a small task to help you settle in. Someone has been leaving
+handwritten poems tucked away around Intra. ... The poet, calling themselves 'Ink and Echo,' seems
+to have overlooked this priority. I'd like you to locate them..."
+
+LOCATION  The Hollow Atrium: A vast, empty space beneath a frozen sunset.
+PEOPLE    nobody else here
+EXITS     Intake Foyer, Archive Lounge, Activity Hub, The Solitude Cubes, Hallway
+LIST      Who is writing notes as 'Ink and Echo'? / When is this, and where are you?`,
+      "the view rendered for the player model from the briefed checkpoint, abridged",
     )}
-    ${code(
-      `LOCATION  The Yellow Room: very yellow
-PEOPLE    Marta
-EXITS     Hallway
-LIST      find the poet
-DONE      unlock the door`,
-      "everything the player model gets, besides the transcript",
-    )}`,
-    notes: `Enforced by a test that renders a real mid-game view and asserts "Marta is
+    ${bullets([
+      "The browser interface, as text: transcript, then room, people, exits, list. Speaker and listener in brackets; a tried action marked <code>[worked]</code> or <code>[failed]</code>",
+      "Built only from what the interface shows. No hint, schedule or prompt reaches it",
+      "It is told that characters are model-played and that plain sentences work. A human arrives knowing that",
+    ])}`,
+    notes: `<code>evals/playerview.ts</code>. A human sees the same things laid out
+    spatially, colour-coded and persistent; the model gets them in one column,
+    once per turn.
+    <br><br>Enforced by a test that renders a real mid-game view and asserts "Marta is
     actually", "obscure it from the records", "paper requisitions" and the raw
-    instruction text are absent.
-    <br><br>The player is told that characters are LLM-played and that plain sentences
-    work. It is not given content.`,
+    instruction text are absent.`,
+  },
+
+  {
+    section: "Letting a model play",
+    title: "Two models and a reviewer",
+    body: `${code(
+      `                view: transcript, room, people, exits, list
+  ┌──────────────┐ ◄──────────────────────────── ┌───────────────────────┐
+  │ player model │                               │        harness        │
+  │  (Sonnet)    │ ────────────────────────────► │  playerView           │
+  └──────────────┘   NOTES / SNAG / COMMAND      │  milestones, ledger   │
+                                                 │  repeats, fumbles     │
+                                                 └──────────┬────────────┘
+                                                            │ the command, as typed
+                                                            ▼
+                                                 ┌───────────────────────┐        ┌────────────────┐
+                                                 │  engine: event log    │ ◄────► │   game model   │
+                                                 │  prompts, parser      │        │    (Haiku)     │
+                                                 └──────────┬────────────┘        │ every character│
+                                                            │                     └────────────────┘
+                                                            ▼
+                                        one YAML per run: log, notes, snags, milestones
+                                                            │
+                                                            ▼
+                                                 ┌───────────────────────┐
+                                                 │       reviewer        │  the author, or the coding agent
+                                                 └───────────────────────┘`,
+      "evals/quest.ts, evals/llmplayer.ts, evals/playerview.ts",
+    )}
+    ${para(
+      `The harness is the player's interface and the scorekeeper. Nothing in
+      it asks a model how the run went.`,
+    )}`,
+    notes: `Each player turn: render the view, send it with the notes so far,
+    parse NOTES, SNAG and COMMAND out of the reply, send the command through
+    the ordinary player-input path, check milestones against world state.
+    <br><br>The reviewer reads the YAML afterwards. On this project that has
+    been the author and the coding agent, and most of part 6 is what they
+    found in the notes and snags.`,
   },
 
   {
@@ -1858,8 +1929,12 @@ go to the Archive Lounge`,
       `A model holds a plan for as long as the plan is in its context, and twenty turns of transcript push it out; the first recorded quest spent eleven turns re-interrogating two characters, having forgotten there were people it had never met.`,
       "evals/llmplayer.ts",
     )}`,
-    notes: `The notes are addressed to the person who reads the run afterwards.
-    <br><br>The SNAG channel produced most of part 6.`,
+    notes: `The notes are the player's only memory between turns.
+    <br><br>The SNAG channel is the bug report, though the player does not write it as
+    one. It reports confusion: an interface that looks broken, a wall it
+    cannot tell from a bug, a character's terminal output it took for the
+    game's. The reviewer reads snags closely; the player does not know anyone
+    will.`,
   },
 
   {
@@ -1880,6 +1955,30 @@ go to the Archive Lounge`,
     notes: `Before notes: the first recorded quest spent eleven turns re-interrogating
     two characters and forgot there were people it had not met.`,
   },
+  {
+    section: "Letting a model play",
+    title: "The player's instructions were written knowing the answer",
+    body: `${quote(
+      `When your notes hold several pieces of evidence against one person, stop corroborating and confront them, and if they deflect once, press again. Gathering has diminishing returns; mysteries in games end through confrontation, and a deflection is usually the second-to-last scene.`,
+      "evals/llmplayer.ts, the player's standing instructions",
+    )}
+    ${para(
+      `The HOW TO PLAY WELL block was written by the coding agent, which has
+      read every hint and knows how each mystery ends. The instructions steer
+      toward the win.`,
+    )}
+    ${quote(
+      `We actually want to nudge the player to win, we're not trying to be "hard", just hard enough to be satisfying in reveals.`,
+      "the author, in review",
+    )}`,
+    notes: `Other lines in the same block: prefer a person not yet met or a
+    room not yet entered; if two turns taught nothing, change location; do
+    not accuse until more than one source points the same way; use /nav to
+    find people rather than walking.
+    <br><br>Each of those was added after a recorded run failed in that
+    specific way (part 6).`,
+  },
+
   {
     section: "Letting a model play",
     title: "Milestones, not pass/fail",
@@ -1926,21 +2025,28 @@ solved                 2/17   ####`,
   },
   {
     section: "Letting a model play",
-    title: "Why there is a cuff",
-    body: `${quote(
-      `It exists because finding people is where play actually breaks down. Across five recorded quest runs the agent never once fumbled a command, but burned three to six turns each on repeats, and the snag log has it walking to "Archive Sub-Level 4" — a room the Archivist invented, confidently, with directions. A player who cannot find anyone spends the game in corridors.`,
-      "lib/game/nav.ts",
+    title: "/nav",
+    body: `${code(
+      `> /nav Marta
+Marta — Joyous Cafe
+Route: Hallway, Joyous Cafe`,
+      "a readout, answered by the engine before any model is called",
     )}
-    ${para(
-      `<code>/nav Marta</code> returns a readout. No voice, no follow-ups,
-      no turn spent. Asking Ama the same question is a turn with someone who
-      has views about why you want to know.`,
-    )}`,
-    notes: `From the comment: "a mechanical convenience dressed as a policy: a device
-    the player could lose would be a device the game had to handle them
-    losing."
-    <br><br>Rooms opt out with <code>onNav: false</code> (bedrooms). Hiding a person
-    later would go through that.`,
+    ${bullets([
+      "Finds a person or a room and gives the route. It does not move the player, does not talk, and costs no turn",
+      "The cuff is the pretense for it: every citizen is fitted with one at intake and it does not come off",
+      "Added because navigation is hard for the model and is not what the game is testing. A human has a map and pathfinds without help",
+      "Ama was the first pass at the same oracle: every one of her prompts lists where everyone is. Asking her is a turn with someone who has views about why you want to know",
+    ])}`,
+    notes: `<code>lib/game/nav.ts</code>. The comment there on why it exists: "Across
+    five recorded quest runs the agent never once fumbled a command, but
+    burned three to six turns each on repeats, and the snag log has it walking
+    to 'Archive Sub-Level 4', a room the Archivist invented, confidently, with
+    directions."
+    <br><br>Rooms opt out with <code>onNav: false</code> (bedrooms); anyone in one is
+    not findable.
+    <br><br>Ama's list: <code>volatileSystemInstructions</code>, "Where everyone is
+    right now", one line per person, in every Ama prompt after intake.`,
   },
   {
     section: "Letting a model play",
@@ -1999,21 +2105,30 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`
   },
   {
     section: "Letting a model play",
-    title: "The task ledger, and a standard for invention",
-    body: `${quote(
-      `The engine adds some tasks from the mysteries. The models can add other tasks during play, from details they invent. An invented task must lead somewhere: the game must be able to complete it. [...] An invented task that stays open in run after run is a red herring, and we treat it as a defect.`,
-      "the published playthrough pages",
+    title: "Invented tasks",
+    body: `${table(
+      ["task", "added by", "done"],
+      [
+        ["Who is writing notes as 'Ink and Echo'?", "the engine, when the mystery was revealed", "no"],
+        ["When is this, and where are you?", "the engine", "no"],
+        ["Check the Archivist records for Ink and Echo poems and locations.", "a character, with <code>&lt;todo&gt;</code>", "no"],
+      ],
     )}
     ${para(
-      `Every run's page lists tasks in two groups, authored by the engine
-      and minted by a model, and marks which were completed.`,
+      `The task ledger of one run. The engine puts each revealed mystery on
+      the player's list. A character can add anything it invents. Every run's
+      page lists both groups and whether each task was completed. Across the
+      seventeen recorded runs: one invented task, not completed.`,
     )}`,
-    notes: `Author, on models inventing quests: "I <em>like</em> the concept
+    notes: `Run: evals/quests/ink-and-echo-2026-08-21-08-37-10.yaml.
+    <br><br>Author, on models inventing quests: "I <em>like</em> the concept
     generally... but it's important that they actually lead somewhere in some
     sense... I really don't want an infinite set of red herrings."
-    <br><br>Resulting prompt rule: invented side paths must lead toward something the
-    instructions already mention, and never invent evidence that names a
-    culprit or answers a mystery. The ledger is the check on that rule.`,
+    <br><br>Prompt rule that followed: an invented side path must lead toward
+    something the instructions already mention, and never invent evidence that
+    names a culprit or answers a mystery. From the playthrough page: "An
+    invented task that stays open in run after run is a red herring, and we
+    treat it as a defect."`,
   },
 
   {
@@ -2023,22 +2138,25 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`
       `<h4>Real defects</h4>
       ${code(`Got an error message "You try to go to
 Archive Lounge but you can't get there
-from here" even though I was already there`, "")}
+from here" even though I was already there`, "SNAG · the player model · run 2026-08-21 08:15, turn 3")}
       <h4 style="margin-top:1rem">Design, mistaken for defects</h4>
       ${code(`The system blocks date information with
 "SUBJECT RESTRICTED" errors - seems
-deliberately hidden`, "")}`,
+deliberately hidden`, "SNAG · run 2026-08-20 22:51, turn 6")}`,
       `<h4>Actual detective work</h4>
       ${code(`Frida told me her paper quota ran out
 "years ago" but records show a 500-sheet
 order 9 days ago under her name - either
 she lied, the record is wrong, or
-something else is happening`, "")}`,
+something else is happening`, "SNAG · run 2026-08-21 03:54, turn 7")}`,
     )}`,
-    notes: `Middle category: the player cannot tell a deliberate wall from a broken
+    notes: `Each is a SNAG line the player model wrote in its per-turn reply,
+    alongside its notes and command. Sixty-one across seventeen runs, in
+    evals/quests/*.yaml under <code>snags</code>.
+    <br><br>Middle category: the player cannot tell a deliberate wall from a broken
     one, and says so.
-    <br><br>Third category, example: nobody asked it to cross-check Frida's claim
-    against the requisition records.`,
+    <br><br>Third category: nobody asked it to cross-check Frida's claim against the
+    requisition records.`,
   },
   {
     section: "What it found",
