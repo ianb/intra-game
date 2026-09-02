@@ -412,8 +412,6 @@ const ASIDES: Record<string, string> = {
     "DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material.",
   "...and what the engine kept":
     "Words on the left, consequences on the right, staples through both. ░▒ FILE COMPLETE ▒░",
-  "The parser is permissive":
-    "PARSER OPEN: emphasis, prose, minor debris. UNKNOWN TAGS remain outside under supervision.",
   "Two severities, and the line between them":
     "RETRY drawer: 12 / INCIDENT drawer: 2 / drawer handles color-coded after incident 2",
   "One retry, then take what you got":
@@ -907,72 +905,37 @@ Doug.curiosity: 0 => 1`,
 
   {
     section: "The engine",
-    title: "The parser is permissive",
-    body: `${quote(
-      `A model told to mention "/nav" in dialogue writes \`<b>/nav Marta</b>\`, because that is what emphasising a command looks like — and the parser saw an unknown tag, warned, and discarded it along with the words inside. Emphasis cost a turn and scored as a protocol failure.`,
-      "lib/parsetags.ts",
+    title: "Player input is rewritten into the same tags",
+    body: `${code(
+      `Hello? Where am I?     →  <dialog character="PLAYER" to="Ama">Hello? Where am I?</dialog>
+look around the room   →  <examine>look around the room</examine>
+leave here             →  <goto>Hallway</goto>
+buy a drink            →  <action minutes="5">Pat looks for a vending machine to buy a drink.</action>`,
+      'the "player input" prompt: two replies from the recorded cassette, two examples from the prompt itself',
+      "tags",
+    )}
+    ${para(
+      `Every line the player types goes through a small model first and comes
+      back as the vocabulary the characters use. From there the engine handles
+      a player turn and a character turn the same way.`,
     )}
     ${bullets([
-      "Auto-closes unclosed tags, warning per level",
-      "Recovers from mismatched closing tags",
-      "Strips <code>&lt;b&gt; &lt;i&gt; &lt;em&gt; &lt;strong&gt;</code> before parsing",
-      "Strips the backticks models fence their output in",
-      "Hoists a <code>&lt;set&gt;</code> written inside a <code>&lt;dialog&gt;</code> back out",
-      "Keeps loose text rather than discarding it",
+      "The player gets four tags: <code>&lt;dialog&gt;</code>, <code>&lt;goto&gt;</code>, <code>&lt;examine&gt;</code>, <code>&lt;action&gt;</code>. No <code>&lt;set&gt;</code>, no <code>&lt;attitude&gt;</code>, no <code>&lt;mind&gt;</code>",
+      "Dialogue is kept as close to the typed text as possible. A character composes; the player is transcribed",
+      "An <code>&lt;action&gt;</code> is the attempt only. The result comes from a second prompt, with a d20",
+      "Conventions: a line starting with <code>&gt;</code> is an action, with <code>&quot;</code> is dialogue",
     ])}`,
-    notes: `2024 commit that first hardened the parser: "Some models produce these
-    regularly, and I'm going out of my way to avoid them through instructions
-    which is distracting."
-    <br><br>Same argument in <code>coerce.ts</code> for pronoun spellings: "a prompt
-    long enough to enumerate the accepted spellings costs every turn of the
-    game to fix one moment of it."`,
-  },
-
-  {
-    section: "The engine",
-    title: "Two severities, and the line between them",
-    body: `${quote(
-      `What goes in is limited to mistakes a model could plausibly fix if told — a misspelt attribute, a value of the wrong shape — because the point is to hand it back and ask again. Anything the model cannot act on is a warning and stays one.`,
-      "lib/game/tags.ts, on the complaints channel",
-    )}
-    ${columns(
-      `<h4>Complaint → one retry</h4>${bullets([
-        "<code>&lt;attitude toward=&gt;</code> naming nobody",
-        "<code>&lt;set&gt;</code> on an attribute that does not exist",
-        "<code>&lt;set&gt;</code> with an unusable value",
-      ])}`,
-      `<h4>Warning → skip and move on</h4>${bullets([
-        "An unknown tag",
-        "<code>&lt;resolveMystery&gt;</code> with a bad id",
-        "<code>&lt;todoDone&gt;</code> matching no open task",
-      ])}`,
-    )}`,
-    notes: `Normalisation on input: "he", "he/him/his" and "He / Him" become
-    <code>he/him</code>; several spellings of true and false are accepted; a
-    profession of "unknown" is refused.
-    <br><br>Most common protocol failure across every model measured:
-    <code>&lt;set&gt;</code> on an attribute that does not exist. Examples
-    seen: <code>PLAYER.intakeStep</code>, <code>Ama.askingProfession</code>.
-    The change is applied and a warning is raised, because some flows
-    legitimately add attributes.
-    <br><br>The warnings are the eval's protocol score (part 4).`,
-  },
-
-  {
-    section: "The engine",
-    title: "One retry, then take what you got",
-    body: `${quote(
-      `One. A model that misspells an attribute usually fixes it when told, and a model that doesn't fix it on the second go isn't going to on the third — meanwhile every retry is a whole prompt's worth of money and a second of the player waiting. Bounded at one because the failure being repaired is cosmetic to the player: the turn still happened, it just recorded less than it meant to.`,
-      "lib/game/classes.ts, PROTOCOL_RETRIES",
-    )}
-    ${para(
-      `The retry shows the model its own answer and the complaints.`,
-    )}
-    ${para(
-      `One retry. After that the turn is taken as it came.`,
-    )}`,
-    notes: `Each attempt builds a fresh story event. A repaired response replaces the
-    first; nothing is merged.`,
+    notes: `Prompt: <code>PlayerClass.assemblePrompt</code> in
+    <code>lib/game/classes.ts</code>. Runs on the "flash" model tier.
+    <br><br>It is given the room, the exits, who is present, the last three
+    history entries, and who the player last spoke to. It answers five
+    questions in a <code>&lt;context&gt;</code> block first: going somewhere,
+    an action, examining, replying to recent dialogue, other speech.
+    <br><br>Instruction in the prompt: "ONLY speak as PLAYER. Do not RESPOND to
+    the input, responses will happen in follow-up requests." Also: "Do not
+    describe the conclusion or result of the action!"
+    <br><br>The rewritten tag is what goes into the log and into every
+    character's history. The typed text is not shown to characters.`,
   },
 
   {
@@ -1010,6 +973,86 @@ writing 4-5 words for each item:
   },
 
 
+
+  {
+    section: "The engine",
+    title: "Two severities, and the line between them",
+    body: `${quote(
+      `What goes in is limited to mistakes a model could plausibly fix if told — a misspelt attribute, a value of the wrong shape — because the point is to hand it back and ask again. Anything the model cannot act on is a warning and stays one.`,
+      "lib/game/tags.ts, on the complaints channel",
+    )}
+    ${columns(
+      `<h4>Complaint → one retry</h4>${bullets([
+        "<code>&lt;attitude toward=&gt;</code> naming nobody",
+        "<code>&lt;set&gt;</code> on an attribute that does not exist",
+        "<code>&lt;set&gt;</code> with an unusable value",
+      ])}`,
+      `<h4>Warning → skip and move on</h4>${bullets([
+        "An unknown tag",
+        "<code>&lt;resolveMystery&gt;</code> with a bad id",
+        "<code>&lt;todoDone&gt;</code> matching no open task",
+      ])}`,
+    )}`,
+    notes: `Before any of this the parser repairs what it can: auto-closes unclosed
+    tags, recovers mismatched closing tags, strips <code>&lt;b&gt; &lt;i&gt;
+    &lt;em&gt;</code> and backticks, hoists a <code>&lt;set&gt;</code> written
+    inside a <code>&lt;dialog&gt;</code>, keeps loose text. 2024 commit: "Some
+    models produce these regularly, and I'm going out of my way to avoid them
+    through instructions which is distracting."
+    <br><br>Normalisation on input: "he", "he/him/his" and "He / Him" become
+    <code>he/him</code>; several spellings of true and false are accepted; a
+    profession of "unknown" is refused.
+    <br><br>Most common protocol failure across every model measured:
+    <code>&lt;set&gt;</code> on an attribute that does not exist. Examples
+    seen: <code>PLAYER.intakeStep</code>, <code>Ama.askingProfession</code>.
+    The change is applied and a warning is raised, because some flows
+    legitimately add attributes.
+    <br><br>The warnings are the eval's protocol score (part 4).`,
+  },
+
+  {
+    section: "The engine",
+    title: "One retry, then take what you got",
+    body: `${quote(
+      `One. A model that misspells an attribute usually fixes it when told, and a model that doesn't fix it on the second go isn't going to on the third — meanwhile every retry is a whole prompt's worth of money and a second of the player waiting. Bounded at one because the failure being repaired is cosmetic to the player: the turn still happened, it just recorded less than it meant to.`,
+      "lib/game/classes.ts, PROTOCOL_RETRIES",
+    )}
+    ${para(
+      `The retry shows the model its own answer and the complaints.`,
+    )}
+    ${para(
+      `One retry. After that the turn is taken as it came.`,
+    )}`,
+    notes: `Each attempt builds a fresh story event. A repaired response replaces the
+    first; nothing is merged.`,
+  },
+
+  {
+    section: "The engine",
+    title: "Mysteries are the objective",
+    body: `${table(
+      ["mystery", "arrives", "ends"],
+      [
+        ["Who is writing notes as 'Ink and Echo'?", "Ama reads it out in the Hollow Atrium, the first room after intake", "Marta confesses"],
+        ["When is this, and where are you?", "when Ama mentions the player's age during intake", "the Archivist says the year, or where Intra is"],
+        ["Become Star Citizen of the Week", "open from the start; on the list once the player hears of the Facility Appreciation Tour", "the engine, when the score crosses the threshold"],
+        ["What is behind the sealed door in the Hallway?", "open on entering the Hallway; on the list once told about the panel", "the player reads enough at the SENTRA panel"],
+        ["Why were you woken?", "open from the start; on the list once the date is known", "the player reads Sentra's note"],
+      ],
+    )}
+    ${para(
+      `A revealed mystery is a question on the player's task list. Solving
+      one is the only progress the game records. Each is a directory in
+      <code>lib/game/content/mysteries/</code>: triggers, hints per character,
+      a way to end, an eval.`,
+    )}`,
+    notes: `Solved means a character, or the engine, emitted
+    <code>&lt;resolveMystery id=...&gt;</code>. The player cannot declare one
+    solved.
+    <br><br>Ink and Echo is the first and the one the playtest corpus is about
+    (part 5). The sealed door and Sentra's note are the endgame material; the
+    planned reset act is in TODO.md and not built.`,
+  },
 
   {
     section: "The engine",
