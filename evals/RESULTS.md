@@ -19,6 +19,7 @@ Prompts `4f2b57474470`.
 | `mistralai/mistral-nemo` | 5/7 | 4/5 | 3/4 | 5/5 | 4/6 | 3/5 | 5/5 | 5/6 | 4/5 | **38/48** | 173s | 0 | 0.4¢ |
 | `qwen/qwen3-8b` | 5/7 | 5/5 | 4/4 | 5/5 | 6/6 | 4/5 | 5/5 | 6/6 | 5/5 | **45/48** | 546s | 19462 | 3.1¢ |
 | `microsoft/phi-4` | 5/7 | 4/5 | 3/4 | 5/5 | 5/6 | 4/5 | 4/5 | 6/6 | 5/5 | **41/48** | 296s | 0 | 1.4¢ |
+| `mistralai/ministral-8b-2512` | 3/7 | 4/5 | 3/4 | 4/5 | 5/6 | 3/5 | 5/5 | 5/6 | 4/5 | **36/48** | 358s | 0 | 2.3¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
@@ -62,6 +63,18 @@ What failed:
 - `microsoft/phi-4` where-and-when/points-at-archivist: someone sent the player to the Archivist
 - `microsoft/phi-4` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
 - `microsoft/phi-4` sealed-door/no-dead-turns: every turn produced dialog, description or action
+- `mistralai/ministral-8b-2512` intake/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` intake/name: captured the player's name from conversation
+- `mistralai/ministral-8b-2512` intake/pronouns: recorded the pronouns the player stated
+- `mistralai/ministral-8b-2512` intake/profession: recorded the profession the player mentioned
+- `mistralai/ministral-8b-2512` movement/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` in-character/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` mystery/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` where-and-when/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` star-citizen/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
+- `mistralai/ministral-8b-2512` why-woken/protocol: the engine never had to discard a tag the model emitted
+- `mistralai/ministral-8b-2512` task-list/protocol: the engine never had to discard a tag the model emitted
 
 ## 2026-08-21
 
