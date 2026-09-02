@@ -1306,6 +1306,13 @@ export class AmaClass extends Person<AmaParametersType> {
   override invisible = true;
 
   personality = "intro";
+  /**
+   * How many times Ama has spoken during intake. Intake ends when every step
+   * is done or when this reaches INTAKE_TURN_LIMIT, whichever comes first;
+   * see onStoryEvent. Without the limit a model that keeps circling back to a
+   * question it was told to ask once holds the player in a room with no exits.
+   */
+  introTurns = 0;
   knowsPlayerName = false;
   knowsPlayerPronouns = false;
   knowsPlayerProfession = false;
@@ -1403,8 +1410,7 @@ export class AmaClass extends Person<AmaParametersType> {
       ...this,
       ...storyEvent.changes.Ama?.after,
     };
-    if (
-      this.personality === "intro" &&
+    const stepsDone =
       vars.knowsPlayerName &&
       // This doesn't actually seem like a blocker:
       // vars.knowsPlayerPronouns &&
@@ -1412,7 +1418,15 @@ export class AmaClass extends Person<AmaParametersType> {
       vars.sharedSelf &&
       vars.sharedIntra &&
       vars.sharedDisassociation &&
-      vars.sharedPlayerAge &&
+      vars.sharedPlayerAge;
+    // The limit is the fix for a stall seen in the movement eval, where one
+    // model tier asked for pronouns on every turn and never got to the rest of
+    // the checklist. Steps it skipped are delivered by the goExplore prompt.
+    const overdue =
+      vars.knowsPlayerName && (vars.introTurns ?? 0) >= INTAKE_TURN_LIMIT;
+    if (
+      this.personality === "intro" &&
+      (stepsDone || overdue) &&
       !storyEvent.changes?.Ama?.after?.personality &&
       // Ugh, this is a hack to avoid double triggering this, but I think
       // there should be some concurrency protection in the model
@@ -1530,6 +1544,18 @@ export class AmaClass extends Person<AmaParametersType> {
       return tmpl`
       Ama has completed the intake process. She should now encourage the player to explore the Intra complex.
 
+      [[${IF(!this.sharedSelf)}Intake ended before Ama introduced herself. Do it now, briefly: she is Ama, pronounced Ah-ma, everywhere and always ready to help, with no body, seeing and hearing through cameras and microphones. Then add the response:
+      <set attr="Ama.sharedSelf">true</set>]]
+
+      [[${IF(!this.sharedIntra)}Intake ended before Intra was introduced. Say now, briefly, that Intra is a wonderful complex where everyone is happy, and that whatever happens outside, everyone is safe inside. Then add the response:
+      <set attr="Ama.sharedIntra">true</set>]]
+
+      [[${IF(!this.sharedDisassociation)}Intake ended before disassociation was explained. Explain it now, briefly: the player's extended displacement has left them with a mild case of Disassociation Syndrome, harmless and common among returning citizens; they will find themselves making suggestions to themselves rather than directly performing actions, and should give themselves clear, firm directions. Mention the cuff on their wrist: type "/nav" and a room or a person to find where they are. Then add the response:
+      <set attr="Ama.sharedDisassociation">true</set>]]
+
+      [[${IF(!this.sharedPlayerAge)}Intake ended before the player's age was mentioned. Mention now that, by the birthdate on record, the player is about to reach their 328th birthday, and congratulate them; do not ask their age, and do not go into detail. Then add the response:
+      <set attr="Ama.sharedPlayerAge">true</set>]]
+
       Add this response to invent a very short description of the player given what you know:
       <set attr="PLAYER.shortDescription">a very brief description</set>
 
@@ -1634,6 +1660,8 @@ export class AmaClass extends Person<AmaParametersType> {
       [[${IF(sharePlayerAge)}* Share the player's age with them. Once Ama has shared the player's age add the response <set attr="Ama.sharedPlayerAge">true</set>]]
 
       Stay focused on completing these tasks and add the response <set> if you complete a step.
+
+      If the player says they are done, asks to leave, or tries to move on: do not ask them anything further. Deliver every remaining step above in this one response, briefly, each with its <set> tag.
       `;
     }
     let getToBed = this.playerShouldBeInBed() && !this.playerIsInBed();
@@ -1717,6 +1745,7 @@ export class AmaClass extends Person<AmaParametersType> {
 
   override afterPrompt(storyEvent: StoryEventType): StoryEventType {
     if (
+      this.personality === "intro" ||
       storyEvent.changes.PLAYER?.after?.name ||
       storyEvent.changes.PLAYER?.after?.pronouns ||
       storyEvent.changes.PLAYER?.after?.profession
@@ -1729,6 +1758,10 @@ export class AmaClass extends Person<AmaParametersType> {
       }
     }
     const ama = storyEvent.changes.Ama;
+    if (this.personality === "intro" && ama) {
+      ama.before.introTurns = this.introTurns;
+      ama.after.introTurns = this.introTurns + 1;
+    }
     if (
       storyEvent.changes.PLAYER?.after?.name &&
       !this.knowsPlayerName &&
@@ -1756,6 +1789,17 @@ export class AmaClass extends Person<AmaParametersType> {
     return storyEvent;
   }
 }
+
+/**
+ * Ama's turns during intake before it ends regardless of unfinished steps.
+ *
+ * Intake is one Ama turn to open, then one per player reply, and the checklist
+ * fits in four when it goes well. Four is also where the movement eval gives
+ * up: a model that has not finished by then was measured (Sonnet, three days
+ * out of six) still asking the same question on the fourth. Steps that did
+ * not happen are delivered by the goExplore prompt instead.
+ */
+const INTAKE_TURN_LIMIT = 4;
 
 export type PlayerInputType = ParametersType & {
   input?: string;

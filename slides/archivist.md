@@ -259,8 +259,7 @@ Every content slide, in order.
 | 6.2 | The harness was the bug (1): the model had read the source | SOURCE ACCESS noted. Everyone in this room now knows what I do before I do it. |
 | 6.3 | The harness was the bug (2): it ordered the player to break format | INSTRUCTION CONFLICT on every turn. Player continued filing reports. Building continued issuing conflict. |
 | 6.4 | A feature nobody used, and the reason why | NAV REQUESTS: 0 / ROUTES PREPARED: 84 / allocating route 85 to improve utilization... |
-| 6.5 | A passing eval hid an inert feature | TASK LIST summoned on command: 5 / TASK LIST observed in habitat: 0 / reducing observer noise |
-| 6.6 | The funnel finally closed | CONFESSION acquired on turn 25. Twenty-five turns fits inside one day. RECORD ACCEPTED WHOLE. |
+| 6.5 | The funnel finally closed | CONFESSION acquired on turn 25. Twenty-five turns fits inside one day. RECORD ACCEPTED WHOLE. |
 |  | **PART 7 — Where it doesn't work** | |
 | 7.1 | Known problems, verbatim (1/2) | KNOWN PROBLEMS loaded. Searching for SLOWNESS IN THIRD QUADRANT... no exact match... |
 | 7.2 | Known problems, verbatim (2/2) | Search expanded to tastes, false timestamps, warm data, and being slightly ahead of oneself. |
@@ -280,7 +279,7 @@ Every content slide, in order.
 |  | What transfers | _(needed)_ |
 |  | **PART 9 — Close** | |
 
-53 written, 28 still needed.
+52 written, 28 still needed.
 
 ## Applying the result
 

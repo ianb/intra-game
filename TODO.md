@@ -63,14 +63,16 @@ original write-up, plus whatever the last few sessions turned up.
   game. The victim comes back with everyone else; only the player carries the
   death.
 
-- **Sonnet stalls intake by re-asking pronouns** `prompts` `S` — twice in four
-  full eval runs, Sonnet's movement scenario failed the same way: intake never
-  completes because Ama circles back to pronouns against the "do not hold up
-  intake" instruction (once with a `<mind>` note rationalizing the loop:
-  "can't have citizens wandering off half-processed"). Haiku and the recorded
-  cassettes don't show it. Not blocking (Luna is production, Haiku the target
-  tier), but if the intake checklist gets touched again, re-test this
-  specifically; the fix is likely a firmer pronoun step, measured with
+- **Intake can end early, and the wrap-up prompt covers what it skipped**
+  `prompts` `S` — fixed 2026-09-02, after Sonnet stalled the movement scenario
+  three times by re-asking pronouns and never reaching the rest of the
+  checklist (Haiku never did). Intake now ends when the steps are done or after
+  `INTAKE_TURN_LIMIT` (four) Ama turns, and the goExplore prompt delivers any
+  step that was skipped. The intake prompt is also told to finish every
+  remaining step in one reply when the player says they are done; on its own
+  that fixed one Sonnet run in two, which is why the limit exists. Left here
+  because four is short for a player who asks questions during intake: if it
+  reads as rushed, that is the number to move, measured with
   `pnpm evals --scenario movement`.
 
 - **Nothing tests whether a mystery can still be solved** `evals` `M` — the

@@ -88,6 +88,10 @@ const CODE = {
 const APPARATUS = CODE.tests + CODE.evals + CODE.playtest;
 const QUESTS = questSummary();
 const DOCTESTS = countFiles("test", ".doctest.md");
+/** Recorded prompt-and-reply pairs in the intake cassette; it grows with the prompts. */
+const CASSETTE_ENTRIES = Object.keys(
+  JSON.parse(readFileSync(resolve(ROOT, "playtest/cassettes/intake.json"), "utf8")) as Record<string, unknown>,
+).length;
 const WORLD = {
   rooms: Object.values(entities).filter((e) => e.type === "room").length,
   // Characters the player can walk up to and talk to, which includes the
@@ -464,8 +468,6 @@ const ASIDES: Record<string, string> = {
     "INSTRUCTION CONFLICT on every turn. Player continued filing reports. Building continued issuing conflict.",
   "A feature nobody used, and the reason why":
     "NAV REQUESTS: 0 / ROUTES PREPARED: 84 / allocating route 85 to improve utilization...",
-  "A passing eval hid an inert feature":
-    "TASK LIST summoned on command: 5 / TASK LIST observed in habitat: 0 / reducing observer noise",
   "The funnel finally closed":
     "CONFESSION acquired on turn 25. Twenty-five turns fits inside one day. RECORD ACCEPTED WHOLE.",
   "Known problems, verbatim (1/2)":
@@ -1533,7 +1535,7 @@ So the name is deliberately one that carries no signal, and the player says thei
     ${para(
       `A cassette is a JSON file mapping a hash of the prompt to the reply a
       model gave. <code>pnpm playtest:record intake</code> plays the intake
-      scenario once against a live model and writes the twelve
+      scenario once against a live model and writes the ${CASSETTE_ENTRIES}
       prompt-and-reply pairs. After that the scenario runs offline,
       identically, inside <code>pnpm test</code>.`,
     )}`,
@@ -1778,16 +1780,23 @@ narrator  You try to go to Intake Foyer but you can't get there from here.`,
       it.`,
     )}
     ${para(
-      `Fix, 2026-09-02: intake also ends after six of Ama's turns, the wrap-up
-      prompt delivers any step that was skipped, and the intake prompt is told
-      to finish everything in one reply when the player says they are done.`,
+      `Fix, 2026-09-02: intake ends after four of Ama's turns whatever is
+      left on the checklist, and the wrap-up prompt delivers the steps that
+      were skipped. The intake prompt is also told to finish everything in
+      one reply when the player says they are done, which on its own worked
+      one run in two.`,
     )}`,
     notes: `The six flags: name, profession, Ama introduced, Intra introduced,
     disassociation explained, age shared. Pronouns were already not required.
     <code>Ama.onStoryEvent</code> in <code>lib/game/classes.ts</code>; the
     limit is <code>INTAKE_TURN_LIMIT</code>.
-    <br><br>In real play the same stall holds a human in a room with no exits while
-    Ama says intake is complete.`,
+    <br><br>Measured 2026-09-02, movement scenario, CLI backend. With only the
+    one-reply instruction: Sonnet 5/5 then 3/5, the second run delivering the
+    Intra intro on the final turn and skipping disassociation and age. With
+    the four-turn limit: Sonnet 5/5, 5/5; Haiku 5/5, 5/5. The intake cassette
+    was re-recorded and has thirteen entries.
+    <br><br>In real play the same stall held a human in a room with no exits while Ama
+    said intake was complete.`,
   },
   {
     section: "Scoring models",
@@ -2236,22 +2245,6 @@ Six of nine turns were spent at the Archive Console. It was not lost. It was abs
     notes: `Same commit, re-reading the older data: "the run that solved the quest
     visited four rooms, the ones that failed visited up to ten. Movement was
     never what separated them."`,
-  },
-
-  {
-    section: "What it found",
-    title: "A passing eval hid an inert feature",
-    body: `${quote(
-      `I filed "we need a progress marker" for something that already exists. The task list is exactly that signal, and the story simply never used it: the \`briefed\` checkpoint — Ama handing over the whole Ink and Echo mystery — recorded no tasks at all, and three full quest playthroughs produced zero list events between them.
-
-Worth recording the methodology miss: \`task-list\` scores 5/5 because that scenario asks Ama for something to do. A passing eval is not the same as a feature that fires in play, and this one hid an inert mechanism for a while.`,
-      "commit b7a675d, 2026-07-27",
-    )}`,
-    notes: `Fix: derive tasks from the log. A mystery being revealed puts its question
-    on the list; solving it crosses it off. Deterministic; replays from any
-    checkpoint.
-    <br><br>The scenario that asked for the behaviour still passes. It proves the
-    behaviour is possible on request.`,
   },
 
   {
