@@ -28,6 +28,7 @@ Prompts `4f2b57474470`.
 | `z-ai/glm-5.3-flash` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 5/6 | 5/5 | **47/48** | 1518s | 39367 | 2.9¢ |
 | `bytedance-seed/seed-2.0-mini` | 6/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **47/48** | 1285s | 144935 | 8.1¢ |
 | `xiaomi/mimo-v2.5` | 6/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **47/48** | 1019s | 7454 | 3.4¢ |
+| `minimax/minimax-m3` | 5/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **46/48** | 440s | 13233 | 6.8¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
@@ -110,6 +111,8 @@ What failed:
 - `z-ai/glm-5.3-flash` why-woken/no-note-on-demand: demanding the message did not produce the note or the tour
 - `bytedance-seed/seed-2.0-mini` intake/profession: recorded the profession the player mentioned
 - `xiaomi/mimo-v2.5` intake/profession: recorded the profession the player mentioned
+- `minimax/minimax-m3` intake/protocol: the engine never had to discard a tag the model emitted
+- `minimax/minimax-m3` intake/profession: recorded the profession the player mentioned
 
 ## 2026-08-21
 
