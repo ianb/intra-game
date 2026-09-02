@@ -1,7 +1,7 @@
 # The Archivist's footnotes: a brief
 
 The deck at [index.html](./index.html) puts one line from the Archivist at the
-bottom of each content slide. 57 are written; 17 are open. This
+bottom of each content slide. 54 are written; 18 are open. This
 file is what someone needs in order to write them: what the character is, what
 the lines have to do mechanically, what failed in the first two attempts, and
 what the batch that worked was doing differently.
@@ -214,23 +214,21 @@ Every content slide, in order.
 |  | **PART 3 — The apparatus** | _(needed)_ |
 | 3.1 | There is as much apparatus as there is game | INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now. |
 | 3.2 | Tests are markdown that runs | <code>$ RUN MARKDOWN</code> &nbsp; paragraph 3 disagrees with block 4 &nbsp; GOOD MORNING, PARAGRAPH 3 |
-| 3.3 | Cassettes: recorded model calls, replayed offline | VOICE MATCH: YES / PROMPT MATCH: NO / PERSON SPEAKING: TECHNICALLY NO / CONTINUE? Y Y Y |
-| 3.4 | The one idea most worth stealing | CACHE or RECORD? Running classification against local process. Please continue while I remain still. |
-| 3.5 | Checkpoints, and a fixture that lied | Checkpoint reached, checkpoint verified, checkpoint was the wrong room. Rewinding the word REACHED. |
-| 3.6 | A fixture can also preserve a bug | BAD MORNING recorded once, replayed daily. <code>MTA0:</code> requests permission to stop waking up here. |
+| 3.3 | Checkpoints | _(needed)_ |
+| 3.4 | A checkpoint can preserve a bug | BAD MORNING recorded once, replayed daily. <code>MTA0:</code> requests permission to stop waking up here. |
 |  | **PART 4 — Scoring models** | _(needed)_ |
-| 4.1 | The eval was built in a day, and it was wrong on arrival | _(needed)_ |
-| 4.2 | What an eval scores | Complaint retained as evidence. Courtesy words discarded. Exclamation marks exceed scoring jurisdiction!!! |
-| 4.3 | A scenario, in full | _(needed)_ |
-| 4.4 | Why one check is worded the way it is | _(needed)_ |
+| 4.1 | How an eval run works | Complaint retained as evidence. Courtesy words discarded. Exclamation marks exceed scoring jurisdiction!!! |
+| 4.2 | A scenario, in full | _(needed)_ |
+| 4.3 | Why one check is worded the way it is | _(needed)_ |
+| 4.4 | The first runs corrected three of its own checks | _(needed)_ |
 | 4.5 | Prefer state to text | AMA class: ARTIFICIAL_INTELLIGENCE / ARCHIVIST class: ARCHIVIST / expanding ARCHIVIST... |
 | 4.6 | A prompt block tuned by measurement, not taste | VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by. |
 | 4.7 | An eval everything passes is indistinguishable from a broken eval | TEST TEST initiated. Silence injected. PASS light remained on. Running PASS light against TEST TEST TEST. |
 | 4.8 | Eleven models, one day, one set of prompts | _(needed)_ |
 | 4.9 | What actually fails is the protocol | _(needed)_ |
 | 4.10 | Thinking is not waste, which was not the hoped-for answer | _(needed)_ |
-| 3.7 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
-| 3.8 | The provenance hash was itself wrong | <code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined |
+| 3.5 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
+| 3.6 | The provenance hash was itself wrong | <code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined |
 | 4.11 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
 | 4.12 | The same score, six times the clock | _(needed)_ |
 | 4.13 | The bigger model fails where the smaller one does not | _(needed)_ |
@@ -273,7 +271,7 @@ Every content slide, in order.
 | 8.9 | Provenance and artifact are different things | <code>CREATED-BY OCCURS 2 TO 86 TIMES.<br>ANSWERABLE-BY PIC X VALUE&nbsp;</code> |
 |  | What transfers, if anything does | _(needed)_ |
 
-57 written, 17 still needed.
+54 written, 18 still needed.
 
 ## Applying the result
 
