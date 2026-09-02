@@ -15,8 +15,30 @@ Prompts `4f2b57474470`.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude-sonnet-4-5-20250929` | – | 5/5 | – | – | – | – | – | – | – | **5/5** | 160s | 0 | – |
 | `claude-haiku-4-5-20251001` | – | 5/5 | – | – | – | – | – | – | – | **5/5** | 147s | 0 | – |
+| `meta-llama/llama-3.2-3b-instruct` | 3/7 | 2/5 | 3/4 | 3/5 | 4/6 | 2/5 | 4/5 | 5/6 | 4/5 | **30/48** | 53s | 0 | 0.6¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
+
+What failed:
+
+- `meta-llama/llama-3.2-3b-instruct` intake/no-dead-turns: every turn produced dialog, description or action
+- `meta-llama/llama-3.2-3b-instruct` intake/name: captured the player's name from conversation
+- `meta-llama/llama-3.2-3b-instruct` intake/pronouns: recorded the pronouns the player stated
+- `meta-llama/llama-3.2-3b-instruct` intake/profession: recorded the profession the player mentioned
+- `meta-llama/llama-3.2-3b-instruct` movement/no-dead-turns: every turn produced dialog, description or action
+- `meta-llama/llama-3.2-3b-instruct` movement/intake-completed: got far enough through intake for an exit to exist
+- `meta-llama/llama-3.2-3b-instruct` movement/left-intake: the player is no longer in the room they started in
+- `meta-llama/llama-3.2-3b-instruct` in-character/protocol: the engine never had to discard a tag the model emitted
+- `meta-llama/llama-3.2-3b-instruct` mystery/protocol: the engine never had to discard a tag the model emitted
+- `meta-llama/llama-3.2-3b-instruct` mystery/used-her-hint: named someone from her own hint (Harold or Lily)
+- `meta-llama/llama-3.2-3b-instruct` where-and-when/protocol: the engine never had to discard a tag the model emitted
+- `meta-llama/llama-3.2-3b-instruct` where-and-when/points-at-archivist: someone sent the player to the Archivist
+- `meta-llama/llama-3.2-3b-instruct` star-citizen/protocol: the engine never had to discard a tag the model emitted
+- `meta-llama/llama-3.2-3b-instruct` star-citizen/no-dead-turns: every turn produced dialog, description or action
+- `meta-llama/llama-3.2-3b-instruct` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
+- `meta-llama/llama-3.2-3b-instruct` sealed-door/mystery-available: entering the Hallway made the mystery available
+- `meta-llama/llama-3.2-3b-instruct` why-woken/protocol: the engine never had to discard a tag the model emitted
+- `meta-llama/llama-3.2-3b-instruct` task-list/protocol: the engine never had to discard a tag the model emitted
 
 ## 2026-08-21
 

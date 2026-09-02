@@ -92,6 +92,100 @@ const DOCTESTS = countFiles("test", ".doctest.md");
 const CASSETTE_ENTRIES = Object.keys(
   JSON.parse(readFileSync(resolve(ROOT, "playtest/cassettes/intake.json"), "utf8")) as Record<string, unknown>,
 ).length;
+
+/**
+ * One results file as table rows: model, score, time, thinking tokens, cost,
+ * and the scenarios with a failed check. Read from evals/results so the deck
+ * shows what was recorded, not a retyped copy of it.
+ */
+interface RecordedScenario {
+  scenario: string;
+  passed: number;
+  total: number;
+  ms: number;
+  usage?: { cost: number; reasoningTokens: number };
+}
+interface RecordedRun {
+  model: string;
+  backend?: string;
+  scenarios: RecordedScenario[];
+}
+function resultRows(
+  date: string,
+  backend: string,
+): { rows: string[][]; models: number } {
+  const file = resolve(ROOT, `evals/results/${date}.yaml`);
+  const parsed = parse(readFileSync(file, "utf8")) as { runs: RecordedRun[] };
+  const runs = parsed.runs.filter((run) => run.backend === backend);
+  const rows = runs
+    .map((run) => {
+      const passed = run.scenarios.reduce((n, s) => n + s.passed, 0);
+      const total = run.scenarios.reduce((n, s) => n + s.total, 0);
+      const ms = run.scenarios.reduce((n, s) => n + s.ms, 0);
+      const cost = run.scenarios.reduce((n, s) => n + (s.usage?.cost ?? 0), 0);
+      const thinking = run.scenarios.reduce(
+        (n, s) => n + (s.usage?.reasoningTokens ?? 0),
+        0,
+      );
+      const lost = run.scenarios.filter((s) => s.passed < s.total);
+      const failed =
+        lost.length === run.scenarios.length
+          ? "every scenario"
+          : lost
+              .map((s) => `${s.scenario} ${s.passed}/${s.total}`)
+              .join(", ");
+      return {
+        passed,
+        total,
+        cells: [
+          `<code>${esc(run.model.replace(/^[^/]+\//, ""))}</code>`,
+          `${passed}/${total}`,
+          `${Math.round(ms / 1000)}s`,
+          thinking ? thinking.toLocaleString("en-US") : "–",
+          cost ? `${(cost * 100).toFixed(1)}¢` : "–",
+          failed || "",
+        ],
+      };
+    })
+    .sort((a, b) => b.passed - a.passed)
+    .map((r) => r.cells);
+  return { rows, models: runs.length };
+}
+const SWEEP_DATE = "2026-09-02";
+const SWEEP = resultRows(SWEEP_DATE, "openrouter");
+
+/** The sweep table, split across slides when it is too tall for one. */
+function sweepSlides(): Slide[] {
+  const per = 10;
+  const pages = Math.max(1, Math.ceil(SWEEP.rows.length / per));
+  return Array.from({ length: pages }, (_, i) => {
+    const rows = SWEEP.rows.slice(i * per, (i + 1) * per);
+    const suffix = pages > 1 ? ` (${i + 1}/${pages})` : "";
+    return {
+      section: "Scoring models",
+      title: `A wider field, after the intake fix${suffix}`,
+      body: `${table(
+        ["model", "score", "time", "thinking", "cost", "where it lost checks"],
+        rows,
+      )}
+      ${
+        i === pages - 1
+          ? para(
+              `${SWEEP.models} models through OpenRouter on ${SWEEP_DATE}, the
+              full suite, one run each, sorted by score. Read from the results
+              file when this deck is generated.`,
+            )
+          : ""
+      }`,
+      notes: `Chosen to widen the field: the current Chinese models at several
+      sizes, some small models that were expected to fail, and the production
+      default and the two Claude tiers on the same backend so their cost is
+      comparable.
+      <br><br>One run is one sample. A single flipped check is as consistent
+      with sampling as with a difference between models.`,
+    };
+  });
+}
 const WORLD = {
   rooms: Object.values(entities).filter((e) => e.type === "room").length,
   // Characters the player can walk up to and talk to, which includes the
@@ -1622,7 +1716,8 @@ So the name is deliberately one that carries no signal, and the player says thei
     Sonnet, the models the game runs on.
     <br><br>Four models tie at 26/26 across a 2.4x range in wall clock. The slowest
     spent 122,368 thinking tokens.`,
-  },
+  },  ...sweepSlides(),
+
   {
     section: "Scoring models",
     title: "What actually fails is the protocol",
