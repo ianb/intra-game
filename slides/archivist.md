@@ -205,13 +205,14 @@ Every content slide, in order.
 | 2.5 | An example response | DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material. |
 | 2.6 | ...and what the engine kept | Words on the left, consequences on the right, staples through both. ░▒ FILE COMPLETE ▒░ |
 | 2.7 | Player input is rewritten into the same tags | _(needed)_ |
-| 2.8 | Guided thinking, forced into the response | Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access. |
-| 2.9 | Two severities, and the line between them | RETRY drawer: 12 / INCIDENT drawer: 2 / drawer handles color-coded after incident 2 |
-| 2.10 | One retry, then take what you got | SECOND ATTEMPT authorized. THIRD ATTEMPT requires form 19-B and an explanation of who keeps asking. |
-| 2.11 | Mysteries are the objective | _(needed)_ |
-| 2.12 | Mysteries: a state machine in content | VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors. |
-| 2.13 | Feelings are scored so the player can read them | FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned. |
-| 2.14 | One character's meter, in full | At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗ |
+| 2.8 | An action is resolved by a second prompt | _(needed)_ |
+| 2.9 | Guided thinking, forced into the response | Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access. |
+| 2.10 | Two severities, and the line between them | RETRY drawer: 12 / INCIDENT drawer: 2 / drawer handles color-coded after incident 2 |
+| 2.11 | One retry, then take what you got | SECOND ATTEMPT authorized. THIRD ATTEMPT requires form 19-B and an explanation of who keeps asking. |
+| 2.12 | Mysteries are the objective | _(needed)_ |
+| 2.13 | How a mystery is defined | VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors. |
+| 2.14 | Feelings are scored so the player can read them | FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned. |
+| 2.15 | One character's meter, in full | At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗ |
 |  | **PART 3 — The apparatus** | |
 | 3.1 | There is as much apparatus as there is game | INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now. |
 | 3.2 | Tests are markdown that runs | <code>$ RUN MARKDOWN</code> &nbsp; paragraph 3 disagrees with block 4 &nbsp; GOOD MORNING, PARAGRAPH 3 |
@@ -277,7 +278,7 @@ Every content slide, in order.
 |  | What transfers | _(needed)_ |
 |  | **PART 9 — Close** | |
 
-54 written, 24 still needed.
+54 written, 25 still needed.
 
 ## Applying the result
 

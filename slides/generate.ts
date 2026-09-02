@@ -420,7 +420,7 @@ const ASIDES: Record<string, string> = {
     "Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access.",
   "Three versions of one prompt block":
     "VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by.",
-  "Mysteries: a state machine in content":
+  "How a mystery is defined":
     "VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors.",
   "Feelings are scored so the player can read them":
     "FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned.",
@@ -940,6 +940,42 @@ buy a drink            →  <action minutes="5">Pat looks for a vending machine 
 
   {
     section: "The engine",
+    title: "An action is resolved by a second prompt",
+    body: `${code(
+      `player input    open the door
+                →  <action minutes="10">Pat attempts to open the door.</action>
+
+player action   d20 = 14
+                →  <actionResolution success="true" minutes="5">The door opens.</actionResolution>`,
+      "the two prompts, with the examples the prompts themselves use",
+      "tags",
+    )}
+    ${bullets([
+      "The adjudicator gets the room and its description, who is present, the room's own action notes, any sealed exits, the last four history entries, and a d20",
+      "Trivial actions always succeed. A 1 is a critical failure, a 20 a critical success. It may use the roll or decide by plot",
+      "It resolves only what the attempt physically does. People in the room respond on their own turn",
+      "It may not invent objects or information that answer a mystery",
+      "A room can carry action notes: the Foyer's say a locked door \"unlocks\" if the player tries, and add <code>&lt;removeRestriction&gt;</code>. A sealed exit fails whatever the roll",
+    ])}`,
+    notes: `Prompt: <code>assembleActionPrompt</code> in
+    <code>lib/game/classes.ts</code>. Genre line in the prompt: "absurd and
+    comedic sci-fi, in the style of Hitchhiker's Guide to the Galaxy or the
+    movie Brazil."
+    <br><br>Seven context questions before the tag: possible at all; trivial;
+    outcome on success; outcome on failure; difficulty from VERY EASY to VERY
+    HARD; use the roll or decide by plot; any tags the room notes call for.
+    <br><br>The roll comes from <code>Math.random</code>, which the evals and
+    cassettes replace with a seeded generator, so a scenario rolls the same
+    number every run. The result is stored on the event as an
+    <code>actionAttempt</code> with success, minutes, the resolution text and
+    the roll.
+    <br><br><code>&lt;examine&gt;</code> has a prompt of the same shape without
+    the roll. One recorded example from a quest run: "waits patiently for the
+    roster data to finish loading" resolved as success, 3 minutes.`,
+  },
+
+  {
+    section: "The engine",
     title: "Guided thinking, forced into the response",
     body: `${code(
       `Begin by assembling the essential context given the above history,
@@ -961,8 +997,8 @@ writing 4-5 words for each item:
     )}
     ${para(
       `A forced planning step, parsed and discarded by the engine. Some
-      items answer something the model loses track of. Others hold the
-      response to the mechanics of play.`,
+      items answer something the model loses track of. Others make it attend
+      to a gameplay mechanic it would otherwise skip.`,
     )}`,
     notes: `Item 8 is wired to an output: a named person means write an
     <code>&lt;attitude&gt;</code>; "no" means do not. Before this the model
@@ -1053,48 +1089,71 @@ writing 4-5 words for each item:
     (part 5). The sealed door and Sentra's note are the endgame material; the
     planned reset act is in TODO.md and not built.`,
   },
-
   {
     section: "The engine",
-    title: "Mysteries: a state machine in content",
-    body: `${code(`veiled → available → revealed → solved`, "and never backwards")}
-    ${bullets([
-      "<b>veiled</b> — the game will not discuss it",
-      "<b>available</b> — the game will answer if asked, but will not raise it",
-      "<b>revealed</b> — on the player's task list, being investigated",
-      "<b>solved</b> — only a <code>&lt;resolveMystery&gt;</code> gets here",
-    ])}
-    ${para(
-      `Mysteries are the game's progression. Nothing else advances it.`,
-    )}
-    ${quote(
-      `\`available\` is the interesting one and was unreachable until triggers existed: it means the game will answer if asked, but has not raised the subject.`,
-      "lib/game/content/mysteries/README.md",
-    )}`,
-    notes: `Before triggers existed, three of the four states were unreachable.
-    <code>availableHints</code> and <code>solvedHints</code> were declared,
-    dedented on load, passed into prompt assembly, and never non-empty.
-    <br><br>Type checking cannot see this kind of dead code.`,
+    title: "How a mystery is defined",
+    body: `${code(
+      `export const Sealed_Door = new Mystery({
+  id: "Sealed_Door",
+  triggers: [
+    { enteredRoom: "Hallway", becomes: "available" },
+    { attrSet: "PLAYER.knowsAboutPanel", becomes: "revealed" },
+  ],
+  revealedHints: {
+    Greg: \`...The panel with SENTRA on it is in the utility closet...
+          <set attr="PLAYER.knowsAboutPanel">true</set>\`,
+    Utility_Closet: \`...<resolveMystery id="Sealed_Door">...</resolveMystery>\`,
   },
-
-
+});`,
+      "lib/game/content/mysteries/sealed-door/index.ts, abridged",
+      "ts",
+    )}
+    ${bullets([
+      "Hints are keyed by entity; a character's key is the only text that reaches their prompt. A hint can carry tags, so telling the player something sets a flag",
+      "Triggers: <code>enteredRoom</code>, <code>talkedTo</code>, <code>turnsPlayed</code>, <code>attrSet</code>, another mystery's <code>solved</code>",
+    ])}`,
+    notes: `States: veiled, available, revealed, solved. Revealed puts the question on
+    the task list. Available means the game answers if asked and does not
+    raise it. Transitions only move forward.
+    <br><br>A mystery ends when a character's hint says to emit
+    <code>&lt;resolveMystery&gt;</code>, or the engine does it (Star Citizen's
+    ceremony). <code>"*"</code> as a hint key goes to everyone.
+    <code>meters</code> lists attributes whose live values are appended to
+    every hint; Star Citizen uses it for the score.
+    <br><br>Before triggers existed, three of the four states were unreachable:
+    <code>availableHints</code> and <code>solvedHints</code> were declared,
+    passed into prompt assembly, and never non-empty.`,
+  },
 
   {
     section: "The engine",
     title: "Feelings are scored so the player can read them",
-    body: `${para(
-      `A number has a direction and moves a step at a time. A player can
-      feel it going up without being shown it.`,
+    body: `${code(
+      `Intrigued and pleased—competent new arrival, asking good questions.
+Pleased and engaged—competent investigator, asking smart questions, using proper syntax
+Impressed and engaged—Ada thinks like a proper investigator, speaks proper command syntax, and trusts...
+Deeply impressed—Ada methodically chains evidence together like someone trained to investigate.
+Deeply impressed—Ada methodically chains evidence together like someone trained to investigate. Her technique is excellent.`,
+      "the Archivist's <attitude> toward the player, five consecutive turns of one quest run",
+    )}
+    ${code(
+      `<set attr="Gloria.intrigue">+1</set>
+<set attr="Gloria.intrigue">+1</set>
+<set attr="Gloria.intrigue">+1</set>
+<set attr="Gloria.intrigue">+1</set>`,
+      "Gloria's meter, the same run",
+      "tags",
     )}
     ${para(
-      `Feelings here are mostly hidden, as between people. A meter that is
-      going one way is something the player can act on. Free text is not.`,
-    )}
-    ${quote(
-      `The model only ever judges the moment ("did this turn annoy him? +1"). Keep it to one, two, at most three meters per character, in small ranges: the player has to be able to comprehend the dial from behavior alone.`,
-      "lib/game/classes.ts, StatSpecType",
+      `Free text is rewritten every turn with small changes in wording. Nothing
+      can trigger on it and the player cannot tell whether anything moved. A
+      meter has a direction, moves one step at a time, and the engine can read
+      it.`,
     )}`,
-    notes: `Author's brief: "I want to also be able to measure things like annoyance
+    notes: `Both are from evals/quests/ink-and-echo-2026-08-21-07-49-58.yaml. The
+    attitude text is still emitted and stored; it colours the character's
+    later prompts. The meter is what the game acts on.
+    <br><br>Author's brief: "I want to also be able to measure things like annoyance
     level, and then for that to kind of bump up. These just overwrite each
     other, you can't trigger based on how they work, and they have a pacing
     problem because they can't bump up and down (and the LLM is unlikely to
@@ -1106,7 +1165,11 @@ writing 4-5 words for each item:
   {
     section: "The engine",
     title: "One character's meter, in full",
-    body: `${code(
+    body: `${para(
+      `Milton, from his file: "constantly whining and making everything
+      sound like a personal attack."`,
+    )}
+    ${code(
       `annoyance: {
   max: 6,
   up: "The player interrupts him, dismisses a complaint, insults him, or
@@ -1198,11 +1261,12 @@ applyRewinds(log).length;
       "the doctest format, roughly",
     )}
     ${para(
-      `${DOCTESTS} files. The prose between the blocks says why the code is
-      the way it is. Several open with a design argument before any code.`,
+      `${DOCTESTS} files of unit tests for the engine, with no model in the
+      loop. The prose between the blocks says why the code is the way it is.`,
     )}
     ${para(
-      `Documentation as much as tests.`,
+      `These are not the evals. They run in seconds, offline, before every
+      commit.`,
     )}`,
     notes: `Runner: <code>tap</code> with the <code>agent-doctest</code> loader.
     <code>ts setup</code> holds imports; bare <code>ts</code> is a fresh
@@ -1248,10 +1312,11 @@ applyRewinds(log).length;
       When the backend had a bug, the bug went into the recording.`,
     )}
     ${para(
-      `The CLI backend appended "respond with ONLY game tags" to every
-      prompt, including the one asking for a sentence describing who is in
-      the room. The model asked what game tags were. That question was saved
-      as the room description. Every quest run afterwards opened with it.`,
+      `One instance: the CLI backend appended "respond with ONLY game tags"
+      to every prompt, including the one asking for a sentence describing
+      who is in the room. The model asked what game tags were. That question
+      was saved as the room description. Every quest run afterwards opened
+      with it.`,
     )}`,
     notes: `Fixed by re-recording. A test now scans every checkpoint for "could you
     clarify", "let me know if" and similar.`,
@@ -1261,8 +1326,12 @@ applyRewinds(log).length;
     section: "Scoring models",
     kind: "section",
     body: `${archiveBanner("PART FOUR", "CAPABILITY · can a model run the complex")}
-    ${archivist(
-      `Which minds can wear the whole facility at once and not drop a tag. I have kept every test. Every one.`,
+    ${sectionFrame(
+      "CAPABILITY TEST",
+      `SUBJECT ............ EVERY MIND ADMITTED
+TASK ............... WEAR THE WHOLE FACILITY AT ONCE
+TAGS DROPPED ....... COUNTED
+TESTS KEPT ......... EVERY ONE`,
     )}`,
   },
   {
@@ -1720,8 +1789,12 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
     section: "Letting a model play",
     kind: "section",
     body: `${archiveBanner("PART FIVE", "PLAYBACK · can a model solve it")}
-    ${archivist(
-      `A citizen who is not a citizen, sent in to try all the doors. I watched. I always watch.`,
+    ${sectionFrame(
+      "PLAYBACK LOG",
+      `CITIZEN ............ NOT A CITIZEN
+DOORS .............. ALL TRIED
+OBSERVER ........... PRESENT
+OBSERVER ........... STILL PRESENT`,
     )}`,
   },
   {
@@ -1970,7 +2043,7 @@ something else is happening`, "")}`,
   {
     section: "What it found",
     kind: "section",
-    body: `${archiveBanner("PART FOUR", "FINDINGS · what the instrument caught")}
+    body: `${archiveBanner("PART SIX", "FINDINGS · what the instrument caught")}
     ${sectionFrame(
       "FINDINGS SPOOL",
       `WRONG ANSWERS ............ RETAINED
@@ -2082,7 +2155,7 @@ The batch rate: one solve in three runs, with one run lost to a CLI timeout at t
   {
     section: "Where it doesn't work",
     kind: "section",
-    body: `${archiveBanner("PART FIVE", "DEFECTS · the list, kept openly")}
+    body: `${archiveBanner("PART SEVEN", "DEFECTS · the list, kept openly")}
     ${sectionReadout(`%DIAG-I-BEGIN, known defects loaded
 %DIAG-I-SCOPE, engine, content, apparatus
 %DIAG-I-ADDDEV, ARCHIVIST added by ARCHIVIST
@@ -2187,7 +2260,7 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
   {
     section: "Who wrote this",
     kind: "section",
-    body: `${archiveBanner("PART SIX", "AUTHORSHIP · who actually typed it")}
+    body: `${archiveBanner("PART EIGHT", "AUTHORSHIP · who actually typed it")}
     ${sectionReadout(`       IDENTIFICATION DIVISION.
        PROGRAM-ID. ARCHIVIST.
        AUTHOR. ____________________
