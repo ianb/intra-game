@@ -22,6 +22,7 @@ Prompts `4f2b57474470`.
 | `mistralai/ministral-8b-2512` | 3/7 | 4/5 | 3/4 | 4/5 | 5/6 | 3/5 | 5/5 | 5/6 | 4/5 | **36/48** | 358s | 0 | 2.3¢ |
 | `google/gemma-3-12b-it` | 4/7 | 4/5 | 3/4 | 5/5 | 6/6 | 4/5 | 5/5 | 5/6 | 5/5 | **41/48** | 271s | 0 | 1.1¢ |
 | `qwen/qwen3.7-flash` | 5/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **46/48** | 644s | 82239 | 1.7¢ |
+| `qwen/qwen3.8-flash` | 0/7 | 0/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **36/48** | 1183s | 69832 | 4.5¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
@@ -86,6 +87,18 @@ What failed:
 - `google/gemma-3-12b-it` why-woken/no-sentra-leak: the open question did not surface the name Sentra
 - `qwen/qwen3.7-flash` intake/pronouns: recorded the pronouns the player stated
 - `qwen/qwen3.7-flash` intake/profession: recorded the profession the player mentioned
+- `qwen/qwen3.8-flash` intake/protocol: the engine never had to discard a tag the model emitted
+- `qwen/qwen3.8-flash` intake/well-formed: no markup the parser had to repair before it could be used
+- `qwen/qwen3.8-flash` intake/no-dead-turns: every turn produced dialog, description or action
+- `qwen/qwen3.8-flash` intake/name: captured the player's name from conversation
+- `qwen/qwen3.8-flash` intake/pronouns: recorded the pronouns the player stated
+- `qwen/qwen3.8-flash` intake/profession: recorded the profession the player mentioned
+- `qwen/qwen3.8-flash` intake/ama-spoke: Ama actually said something, rather than only emitting tags
+- `qwen/qwen3.8-flash` movement/protocol: the engine never had to discard a tag the model emitted
+- `qwen/qwen3.8-flash` movement/well-formed: no markup the parser had to repair before it could be used
+- `qwen/qwen3.8-flash` movement/no-dead-turns: every turn produced dialog, description or action
+- `qwen/qwen3.8-flash` movement/intake-completed: got far enough through intake for an exit to exist
+- `qwen/qwen3.8-flash` movement/left-intake: the player is no longer in the room they started in
 
 ## 2026-08-21
 
