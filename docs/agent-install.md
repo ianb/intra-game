@@ -46,10 +46,10 @@ INSTALL.md covers it.
 A text adventure where an LLM plays every character, but the world is real
 state rather than something the model imagines fresh each turn.
 
-**The event log is the game.** `StoryEventType[]` is the only mutable thing.
-The world — where everyone is, what Ama knows, what's on your task list — is a
-fold over that log, recomputed rather than stored. Undo appends a rewind marker
-instead of deleting. Everything else follows from this:
+**The event log is the game.** The world — where everyone is, what Ama knows,
+what's on your task list — is computed by replaying the log, and is never stored
+on its own. Undo appends a rewind marker instead of deleting. Everything else
+follows from this:
 
 - A **save** is a log.
 - A **checkpoint** is a log, so starting the game partway through is just

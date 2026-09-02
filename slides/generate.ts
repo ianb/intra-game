@@ -402,7 +402,7 @@ const ASIDES: Record<string, string> = {
     "The rooms came afterward and fit the document. I know rooms like that. I have records for all of them.",
   "One event":
     "Every event retains the prompt that made it. Checking my own header... checking...",
-  "The world is a fold":
+  "The world is computed from the log":
     "WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt",
   "Undo is an append":
     "<code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b>",
@@ -657,7 +657,7 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
     section: "Where it came from",
     title: "Decision two: the event log is the game",
     body: `${quote(
-      `The event log is the game. StoryEventType[] is the only mutable thing. The world — where everyone is, what Ama knows, what's on your task list — is a fold over that log, recomputed rather than stored.
+      `The event log is the game. The world — where everyone is, what Ama knows, what's on your task list — is computed by replaying the log, and is never stored on its own.
 
   A save is a log.
   A checkpoint is a log, so starting the game partway through is just replaying one.
@@ -694,9 +694,9 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
     )}
     ${bullets([
       "Ama has no body and there are no robots, so nothing physical is depicted",
-      "Rooms have sky screens, not windows, so there is no outside to render",
-      "The cuff cannot come off, because a device you can lose is a device the game has to handle you losing",
+      "The player is in one room and aware of only that room, as in most text adventures",
       "The player has Disassociation Syndrome, which is why they instruct themselves in the second person",
+      "The world is surreal and its people do not act fully sensibly, because the model cannot make them sensible, and a normal world is boring",
     ])}
 `,
     notes: `Header added later, the only substantive change: "This is a prompt and
@@ -755,7 +755,7 @@ ARCHIVIST ... already present`)}`,
 
   {
     section: "The engine",
-    title: "The world is a fold",
+    title: "The world is computed from the log",
     body: `${code(
       `copy every entity from the authored content into a fresh world
 for each event in the log:
@@ -767,8 +767,8 @@ for each event in the log:
       The copy has no object graph to walk and no cycles.`,
     )}
     ${para(
-      `Undo does not rewind state. The world is thrown away and folded again
-      from the shorter log.`,
+      `Undo does not rewind state. The world is thrown away and computed
+      again from the shorter log.`,
     )}`,
     notes: `<code>original</code> is the authored content; <code>entities</code> is
     the working copy. Same call in <code>undo()</code>, <code>reset()</code>,
@@ -1233,8 +1233,8 @@ applyRewinds(log).length;
       "Score the world that is left, and count what the engine complained about on the way",
     ])}
     ${para(
-      `Nothing is stubbed except the player. Prompts, parser, fold and
-      schedule are the ones the game ships.`,
+      `Nothing is stubbed except the player. Prompts, parser, world state
+      and schedule are the ones the game ships.`,
     )}`,
     notes: `Player input is hardcoded: two to five lines per scenario. Everything else
     is the model under test: every character's words, every tag, every
@@ -1427,7 +1427,7 @@ So the name is deliberately one that carries no signal, and the player says thei
       prompt-and-reply pairs. After that the scenario runs offline,
       identically, inside <code>pnpm test</code>.`,
     )}`,
-    notes: `Covers: prompt assembly, the parser, the fold, the checks. Does not cover:
+    notes: `Covers: prompt assembly, the parser, the world state, the checks. Does not cover:
     the model.
     <br><br>Key is a hash of the prompt, so a prompt edit makes every lookup miss.
     That used to surface as "the player has no name". The replay now reports a
@@ -2013,7 +2013,7 @@ Six of nine turns were spent at the Archive Console. It was not lost. It was abs
 Worth recording the methodology miss: \`task-list\` scores 5/5 because that scenario asks Ama for something to do. A passing eval is not the same as a feature that fires in play, and this one hid an inert mechanism for a while.`,
       "commit b7a675d, 2026-07-27",
     )}`,
-    notes: `Fix: derive tasks in the fold. A mystery being revealed puts its question
+    notes: `Fix: derive tasks from the log. A mystery being revealed puts its question
     on the list; solving it crosses it off. Deterministic; replays from any
     checkpoint.
     <br><br>The scenario that asked for the behaviour still passes. It proves the

@@ -199,7 +199,7 @@ Every content slide, in order.
 | 1.7 | The world bible was written on day two | The rooms came afterward and fit the document. I know rooms like that. I have records for all of them. |
 |  | **PART 2 — The engine** | |
 | 2.1 | One event | Every event retains the prompt that made it. Checking my own header... checking... |
-| 2.2 | The world is a fold | WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt |
+| 2.2 | The world is computed from the log | WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt |
 | 2.3 | Undo is an append | <code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b> |
 | 2.4 | The vocabulary a response is written in | Twelve verbs cross the boundary. Everything else may speak freely on this side of it. |
 | 2.5 | An example response | DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material. |
