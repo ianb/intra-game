@@ -2484,6 +2484,7 @@ body.deck { max-width: none; margin: 0; padding: 0; height: 100vh; overflow: hid
             letter-spacing: -.01em; color: var(--fg); flex: 0 0 auto; }
 .slide .content { font-size: clamp(.95rem, 1.7vw, 1.35rem); flex: 0 0 auto; }
 .slide p { max-width: 54em; }
+.slide p.aside { max-width: none; }
 .slide.title { text-align: center; }
 .slide.section .main, .slide.title .main { justify-content: center; }
 .lead { font-size: clamp(1.1rem, 2.2vw, 1.6rem); color: var(--fg); max-width: 40em;
