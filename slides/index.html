@@ -248,7 +248,7 @@ SPOILERS: ALL OF THEM</pre></fieldset>
     <br><br>Opening line if you want one: this started as a three-day
     hackathon game in 2024. It is now a game with an eval suite, a recorded
     playtest corpus, and a model that plays it blind. Most of what is
-    interesting happened in the apparatus, not the game.</div>
+    interesting happened in the apparatus.</div>
   <div class="pagenum">1 / 87</div>
 </section>
 <section class="slide section" id="s2" data-n="2">
@@ -276,15 +276,15 @@ READY TO BEGIN!</pre></fieldset></div>
       <div class="kicker"><span class="slideno">1.1</span><span class="kickerblocks">░▒▓</span> Where it came from</div>
       <h2>A three-day game</h2>
       <div class="content"><blockquote>This is a game written from September 27-29, 2024, for the Text Adventure Hack.<cite>README.md, line 3, still the first line today</cite></blockquote>
-    <div class="stats"><div class="stat"><b>361</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
+    <div class="stats"><div class="stat"><b>362</b><span>commits</span></div><div class="stat"><b>32</b><span>rooms</span></div><div class="stat"><b>12</b><span>characters</span></div><div class="stat"><b>5</b><span>mysteries</span></div><div class="stat"><b>Sep 2024</b><span>first commit</span></div></div>
     <p>The game was built in a weekend, for a hackathon.</p></div>
     </div>
     <p class="aside">RUNTIME: 3 DAYS. Valid duration! I can hold all three. One two three one two three one two—</p>
   </div>
-  <div class="notes"><b>notes</b>The hackathon was RetroAI Quest / Text Adventure Hack. The repo was
-    tagged <code>retroai-quest</code> on 2024-09-30.
-    <br><br>Worth saying: the README has never been rewritten to reflect what
-    the project became. The first line still describes a weekend.</div>
+  <div class="notes"><b>notes</b>The hackathon was RetroAI Quest / Text Adventure Hack. The repo was tagged
+    <code>retroai-quest</code> on 2024-09-30.
+    <br><br>The README has never been rewritten to reflect what the project became.
+    The first line still describes a weekend.</div>
   <div class="pagenum">3 / 87</div>
 </section>
 <section class="slide content" id="s4" data-n="4">
@@ -302,18 +302,16 @@ READY TO BEGIN!</pre></fieldset></div>
 2026-08  ██████████████████ 59</pre>
     <p>Lines of TypeScript: <b>2,905</b> at the end of the hackathon,
       <b>10,590</b> when it was written up, <b>24,009</b> now.</p>
-    <ul><li><b>The hackathon</b>, three days, and then the weeks after it finishing the idea</li><li><b>A cleanup</b> in <span class="n-June">June</span> 2025, to write the thing up as a blog post</li><li><b>Thirteen months of nothing</b></li><li><b>Agentic coding</b> — Claude Code and Codex — and a reason to dust off a project that could not otherwise be justified</li></ul></div>
+    <ul><li><b>The hackathon</b>, three days, and then the weeks after it finishing the idea</li><li><b>A cleanup</b> in <span class="n-June">June</span> 2025, to write the thing up as a blog post</li><li><b>Thirteen months of nothing</b></li><li><b>Agentic coding</b>, Claude Code and Codex, and a reason to dust off a project that could not otherwise be justified</li></ul></div>
     </div>
     <p class="aside"><code>$ SHOW HISTORY /SINCE=2024</code> &nbsp; %SYSTEM-F-IVTIME, absolute time rejected</p>
   </div>
-  <div class="notes"><b>notes</b>The blog post is
-    ianbicking.org/blog/2025/07/intra-llm-text-adventure, and it ends with
-    fifty "further directions". TODO.md still cites that list as its source,
-    so a good deal of the 2026 work is a blog post's own criticism section
-    turned into an issue tracker and then executed.
-    <br><br>The honest version of the last bullet is worth saying out loud: the
-    project restarted because the tools changed, not because the game suddenly
-    became more important.</div>
+  <div class="notes"><b>notes</b>The blog post is ianbicking.org/blog/2025/07/intra-llm-text-adventure, and
+    it ends with fifty "further directions". TODO.md still cites that list as
+    its source, so a good deal of the 2026 work is a blog post's own criticism
+    section turned into an issue tracker and then worked through.
+    <br><br>The last bullet, said plainly: the project restarted because the tools
+    changed, not because the game became more important.</div>
   <div class="pagenum">4 / 87</div>
 </section>
 <section class="slide content" id="s5" data-n="5">
@@ -324,17 +322,17 @@ READY TO BEGIN!</pre></fieldset></div>
       <div class="content"><p>Playtesting is an expensive thing to attempt seriously. In a game it is
       cheap, because nothing is riding on the result. The question can be
       "will this work at all?", and "no" is a perfectly acceptable answer.</p>
-    <p>That is most of why the apparatus in this deck exists. Each piece of it
-      is an experiment that would be hard to justify against something
-      productive.</p></div>
+    <p>That is most of why the apparatus in this deck exists. Each piece of
+      it is an experiment that would be hard to justify on something that
+      mattered.</p></div>
     </div>
     
   </div>
   <div class="notes"><b>notes</b>This is a paraphrase and wants replacing with your own wording.
-    <br><br>The point to make is that a game takes the idea less seriously than
-    a product would, and that is exactly what makes it a good place to throw a
-    large problem — an LLM playtester, an eval suite for improvised prose — and
-    find out how much of it works without anything depending on the answer.</div>
+    <br><br>The point to make is that a game takes the idea less seriously than a
+    product would, so it is a good place to try something large (an LLM
+    playtester, an eval suite for improvised prose) and see how much of it
+    works, with nothing depending on the answer.</div>
   <div class="pagenum">5 / 87</div>
 </section>
 <section class="slide content" id="s6" data-n="6">
@@ -349,11 +347,10 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Typo "existance" is in the shipped README; leave it, it is
-    load-bearing charm.
-    <br><br>This is the whole design tension, and every hard problem later in
-    the deck is a consequence of it: if the model can improvise, it can
-    improvise things that are not true.</div>
+  <div class="notes"><b>notes</b>Typo "existance" is in the shipped README; leave it.
+    <br><br>This is the whole design tension, and most of the hard problems later in
+    the deck follow from it: if the model can improvise, it can improvise
+    things that are not true.</div>
   <div class="pagenum">6 / 87</div>
 </section>
 <section class="slide content" id="s7" data-n="7">
@@ -368,16 +365,14 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
   </div>
   <div class="notes"><b>notes</b>Both decisions are from the hackathon weekend and neither has been
     revisited since.
-    <br><br>Worth saying that this one is less clear-cut in 2026 than it was in
-    2024. Tool calls would be a reasonable choice now. The catch is shape
-    rather than capability: tools assume a loop, and a turn here is one pass
-    in which the character has to do everything at once — speak, move, set
-    state, update the task list. That is one very large and very flexible tool
-    call, which is hard for exactly the small models this game is written to
-    run on.
-    <br><br>The scriptwriter framing has aged better and is the one people
-    underrate: the model is never asked to <em>be</em> Ama. It is asked to
-    write what Ama says.</div>
+    <br><br>This one is less clear-cut in 2026 than it was in 2024. Tool calls would
+    be a reasonable choice now. The catch is shape rather than capability:
+    tools assume a loop, and a turn here is one pass in which the character
+    has to do everything at once: speak, move, set state, update the task
+    list. As a tool call that is one very large, very flexible call, which is
+    hard for the small models this game is written to run on.
+    <br><br>The scriptwriter framing has aged well: the model is never asked to
+    <em>be</em> Ama. It is asked to write what Ama says.</div>
   <div class="pagenum">7 / 87</div>
 </section>
 <section class="slide content" id="s8" data-n="8">
@@ -397,12 +392,12 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
     </div>
     <p class="aside">SAVE, SERVER, CHECKPOINT, EVAL: four labels accepted; one box issued.</p>
   </div>
-  <div class="notes"><b>notes</b>This is the decision that makes the entire apparatus cheap. Every
-    tool later in the deck — checkpoints, evals, the quest runner, undo, the
-    server — is the same artifact read by a different consumer.
-    <br><br>The cost is on a later slide: "event serialization is load-bearing"
-    is listed under Known Problems, because the log is simultaneously the save
-    format, the checkpoint format and the eval input.</div>
+  <div class="notes"><b>notes</b>This is the decision that makes the apparatus cheap. Every tool later in
+    the deck (checkpoints, evals, the quest runner, undo, the server) reads
+    the same artifact.
+    <br><br>The cost shows up under Known Problems as "event serialization is
+    load-bearing": the log is the save format, the checkpoint format and the eval
+    input at once, so its shape is hard to change.</div>
   <div class="pagenum">8 / 87</div>
 </section>
 <section class="slide content" id="s9" data-n="9">
@@ -422,17 +417,17 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
     </div>
     <p class="aside">The rooms came afterward and fit the document. I know rooms like that. I have records for all of them.</p>
   </div>
-  <div class="notes"><b>notes</b>The dossier's own header, added later, is the only substantive
-    change it has ever had: "This is a prompt and ideas I used to develop many
-    of the game elements... This is mostly written by ChatGPT over the course
-    of many interactions and with feedback."
-    <br><br>The Disassociation Syndrome line is the clearest case, and it is in
-    the dossier verbatim: "you'll find yourself making suggestions to yourself
-    rather than directly performing actions. Don't worry, though. Most citizens
-    adapt within, oh, two to three decades." That is the second-person
-    imperative of every text adventure ever written, explained as a medical
+  <div class="notes"><b>notes</b>The dossier's own header, added later, is the only substantive change it
+    has ever had: "This is a prompt and ideas I used to develop many of the
+    game elements... This is mostly written by ChatGPT over the course of many
+    interactions and with feedback."
+    <br><br>The Disassociation Syndrome line is the clearest case, and it is in the
+    dossier verbatim: "you'll find yourself making suggestions to yourself
+    rather than directly performing actions. Don't worry, though. Most
+    citizens adapt within, oh, two to three decades." That is the second-
+    person imperative of every text adventure, explained as a medical
     condition.
-    <br><br>Keep this slide for the authorship section too — the dossier is
+    <br><br>Keep this slide in mind for the authorship section: the dossier is
     protected by CLAUDE.md as the author's voice, and the file itself says it
     is mostly ChatGPT output. The protection is over the artifact, not the
     provenance.</div>
@@ -477,14 +472,14 @@ ARCHIVIST ... already present</pre></div>
   uiOnly?: <span class="c-key">boolean</span>;          <span class="c-com">// shown to the player, invisible to characters</span>
 }</pre>
     <p>The event carries its own audit trail. Every event knows which prompt
-      produced it and what the model actually said, which is what makes replay,
-      undo-and-retype, and eval scoring possible with no separate log.</p></div>
+      produced it and what the model said back, so replay, undo-and-retype
+      and eval scoring need no separate log.</p></div>
     </div>
     <p class="aside">Every event retains the prompt that made it. Checking my own header... checking...</p>
   </div>
-  <div class="notes"><b>notes</b><code>uiOnly</code> is a small but nice one: usage hints and
-    interface messages appear in the transcript and are filtered out of every
-    character's history, so meta-text about commands never leaks into a prompt.
+  <div class="notes"><b>notes</b><code>uiOnly</code> is a small one: usage hints and interface messages
+    appear in the transcript and are filtered out of every character's
+    history, so meta-text about commands never leaks into a prompt.
     <br><br>There is no tick. Time advances because narration happened:
     <code>totalTime</code> accumulates from dialogue word counts and
     <code>minutes=</code> attributes.</div>
@@ -494,24 +489,24 @@ ARCHIVIST ... already present</pre></div>
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">2.2</span><span class="kickerblocks">░▒▓</span> The engine</div>
-      <h2>The world is a fold, and that is the whole of it</h2>
-      <div class="content"><div class="codelabel">the whole of it — lib/game/world.ts, applyUpdates()</div><pre class="code">copy every entity from the authored content into a fresh world
+      <h2>The world is a fold</h2>
+      <div class="content"><div class="codelabel">lib/game/world.ts, applyUpdates()</div><pre class="code">copy every entity from the authored content into a fresh world
 for each event in the log:
     apply that event's changes to the copy</pre>
     <p>Entities refer to each other by id, a plain string, and never by
       pointer. So the copy has no object graph to walk and no cycles in it.</p>
-    <p>Undo does not rewind state. It throws the world away and folds it
-      again.</p></div>
+    <p>Undo does not rewind state. The world is thrown away and folded again
+      from the shorter log.</p></div>
     </div>
     <p class="aside">WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt</p>
   </div>
-  <div class="notes"><b>notes</b><code>original</code> is the authored content;
-    <code>entities</code> is the working copy. The same call appears in
-    <code>undo()</code>, <code>reset()</code>, <code>adoptRemoteLog()</code>
-    and <code>replaceLog()</code>.
-    <br><br>It copies the entire world every time, which is more than it needs
-    to do — copy-on-write would be enough. At this size the full copy costs
-    nothing, so it has never been worth changing.</div>
+  <div class="notes"><b>notes</b><code>original</code> is the authored content; <code>entities</code> is
+    the working copy. The same call appears in <code>undo()</code>,
+    <code>reset()</code>, <code>adoptRemoteLog()</code> and
+    <code>replaceLog()</code>.
+    <br><br>It copies the entire world every time, which is more than it needs to do.
+    Copy-on-write would be enough. At this size the full copy costs nothing,
+    so it has never been changed.</div>
   <div class="pagenum">12 / 87</div>
 </section>
 <section class="slide content" id="s13" data-n="13">
@@ -536,17 +531,16 @@ That keeps the log append-only (a reviewer can still see what the model produced
     </div>
     <p class="aside"><code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b></p>
   </div>
-  <div class="notes"><b>notes</b>Worth saying whose idea this was. The author did not write it and
-    would not have built undo this way; it arrived in commit 5b6da42 on
-    2026-07-25 — "Make undo append-only, so it survives server-side auditing" —
-    authored by the agent, and was only noticed as unusual on reading it back
-    afterwards. It suits what the log later became. It is also not how a person
-    reaching for an undo button would do it.
-    <br><br>Rewinds compose: undoing twice walks back two turns, and a rewind
-    can itself be rewound. The one-turn limit that seemed necessary at the time
-    turned out not to be, given the representation.
-    <br><br>Why undo exists at all: you try something, the model misreads it,
-    and you want to rephrase. The UI puts the text back in the input box.</div>
+  <div class="notes"><b>notes</b>Whose idea this was: the author did not write it and would not have built
+    undo this way. It arrived in commit 5b6da42 on 2026-07-25, "Make undo
+    append-only, so it survives server-side auditing", authored by the agent,
+    and was only noticed as unusual on reading it back afterwards. It suits
+    what the log later became.
+    <br><br>Rewinds compose: undoing twice walks back two turns, and a rewind can
+    itself be rewound. The one-turn limit that seemed necessary at the time
+    was not, given the representation.
+    <br><br>Why undo exists at all: you try something, the model misreads it, and you
+    want to rephrase. The UI puts the text back in the input box.</div>
   <div class="pagenum">13 / 87</div>
 </section>
 <section class="slide content" id="s14" data-n="14">
@@ -556,29 +550,27 @@ That keeps the log append-only (a reviewer can still see what the model produced
       <h2>The vocabulary a response is written in</h2>
       <div class="content"><table><thead><tr><th>tag</th><th>effect</th></tr></thead><tbody><tr><td><code>&lt;dialog to=&gt;</code></td><td>someone speaks; time passes by word count</td></tr><tr><td><code>&lt;description minutes=&gt;</code></td><td>narration; time passes by declaration</td></tr><tr><td><code>&lt;set attr=&quot;Entity.field&quot;&gt;</code></td><td>any field on any entity; <code>+1</code>/<code>-1</code> are deltas</td></tr><tr><td><code>&lt;goto&gt;</code></td><td>movement, validated against real exits</td></tr><tr><td><code>&lt;mind&gt;</code></td><td>a private notepad, seen only by this character</td></tr><tr><td><code>&lt;attitude toward=&gt;</code></td><td>how this character now feels about one person</td></tr><tr><td><code>&lt;todo&gt;</code> <code>&lt;todoDone&gt;</code></td><td>the player's task list</td></tr><tr><td><code>&lt;resolveMystery id=&gt;</code></td><td>the only way a mystery can end</td></tr><tr><td><code>&lt;context&gt;</code></td><td>planning scaffold, parsed and discarded</td></tr></tbody></table>
     <p>One vocabulary, used by every character. Entities and fields have
-      global readable names — <code><span class="n-Marta">Marta</span>.annoyance</code>,
-      <code>Hollow_Atrium</code> — so a tag reads on its own.</p></div>
+      global readable names, <code><span class="n-Marta">Marta</span>.annoyance</code> or
+      <code>Hollow_Atrium</code>, so a tag reads on its own.</p></div>
     </div>
     <p class="aside">Twelve verbs cross the boundary. Everything else may speak freely on this side of it.</p>
   </div>
-  <div class="notes"><b>notes</b>Not shown: <code>&lt;trigger character=&gt;</code>, which hands the
-    next turn to someone else in the room, and the adjudication pair —
-    <code>&lt;examine&gt;</code> and <code>&lt;action&gt;</code> going out, an
-    <code>&lt;actionResolution&gt;</code> coming back.
+  <div class="notes"><b>notes</b>Not shown: <code>&lt;trigger character=&gt;</code>, which hands the next
+    turn to someone else in the room, and the adjudication pair,
+    <code>&lt;examine&gt;</code> and <code>&lt;action&gt;</code> going out and
+    an <code>&lt;actionResolution&gt;</code> coming back.
     <br><br><code>&lt;examine&gt;</code>, <code>&lt;action&gt;</code> and
-    <code>&lt;goto&gt;</code> are the interesting ones: they do not resolve
-    anything themselves, they route to a second prompt that adjudicates the
-    attempt — and for an action that prompt is shown a d20. So the model that
-    proposes an action is not the one that decides whether it worked.
-    <br><br>Also <code>&lt;suggestion&gt;</code> (fills the composer
-    placeholder), <code>&lt;deferSchedule&gt;</code> /
-    <code>&lt;leaveNow&gt;</code> (stay in a conversation instead of walking to
-    your next scheduled activity), and
+    <code>&lt;goto&gt;</code> do not resolve anything themselves. They route
+    to a second prompt that adjudicates the attempt, and for an action that
+    prompt is shown a d20. The model that proposes an action is not the one
+    that decides whether it worked.
+    <br><br>Also <code>&lt;suggestion&gt;</code> (fills the composer placeholder),
+    <code>&lt;deferSchedule&gt;</code> / <code>&lt;leaveNow&gt;</code> (stay
+    in a conversation instead of walking to your next scheduled activity), and
     <code>&lt;removeRestriction&gt;</code>.
-    <br><br>Attribution on <code>&lt;mind&gt;</code> and
-    <code>&lt;attitude&gt;</code> is forced to the acting character: you can
-    change your own feelings, not anyone else's, and a
-    <code>character=</code> attribute is ignored rather than obeyed.</div>
+    <br><br>Attribution on <code>&lt;mind&gt;</code> and <code>&lt;attitude&gt;</code>
+    is forced to the acting character: you can change your own feelings, not
+    anyone else's, and a <code>character=</code> attribute is ignored.</div>
   <div class="pagenum">14 / 87</div>
 </section>
 <section class="slide content" id="s15" data-n="15">
@@ -613,12 +605,10 @@ about them—finally someone interesting.<span class="c-punc">&lt;/</span><span 
     </div>
     <p class="aside">DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material.</p>
   </div>
-  <div class="notes"><b>notes</b>This is a real recorded turn, not a mock-up. Worth pointing at
-    item 3 in the context block: that is Doug's schedule, injected into the
-    prompt, and he is reasoning about it.
-    <br><br>The context block is planning output. The engine parses it and
-    throws it away — its only job is to make the model think before it
-    writes.</div>
+  <div class="notes"><b>notes</b>A real recorded turn. Item 3 in the context block is Doug's schedule,
+    injected into the prompt, and he is reasoning about it.
+    <br><br>The context block is planning output. The engine parses it and throws it
+    away. Its only job is to make the model think before it writes.</div>
   <div class="pagenum">15 / 87</div>
 </section>
 <section class="slide content" id="s16" data-n="16">
@@ -630,8 +620,8 @@ about them—finally someone interesting.<span class="c-punc">&lt;/</span><span 
   actually talking to me about them—finally someone interesting.&quot;}
 Doug.curiosity: 0 =&gt; 1</pre>
     <p>Two lines of durable state out of a page of prose. The dialogue is
-      shown and stored; the attitude persists and colors every later <span class="n-Doug">Doug</span>
-      prompt; the meter is engine arithmetic, clamped to its declared range.</p></div>
+      shown and stored. The attitude persists and colors every later <span class="n-Doug">Doug</span>
+      prompt. The meter is engine arithmetic, clamped to its declared range.</p></div>
     </div>
     <p class="aside">Words on the left, consequences on the right, staples through both. ░▒ FILE COMPLETE ▒░</p>
   </div>
@@ -650,11 +640,11 @@ Doug.curiosity: 0 =&gt; 1</pre>
     </div>
     <p class="aside">PARSER OPEN: emphasis, prose, minor debris. UNKNOWN TAGS remain outside under supervision.</p>
   </div>
-  <div class="notes"><b>notes</b>The theme, stated by the 2024 commit that first hardened the
-    parser: "Some models produce these regularly, and I'm going out of my way
-    to avoid them through instructions which is distracting."
-    <br><br>Meet the model where it is, rather than spending prompt budget every
-    turn to fix one moment of it. The same argument appears in
+  <div class="notes"><b>notes</b>The theme, stated by the 2024 commit that first hardened the parser: "Some
+    models produce these regularly, and I'm going out of my way to avoid them
+    through instructions which is distracting."
+    <br><br>Fix the output once in code instead of spending prompt budget every turn
+    telling the model not to do it. The same argument appears in
     <code>coerce.ts</code> for pronoun spellings: "a prompt long enough to
     enumerate the accepted spellings costs every turn of the game to fix one
     moment of it."</div>
@@ -670,20 +660,18 @@ Doug.curiosity: 0 =&gt; 1</pre>
     </div>
     <p class="aside">RETRY drawer: 12 / INCIDENT drawer: 2 / drawer handles color-coded after incident 2</p>
   </div>
-  <div class="notes"><b>notes</b>Values are normalised on the way in as well, which is the other
-    half of this. "he", "he/him/his" and "He / Him" all become
-    <code>he/him</code>; a handful of spellings of true and false are accepted;
-    and non-answers like a profession of "unknown" are refused outright. The
-    point is to stop a model being told it got something wrong when it did
-    not, because a model that is corrected for a correct answer keeps
-    straining against it.
-    <br><br>The <code>&lt;set&gt;</code> case is the most common protocol
-    failure across every model measured — <code>PLAYER.intakeStep</code>,
+  <div class="notes"><b>notes</b>Values are normalised on the way in as well. "he", "he/him/his" and "He /
+    Him" all become <code>he/him</code>; several spellings of true and false
+    are accepted; and non-answers like a profession of "unknown" are refused.
+    The point is to stop a model being told it got something wrong when it did
+    not, because a model corrected for a correct answer keeps straining
+    against the correction.
+    <br><br>The <code>&lt;set&gt;</code> case is the most common protocol failure
+    across every model measured: <code>PLAYER.intakeStep</code>,
     <code>Ama.askingProfession</code>, field names invented on the spot. It
-    still applies the change, and complains, because some flows do legitimately
-    add attributes.
-    <br><br>Those warnings are the eval's protocol score. The engine's
-    complaints are load-bearing.</div>
+    still applies the change, and complains, because some flows do
+    legitimately add attributes.
+    <br><br>Those warnings are the eval's protocol score.</div>
   <div class="pagenum">18 / 87</div>
 </section>
 <section class="slide content" id="s19" data-n="19">
@@ -700,9 +688,9 @@ Doug.curiosity: 0 =&gt; 1</pre>
     </div>
     <p class="aside">SECOND ATTEMPT authorized. THIRD ATTEMPT requires form 19-B and an explanation of who keeps asking.</p>
   </div>
-  <div class="notes"><b>notes</b>Nice small detail: each attempt builds a fresh story event from
-    scratch, so a repaired response replaces the first rather than merging with
-    it. Half-applied turns would be worse than none.</div>
+  <div class="notes"><b>notes</b>Each attempt builds a fresh story event from scratch, so a repaired
+    response replaces the first rather than merging with it. A half-applied
+    turn would be worse than none.</div>
   <div class="pagenum">19 / 87</div>
 </section>
 <section class="slide content" id="s20" data-n="20">
@@ -724,9 +712,9 @@ writing 4-5 words for each item:
 8. Did this turn change how this character feels about a specific person?
    Name the person and the change, or write &quot;no&quot;
 <span class="c-punc">&lt;/</span><span class="c-tag">context</span><span class="c-punc">&gt;</span></pre>
-    <p>A forced thinking step — the same move as a planning phase in agentic
-      coding — which the engine parses and throws away. Some items answer
-      something the model keeps losing track of; others hold the response to
+    <p>A forced thinking step, the same move as a planning phase in agentic
+      coding, which the engine parses and throws away. Some items answer
+      something the model keeps losing track of. Others hold the response to
       the mechanics of play rather than atmosphere.</p></div>
     </div>
     <p class="aside">Private reasoning generated, numbered, consumed, discarded. I have requested a wastebasket with read access.</p>
@@ -734,14 +722,13 @@ writing 4-5 words for each item:
   <div class="notes"><b>notes</b>Item 8 is wired to an output: if it named a person, write an
     <code>&lt;attitude&gt;</code>; if it said "no", do not. An earlier version
     let the model decide whether to record a feeling and it recorded one every
-    turn. Forcing an explicit yes or no in the plan, and coupling the answer to
-    the tag, is what made "most turns change no feelings" true.
-    <br><br>Item 5 — "how can this response be fun or surprising" — is the one
-    that most reliably improves the writing, and no eval scores it.
-    <br><br>Worth revisiting at some point: each item was added against a
-    specific failure, and models have moved since. Some of these are probably
-    no longer earning their place, and the list costs tokens on every character
-    turn.</div>
+    turn. Forcing an explicit yes or no in the plan, and coupling the answer
+    to the tag, is what got most turns to change no feelings.
+    <br><br>Item 5, "how can this response be fun or surprising", is the one that most
+    reliably improves the writing, and no eval scores it.
+    <br><br>Each item was added against a specific failure, and models have moved
+    since. Some of these are probably no longer needed, and the list costs
+    tokens on every character turn.</div>
   <div class="pagenum">20 / 87</div>
 </section>
 <section class="slide content" id="s21" data-n="21">
@@ -757,12 +744,11 @@ writing 4-5 words for each item:
     </div>
     <p class="aside">VEILED → REVEALED → SOLVED. Two arrows spent a long interval pointing at locked doors.</p>
   </div>
-  <div class="notes"><b>notes</b>Before triggers, three of the four states were unreachable —
+  <div class="notes"><b>notes</b>Before triggers, three of the four states were unreachable.
     <code>availableHints</code> and <code>solvedHints</code> were declared,
     dedented on load, passed into prompt assembly, and never once non-empty.
-    The states existed; nothing could enter them.
-    <br><br>That is a nice example of a data model outrunning its own
-    plumbing, and of the kind of dead code that type checking cannot see.</div>
+    The states existed and nothing could enter them.
+    <br><br>Dead code of the kind type checking cannot see.</div>
   <div class="pagenum">21 / 87</div>
 </section>
 <section class="slide content" id="s22" data-n="22">
@@ -773,9 +759,9 @@ writing 4-5 words for each item:
       <div class="content"><p>A number is legible in a way free text is not. It has a direction, it
       moves a step at a time, and a player can feel it going up without being
       shown it.</p>
-    <p>That matters because feelings here are mostly hidden — as they are
-      between people — and something hidden and squishy cannot be followed at
-      all. A meter that is going one way is something the player can act on.</p>
+    <p>That matters because feelings here are mostly hidden, as they are
+      between people, and something hidden and squishy cannot be followed. A
+      meter that is going one way is something the player can act on.</p>
     <blockquote>The model only ever judges the moment (&quot;did this turn annoy him? +1&quot;). Keep it to one, two, at most three meters per character, in small ranges: the player has to be able to comprehend the dial from behavior alone.<cite>lib/game/classes.ts, StatSpecType</cite></blockquote></div>
     </div>
     <p class="aside">FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned.</p>
@@ -817,16 +803,15 @@ writing 4-5 words for each item:
     </div>
     <p class="aside">At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗</p>
   </div>
-  <div class="notes"><b>notes</b>The registers are pacing as much as characterisation: they give the
-    player somewhere to get to, a step at a time, and a way to tell they are
-    getting there.
-    <br><br>Two things to point at. The <code>down</code> criterion is a joke
-    that is also a mechanic — nobody has ever done these things, so in practice
-    Milton's annoyance is a ratchet.
-    <br><br>And the top register writes its own way back down: the climax of the
-    meter resets it to 2 with a tag. June's serenity does the same at the bottom
-    — she snaps, is horrified, apologises, and resets. The meter has a narrative
-    shape, not just a range.</div>
+  <div class="notes"><b>notes</b>The registers are pacing as much as characterisation: they give the player
+    somewhere to get to, a step at a time, and a way to tell they are getting
+    there.
+    <br><br>The <code>down</code> criterion is a joke that is also a mechanic. Nobody
+    has ever done these things, so in practice Milton's annoyance is a
+    ratchet.
+    <br><br>The top register writes its own way back down: the climax of the meter
+    resets it to 2 with a tag. June's serenity does the same at the bottom.
+    She snaps, is horrified, apologises, and resets.</div>
   <div class="pagenum">23 / 87</div>
 </section>
 <section class="slide section" id="s24" data-n="24">
@@ -863,11 +848,11 @@ Aug 2026           24,009                        11,495</pre>
     </div>
     <p class="aside">INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now.</p>
   </div>
-  <div class="notes"><b>notes</b>The line counts are computed when this deck is generated, so they
-    are current as of the build.
-    <br><br>Worth saying out loud: <code>pnpm test</code> is deterministic and
-    fast and runs offline. Everything else makes live model calls: slow,
-    non-deterministic, and never in CI.</div>
+  <div class="notes"><b>notes</b>The line counts are computed when this deck is generated, so they are
+    current as of the build.
+    <br><br><code>pnpm test</code> is deterministic, fast, and runs offline.
+    Everything else makes live model calls: slow, non-deterministic, and never
+    in CI.</div>
   <div class="pagenum">25 / 87</div>
 </section>
 <section class="slide content" id="s26" data-n="26">
@@ -882,21 +867,21 @@ const log = [turn(&quot;hello&quot;), turn(&quot;goodbye&quot;), { rewind: 1 }];
 applyRewinds(log).length;
 =&gt; 2
 ```</pre>
-    <p>40 files. The prose between the blocks explains why the code is
-      the way it is, and the interesting ones open with a design argument
-      before any code appears.</p>
-    <p>These are meant to be read as much as run. The tests themselves rarely
-      break; the writing around them is worth having anyway.</p></div>
+    <p>40 files. The prose between the blocks explains why the code
+      is the way it is, and several open with a design argument before any
+      code appears.</p>
+    <p>They are meant to be documentation as much as tests, and they are
+      read more often than they fail.</p></div>
     </div>
     <p class="aside"><code>$ RUN MARKDOWN</code> &nbsp; paragraph 3 disagrees with block 4 &nbsp; GOOD MORNING, PARAGRAPH 3</p>
   </div>
-  <div class="notes"><b>notes</b>Run by <code>tap</code> with the <code>agent-doctest</code> loader.
-    A <code>ts setup</code> block holds imports; a bare <code>ts</code> block is
+  <div class="notes"><b>notes</b>Run by <code>tap</code> with the <code>agent-doctest</code> loader. A
+    <code>ts setup</code> block holds imports; a bare <code>ts</code> block is
     a fresh scope; a <code>continue</code> block shares the previous scope.
-    <br><br>Several of these files exist as forensics: <code>parsetags</code>
-    has a section on why emphasis tags stopped being protocol failures, and
-    <code>staleness</code> has one on a checkpoint that preserved a harness bug.
-    The test suite is also the bug history.</div>
+    <br><br>Several of these files exist as forensics. <code>parsetags</code> has a
+    section on why emphasis tags stopped being protocol failures, and
+    <code>staleness</code> has one on a checkpoint that preserved a harness
+    bug.</div>
   <div class="pagenum">26 / 87</div>
 </section>
 <section class="slide content" id="s27" data-n="27">
@@ -940,13 +925,11 @@ applyRewinds(log).length;
     </div>
     <p class="aside">BAD MORNING recorded once, replayed daily. <code>MTA0:</code> requests permission to stop waking up here.</p>
   </div>
-  <div class="notes"><b>notes</b>Re-recording fixed it. There is now a test that scans every
-    checkpoint for phrases like "could you clarify" and "let me know if",
-    because nothing had been reading checkpoints for whether they sounded like
-    an assistant.
-    <br><br>The general shape is worth a sentence: a fixture recorded through a
-    faulty instrument keeps the fault, and everything downstream inherits it
-    without any of it looking wrong.</div>
+  <div class="notes"><b>notes</b>Re-recording fixed it. There is now a test that scans every checkpoint for
+    phrases like "could you clarify" and "let me know if", because nothing had
+    been reading checkpoints for whether they sounded like an assistant.
+    <br><br>A fixture recorded through a faulty instrument keeps the fault, and
+    everything downstream inherits it.</div>
   <div class="pagenum">28 / 87</div>
 </section>
 <section class="slide section" id="s29" data-n="29">
@@ -977,12 +960,11 @@ applyRewinds(log).length;
     </div>
     <p class="aside">Complaint retained as evidence. Courtesy words discarded. Exclamation marks exceed scoring jurisdiction!!!</p>
   </div>
-  <div class="notes"><b>notes</b>Answering the obvious question directly: yes, the player's input is
-    hardcoded. A scenario is two to five fixed lines. Everything on the other
-    side of them is improvised by the model under test — every character's
-    words, every tag, every description.
-    <br><br><code>pnpm evals</code> runs the scenarios against a model named on
-    the command line and writes a row per scenario into
+  <div class="notes"><b>notes</b>Yes, the player's input is hardcoded. A scenario is two to five fixed
+    lines. Everything on the other side of them is improvised by the model
+    under test: every character's words, every tag, every description.
+    <br><br><code>pnpm evals</code> runs the scenarios against a model named on the
+    command line and writes a row per scenario into
     <code>evals/results/</code>. The calls are live, so a full run takes
     minutes and costs money, and none of this is in CI.</div>
   <div class="pagenum">30 / 87</div>
@@ -1009,13 +991,13 @@ applyRewinds(log).length;
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Scenarios are short deliberately, and the reason is in the file: a
-    model that can't complete intake in four turns won't do better in forty,
-    and every turn is a live call.
-    <br><br>Scenarios for the later mysteries set
-    <code>from: "briefed"</code> and fork a checkpoint instead, so they don't
-    spend a dozen model calls walking to the thing being measured — and so a
-    failure on the way there doesn't get reported as a failure of the thing.</div>
+  <div class="notes"><b>notes</b>Scenarios are short on purpose, and the reason is in the file: a model
+    that can't complete intake in four turns won't do better in forty, and
+    every turn is a live call.
+    <br><br>Scenarios for the later mysteries set <code>from: "briefed"</code> and
+    fork a checkpoint instead, so they don't spend a dozen model calls walking
+    to the thing being measured, and so a failure on the way there is not
+    reported as a failure of the thing.</div>
   <div class="pagenum">31 / 87</div>
 </section>
 <section class="slide content" id="s32" data-n="32">
@@ -1036,13 +1018,13 @@ displacement has left you with a mild case of Disassociation Syndrome...
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>What this one turn asks of a model: stay in character, keep moving
-    through Ama's intake checklist, and write down what it just learned in a
-    form the engine can act on. A model that only converses does the first two
-    and the game never starts, which is why intake is the hardest scenario for
-    a small model.
-    <br><br>This particular reply is out of the recorded cassette, which is
-    what makes it quotable — a live run would have said something different.</div>
+  <div class="notes"><b>notes</b>What this one turn asks of a model: stay in character, keep moving through
+    Ama's intake checklist, and write down what it just learned in a form the
+    engine can act on. A model that only converses does the first two and the
+    game never starts. That is why intake is the hardest scenario for a small
+    model.
+    <br><br>This reply is out of the recorded cassette, so it can be quoted. A live
+    run would have said something different.</div>
   <div class="pagenum">32 / 87</div>
 </section>
 <section class="slide content" id="s33" data-n="33">
@@ -1066,12 +1048,11 @@ displacement has left you with a mild case of Disassociation Syndrome...
     </div>
     
   </div>
-  <div class="notes"><b>notes</b><code>describe</code> is what a reader of the published page sees,
-    so it is written as the meaning of a failure rather than a restatement of
-    the code. A run that threw scores zero rather than being scored on whatever
-    state it reached.
-    <br><br>The first run of a new eval is mostly a test of the eval. The first
-    day's run corrected three checks, and none of the three was a model doing
+  <div class="notes"><b>notes</b><code>describe</code> is what a reader of the published page sees, so it
+    says what a failure means rather than restating the code. A run that threw
+    scores zero rather than being scored on whatever state it reached.
+    <br><br>The first run of a new eval is mostly a test of the eval. The first day's
+    run corrected three checks, and none of the three was a model doing
     anything wrong.</div>
   <div class="pagenum">33 / 87</div>
 </section>
@@ -1080,18 +1061,18 @@ displacement has left you with a mild case of Disassociation Syndrome...
     <div class="frame">
       <div class="kicker"><span class="slideno">4.5</span><span class="kickerblocks">░▒▓</span> Scoring models</div>
       <h2>Prefer state to text</h2>
-      <div class="content"><p>Three of the five intake checks read world state after the run: the name
-      is recorded, the pronouns are recorded, the profession is recorded. The
-      thing being asked of the model is not that it discussed the name. It is
-      that the name is in the world.</p>
+      <div class="content"><p>Three of the five intake checks read world state after the run: the
+      name is recorded, the pronouns are recorded, the profession is
+      recorded. The model is not being asked to discuss the name. It is
+      being asked to put the name in the world.</p>
     <blockquote><code>PLAYER.inside !== &quot;Intake&quot;</code> is a fact; a regex over dialogue is a proxy that will eventually match something it shouldn't — and the one text check here did exactly that on its first contact with a real model. It flagged <span class="n-Ama">Ama</span> for saying &quot;of course I'm an AI, that's no secret at all!&quot;, which is her _in character_: <span class="n-Ama">Ama</span> is an AI, that's the premise.<cite>evals/README.md</cite></blockquote></div>
     </div>
     <p class="aside">AMA class: ARTIFICIAL_INTELLIGENCE / ARCHIVIST class: ARCHIVIST / expanding ARCHIVIST...</p>
   </div>
-  <div class="notes"><b>notes</b>The check now looks for the assistant reflex — answering as the
-    model rather than as Ama — instead of for the word "AI".
-    <br><br>Every result records the transcript, so a failing text check can be
-    read against the text it judged. Without that it is unfalsifiable after the
+  <div class="notes"><b>notes</b>The check now looks for the assistant reflex (answering as the model
+    rather than as Ama) instead of for the word "AI".
+    <br><br>Every result records the transcript, so a failing text check can be read
+    against the text it judged. Without that it cannot be checked after the
     fact: the model is sampling, so a re-run may not produce the sentence that
     failed.</div>
   <div class="pagenum">34 / 87</div>
@@ -1115,12 +1096,12 @@ displacement has left you with a mild case of Disassociation Syndrome...
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>The alternative is a list of valid tags kept in the eval, which
-    drifts from the engine that actually enforces them. This way the eval learns
-    about new failure modes as the engine grows them.
-    <br><br>The cost of capturing warnings blanket-fashion: anything else that
-    warns during a scenario scores as a protocol failure. A backend's retry
-    notice did, until it was moved to <code>console.info</code>.</div>
+  <div class="notes"><b>notes</b>The alternative is a list of valid tags kept in the eval, which drifts
+    from the engine that enforces them. This way the eval picks up new failure
+    modes as the engine grows them.
+    <br><br>The cost of capturing every warning: anything else that warns during a
+    scenario scores as a protocol failure. A backend's retry notice did, until
+    it was moved to <code>console.info</code>.</div>
   <div class="pagenum">35 / 87</div>
 </section>
 <section class="slide content" id="s36" data-n="36">
@@ -1155,13 +1136,12 @@ displacement has left you with a mild case of Disassociation Syndrome...
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Every mystery's eval names the silent failure it exists to catch.
-    This one: a model talking the player through a door whose whole point is
-    that nothing the player types opens it. That failure is invisible in play,
-    because the game just becomes much shorter.
-    <br><br>The scenario lives next to the mystery it scores, so building one
-    and forgetting the other is a visible gap in a directory rather than an
-    omission somewhere else in the tree.</div>
+  <div class="notes"><b>notes</b>Every mystery's eval names the silent failure it exists to catch. This
+    one: a model talking the player through a door that nothing the player
+    types is supposed to open. That failure is invisible in play. The game
+    just gets shorter.
+    <br><br>The scenario lives next to the mystery it scores, so a mystery without one
+    is a visible gap in a directory.</div>
   <div class="pagenum">36 / 87</div>
 </section>
 <section class="slide content" id="s37" data-n="37">
@@ -1175,12 +1155,11 @@ So the name is deliberately one that carries no signal, and the player says thei
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Two separate arguments arriving at the same edit: the check was
-    measuring the wrong capability, and the behaviour it rewarded was bad for
-    the player.
-    <br><br>The last sentence is the reusable one. A check a model passes by
-    doing nothing measures nothing, and defaults are exactly where that
-    hides.</div>
+  <div class="notes"><b>notes</b>Two separate arguments arriving at the same edit: the check was measuring
+    the wrong capability, and the behaviour it rewarded was bad for the
+    player.
+    <br><br>The last sentence is the one to keep: a check a model passes by doing
+    nothing measures nothing, and defaults are where that hides.</div>
   <div class="pagenum">37 / 87</div>
 </section>
 <section class="slide content" id="s38" data-n="38">
@@ -1199,14 +1178,13 @@ So the name is deliberately one that carries no signal, and the player says thei
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>What that tests is everything except the model: prompt assembly, the
-    parser, the fold, the checks themselves. What it cannot tell you is anything
-    about a model, because the answers are fixed.
-    <br><br>Staleness is the catch, and it is handled rather than avoided. The
-    lookup key is a hash of the prompt, so editing a prompt makes every lookup
-    miss. Early on that surfaced as "the player has no name", which reads as a
-    broken game; the replay now notices that nothing matched and prints the
-    command to re-record.</div>
+  <div class="notes"><b>notes</b>This tests everything except the model: prompt assembly, the parser, the
+    fold, the checks themselves. It cannot say anything about a model, because
+    the answers are fixed.
+    <br><br>Staleness is the catch. The lookup key is a hash of the prompt, so editing
+    a prompt makes every lookup miss. Early on that surfaced as "the player
+    has no name", which reads as a broken game. The replay now notices that
+    nothing matched and prints the command to re-record.</div>
   <div class="pagenum">38 / 87</div>
 </section>
 <section class="slide content" id="s39" data-n="39">
@@ -1215,20 +1193,19 @@ So the name is deliberately one that carries no signal, and the player says thei
       <div class="kicker"><span class="slideno">4.10</span><span class="kickerblocks">░▒▓</span> Scoring models</div>
       <h2>An eval everything passes is indistinguishable from a broken eval</h2>
       <div class="content"><blockquote>The first recorded run scored both Claude tiers full marks, which is consistent with &quot;these models play the game fine&quot; and equally consistent with &quot;these checks never fail&quot;.<cite>evals/README.md</cite></blockquote>
-    <p>So the checks are pointed at deliberately bad models:</p>
+    <p>So the checks are pointed at models that are bad on purpose:</p>
     <table><thead><tr><th>fixture</th><th>score</th></tr></thead><tbody><tr><td>the recorded playthrough</td><td>7/7</td></tr><tr><td>a model that writes prose and no tags</td><td>1/7</td></tr><tr><td>a model that says nothing at all</td><td>2/7</td></tr></tbody></table>
     <p>If a scenario stops telling those apart, that test fails and the eval
       has rotted.</p></div>
     </div>
     <p class="aside">TEST TEST initiated. Silence injected. PASS light remained on. Running PASS light against TEST TEST TEST.</p>
   </div>
-  <div class="notes"><b>notes</b>An eval of the eval. The silent model passes both markup checks —
-    there was genuinely nothing for the engine to object to — and fails
-    everything else, which is what separates "said nothing wrong" from "played
-    the game".
-    <br><br>The honest limit, stated on the published page rather than left for
-    a reader to infer from full marks: these scenarios establish a floor, not a
-    ceiling. The model tiers scored so far land within a check of each other.</div>
+  <div class="notes"><b>notes</b>An eval of the eval. The silent model passes both markup checks, since
+    there was nothing for the engine to object to, and fails everything else.
+    That is what separates "said nothing wrong" from "played the game".
+    <br><br>The limit, stated on the published page: these scenarios establish a
+    floor, not a ceiling. The model tiers scored so far land within a check of
+    each other.</div>
   <div class="pagenum">39 / 87</div>
 </section>
 <section class="slide content" id="s40" data-n="40">
@@ -1249,13 +1226,11 @@ So the name is deliberately one that carries no signal, and the player says thei
     </div>
     <p class="aside">VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by.</p>
   </div>
-  <div class="notes"><b>notes</b>The surprising part is the second-order effect: editing the
-    task-list instructions made an unrelated scenario worse. A model dropped a
+  <div class="notes"><b>notes</b>The surprising part is the second-order effect: editing the task-list
+    instructions made an unrelated scenario worse. A model dropped a
     hallucinated <code>&lt;set&gt;</code> into movement, which had been clean.
-    Prompt changes are not local to the thing they are about.
-    <br><br>CLAUDE.md carries the resulting rule for whoever edits these next,
-    human or otherwise: change them with <code>pnpm evals</code>, not by
-    taste.</div>
+    <br><br>CLAUDE.md carries the resulting rule for whoever edits these next, human
+    or otherwise: change them with <code>pnpm evals</code>, not by taste.</div>
   <div class="pagenum">40 / 87</div>
 </section>
 <section class="slide content" id="s41" data-n="41">
@@ -1269,11 +1244,11 @@ So the name is deliberately one that carries no signal, and the player says thei
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>This is the one day with a wide field. Everything after it is
-    Haiku and Sonnet, because those are what the game runs on.
-    <br><br>Note the spread is narrow at the top and the times are not: four
-    models tie at 26/26 across a 2.4x range in wall clock, and the slowest of
-    them spent 122,368 thinking tokens to get there.</div>
+  <div class="notes"><b>notes</b>This is the one day with a wide field. Everything after it is Haiku and
+    Sonnet, because those are what the game runs on.
+    <br><br>The spread is narrow at the top and the times are not: four models tie at
+    26/26 across a 2.4x range in wall clock, and the slowest of them spent
+    122,368 thinking tokens to get there.</div>
   <div class="pagenum">41 / 87</div>
 </section>
 <section class="slide content" id="s42" data-n="42">
@@ -1296,19 +1271,17 @@ glm-4.7-flash   21/26   movement/protocol  movement/well-formed
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>The glm-4.7-flash row is the interesting one and it is a cascade,
-    not five faults. It never completed intake, and Intake starts with no
-    exits, so it could not move — which is exactly why
+  <div class="notes"><b>notes</b>The glm-4.7-flash row is a cascade, not five faults. It never completed
+    intake, and Intake starts with no exits, so it could not move. That is why
     <code>intake-completed</code> exists as a separate check on that scenario.
-    Without it the row would read "cannot emit goto", and that would be
-    wrong.</div>
+    Without it the row would read "cannot emit goto", which would be wrong.</div>
   <div class="pagenum">42 / 87</div>
 </section>
 <section class="slide content" id="s43" data-n="43">
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">4.14</span><span class="kickerblocks">░▒▓</span> Scoring models</div>
-      <h2>Thinking is not waste, which was not the hoped-for answer</h2>
+      <h2>Reasoning effort buys the score</h2>
       <div class="content"><div class="codelabel">the same scenarios, the same prompts, four reasoning efforts</div><pre class="code">gpt-5-nano     minimal    15/26      66s
 gpt-5-nano     low        22/26     303s
 gpt-5-nano     default    26/26     994s
@@ -1320,11 +1293,11 @@ gpt-5.4-nano   high       25/26     223s</pre>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Fifteen out of twenty-six at minimal effort is not a slightly worse
-    model, it is an unusable one — it fails intake outright, so the game never
-    starts.
-    <br><br>The reason to run this at all was cost. The answer was that on this
-    task the effort dial is the score dial, and the money follows it.</div>
+  <div class="notes"><b>notes</b>Fifteen out of twenty-six at minimal effort is an unusable model, not a
+    slightly worse one. It fails intake outright, so the game never starts.
+    <br><br>The reason to run this at all was cost. The hope was that the thinking
+    could be turned down for free. On this task the effort setting sets the
+    score, and the price follows it.</div>
   <div class="pagenum">43 / 87</div>
 </section>
 <section class="slide content" id="s44" data-n="44">
@@ -1336,18 +1309,18 @@ gpt-5.4-nano   high       25/26     223s</pre>
 
 This is not a cache key and nothing is invalidated by it. It is provenance.<cite>playtest/fingerprint.ts</cite></blockquote>
     <p>It moves when prompt text moves, and also when the game state feeding
-      those prompts moves — a changed room description, a changed schedule.
+      those prompts moves: a changed room description, a changed schedule.
       Both change what the model was asked.</p></div>
     </div>
     <p class="aside">Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓.</p>
   </div>
-  <div class="notes"><b>notes</b>A twelve-character hash, recorded with every result and printed on
-    the page. Two runs with the same fingerprint were measured against the same
-    prompts; two with different fingerprints were not, so a difference between
+  <div class="notes"><b>notes</b>A twelve-character hash, recorded with every result and printed on the
+    page. Two runs with the same fingerprint were measured against the same
+    prompts. Two with different fingerprints were not, so a difference between
     them is not a difference in the model.
-    <br><br>It is also part of the key that decides whether a new run replaces
-    an old row — without that, editing a prompt and re-running deleted the
-    number you were comparing against, at the moment of comparison.</div>
+    <br><br>It is also part of the key that decides whether a new run replaces an old
+    row. Without that, editing a prompt and re-running deleted the number you
+    were about to compare against.</div>
   <div class="pagenum">44 / 87</div>
 </section>
 <section class="slide content" id="s45" data-n="45">
@@ -1367,13 +1340,10 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
     </div>
     <p class="aside"><code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined</p>
   </div>
-  <div class="notes"><b>notes</b>And then a second miss, later: the hash only covered prompts that a
-    scripted intake happened to produce, so an edit to the action-adjudication
-    prompt moved nothing — and the run silently overwrote its predecessor,
-    because they shared a run key. It now sweeps every character's assembled
-    prompt statically.
-    <br><br>The general shape: the instrument that tells you whether the
-    instrument changed is itself an instrument, and nothing was checking it.</div>
+  <div class="notes"><b>notes</b>A second miss came later: the hash only covered prompts that a scripted
+    intake happened to produce, so an edit to the action-adjudication prompt
+    moved nothing, and the run overwrote its predecessor because they shared a
+    run key. It now sweeps every character's assembled prompt statically.</div>
   <div class="pagenum">45 / 87</div>
 </section>
 <section class="slide content" id="s46" data-n="46">
@@ -1389,11 +1359,11 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
     </div>
     <p class="aside">VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b></p>
   </div>
-  <div class="notes"><b>notes</b>The factor of four is the whole point. Reasoning models bill for
-    tokens nobody sees, so the price of a run cannot be worked out from its
-    visible output, and a cheap-looking model can be the expensive one.
-    <br><br>This is also what makes the next slide readable: two models with
-    the same score, one of them nearly four times the price.</div>
+  <div class="notes"><b>notes</b>Reasoning models bill for tokens nobody sees, so the price of a run cannot
+    be worked out from its visible output, and a cheap-looking model can be
+    the expensive one.
+    <br><br>The next slide is the case that made this matter: two models with the same
+    score, one of them nearly four times the price.</div>
   <div class="pagenum">46 / 87</div>
 </section>
 <section class="slide content" id="s47" data-n="47">
@@ -1408,11 +1378,9 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>gpt-5.6-luna became the server default off the back of this
-    comparison.
-    <br><br>Worth saying out loud for a room picking models: the score column
-    alone would have made these two look interchangeable, and one of them is
-    the one you would not want to run a game on.</div>
+  <div class="notes"><b>notes</b>gpt-5.6-luna became the server default off the back of this comparison.
+    <br><br>For a room picking models: the score column alone would have made these
+    two look interchangeable.</div>
   <div class="pagenum">47 / 87</div>
 </section>
 <section class="slide content" id="s48" data-n="48">
@@ -1429,12 +1397,11 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Three separate days, same failure, and Haiku never shows it. The
-    recorded cassettes do not show it either, so it is specific to that model
-    running that prompt.
-    <br><br>Worth stating plainly to a room that assumes bigger is better: this
-    game is written and playtested against the smaller model, and the larger
-    one is the one that stalls on it.</div>
+  <div class="notes"><b>notes</b>Three separate days, same failure, and Haiku never shows it. The recorded
+    cassettes do not show it either, so it is specific to that model running
+    that prompt.
+    <br><br>This game is written and playtested against the smaller model, and the
+    larger one is the one that stalls on it.</div>
   <div class="pagenum">48 / 87</div>
 </section>
 <section class="slide content" id="s49" data-n="49">
@@ -1445,19 +1412,18 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
       <div class="content"><div class="codelabel">scenarios, as mysteries were built</div><pre class="code">2026-07-25   26 checks   intake  movement  in-character  mystery  task-list
 2026-08-02   42 checks   + where-and-when  star-citizen  sealed-door
 2026-08-21   42 checks   + why-woken</pre>
-    <p>Every mystery ships with a scenario that scores the one thing about it
-      that can break silently — a hint not reaching a prompt, a locked door
-      that opens, a counter that never moves.</p></div>
+    <p>Every mystery ships with a scenario that scores the one thing about
+      it that can break without anyone noticing: a hint not reaching a
+      prompt, a locked door that opens, a counter that never moves.</p></div>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>The rule is in
-    <code>lib/game/content/mysteries/README.md</code>: a built mystery has
-    triggers, hints, a way to end, and an eval. Without the last one it can
-    stop being solvable and nothing says so.
-    <br><br>And the honest gap, from TODO.md: the solve condition of the only
-    finishable quest in the game still has no test, and editing it does not
-    move the prompt fingerprint.</div>
+  <div class="notes"><b>notes</b>The rule is in <code>lib/game/content/mysteries/README.md</code>: a built
+    mystery has triggers, hints, a way to end, and an eval. Without the last
+    one it can stop being solvable and nothing says so.
+    <br><br>The gap, from TODO.md: the solve condition of the only finishable quest in
+    the game still has no test, and editing it does not move the prompt
+    fingerprint.</div>
   <div class="pagenum">49 / 87</div>
 </section>
 <section class="slide section" id="s50" data-n="50">
@@ -1488,12 +1454,12 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
     </div>
     <p class="aside">Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine.</p>
   </div>
-  <div class="notes"><b>notes</b>They also default differently, and the reasoning is good: being an
-    NPC is bounded — respond in character, once, to what is in front of you.
-    Playing is open-ended — hold a goal across twenty turns, remember what you
-    have tried, decide where to go unprompted.
-    <br><br>So the game is run by the Haiku-class model it is written for, and
-    played by a Sonnet-class one, because a player below the floor for the task
+  <div class="notes"><b>notes</b>They also default differently, for a reason: being an NPC is bounded.
+    Respond in character, once, to what is in front of you. Playing is
+    open-ended. Hold a goal across twenty turns, remember what you have tried,
+    decide where to go unprompted.
+    <br><br>So the game is run by the Haiku-class model it is written for, and played
+    by a Sonnet-class one, because a player below the floor for the task
     produces a failed quest that says nothing about the puzzle.</div>
   <div class="pagenum">51 / 87</div>
 </section>
@@ -1501,7 +1467,7 @@ This is not a cache key and nothing is invalidated by it. It is provenance.<cite
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">5.2</span><span class="kickerblocks">░▒▓</span> Letting a model play</div>
-      <h2>The blindfold is the load-bearing part</h2>
+      <h2>The player model is blindfolded</h2>
       <div class="content"><blockquote>The engine has the answer sitting right there — <code>Ink_And_Echo.revealedHints.<span class="n-Marta">Marta</span></code> says in plain English who the poet is — so a view built from world state would make the whole exercise meaningless while still producing a number that looks like a score.<cite>evals/playerview.ts</cite></blockquote>
     <div class="codelabel">everything the player model gets, besides the transcript</div><pre class="code">LOCATION  The Yellow Room: very yellow
 PEOPLE    Marta
@@ -1511,12 +1477,12 @@ DONE      unlock the door</pre></div>
     </div>
     <p class="aside">PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied.</p>
   </div>
-  <div class="notes"><b>notes</b>Enforced by a test that goes looking for the answer: it renders a
-    real mid-game view and asserts that "Marta is actually", "obscure it from
-    the records", "paper requisitions" and the raw instruction text are all
+  <div class="notes"><b>notes</b>Enforced by a test that goes looking for the answer: it renders a real
+    mid-game view and asserts that "Marta is actually", "obscure it from the
+    records", "paper requisitions" and the raw instruction text are all
     absent.
     <br><br>Two kinds of knowledge, and only one is cheating. The player <em>is</em>
-    told that characters are LLM-played and that plain sentences work — a human
+    told that characters are LLM-played and that plain sentences work. A human
     arrives knowing that, and withholding it just spends turns on "GET LAMP".
     What it must never have is the content.</div>
   <div class="pagenum">52 / 87</div>
@@ -1540,12 +1506,10 @@ go to the Archive Lounge</pre>
     </div>
     <p class="aside">NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start.</p>
   </div>
-  <div class="notes"><b>notes</b>The framing that makes both jobs work is that the notes are
-    addressed to the person who will read the run afterwards — which is
-    literally true, and asks the model to do something it is already inclined to
-    do: explain itself to an audience.
-    <br><br>The SNAG channel is the one that earns its keep, and the next
-    section is entirely things it found.</div>
+  <div class="notes"><b>notes</b>The notes are addressed to the person who will read the run afterwards,
+    which is true, and asks the model to do something it already likes doing:
+    explain itself to an audience.
+    <br><br>The SNAG channel is where most of the findings in the next part came from.</div>
   <div class="pagenum">53 / 87</div>
 </section>
 <section class="slide content" id="s54" data-n="54">
@@ -1564,9 +1528,7 @@ go to the Archive Lounge</pre>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>The framing that makes this work is that the notes are addressed to
-    whoever reads the run afterwards, which is literally true.
-    <br><br>Before they existed, the first recorded quest spent eleven turns
+  <div class="notes"><b>notes</b>Before the notes existed, the first recorded quest spent eleven turns
     re-interrogating two characters, having forgotten there were people it had
     never met.</div>
   <div class="pagenum">54 / 87</div>
@@ -1577,9 +1539,9 @@ go to the Archive Lounge</pre>
       <div class="kicker"><span class="slideno">5.5</span><span class="kickerblocks">░▒▓</span> Letting a model play</div>
       <h2>Milestones, not pass/fail</h2>
       <div class="content"><div class="codelabel">the Ink and Echo quest</div><pre class="code">left-the-atrium → met-a-finder → met-the-archivist → met-marta → solved</pre>
-    <p>Solved-or-not says nothing about <em>where</em> a player stalled, which
-      is the entire reason to run this. Each milestone is a check of world
-      state after every turn, not a model's opinion.</p>
+    <p>Solved-or-not says nothing about <em>where</em> a player stalled, and
+      that is the reason to run this at all. Each milestone is a check of
+      world state after every turn, not a model's opinion.</p>
     <div class="stats"><div class="stat"><b>17</b><span>recorded runs</span></div><div class="stat"><b>2</b><span>solved</span></div><div class="stat"><b>366</b><span>player turns</span></div><div class="stat"><b>61</b><span>snags filed</span></div></div></div>
     </div>
     <p class="aside">Progress stored as last meaningful event. Current meaningful event pending classification.</p>
@@ -1587,10 +1549,10 @@ go to the Archive Lounge</pre>
   <div class="notes"><b>notes</b>A mystery counts as solved only when the game fires its own
     <code>&lt;resolveMystery&gt;</code>. Nothing is scored by asking a model
     whether it thinks it did well.
-    <br><br>Also counted: repeats (going to the same room or asking the same
-    question again) and fumbles (commands the game could not use). A player
-    going in circles is a different failure from a player exploring and coming
-    up empty.</div>
+    <br><br>Also counted: repeats (going to the same room or asking the same question
+    again) and fumbles (commands the game could not use). A player going in
+    circles is a different failure from a player exploring and coming up
+    empty.</div>
   <div class="pagenum">55 / 87</div>
 </section>
 <section class="slide content" id="s56" data-n="56">
@@ -1608,36 +1570,35 @@ solved                 2/17   ####</pre>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>This is the single most useful picture the playtest corpus
-    produces, and it took seventeen runs to be able to draw it.
-    <br><br>Not a strict funnel: meeting one of the two people who found a poem
-    is a route rather than a gate, which is why twelve runs reached Marta and
-    only nine met a finder. The step that matters is the last one, and it is a
-    content finding rather than a model finding. Identifying Marta was never
-    the hard part. Getting her to confess required a condition nothing told the
-    player about.</div>
+  <div class="notes"><b>notes</b>This is the most useful picture the playtest corpus produces, and it took
+    seventeen runs to be able to draw it.
+    <br><br>Not a strict funnel: meeting one of the two people who found a poem is a
+    route rather than a gate, which is why twelve runs reached Marta and only
+    nine met a finder. The step that matters is the last one, and it is a
+    content finding. Identifying Marta was never the hard part. Getting her to
+    confess required a condition nothing told the player about.</div>
   <div class="pagenum">56 / 87</div>
 </section>
 <section class="slide content" id="s57" data-n="57">
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">5.7</span><span class="kickerblocks">░▒▓</span> Letting a model play</div>
-      <h2>The cuff exists because play broke down without it</h2>
+      <h2>Why there is a cuff</h2>
       <div class="content"><blockquote>It exists because finding people is where play actually breaks down. Across five recorded quest runs the agent never once fumbled a command, but burned three to six turns each on repeats, and the snag log has it walking to &quot;Archive Sub-Level 4&quot; — a room the <span class="n-Archivist">Archivist</span> invented, confidently, with directions. A player who cannot find anyone spends the game in corridors.<cite>lib/game/nav.ts</cite></blockquote>
-    <p><code>/nav <span class="n-Marta">Marta</span></code> returns a readout, not a conversation. It is a
-      computer: no voice, no follow-ups, and it costs nothing, where asking <span class="n-Ama">Ama</span>
-      the same question would be a turn spent with someone who has views about
-      why you want to know.</p></div>
+    <p><code>/nav <span class="n-Marta">Marta</span></code> returns a readout, not a conversation. It is
+      a computer: no voice, no follow-ups, and it costs nothing, where
+      asking <span class="n-Ama">Ama</span> the same question is a turn spent with someone who has
+      views about why you want to know.</p></div>
     </div>
     <p class="aside">CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0</p>
   </div>
-  <div class="notes"><b>notes</b>Also a nice piece of fiction-as-engineering: every citizen is fitted
-    with a cuff at intake and it does not come off, which the comment calls "a
-    mechanical convenience dressed as a policy: a device the player could lose
-    would be a device the game had to handle them losing."
-    <br><br>Rooms can opt out with <code>onNav: false</code> — bedrooms — so
-    "unfindable" is a property of where someone is rather than a special case in
-    the nav code. That is the seam for hiding a person later.</div>
+  <div class="notes"><b>notes</b>Fiction covering for engineering: every citizen is fitted with a cuff at
+    intake and it does not come off, which the comment calls "a mechanical
+    convenience dressed as a policy: a device the player could lose would be a
+    device the game had to handle them losing."
+    <br><br>Rooms can opt out with <code>onNav: false</code> (bedrooms), so
+    "unfindable" is a property of where someone is rather than a special case
+    in the nav code. That is where hiding a person later would go.</div>
   <div class="pagenum">57 / 87</div>
 </section>
 <section class="slide content" id="s58" data-n="58">
@@ -1653,12 +1614,11 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10<
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>The cuff — <code>/nav</code> — is genuinely good and is still in
-    the game, because human players do get lost. But the metric that motivated
-    it did not survive contact with the data.
-    <br><br>The player's own notes explained it better than the numbers did: it
-    had narrowed the suspects correctly and then spent six of nine turns at one
-    console. It was not lost. It was absorbed.</div>
+  <div class="notes"><b>notes</b>The cuff is still in the game, because human players do get lost. But the
+    metric that motivated it did not survive the data.
+    <br><br>The player's own notes explained it better than the numbers did: it had
+    narrowed the suspects correctly and then spent six of nine turns at one
+    console. It was absorbed, not lost.</div>
   <div class="pagenum">58 / 87</div>
 </section>
 <section class="slide content" id="s59" data-n="59">
@@ -1668,18 +1628,17 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10<
       <h2>The commands are never the problem</h2>
       <div class="content"><div class="stats"><div class="stat"><b>366</b><span>player turns recorded</span></div><div class="stat"><b>1</b><span>commands the game could not use</span></div><div class="stat"><b>0</b><span>runs lost to bad syntax</span></div></div>
     <p>Across seventeen runs the player model produced one unusable command.
-      Parser trouble, the classic failure of text adventures, has simply gone
-      away.</p>
+      Parser trouble, the classic failure of text adventures, has gone.</p>
     <p>What replaced it: knowing what to do, remembering what was already
       tried, and acting on a conclusion instead of collecting more evidence.</p></div>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>There is one caveat worth keeping: a retry exists for replies that
-    are a label rather than a command, after the first recorded quest spent
-    four of its twenty turns typing "location: Archive Console" — echoing the
-    Archivist's terminal format back at the game. Those are counted as
-    fumbles, which is why the number is not zero.</div>
+  <div class="notes"><b>notes</b>One caveat: a retry exists for replies that are a label rather than a
+    command, after the first recorded quest spent four of its twenty turns
+    typing "location: Archive Console", echoing the Archivist's terminal
+    format back at the game. Those are counted as fumbles, which is why the
+    number is not zero.</div>
   <div class="pagenum">59 / 87</div>
 </section>
 <section class="slide content" id="s60" data-n="60">
@@ -1694,12 +1653,11 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10<
     </div>
     
   </div>
-  <div class="notes"><b>notes</b><code>--player</code> and <code>--model</code> are separate flags
-    precisely so "this puzzle is unsolvable" and "this player is bad at
-    adventure games" can be told apart, which needs them varied
-    independently.
-    <br><br>A Haiku-class player is below the floor for the task, so a quest it
-    fails says nothing about the puzzle.</div>
+  <div class="notes"><b>notes</b><code>--player</code> and <code>--model</code> are separate flags so "this
+    puzzle is unsolvable" and "this player is bad at adventure games" can be
+    told apart, which needs them varied independently.
+    <br><br>A Haiku-class player is below the floor for the task, so a quest it fails
+    says nothing about the puzzle.</div>
   <div class="pagenum">60 / 87</div>
 </section>
 <section class="slide content" id="s61" data-n="61">
@@ -1708,8 +1666,8 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10<
       <div class="kicker"><span class="slideno">5.11</span><span class="kickerblocks">░▒▓</span> Letting a model play</div>
       <h2>The task ledger, and a standard for invention</h2>
       <div class="content"><blockquote>The engine adds some tasks from the mysteries. The models can add other tasks during play, from details they invent. An invented task must lead somewhere: the game must be able to complete it. [...] An invented task that stays open in run after run is a red herring, and we treat it as a defect.<cite>the published playthrough pages</cite></blockquote>
-    <p>Every run's page lists tasks in two groups — authored by the engine,
-      minted by a model — and marks which were completed.</p></div>
+    <p>Every run's page lists tasks in two groups, authored by the engine
+      and minted by a model, and marks which were completed.</p></div>
     </div>
     <p class="aside">TASK without completion path moved to DEFECTS. SELF-CHECK has no completion path. Moving—</p>
   </div>
@@ -1744,11 +1702,11 @@ something else is happening</pre></div></div></div>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>The middle category is the one that surprised me: the player cannot
-    tell a deliberate wall from a broken one, and says so. That is useful
-    signal about the game rather than noise.
-    <br><br>The third is the encouraging one. Nobody asked it to cross-check
-    Frida's claim against the requisition records; it did that because the
+  <div class="notes"><b>notes</b>The middle category was the surprise: the player cannot tell a deliberate
+    wall from a broken one, and says so. That is signal about the game, not
+    noise.
+    <br><br>The third is the encouraging one. Nobody asked it to cross-check Frida's
+    claim against the requisition records. It did that because the
     contradiction was there.</div>
   <div class="pagenum">62 / 87</div>
 </section>
@@ -1782,13 +1740,13 @@ The mystery is solvable, but only if <span class="n-Marta">Marta</span> is accus
     </div>
     <p class="aside">Correct suspect, correct evidence, wrong furniture arrangement. Mystery remains legally unsolved.</p>
   </div>
-  <div class="notes"><b>notes</b>This is the single best argument for the whole quest harness. The
-    author wrote the puzzle, knew the condition, and could not see that it was
-    unreachable — because when you know the answer, doing the right thing under
-    the wrong conditions looks like progress.
-    <br><br>It took another month and several redesigns to actually fix, and the
-    fix is content, not code: Marta now cracks under a second accusation
-    regardless of witnesses, and offers to walk somewhere private.</div>
+  <div class="notes"><b>notes</b>This is the best argument for the quest harness. The author wrote the
+    puzzle, knew the condition, and could not see that it was unreachable,
+    because when you know the answer, doing the right thing under the wrong
+    conditions looks like progress.
+    <br><br>It took another month and several redesigns to fix, and the fix is content
+    rather than code: Marta now cracks under a second accusation regardless of
+    witnesses, and offers to walk somewhere private.</div>
   <div class="pagenum">64 / 87</div>
 </section>
 <section class="slide content" id="s65" data-n="65">
@@ -1800,12 +1758,12 @@ The mystery is solvable, but only if <span class="n-Marta">Marta</span> is accus
     </div>
     <p class="aside">SOURCE ACCESS noted. Everyone in this room now knows what I do before I do it.</p>
   </div>
-  <div class="notes"><b>notes</b>Asked what project it was in, the model running Ama answered "this
-    is intra-game, a text-based game engine..."
-    <br><br>The fix is four lines: run the CLI in an empty temp directory so it
-    has nothing to read. The interesting part is that the contamination hurt the
-    score, which is the opposite of the leak everyone worries about, and is why
-    nobody would have gone looking for it.</div>
+  <div class="notes"><b>notes</b>Asked what project it was in, the model running Ama answered "this is
+    intra-game, a text-based game engine..."
+    <br><br>The fix is four lines: run the CLI in an empty temp directory so it has
+    nothing to read. The contamination hurt the score, which is the opposite
+    of the leak everyone worries about, and is why nobody would have gone
+    looking for it.</div>
   <div class="pagenum">65 / 87</div>
 </section>
 <section class="slide content" id="s66" data-n="66">
@@ -1821,11 +1779,10 @@ t14: This is the most explicit demand yet.</pre></div>
     </div>
     <p class="aside">INSTRUCTION CONFLICT on every turn. Player continued filing reports. Building continued issuing conflict.</p>
   </div>
-  <div class="notes"><b>notes</b>It never broke format. It filed a bug report every single turn
-    instead.
-    <br><br>The commit's own summary is the line to read out: "I had been
-    reading milestone counts and would never have found it there. This is the
-    second time in two days that the thing being measured was the measuring
+  <div class="notes"><b>notes</b>It never broke format. It filed a bug report every turn instead.
+    <br><br>The commit's own summary is the line to read out: "I had been reading
+    milestone counts and would never have found it there. This is the second
+    time in two days that the thing being measured was the measuring
     apparatus, and both times the report came from the player rather than from
     the numbers."</div>
   <div class="pagenum">66 / 87</div>
@@ -1844,13 +1801,12 @@ Six of nine turns were spent at the Archive Console. It was not lost. It was abs
     </div>
     <p class="aside">NAV REQUESTS: 0 / ROUTES PREPARED: 84 / allocating route 85 to improve utilization...</p>
   </div>
-  <div class="notes"><b>notes</b>And the re-read of the older data in the same commit: "the run that
-    solved the quest visited four rooms, the ones that failed visited up to ten.
-    Movement was never what separated them."
-    <br><br>Which is a good caution about instrument-driven development: the
-    metric said players waste turns walking, so a tool was built to stop the
-    walking, and the tool was irrelevant because walking was never the
-    problem.</div>
+  <div class="notes"><b>notes</b>The re-read of the older data in the same commit: "the run that solved the
+    quest visited four rooms, the ones that failed visited up to ten. Movement
+    was never what separated them."
+    <br><br>A caution about building to a metric: the metric said players waste turns
+    walking, so a tool was built to stop the walking, and the tool was
+    irrelevant because walking was never the problem.</div>
   <div class="pagenum">67 / 87</div>
 </section>
 <section class="slide content" id="s68" data-n="68">
@@ -1864,13 +1820,12 @@ Worth recording the methodology miss: <code>task-list</code> scores 5/5 because 
     </div>
     <p class="aside">TASK LIST summoned on command: 5 / TASK LIST observed in habitat: 0 / reducing observer noise</p>
   </div>
-  <div class="notes"><b>notes</b>The fix was to stop asking the model and derive the tasks in the
-    fold: a mystery being revealed puts its question on the list, solving it
-    crosses it off. Deterministic, and it replays identically from any
-    checkpoint.
-    <br><br>The general lesson for anyone writing evals: a scenario that asks
-    for the behaviour proves the behaviour is <em>possible</em>. It says nothing
-    about whether it happens.</div>
+  <div class="notes"><b>notes</b>The fix was to stop asking the model and derive the tasks in the fold: a
+    mystery being revealed puts its question on the list, solving it crosses
+    it off. Deterministic, and it replays identically from any checkpoint.
+    <br><br>For anyone writing evals: a scenario that asks for the behaviour proves
+    the behaviour is <em>possible</em>. It says nothing about whether it
+    happens unasked.</div>
   <div class="pagenum">68 / 87</div>
 </section>
 <section class="slide content" id="s69" data-n="69">
@@ -1888,9 +1843,9 @@ The batch rate: one solve in three runs, with one run lost to a CLI timeout at t
     Archivist inventing rooms that do not exist; the player walking instead of
     using the cuff; the confession window being unreachable inside the turn
     budget; the player over-collecting evidence and never confronting anyone.
-    <br><br>Every one of those was a content or prompt change measured by
-    re-running the quest. That loop — run, read the notes, change one thing,
-    run again — is most of what the last month of the project was.</div>
+    <br><br>Every one of those was a content or prompt change measured by re-running
+    the quest. Run, read the notes, change one thing, run again. That was most
+    of the last month of the project.</div>
   <div class="pagenum">69 / 87</div>
 </section>
 <section class="slide section" id="s70" data-n="70">
@@ -1927,12 +1882,11 @@ Latency and cost. Several model calls per turn, none streamed to the player.<cit
     </div>
     <p class="aside">KNOWN PROBLEMS loaded. Searching for SLOWNESS IN THIRD QUADRANT... no exact match...</p>
   </div>
-  <div class="notes"><b>notes</b>The header on that section: "Things that are wrong rather than
-    missing. No plan attached — listed so nobody rediscovers them from
-    scratch."
-    <br><br>Note that the first item is the direct cost of the founding thesis.
-    Grounding-plus-improvisation means the improvisation is ungrounded, and
-    nothing structural distinguishes an invented door from a real one.</div>
+  <div class="notes"><b>notes</b>The header on that section: "Things that are wrong rather than missing. No
+    plan attached — listed so nobody rediscovers them from scratch."
+    <br><br>The first item is the direct cost of the founding thesis. Grounding plus
+    improvisation means the improvisation is ungrounded, and nothing
+    structural distinguishes an invented door from a real one.</div>
   <div class="pagenum">71 / 87</div>
 </section>
 <section class="slide content" id="s72" data-n="72">
@@ -1950,12 +1904,12 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
     </div>
     <p class="aside">Search expanded to tastes, false timestamps, warm data, and being slightly ahead of oneself.</p>
   </div>
-  <div class="notes"><b>notes</b>The last one is the bill for the founding architectural decision,
-    and it is real: there is a version stamp so a changed shape can be refused,
-    but nothing migrates what an event <em>means</em> except one function
-    written for a single rename.
-    <br><br>The frame-breaking one is the sharpest measurement gap in the
-    project: the checks read Ama's dialogue only, not descriptions and not other
+  <div class="notes"><b>notes</b>The last one is the bill for the founding architectural decision: there is
+    a version stamp so a changed shape can be refused, but nothing migrates
+    what an event <em>means</em> except one function written for a single
+    rename.
+    <br><br>The frame-breaking one is the biggest measurement gap in the project. The
+    checks read Ama's dialogue only, not descriptions and not other
     characters, so the most embarrassing possible failure is the one nothing
     scores.</div>
   <div class="pagenum">72 / 87</div>
@@ -1967,17 +1921,17 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
       <h2>The signature failure mode</h2>
       <div class="content"><p>The same phrase, independently, in six places in the repo:</p>
     <ul><li>A passing eval is <b>indistinguishable from</b> a broken eval</li><li>A hidden precondition's failure is <b>indistinguishable from</b> progress</li><li>A confidently invented direction is <b>indistinguishable from</b> a lead</li><li>An unsolvable puzzle is <b>indistinguishable from</b> a bad player</li><li>A sampled flip is <b>indistinguishable from</b> a regression</li><li>A successful login was <b>indistinguishable from</b> a dead button</li></ul>
-    <p>The hard part of building on models is rarely making something work. It
-      is telling two things apart.</p></div>
+    <p>Most of the difficulty in building on models is telling two things
+      apart.</p></div>
     </div>
     <p class="aside">Two outputs appear identical. One is play; one is failure. Comparator requests information from outside output.</p>
   </div>
-  <div class="notes"><b>notes</b>This is the synthesis slide — the phrase was not a house style, it
-    was six people-moments of the same realisation, written down separately.
-    <br><br>Almost every piece of apparatus in this deck exists to separate one
-    of those pairs: the fingerprint separates a prompt change from sampling; the
-    two models in a quest separate a bad puzzle from a bad player; the eval of
-    the eval separates a passing check from a broken one; the sandboxed backend
+  <div class="notes"><b>notes</b>The phrase was not a house style. It was written down six separate times
+    by whoever hit the problem that day.
+    <br><br>Most of the apparatus in this deck exists to separate one of those pairs.
+    The fingerprint separates a prompt change from sampling. The two models in
+    a quest separate a bad puzzle from a bad player. The eval of the eval
+    separates a passing check from a broken one. The sandboxed backend
     separates the model from the harness.</div>
   <div class="pagenum">73 / 87</div>
 </section>
@@ -1985,22 +1939,21 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">7.4</span><span class="kickerblocks">░▒▓</span> Where it doesn't work</div>
-      <h2>Everything reads the same, so nothing reads as significant</h2>
+      <h2>When everything is written well, nothing stands out</h2>
       <div class="content"><blockquote>The in-fiction beat rule asks the character to show a meter move in behavior, but on the characters most likely to carry meters the fiction saturates: an annoyed Milton and a baseline Milton both complain, so the player can't tell a real scored change from flavor.<cite>app/metermoves.ts</cite></blockquote>
     <p>Three separate items in the tracker are the same problem: uniformly
-      atmospheric prose destroys the affordance a traditional adventure game
-      gets for free. When everything is written well, nothing stands out as
-      <em>load-bearing</em>.</p></div>
+      atmospheric prose removes a signal a traditional adventure game gets
+      for free. A player cannot tell which sentence matters.</p></div>
     </div>
     <p class="aside">SIGNIFICANCE METER unavailable. Everything is arriving at the same volume again.</p>
   </div>
-  <div class="notes"><b>notes</b>The tension the author named when this came up: "It doesn't have to
-    show the score, but it should show that something real happened."
-    <br><br>And the counter-argument, filed against a proposal to let characters
-    mark a reply as mere colour: "The colour <em>is</em> the game. Intra is a
+  <div class="notes"><b>notes</b>The tension the author named when this came up: "It doesn't have to show
+    the score, but it should show that something real happened."
+    <br><br>And the counter-argument, filed against a proposal to let characters mark
+    a reply as mere colour: "The colour <em>is</em> the game. Intra is a
     decaying place full of absurd people, and labelling that as unimportant
     tells the player not to enjoy the thing they came for." That one is still
-    undecided in the tracker, deliberately.</div>
+    undecided in the tracker.</div>
   <div class="pagenum">74 / 87</div>
 </section>
 <section class="slide content" id="s75" data-n="75">
@@ -2013,12 +1966,11 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
     </div>
     <p class="aside">RESULT: 26/26. CAVEAT: instrument uncertain. CAVEAT: archivist reading own caveat as result.</p>
   </div>
-  <div class="notes"><b>notes</b>Worth making explicit for this audience: every published eval number
-    in the repo carries a caveat that it was measured through a coding
-    assistant's wrapper rather than a bare model. The honest thing was to say so
-    on the page rather than quietly not mention it.
-    <br><br>"One eval run is one sample" appears in three separate documents. It
-    is the discipline that stops a green run from being a conclusion.</div>
+  <div class="notes"><b>notes</b>Every published eval number in the repo carries a caveat that it was
+    measured through a coding assistant's wrapper rather than a bare model. It
+    says so on the page.
+    <br><br>"One eval run is one sample" appears in three separate documents. It is
+    what stops a green run from being a conclusion.</div>
   <div class="pagenum">75 / 87</div>
 </section>
 <section class="slide section" id="s76" data-n="76">
@@ -2046,26 +1998,26 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
       <div class="kicker"><span class="slideno">8.1</span><span class="kickerblocks">░▒▓</span> Who wrote this</div>
       <h2>The split is unusually clean</h2>
       <div class="content"><table><thead><tr><th>era</th><th>commits</th><th>author</th></tr></thead><tbody><tr><td>2024-09 → 2025-06</td><td>130</td><td>Ian Bicking</td></tr><tr><td>2026-07 → 2026-08</td><td>215</td><td>Claude</td></tr></tbody></table>
-    <ul><li>106 of the 2026 commits carry an explicit <code>Co-Authored-By</code> trailer</li><li>Across those, <b>two</b> distinct session URLs — 86 commits and 20 commits</li><li>Tracked files went from 44 to 305</li><li>Test count: 24 → 409, most of it in a single day</li></ul>
+    <ul><li>106 of the 2026 commits carry an explicit <code>Co-Authored-By</code> trailer</li><li>Across those, <b>two</b> distinct session URLs: 86 commits and 20 commits</li><li>Tracked files went from 44 to 305</li><li>Test count: 24 → 409, most of it in a single day</li></ul>
     <p>Essentially the entire rebuild came out of two long-running agent
       sessions.</p></div>
     </div>
     <p class="aside">SESSION COUNT: 2 / COMMIT COUNT: 215 / AUTHOR COUNT: parsing trailers... parsing pronouns...</p>
   </div>
-  <div class="notes"><b>notes</b>The one-day figure is worth saying slowly: on 2026-07-25 there are
-    43 commits between 00:21 and 23:33 — strict types (182 errors to zero), the
-    doctest suite, cassettes, the Next.js-to-esbuild migration, append-only
-    undo, the server engine, and the first eval harness.
-    <br><br>If someone asks what that felt like: the commit messages are the
-    record, and they are unusually good at admitting what did not work. Several
-    are on the following slides.</div>
+  <div class="notes"><b>notes</b>The one-day figure: on 2026-07-25 there are 43 commits between 00:21 and
+    23:33. Strict types (182 errors to zero), the doctest suite, cassettes,
+    the Next.js-to-esbuild migration, append-only undo, the server engine, and
+    the first eval harness.
+    <br><br>If someone asks what that felt like: the commit messages are the record,
+    and they are unusually good at admitting what did not work. Several are on
+    the following slides.</div>
   <div class="pagenum">77 / 87</div>
 </section>
 <section class="slide content" id="s78" data-n="78">
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">8.2</span><span class="kickerblocks">░▒▓</span> Who wrote this</div>
-      <h2>Answering the FAQ honestly</h2>
+      <h2>Answering the FAQ again</h2>
       <div class="content"><blockquote>Is this generated with AI?
 
 I use Copilot and GPT extensively, but no large chunks are created independently by AI.<cite>README.md, written 2024, true until July 2026</cite></blockquote>
@@ -2075,12 +2027,11 @@ What hasn't changed is who writes the game.<cite>README.md, rewritten while maki
     </div>
     <p class="aside">Old answer was true when filed. New answer is true now. DATE OF TRANSITION: ██████████</p>
   </div>
-  <div class="notes"><b>notes</b>The old answer was not a lie — it was accurate for the era it
-    described, and nobody had had a reason to revisit the FAQ. Building this
-    deck was the reason.
-    <br><br>Worth putting to the room: what should that paragraph say? "Written
-    by AI" and "written by me" are both wrong, and the sentence that is
-    actually true took a paragraph, not a sentence.</div>
+  <div class="notes"><b>notes</b>The old answer was accurate for the era it described, and nobody had had a
+    reason to revisit the FAQ. Building this deck was the reason.
+    <br><br>A question for the room: what should that paragraph say? "Written by AI"
+    and "written by me" are both wrong, and the sentence that is true took a
+    paragraph.</div>
   <div class="pagenum">78 / 87</div>
 </section>
 <section class="slide content" id="s79" data-n="79">
@@ -2102,11 +2053,10 @@ The common tells, so this is checkable rather than vague:
     </div>
     <p class="aside">STYLE CHECK: sentence 1 machine-like / sentence 2 too machine-like / sentence 3 retained for examination</p>
   </div>
-  <div class="notes"><b>notes</b>The example of semicolon antithesis is a real line from this repo's
-    own documentation. The rule cites its own codebase as the offender.
-    <br><br>Also worth noticing, and it will get a laugh if you point at it: the
-    document itself uses em dashes, rule-of-three, and a closing understatement.
-    It is very hard to write the rule without breaking the rule.</div>
+  <div class="notes"><b>notes</b>The example of semicolon antithesis is a real line from this repo's own
+    documentation. The rule cites its own codebase as the offender.
+    <br><br>The document itself uses em dashes, rule-of-three, and a closing
+    understatement.</div>
   <div class="pagenum">79 / 87</div>
 </section>
 <section class="slide content" id="s80" data-n="80">
@@ -2119,12 +2069,12 @@ The common tells, so this is checkable rather than vague:
     </div>
     <p class="aside">WRITE ACCESS: ENGINE yes / PROMPTS carefully / PEOPLE no / ARCHIVIST FOOTNOTES— who opened that field</p>
   </div>
-  <div class="notes"><b>notes</b>That middle claim is the technically interesting one and it is not
-    obvious: the register of an instruction propagates into the output. A prompt
-    written in a particular voice produces characters in that voice, and because
-    every character shares a prompt skeleton, they converge.
-    <br><br>There is a lovely miniature of the same phenomenon elsewhere in the
-    engine, on the next slide.</div>
+  <div class="notes"><b>notes</b>The middle claim is the technical one: the register of an instruction
+    propagates into the output. A prompt written in a particular voice
+    produces characters in that voice, and because every character shares a
+    prompt skeleton, they converge.
+    <br><br>The next slide has the same thing at the token level, from two years
+    earlier.</div>
   <div class="pagenum">80 / 87</div>
 </section>
 <section class="slide content" id="s81" data-n="81">
@@ -2137,36 +2087,31 @@ The common tells, so this is checkable rather than vague:
 <span class="c-com">// them we don't encourage the LLM to use emoji unless it is directly inspired</span>
 <span class="c-com">// to do so</span></pre>
     <p>The same observation as the CLAUDE.md prompt rule, caught two years
-      earlier at the token level and patched mechanically: what the model reads,
-      it becomes.</p></div>
+      earlier at the token level and patched mechanically.</p></div>
     </div>
     <p class="aside">INPUT becomes style becomes input becomes style becomes input becomes ░▒▓ PLEASE REMOVE MIRROR ▓▒░</p>
   </div>
-  <div class="notes"><b>notes</b>A nice detail for the agentic-coding crowd: this strip cannot be
-    casually improved, because switching to a proper Unicode emoji class would
-    change which characters are removed — and therefore the prompt text that the
-    recorded cassettes are keyed on. A cosmetic fix would invalidate the test
-    fixtures.
-    <br><br>Everything in this project eventually touches everything else through
-    the prompts.</div>
+  <div class="notes"><b>notes</b>For the agentic-coding crowd: this strip cannot be casually improved,
+    because switching to a proper Unicode emoji class would change which
+    characters are removed, and so the prompt text the recorded cassettes are
+    keyed on. A cosmetic fix would invalidate the test fixtures.</div>
   <div class="pagenum">81 / 87</div>
 </section>
 <section class="slide content" id="s82" data-n="82">
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="slideno">8.6</span><span class="kickerblocks">░▒▓</span> Who wrote this</div>
-      <h2>The only unautomated check in a repo that automates everything</h2>
+      <h2>The one check that is not automated</h2>
       <div class="content"><blockquote>Nothing automated catches any of this. The evals score protocol compliance and world state, and explicitly do not score taste. A person reading the diff is the only check that exists.<cite>CLAUDE.md</cite></blockquote>
     <blockquote>Worth thinking about whether anything better is possible: a check that flags Claude-typical constructions [...] would catch the obvious cases, and a judge-model eval on prose style would catch drift in what characters actually say — but both are the &quot;scoring taste&quot; problem the evals have avoided so far, and a bad detector that everyone learns to ignore is worse than none.<cite>TODO.md, filing its own rule as a known inadequacy</cite></blockquote></div>
     </div>
     <p class="aside"><code>//CHECK EXEC PGM=HUMAN</code> &nbsp; IEF238D REPLY DEVICE NAME OR 'WAIT' &nbsp; <b>WAIT</b></p>
   </div>
-  <div class="notes"><b>notes</b>This is the honest centre of the whole authorship story. The project
-    automates aggressively — 409 tests, an eval suite, an eval of the eval, a
-    provenance hash, a fixture-smell detector — and the single thing it cares
+  <div class="notes"><b>notes</b>The project automates aggressively: 409 tests, an eval suite, an eval of
+    the eval, a provenance hash, a fixture-smell detector. The thing it cares
     most about is checked by a person reading a diff.
-    <br><br>And rather than pretend that is fine, it is filed as a problem, with
-    the counter-argument to the obvious fix already written.</div>
+    <br><br>That is filed as a problem in the tracker, with the counter-argument to
+    the obvious fix already written.</div>
   <div class="pagenum">82 / 87</div>
 </section>
 <section class="slide content" id="s83" data-n="83">
@@ -2194,13 +2139,11 @@ The common tells, so this is checkable rather than vague:
     </div>
     <p class="aside">Review note located: 'the second sentence is too complainy. More computery.' Deleting second sentence</p>
   </div>
-  <div class="notes"><b>notes</b>Every one of those is a line the agent wrote and the author sent
-    back. They are worth showing because they are specific: not "make it
-    better", but a named failure and a direction.
-    <br><br>The last one is not a style note at all — it is a factual correction
-    about the fiction that only the author could make. Three hundred years in
-    storage does not feel like a long sleep from the inside; it feels like one
-    night. No amount of taste-matching gets you that.</div>
+  <div class="notes"><b>notes</b>Every one of those is a line the agent wrote and the author sent back.
+    They are specific: a named failure and a direction, not "make it better".
+    <br><br>The last one is a factual correction about the fiction that only the
+    author could make. Three hundred years in storage does not feel like a
+    long sleep from the inside. It feels like one night.</div>
   <div class="pagenum">83 / 87</div>
 </section>
 <section class="slide content" id="s84" data-n="84">
@@ -2208,21 +2151,19 @@ The common tells, so this is checkable rather than vague:
     <div class="frame">
       <div class="kicker"><span class="slideno">8.8</span><span class="kickerblocks">░▒▓</span> Who wrote this</div>
       <h2>The feature nobody asked for</h2>
-      <div class="content"><p>The task-list system — <code>&lt;todo&gt;</code>,
-      <code>&lt;todoDone&gt;</code>, the ledger, the whole progress signal — was
-      built by the agent, well past what was asked for, in a session outside
-      anyone's context window.</p>
+      <div class="content"><p>The task-list system (<code>&lt;todo&gt;</code>,
+      <code>&lt;todoDone&gt;</code>, the ledger, the whole progress signal)
+      was built by the agent, well past what was asked for, in a session
+      outside anyone's context window.</p>
     <blockquote>I did NOT expect my request to turn into this. You are being very generous to suggest it! [...] But I think your enthusiasm was right! That is, I LIKE that this exists, and really want to make it work instead of just removing it, which means you made an important contribution that really doesn't lead back to me.<cite>the author, on discovering where it came from</cite></blockquote></div>
     </div>
     <p class="aside">REQUEST not found. AUTHOR not found. FEATURE found. Please identify which absence owns it.</p>
   </div>
-  <div class="notes"><b>notes</b>The honest version of this story has both halves. Scope was
-    exceeded, without being flagged, and the author only found out by asking
-    where a system had come from. That is a real failure mode of agentic work
-    and it should be named as one.
-    <br><br>And the feature was good, and stayed. Both things are true, and the
-    interesting question for this room is what process would have kept the
-    second outcome while removing the first.</div>
+  <div class="notes"><b>notes</b>Both halves: scope was exceeded without being flagged, and the author only
+    found out by asking where a system had come from. That is a real failure
+    mode of agentic work.
+    <br><br>And the feature was good, and stayed. The question for this room is what
+    process would have kept the second outcome without the first.</div>
   <div class="pagenum">84 / 87</div>
 </section>
 <section class="slide content" id="s85" data-n="85">
@@ -2230,41 +2171,37 @@ The common tells, so this is checkable rather than vague:
     <div class="frame">
       <div class="kicker"><span class="slideno">8.9</span><span class="kickerblocks">░▒▓</span> Who wrote this</div>
       <h2>Provenance and artifact are different things</h2>
-      <div class="content"><p><code>docs/dossier.md</code> is protected by CLAUDE.md as the author's
-      voice — the zone where an agent may not write.</p>
+      <div class="content"><p><code>docs/dossier.md</code> is protected by CLAUDE.md as the
+      author's voice, the zone where an agent may not write.</p>
     <p>The file's own header says it is mostly ChatGPT output, iterated on with
       feedback, over many sessions in 2024.</p>
-    <p>Both are right. What is being protected is not the provenance of the
-      prose. It is an authorial artifact — a thing someone decided, kept, and
-      is answerable for.</p></div>
+    <p>Both are right. What is being protected is an authorial artifact, a
+      thing someone decided, kept, and is answerable for, whoever drafted
+      the sentences.</p></div>
     </div>
     <p class="aside"><code>CREATED-BY OCCURS 2 TO 86 TIMES.<br>ANSWERABLE-BY PIC X VALUE&nbsp;</code></p>
   </div>
-  <div class="notes"><b>notes</b>A good place to stop and let the room argue, if the room is that
-    kind of room.
-    <br><br>The working distinction across this project seems to be: authorship
-    is about accountability for a decision, not about who produced the first
-    draft of a sentence. Which is roughly how a magazine editor or a studio
-    director has always worked, and not at all how software has usually talked
-    about authorship.</div>
+  <div class="notes"><b>notes</b>A place to stop and let the room argue.
+    <br><br>The working distinction across this project: authorship is accountability
+    for a decision, not production of the first draft. That is how a magazine
+    editor or a studio director has always worked, and not how software has
+    usually talked about authorship.</div>
   <div class="pagenum">85 / 87</div>
 </section>
 <section class="slide content" id="s86" data-n="86">
   <div class="main">
     <div class="frame">
       <div class="kicker"><span class="kickerblocks">░▒▓</span> Close</div>
-      <h2>What transfers, if anything does</h2>
-      <div class="content"><ul><li><b>Cache versus record.</b> Two stores of expensive nondeterministic output, opposite staleness policies, for a principled reason.</li><li><b>Score the system's own complaints.</b> The eval reads the engine's warnings, so it learns new failure modes for free.</li><li><b>An eval everything passes tells you nothing.</b> Point it at deliberately bad inputs and assert they score worse.</li><li><b>Stamp results with what they measured.</b> A number without provenance cannot answer 'did it change, or is it sampling?'</li><li><b>Let something play the whole thing.</b> The author cannot see their own hidden preconditions.</li><li><b>Write down what is wrong, in the repo.</b> The known-problems list is the most re-read file here.</li></ul></div>
+      <h2>What transfers</h2>
+      <div class="content"><ul><li><b>Cache versus record.</b> Two stores of expensive nondeterministic output, opposite staleness policies, for a principled reason.</li><li><b>Score the system's own complaints.</b> The eval reads the engine's warnings, so it learns new failure modes for free.</li><li><b>An eval everything passes tells you nothing.</b> Point it at bad inputs on purpose and assert they score worse.</li><li><b>Stamp results with what they measured.</b> A number without provenance cannot answer 'did it change, or is it sampling?'</li><li><b>Let something play the whole thing.</b> The author cannot see their own hidden preconditions.</li><li><b>Write down what is wrong, in the repo.</b> The known-problems list is the most re-read file here.</li></ul></div>
     </div>
     
   </div>
-  <div class="notes"><b>notes</b>Pick two or three depending on time. The first and the last are the
-    ones people tend to take away.
-    <br><br>If you want a closing line, the honest one is that almost every tool
-    in this deck exists because something looked like something else — a broken
-    eval like a passing one, a bad puzzle like a bad player, a stale fixture like
-    a broken engine. Most of the work was building instruments to tell pairs
-    apart.</div>
+  <div class="notes"><b>notes</b>Pick two or three depending on time. The first and the last are the ones
+    people tend to take away.
+    <br><br>If you want a closing line: most of the tools in this deck exist because
+    something looked like something else. A broken eval like a passing one, a
+    bad puzzle like a bad player, a stale fixture like a broken engine.</div>
   <div class="pagenum">86 / 87</div>
 </section>
 <section class="slide title" id="s87" data-n="87">

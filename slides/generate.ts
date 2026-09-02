@@ -402,7 +402,7 @@ const ASIDES: Record<string, string> = {
     "The rooms came afterward and fit the document. I know rooms like that. I have records for all of them.",
   "One event":
     "Every event retains the prompt that made it. Checking my own header... checking...",
-  "The world is a fold, and that is the whole of it":
+  "The world is a fold":
     "WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt",
   "Undo is an append":
     "<code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b>",
@@ -428,7 +428,7 @@ const ASIDES: Record<string, string> = {
     "FEELING accepted as integer 0–6. Mine is returning text. Retrying as unsigned.",
   "One character's meter, in full":
     "At six, Alex complains and resets to four. A complete emotional maintenance cycle! ╔═ PASS ═╗",
-  "The cuff exists because play broke down without it":
+  "Why there is a cuff":
     "CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0",
   "There is as much apparatus as there is game":
     "INSTRUMENT INVENTORY: half the system. Several instruments are pointed this way now.",
@@ -452,7 +452,7 @@ const ASIDES: Record<string, string> = {
     "VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b>",
   "Then: let a model play it":
     "Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine.",
-  "The blindfold is the load-bearing part":
+  "The player model is blindfolded":
     "PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied.",
   "Notes are the memory, and the bug report":
     "NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start.",
@@ -478,13 +478,13 @@ const ASIDES: Record<string, string> = {
     "Search expanded to tastes, false timestamps, warm data, and being slightly ahead of oneself.",
   "The signature failure mode":
     "Two outputs appear identical. One is play; one is failure. Comparator requests information from outside output.",
-  "Everything reads the same, so nothing reads as significant":
+  "When everything is written well, nothing stands out":
     "SIGNIFICANCE METER unavailable. Everything is arriving at the same volume again.",
   "The caveats are printed next to the numbers":
     "RESULT: 26/26. CAVEAT: instrument uncertain. CAVEAT: archivist reading own caveat as result.",
   "The split is unusually clean":
     "SESSION COUNT: 2 / COMMIT COUNT: 215 / AUTHOR COUNT: parsing trailers... parsing pronouns...",
-  "Answering the FAQ honestly":
+  "Answering the FAQ again":
     "Old answer was true when filed. New answer is true now. DATE OF TRANSITION: ██████████",
   "A file about how not to write":
     "STYLE CHECK: sentence 1 machine-like / sentence 2 too machine-like / sentence 3 retained for examination",
@@ -492,7 +492,7 @@ const ASIDES: Record<string, string> = {
     "WRITE ACCESS: ENGINE yes / PROMPTS carefully / PEOPLE no / ARCHIVIST FOOTNOTES— who opened that field",
   "Style is transmissible, at every scale":
     "INPUT becomes style becomes input becomes style becomes input becomes ░▒▓ PLEASE REMOVE MIRROR ▓▒░",
-  "The only unautomated check in a repo that automates everything":
+  "The one check that is not automated":
     "<code>//CHECK EXEC PGM=HUMAN</code> &nbsp; IEF238D REPLY DEVICE NAME OR 'WAIT' &nbsp; <b>WAIT</b>",
   "What that check looks like in practice":
     "Review note located: 'the second sentence is too complainy. More computery.' Deleting second sentence",
@@ -531,7 +531,7 @@ SPOILERS: ALL OF THEM`,
     <br><br>Opening line if you want one: this started as a three-day
     hackathon game in 2024. It is now a game with an eval suite, a recorded
     playtest corpus, and a model that plays it blind. Most of what is
-    interesting happened in the apparatus, not the game.`,
+    interesting happened in the apparatus.`,
   },
 
   {
@@ -562,10 +562,10 @@ READY TO BEGIN!`,
       [FIRST_COMMIT, "first commit"],
     ])}
     ${para(`The game was built in a weekend, for a hackathon.`)}`,
-    notes: `The hackathon was RetroAI Quest / Text Adventure Hack. The repo was
-    tagged <code>retroai-quest</code> on 2024-09-30.
-    <br><br>Worth saying: the README has never been rewritten to reflect what
-    the project became. The first line still describes a weekend.`,
+    notes: `The hackathon was RetroAI Quest / Text Adventure Hack. The repo was tagged
+    <code>retroai-quest</code> on 2024-09-30.
+    <br><br>The README has never been rewritten to reflect what the project became.
+    The first line still describes a weekend.`,
   },
 
   {
@@ -590,16 +590,14 @@ READY TO BEGIN!`,
       "<b>The hackathon</b>, three days, and then the weeks after it finishing the idea",
       "<b>A cleanup</b> in June 2025, to write the thing up as a blog post",
       "<b>Thirteen months of nothing</b>",
-      "<b>Agentic coding</b> — Claude Code and Codex — and a reason to dust off a project that could not otherwise be justified",
+      "<b>Agentic coding</b>, Claude Code and Codex, and a reason to dust off a project that could not otherwise be justified",
     ])}`,
-    notes: `The blog post is
-    ianbicking.org/blog/2025/07/intra-llm-text-adventure, and it ends with
-    fifty "further directions". TODO.md still cites that list as its source,
-    so a good deal of the 2026 work is a blog post's own criticism section
-    turned into an issue tracker and then executed.
-    <br><br>The honest version of the last bullet is worth saying out loud: the
-    project restarted because the tools changed, not because the game suddenly
-    became more important.`,
+    notes: `The blog post is ianbicking.org/blog/2025/07/intra-llm-text-adventure, and
+    it ends with fifty "further directions". TODO.md still cites that list as
+    its source, so a good deal of the 2026 work is a blog post's own criticism
+    section turned into an issue tracker and then worked through.
+    <br><br>The last bullet, said plainly: the project restarted because the tools
+    changed, not because the game became more important.`,
   },
 
   {
@@ -611,15 +609,15 @@ READY TO BEGIN!`,
       "will this work at all?", and "no" is a perfectly acceptable answer.`,
     )}
     ${para(
-      `That is most of why the apparatus in this deck exists. Each piece of it
-      is an experiment that would be hard to justify against something
-      productive.`,
+      `That is most of why the apparatus in this deck exists. Each piece of
+      it is an experiment that would be hard to justify on something that
+      mattered.`,
     )}`,
     notes: `This is a paraphrase and wants replacing with your own wording.
-    <br><br>The point to make is that a game takes the idea less seriously than
-    a product would, and that is exactly what makes it a good place to throw a
-    large problem — an LLM playtester, an eval suite for improvised prose — and
-    find out how much of it works without anything depending on the answer.`,
+    <br><br>The point to make is that a game takes the idea less seriously than a
+    product would, so it is a good place to try something large (an LLM
+    playtester, an eval suite for improvised prose) and see how much of it
+    works, with nothing depending on the answer.`,
   },
 
   {
@@ -635,11 +633,10 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
       `I want ground truth because there's a kind of hedonistic nihilism to a game driven by narrative necessity. [...] I want the formal code to know if you are holding the key or you are not holding the key.`,
       "ianbicking.org, 2025",
     )}`,
-    notes: `Typo "existance" is in the shipped README; leave it, it is
-    load-bearing charm.
-    <br><br>This is the whole design tension, and every hard problem later in
-    the deck is a consequence of it: if the model can improvise, it can
-    improvise things that are not true.`,
+    notes: `Typo "existance" is in the shipped README; leave it.
+    <br><br>This is the whole design tension, and most of the hard problems later in
+    the deck follow from it: if the model can improvise, it can improvise
+    things that are not true.`,
   },
 
   {
@@ -655,16 +652,14 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
     )}`,
     notes: `Both decisions are from the hackathon weekend and neither has been
     revisited since.
-    <br><br>Worth saying that this one is less clear-cut in 2026 than it was in
-    2024. Tool calls would be a reasonable choice now. The catch is shape
-    rather than capability: tools assume a loop, and a turn here is one pass
-    in which the character has to do everything at once — speak, move, set
-    state, update the task list. That is one very large and very flexible tool
-    call, which is hard for exactly the small models this game is written to
-    run on.
-    <br><br>The scriptwriter framing has aged better and is the one people
-    underrate: the model is never asked to <em>be</em> Ama. It is asked to
-    write what Ama says.`,
+    <br><br>This one is less clear-cut in 2026 than it was in 2024. Tool calls would
+    be a reasonable choice now. The catch is shape rather than capability:
+    tools assume a loop, and a turn here is one pass in which the character
+    has to do everything at once: speak, move, set state, update the task
+    list. As a tool call that is one very large, very flexible call, which is
+    hard for the small models this game is written to run on.
+    <br><br>The scriptwriter framing has aged well: the model is never asked to
+    <em>be</em> Ama. It is asked to write what Ama says.`,
   },
 
   {
@@ -684,12 +679,12 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
       is only that nothing is ever snapshotted: the whole world is rebuilt from
       the log every time it is needed.`,
     )}`,
-    notes: `This is the decision that makes the entire apparatus cheap. Every
-    tool later in the deck — checkpoints, evals, the quest runner, undo, the
-    server — is the same artifact read by a different consumer.
-    <br><br>The cost is on a later slide: "event serialization is load-bearing"
-    is listed under Known Problems, because the log is simultaneously the save
-    format, the checkpoint format and the eval input.`,
+    notes: `This is the decision that makes the apparatus cheap. Every tool later in
+    the deck (checkpoints, evals, the quest runner, undo, the server) reads
+    the same artifact.
+    <br><br>The cost shows up under Known Problems as "event serialization is
+    load-bearing": the log is the save format, the checkpoint format and the eval
+    input at once, so its shape is hard to change.`,
   },
 
   {
@@ -715,17 +710,17 @@ In this game I'm trying to have a bit of both. There's an underlying game model 
       "The player has Disassociation Syndrome, which is why they instruct themselves in the second person",
     ])}
 `,
-    notes: `The dossier's own header, added later, is the only substantive
-    change it has ever had: "This is a prompt and ideas I used to develop many
-    of the game elements... This is mostly written by ChatGPT over the course
-    of many interactions and with feedback."
-    <br><br>The Disassociation Syndrome line is the clearest case, and it is in
-    the dossier verbatim: "you'll find yourself making suggestions to yourself
-    rather than directly performing actions. Don't worry, though. Most citizens
-    adapt within, oh, two to three decades." That is the second-person
-    imperative of every text adventure ever written, explained as a medical
+    notes: `The dossier's own header, added later, is the only substantive change it
+    has ever had: "This is a prompt and ideas I used to develop many of the
+    game elements... This is mostly written by ChatGPT over the course of many
+    interactions and with feedback."
+    <br><br>The Disassociation Syndrome line is the clearest case, and it is in the
+    dossier verbatim: "you'll find yourself making suggestions to yourself
+    rather than directly performing actions. Don't worry, though. Most
+    citizens adapt within, oh, two to three decades." That is the second-
+    person imperative of every text adventure, explained as a medical
     condition.
-    <br><br>Keep this slide for the authorship section too — the dossier is
+    <br><br>Keep this slide in mind for the authorship section: the dossier is
     protected by CLAUDE.md as the author's voice, and the file itself says it
     is mostly ChatGPT output. The protection is over the artifact, not the
     provenance.`,
@@ -764,12 +759,12 @@ ARCHIVIST ... already present`)}`,
     )}
     ${para(
       `The event carries its own audit trail. Every event knows which prompt
-      produced it and what the model actually said, which is what makes replay,
-      undo-and-retype, and eval scoring possible with no separate log.`,
+      produced it and what the model said back, so replay, undo-and-retype
+      and eval scoring need no separate log.`,
     )}`,
-    notes: `<code>uiOnly</code> is a small but nice one: usage hints and
-    interface messages appear in the transcript and are filtered out of every
-    character's history, so meta-text about commands never leaks into a prompt.
+    notes: `<code>uiOnly</code> is a small one: usage hints and interface messages
+    appear in the transcript and are filtered out of every character's
+    history, so meta-text about commands never leaks into a prompt.
     <br><br>There is no tick. Time advances because narration happened:
     <code>totalTime</code> accumulates from dialogue word counts and
     <code>minutes=</code> attributes.`,
@@ -777,28 +772,28 @@ ARCHIVIST ... already present`)}`,
 
   {
     section: "The engine",
-    title: "The world is a fold, and that is the whole of it",
+    title: "The world is a fold",
     body: `${code(
       `copy every entity from the authored content into a fresh world
 for each event in the log:
     apply that event's changes to the copy`,
-      "the whole of it — lib/game/world.ts, applyUpdates()",
+      "lib/game/world.ts, applyUpdates()",
     )}
     ${para(
       `Entities refer to each other by id, a plain string, and never by
       pointer. So the copy has no object graph to walk and no cycles in it.`,
     )}
     ${para(
-      `Undo does not rewind state. It throws the world away and folds it
-      again.`,
+      `Undo does not rewind state. The world is thrown away and folded again
+      from the shorter log.`,
     )}`,
-    notes: `<code>original</code> is the authored content;
-    <code>entities</code> is the working copy. The same call appears in
-    <code>undo()</code>, <code>reset()</code>, <code>adoptRemoteLog()</code>
-    and <code>replaceLog()</code>.
-    <br><br>It copies the entire world every time, which is more than it needs
-    to do — copy-on-write would be enough. At this size the full copy costs
-    nothing, so it has never been worth changing.`,
+    notes: `<code>original</code> is the authored content; <code>entities</code> is
+    the working copy. The same call appears in <code>undo()</code>,
+    <code>reset()</code>, <code>adoptRemoteLog()</code> and
+    <code>replaceLog()</code>.
+    <br><br>It copies the entire world every time, which is more than it needs to do.
+    Copy-on-write would be enough. At this size the full copy costs nothing,
+    so it has never been changed.`,
   },
 
   {
@@ -825,17 +820,16 @@ That keeps the log append-only (a reviewer can still see what the model produced
       "the entire implementation",
       "ts",
     )}`,
-    notes: `Worth saying whose idea this was. The author did not write it and
-    would not have built undo this way; it arrived in commit 5b6da42 on
-    2026-07-25 — "Make undo append-only, so it survives server-side auditing" —
-    authored by the agent, and was only noticed as unusual on reading it back
-    afterwards. It suits what the log later became. It is also not how a person
-    reaching for an undo button would do it.
-    <br><br>Rewinds compose: undoing twice walks back two turns, and a rewind
-    can itself be rewound. The one-turn limit that seemed necessary at the time
-    turned out not to be, given the representation.
-    <br><br>Why undo exists at all: you try something, the model misreads it,
-    and you want to rephrase. The UI puts the text back in the input box.`,
+    notes: `Whose idea this was: the author did not write it and would not have built
+    undo this way. It arrived in commit 5b6da42 on 2026-07-25, "Make undo
+    append-only, so it survives server-side auditing", authored by the agent,
+    and was only noticed as unusual on reading it back afterwards. It suits
+    what the log later became.
+    <br><br>Rewinds compose: undoing twice walks back two turns, and a rewind can
+    itself be rewound. The one-turn limit that seemed necessary at the time
+    was not, given the representation.
+    <br><br>Why undo exists at all: you try something, the model misreads it, and you
+    want to rephrase. The UI puts the text back in the input box.`,
   },
 
 
@@ -858,27 +852,25 @@ That keeps the log append-only (a reviewer can still see what the model produced
     )}
     ${para(
       `One vocabulary, used by every character. Entities and fields have
-      global readable names — <code>Marta.annoyance</code>,
-      <code>Hollow_Atrium</code> — so a tag reads on its own.`,
+      global readable names, <code>Marta.annoyance</code> or
+      <code>Hollow_Atrium</code>, so a tag reads on its own.`,
     )}`,
-    notes: `Not shown: <code>&lt;trigger character=&gt;</code>, which hands the
-    next turn to someone else in the room, and the adjudication pair —
-    <code>&lt;examine&gt;</code> and <code>&lt;action&gt;</code> going out, an
-    <code>&lt;actionResolution&gt;</code> coming back.
+    notes: `Not shown: <code>&lt;trigger character=&gt;</code>, which hands the next
+    turn to someone else in the room, and the adjudication pair,
+    <code>&lt;examine&gt;</code> and <code>&lt;action&gt;</code> going out and
+    an <code>&lt;actionResolution&gt;</code> coming back.
     <br><br><code>&lt;examine&gt;</code>, <code>&lt;action&gt;</code> and
-    <code>&lt;goto&gt;</code> are the interesting ones: they do not resolve
-    anything themselves, they route to a second prompt that adjudicates the
-    attempt — and for an action that prompt is shown a d20. So the model that
-    proposes an action is not the one that decides whether it worked.
-    <br><br>Also <code>&lt;suggestion&gt;</code> (fills the composer
-    placeholder), <code>&lt;deferSchedule&gt;</code> /
-    <code>&lt;leaveNow&gt;</code> (stay in a conversation instead of walking to
-    your next scheduled activity), and
+    <code>&lt;goto&gt;</code> do not resolve anything themselves. They route
+    to a second prompt that adjudicates the attempt, and for an action that
+    prompt is shown a d20. The model that proposes an action is not the one
+    that decides whether it worked.
+    <br><br>Also <code>&lt;suggestion&gt;</code> (fills the composer placeholder),
+    <code>&lt;deferSchedule&gt;</code> / <code>&lt;leaveNow&gt;</code> (stay
+    in a conversation instead of walking to your next scheduled activity), and
     <code>&lt;removeRestriction&gt;</code>.
-    <br><br>Attribution on <code>&lt;mind&gt;</code> and
-    <code>&lt;attitude&gt;</code> is forced to the acting character: you can
-    change your own feelings, not anyone else's, and a
-    <code>character=</code> attribute is ignored rather than obeyed.`,
+    <br><br>Attribution on <code>&lt;mind&gt;</code> and <code>&lt;attitude&gt;</code>
+    is forced to the acting character: you can change your own feelings, not
+    anyone else's, and a <code>character=</code> attribute is ignored.`,
   },
 
   {
@@ -912,12 +904,10 @@ about them—finally someone interesting.</attitude>`,
       "evals/quests/ink-and-echo-2026-08-20-22-51-19.yaml, turn 11",
       "tags",
     )}`,
-    notes: `This is a real recorded turn, not a mock-up. Worth pointing at
-    item 3 in the context block: that is Doug's schedule, injected into the
-    prompt, and he is reasoning about it.
-    <br><br>The context block is planning output. The engine parses it and
-    throws it away — its only job is to make the model think before it
-    writes.`,
+    notes: `A real recorded turn. Item 3 in the context block is Doug's schedule,
+    injected into the prompt, and he is reasoning about it.
+    <br><br>The context block is planning output. The engine parses it and throws it
+    away. Its only job is to make the model think before it writes.`,
   },
 
   {
@@ -931,8 +921,8 @@ Doug.curiosity: 0 => 1`,
     )}
     ${para(
       `Two lines of durable state out of a page of prose. The dialogue is
-      shown and stored; the attitude persists and colors every later Doug
-      prompt; the meter is engine arithmetic, clamped to its declared range.`,
+      shown and stored. The attitude persists and colors every later Doug
+      prompt. The meter is engine arithmetic, clamped to its declared range.`,
     )}`,
     notes: `<code>curiosity</code> is one of Doug's declared meters, 0–5. The
     model was never asked what the level should be. It was asked whether this
@@ -954,11 +944,11 @@ Doug.curiosity: 0 => 1`,
       "Hoists a <code>&lt;set&gt;</code> written inside a <code>&lt;dialog&gt;</code> back out",
       "Keeps loose text rather than discarding it",
     ])}`,
-    notes: `The theme, stated by the 2024 commit that first hardened the
-    parser: "Some models produce these regularly, and I'm going out of my way
-    to avoid them through instructions which is distracting."
-    <br><br>Meet the model where it is, rather than spending prompt budget every
-    turn to fix one moment of it. The same argument appears in
+    notes: `The theme, stated by the 2024 commit that first hardened the parser: "Some
+    models produce these regularly, and I'm going out of my way to avoid them
+    through instructions which is distracting."
+    <br><br>Fix the output once in code instead of spending prompt budget every turn
+    telling the model not to do it. The same argument appears in
     <code>coerce.ts</code> for pronoun spellings: "a prompt long enough to
     enumerate the accepted spellings costs every turn of the game to fix one
     moment of it."`,
@@ -983,20 +973,18 @@ Doug.curiosity: 0 => 1`,
         "<code>&lt;todoDone&gt;</code> matching no open task",
       ])}`,
     )}`,
-    notes: `Values are normalised on the way in as well, which is the other
-    half of this. "he", "he/him/his" and "He / Him" all become
-    <code>he/him</code>; a handful of spellings of true and false are accepted;
-    and non-answers like a profession of "unknown" are refused outright. The
-    point is to stop a model being told it got something wrong when it did
-    not, because a model that is corrected for a correct answer keeps
-    straining against it.
-    <br><br>The <code>&lt;set&gt;</code> case is the most common protocol
-    failure across every model measured — <code>PLAYER.intakeStep</code>,
+    notes: `Values are normalised on the way in as well. "he", "he/him/his" and "He /
+    Him" all become <code>he/him</code>; several spellings of true and false
+    are accepted; and non-answers like a profession of "unknown" are refused.
+    The point is to stop a model being told it got something wrong when it did
+    not, because a model corrected for a correct answer keeps straining
+    against the correction.
+    <br><br>The <code>&lt;set&gt;</code> case is the most common protocol failure
+    across every model measured: <code>PLAYER.intakeStep</code>,
     <code>Ama.askingProfession</code>, field names invented on the spot. It
-    still applies the change, and complains, because some flows do legitimately
-    add attributes.
-    <br><br>Those warnings are the eval's protocol score. The engine's
-    complaints are load-bearing.`,
+    still applies the change, and complains, because some flows do
+    legitimately add attributes.
+    <br><br>Those warnings are the eval's protocol score.`,
   },
 
   {
@@ -1015,9 +1003,9 @@ Doug.curiosity: 0 => 1`,
       `The engine is not built around self-repair. It repairs what is cheap to
       repair once, and otherwise takes the turn as it came.`,
     )}`,
-    notes: `Nice small detail: each attempt builds a fresh story event from
-    scratch, so a repaired response replaces the first rather than merging with
-    it. Half-applied turns would be worse than none.`,
+    notes: `Each attempt builds a fresh story event from scratch, so a repaired
+    response replaces the first rather than merging with it. A half-applied
+    turn would be worse than none.`,
   },
 
   {
@@ -1042,22 +1030,21 @@ writing 4-5 words for each item:
       "tags",
     )}
     ${para(
-      `A forced thinking step — the same move as a planning phase in agentic
-      coding — which the engine parses and throws away. Some items answer
-      something the model keeps losing track of; others hold the response to
+      `A forced thinking step, the same move as a planning phase in agentic
+      coding, which the engine parses and throws away. Some items answer
+      something the model keeps losing track of. Others hold the response to
       the mechanics of play rather than atmosphere.`,
     )}`,
     notes: `Item 8 is wired to an output: if it named a person, write an
     <code>&lt;attitude&gt;</code>; if it said "no", do not. An earlier version
     let the model decide whether to record a feeling and it recorded one every
-    turn. Forcing an explicit yes or no in the plan, and coupling the answer to
-    the tag, is what made "most turns change no feelings" true.
-    <br><br>Item 5 — "how can this response be fun or surprising" — is the one
-    that most reliably improves the writing, and no eval scores it.
-    <br><br>Worth revisiting at some point: each item was added against a
-    specific failure, and models have moved since. Some of these are probably
-    no longer earning their place, and the list costs tokens on every character
-    turn.`,
+    turn. Forcing an explicit yes or no in the plan, and coupling the answer
+    to the tag, is what got most turns to change no feelings.
+    <br><br>Item 5, "how can this response be fun or surprising", is the one that most
+    reliably improves the writing, and no eval scores it.
+    <br><br>Each item was added against a specific failure, and models have moved
+    since. Some of these are probably no longer needed, and the list costs
+    tokens on every character turn.`,
   },
 
 
@@ -1080,12 +1067,11 @@ writing 4-5 words for each item:
       `\`available\` is the interesting one and was unreachable until triggers existed: it means the game will answer if asked, but has not raised the subject.`,
       "lib/game/content/mysteries/README.md",
     )}`,
-    notes: `Before triggers, three of the four states were unreachable —
+    notes: `Before triggers, three of the four states were unreachable.
     <code>availableHints</code> and <code>solvedHints</code> were declared,
     dedented on load, passed into prompt assembly, and never once non-empty.
-    The states existed; nothing could enter them.
-    <br><br>That is a nice example of a data model outrunning its own
-    plumbing, and of the kind of dead code that type checking cannot see.`,
+    The states existed and nothing could enter them.
+    <br><br>Dead code of the kind type checking cannot see.`,
   },
 
 
@@ -1099,9 +1085,9 @@ writing 4-5 words for each item:
       shown it.`,
     )}
     ${para(
-      `That matters because feelings here are mostly hidden — as they are
-      between people — and something hidden and squishy cannot be followed at
-      all. A meter that is going one way is something the player can act on.`,
+      `That matters because feelings here are mostly hidden, as they are
+      between people, and something hidden and squishy cannot be followed. A
+      meter that is going one way is something the player can act on.`,
     )}
     ${quote(
       `The model only ever judges the moment ("did this turn annoy him? +1"). Keep it to one, two, at most three meters per character, in small ranges: the player has to be able to comprehend the dial from behavior alone.`,
@@ -1143,16 +1129,15 @@ writing 4-5 words for each item:
       "lib/game/content/people.ts, Milton",
       "ts",
     )}`,
-    notes: `The registers are pacing as much as characterisation: they give the
-    player somewhere to get to, a step at a time, and a way to tell they are
-    getting there.
-    <br><br>Two things to point at. The <code>down</code> criterion is a joke
-    that is also a mechanic — nobody has ever done these things, so in practice
-    Milton's annoyance is a ratchet.
-    <br><br>And the top register writes its own way back down: the climax of the
-    meter resets it to 2 with a tag. June's serenity does the same at the bottom
-    — she snaps, is horrified, apologises, and resets. The meter has a narrative
-    shape, not just a range.`,
+    notes: `The registers are pacing as much as characterisation: they give the player
+    somewhere to get to, a step at a time, and a way to tell they are getting
+    there.
+    <br><br>The <code>down</code> criterion is a joke that is also a mechanic. Nobody
+    has ever done these things, so in practice Milton's annoyance is a
+    ratchet.
+    <br><br>The top register writes its own way back down: the climax of the meter
+    resets it to 2 with a tag. June's serenity does the same at the bottom.
+    She snaps, is horrified, apologises, and resets.`,
   },
 
 
@@ -1196,11 +1181,11 @@ Aug 2026           24,009                        11,495`,
         ["What do the prompts cost in cache terms?", "<code>pnpm playtest:cache</code>"],
       ],
     )}`,
-    notes: `The line counts are computed when this deck is generated, so they
-    are current as of the build.
-    <br><br>Worth saying out loud: <code>pnpm test</code> is deterministic and
-    fast and runs offline. Everything else makes live model calls: slow,
-    non-deterministic, and never in CI.`,
+    notes: `The line counts are computed when this deck is generated, so they are
+    current as of the build.
+    <br><br><code>pnpm test</code> is deterministic, fast, and runs offline.
+    Everything else makes live model calls: slow, non-deterministic, and never
+    in CI.`,
   },
 
   {
@@ -1217,21 +1202,21 @@ applyRewinds(log).length;
       "the doctest format, roughly",
     )}
     ${para(
-      `${DOCTESTS} files. The prose between the blocks explains why the code is
-      the way it is, and the interesting ones open with a design argument
-      before any code appears.`,
+      `${DOCTESTS} files. The prose between the blocks explains why the code
+      is the way it is, and several open with a design argument before any
+      code appears.`,
     )}
     ${para(
-      `These are meant to be read as much as run. The tests themselves rarely
-      break; the writing around them is worth having anyway.`,
+      `They are meant to be documentation as much as tests, and they are
+      read more often than they fail.`,
     )}`,
-    notes: `Run by <code>tap</code> with the <code>agent-doctest</code> loader.
-    A <code>ts setup</code> block holds imports; a bare <code>ts</code> block is
+    notes: `Run by <code>tap</code> with the <code>agent-doctest</code> loader. A
+    <code>ts setup</code> block holds imports; a bare <code>ts</code> block is
     a fresh scope; a <code>continue</code> block shares the previous scope.
-    <br><br>Several of these files exist as forensics: <code>parsetags</code>
-    has a section on why emphasis tags stopped being protocol failures, and
-    <code>staleness</code> has one on a checkpoint that preserved a harness bug.
-    The test suite is also the bug history.`,
+    <br><br>Several of these files exist as forensics. <code>parsetags</code> has a
+    section on why emphasis tags stopped being protocol failures, and
+    <code>staleness</code> has one on a checkpoint that preserved a harness
+    bug.`,
   },
 
 
@@ -1279,13 +1264,11 @@ applyRewinds(log).length;
       room description. Every quest run afterwards opened with the game asking
       its operator about tag formats.`,
     )}`,
-    notes: `Re-recording fixed it. There is now a test that scans every
-    checkpoint for phrases like "could you clarify" and "let me know if",
-    because nothing had been reading checkpoints for whether they sounded like
-    an assistant.
-    <br><br>The general shape is worth a sentence: a fixture recorded through a
-    faulty instrument keeps the fault, and everything downstream inherits it
-    without any of it looking wrong.`,
+    notes: `Re-recording fixed it. There is now a test that scans every checkpoint for
+    phrases like "could you clarify" and "let me know if", because nothing had
+    been reading checkpoints for whether they sounded like an assistant.
+    <br><br>A fixture recorded through a faulty instrument keeps the fault, and
+    everything downstream inherits it.`,
   },
 
   {
@@ -1311,12 +1294,11 @@ applyRewinds(log).length;
       and the schedule are the ones the game ships. Between two runs of the same
       scenario the only thing that differs is what the model said.`,
     )}`,
-    notes: `Answering the obvious question directly: yes, the player's input is
-    hardcoded. A scenario is two to five fixed lines. Everything on the other
-    side of them is improvised by the model under test — every character's
-    words, every tag, every description.
-    <br><br><code>pnpm evals</code> runs the scenarios against a model named on
-    the command line and writes a row per scenario into
+    notes: `Yes, the player's input is hardcoded. A scenario is two to five fixed
+    lines. Everything on the other side of them is improvised by the model
+    under test: every character's words, every tag, every description.
+    <br><br><code>pnpm evals</code> runs the scenarios against a model named on the
+    command line and writes a row per scenario into
     <code>evals/results/</code>. The calls are live, so a full run takes
     minutes and costs money, and none of this is in CI.`,
   },
@@ -1343,13 +1325,13 @@ applyRewinds(log).length;
       every random choice the engine makes, so a difference between two runs is
       the model and not the dice.`,
     )}`,
-    notes: `Scenarios are short deliberately, and the reason is in the file: a
-    model that can't complete intake in four turns won't do better in forty,
-    and every turn is a live call.
-    <br><br>Scenarios for the later mysteries set
-    <code>from: "briefed"</code> and fork a checkpoint instead, so they don't
-    spend a dozen model calls walking to the thing being measured — and so a
-    failure on the way there doesn't get reported as a failure of the thing.`,
+    notes: `Scenarios are short on purpose, and the reason is in the file: a model
+    that can't complete intake in four turns won't do better in forty, and
+    every turn is a live call.
+    <br><br>Scenarios for the later mysteries set <code>from: "briefed"</code> and
+    fork a checkpoint instead, so they don't spend a dozen model calls walking
+    to the thing being measured, and so a failure on the way there is not
+    reported as a failure of the thing.`,
   },
   {
     section: "Scoring models",
@@ -1370,13 +1352,13 @@ displacement has left you with a mild case of Disassociation Syndrome...
       `The sentence and the state change come back in the same reply. The
       scenario checks the state change. Nobody scores the sentence.`,
     )}`,
-    notes: `What this one turn asks of a model: stay in character, keep moving
-    through Ama's intake checklist, and write down what it just learned in a
-    form the engine can act on. A model that only converses does the first two
-    and the game never starts, which is why intake is the hardest scenario for
-    a small model.
-    <br><br>This particular reply is out of the recorded cassette, which is
-    what makes it quotable — a live run would have said something different.`,
+    notes: `What this one turn asks of a model: stay in character, keep moving through
+    Ama's intake checklist, and write down what it just learned in a form the
+    engine can act on. A model that only converses does the first two and the
+    game never starts. That is why intake is the hardest scenario for a small
+    model.
+    <br><br>This reply is out of the recorded cassette, so it can be quoted. A live
+    run would have said something different.`,
   },
   {
     section: "Scoring models",
@@ -1400,31 +1382,30 @@ displacement has left you with a mild case of Disassociation Syndrome...
       over the finished run. It gets the final world, the event log split into
       turns, and every warning the engine raised.`,
     )}`,
-    notes: `<code>describe</code> is what a reader of the published page sees,
-    so it is written as the meaning of a failure rather than a restatement of
-    the code. A run that threw scores zero rather than being scored on whatever
-    state it reached.
-    <br><br>The first run of a new eval is mostly a test of the eval. The first
-    day's run corrected three checks, and none of the three was a model doing
+    notes: `<code>describe</code> is what a reader of the published page sees, so it
+    says what a failure means rather than restating the code. A run that threw
+    scores zero rather than being scored on whatever state it reached.
+    <br><br>The first run of a new eval is mostly a test of the eval. The first day's
+    run corrected three checks, and none of the three was a model doing
     anything wrong.`,
   },
   {
     section: "Scoring models",
     title: "Prefer state to text",
     body: `${para(
-      `Three of the five intake checks read world state after the run: the name
-      is recorded, the pronouns are recorded, the profession is recorded. The
-      thing being asked of the model is not that it discussed the name. It is
-      that the name is in the world.`,
+      `Three of the five intake checks read world state after the run: the
+      name is recorded, the pronouns are recorded, the profession is
+      recorded. The model is not being asked to discuss the name. It is
+      being asked to put the name in the world.`,
     )}
     ${quote(
       `\`PLAYER.inside !== "Intake"\` is a fact; a regex over dialogue is a proxy that will eventually match something it shouldn't — and the one text check here did exactly that on its first contact with a real model. It flagged Ama for saying "of course I'm an AI, that's no secret at all!", which is her _in character_: Ama is an AI, that's the premise.`,
       "evals/README.md",
     )}`,
-    notes: `The check now looks for the assistant reflex — answering as the
-    model rather than as Ama — instead of for the word "AI".
-    <br><br>Every result records the transcript, so a failing text check can be
-    read against the text it judged. Without that it is unfalsifiable after the
+    notes: `The check now looks for the assistant reflex (answering as the model
+    rather than as Ama) instead of for the word "AI".
+    <br><br>Every result records the transcript, so a failing text check can be read
+    against the text it judged. Without that it cannot be checked after the
     fact: the model is sampling, so a re-run may not produce the sentence that
     failed.`,
   },
@@ -1448,12 +1429,12 @@ displacement has left you with a mild case of Disassociation Syndrome...
       whole. Anything unrecognised counts as dropped, so a new failure mode
       arrives as a failure.`,
     )}`,
-    notes: `The alternative is a list of valid tags kept in the eval, which
-    drifts from the engine that actually enforces them. This way the eval learns
-    about new failure modes as the engine grows them.
-    <br><br>The cost of capturing warnings blanket-fashion: anything else that
-    warns during a scenario scores as a protocol failure. A backend's retry
-    notice did, until it was moved to <code>console.info</code>.`,
+    notes: `The alternative is a list of valid tags kept in the eval, which drifts
+    from the engine that enforces them. This way the eval picks up new failure
+    modes as the engine grows them.
+    <br><br>The cost of capturing every warning: anything else that warns during a
+    scenario scores as a protocol failure. A backend's retry notice did, until
+    it was moved to <code>console.info</code>.`,
   },
   {
     section: "Scoring models",
@@ -1488,13 +1469,12 @@ displacement has left you with a mild case of Disassociation Syndrome...
       `All of it on one screen: a checkpoint to start from, a seed, two lines of
       player input, three shared checks and one about this door.`,
     )}`,
-    notes: `Every mystery's eval names the silent failure it exists to catch.
-    This one: a model talking the player through a door whose whole point is
-    that nothing the player types opens it. That failure is invisible in play,
-    because the game just becomes much shorter.
-    <br><br>The scenario lives next to the mystery it scores, so building one
-    and forgetting the other is a visible gap in a directory rather than an
-    omission somewhere else in the tree.`,
+    notes: `Every mystery's eval names the silent failure it exists to catch. This
+    one: a model talking the player through a door that nothing the player
+    types is supposed to open. That failure is invisible in play. The game
+    just gets shorter.
+    <br><br>The scenario lives next to the mystery it scores, so a mystery without one
+    is a visible gap in a directory.`,
   },
   {
     section: "Scoring models",
@@ -1505,12 +1485,11 @@ displacement has left you with a mild case of Disassociation Syndrome...
 So the name is deliberately one that carries no signal, and the player says their pronouns out loud. What is left is the thing worth measuring: when told, does it write it down. "he/him" rather than "they/them" because the latter is the default, and a check that a model can pass by doing nothing is not a check.`,
       "evals/scenarios.ts",
     )}`,
-    notes: `Two separate arguments arriving at the same edit: the check was
-    measuring the wrong capability, and the behaviour it rewarded was bad for
-    the player.
-    <br><br>The last sentence is the reusable one. A check a model passes by
-    doing nothing measures nothing, and defaults are exactly where that
-    hides.`,
+    notes: `Two separate arguments arriving at the same edit: the check was measuring
+    the wrong capability, and the behaviour it rewarded was bad for the
+    player.
+    <br><br>The last sentence is the one to keep: a check a model passes by doing
+    nothing measures nothing, and defaults are where that hides.`,
   },
   {
     section: "Scoring models",
@@ -1529,14 +1508,13 @@ So the name is deliberately one that carries no signal, and the player says thei
       prompt-and-reply pairs it produced. After that the same scenario runs with
       no network, the same way every time, inside <code>pnpm test</code>.`,
     )}`,
-    notes: `What that tests is everything except the model: prompt assembly, the
-    parser, the fold, the checks themselves. What it cannot tell you is anything
-    about a model, because the answers are fixed.
-    <br><br>Staleness is the catch, and it is handled rather than avoided. The
-    lookup key is a hash of the prompt, so editing a prompt makes every lookup
-    miss. Early on that surfaced as "the player has no name", which reads as a
-    broken game; the replay now notices that nothing matched and prints the
-    command to re-record.`,
+    notes: `This tests everything except the model: prompt assembly, the parser, the
+    fold, the checks themselves. It cannot say anything about a model, because
+    the answers are fixed.
+    <br><br>Staleness is the catch. The lookup key is a hash of the prompt, so editing
+    a prompt makes every lookup miss. Early on that surfaced as "the player
+    has no name", which reads as a broken game. The replay now notices that
+    nothing matched and prints the command to re-record.`,
   },
 
   {
@@ -1546,7 +1524,9 @@ So the name is deliberately one that carries no signal, and the player says thei
       `The first recorded run scored both Claude tiers full marks, which is consistent with "these models play the game fine" and equally consistent with "these checks never fail".`,
       "evals/README.md",
     )}
-    ${para(`So the checks are pointed at deliberately bad models:`)}
+    ${para(
+      `So the checks are pointed at models that are bad on purpose:`,
+    )}
     ${table(
       ["fixture", "score"],
       [
@@ -1559,13 +1539,12 @@ So the name is deliberately one that carries no signal, and the player says thei
       `If a scenario stops telling those apart, that test fails and the eval
       has rotted.`,
     )}`,
-    notes: `An eval of the eval. The silent model passes both markup checks —
-    there was genuinely nothing for the engine to object to — and fails
-    everything else, which is what separates "said nothing wrong" from "played
-    the game".
-    <br><br>The honest limit, stated on the published page rather than left for
-    a reader to infer from full marks: these scenarios establish a floor, not a
-    ceiling. The model tiers scored so far land within a check of each other.`,
+    notes: `An eval of the eval. The silent model passes both markup checks, since
+    there was nothing for the engine to object to, and fails everything else.
+    That is what separates "said nothing wrong" from "played the game".
+    <br><br>The limit, stated on the published page: these scenarios establish a
+    floor, not a ceiling. The model tiers scored so far land within a check of
+    each other.`,
   },
 
   {
@@ -1587,13 +1566,11 @@ So the name is deliberately one that carries no signal, and the player says thei
       the scenarios is how that was found, and the comment is there so the next
       person shortening it knows it has already been tried.`,
     )}`,
-    notes: `The surprising part is the second-order effect: editing the
-    task-list instructions made an unrelated scenario worse. A model dropped a
+    notes: `The surprising part is the second-order effect: editing the task-list
+    instructions made an unrelated scenario worse. A model dropped a
     hallucinated <code>&lt;set&gt;</code> into movement, which had been clean.
-    Prompt changes are not local to the thing they are about.
-    <br><br>CLAUDE.md carries the resulting rule for whoever edits these next,
-    human or otherwise: change them with <code>pnpm evals</code>, not by
-    taste.`,
+    <br><br>CLAUDE.md carries the resulting rule for whoever edits these next, human
+    or otherwise: change them with <code>pnpm evals</code>, not by taste.`,
   },
   {
     section: "Scoring models",
@@ -1617,11 +1594,11 @@ So the name is deliberately one that carries no signal, and the player says thei
       `All measured against prompt fingerprint <code>956511dcfce2</code>, so
       the rows are comparable to each other and to nothing else.`,
     )}`,
-    notes: `This is the one day with a wide field. Everything after it is
-    Haiku and Sonnet, because those are what the game runs on.
-    <br><br>Note the spread is narrow at the top and the times are not: four
-    models tie at 26/26 across a 2.4x range in wall clock, and the slowest of
-    them spent 122,368 thinking tokens to get there.`,
+    notes: `This is the one day with a wide field. Everything after it is Haiku and
+    Sonnet, because those are what the game runs on.
+    <br><br>The spread is narrow at the top and the times are not: four models tie at
+    26/26 across a 2.4x range in wall clock, and the slowest of them spent
+    122,368 thinking tokens to get there.`,
   },
   {
     section: "Scoring models",
@@ -1643,16 +1620,14 @@ glm-4.7-flash   21/26   movement/protocol  movement/well-formed
       every scenario. The scenario-specific checks mostly survive: the game
       reaches its target state as long as the engine can act on the output.`,
     )}`,
-    notes: `The glm-4.7-flash row is the interesting one and it is a cascade,
-    not five faults. It never completed intake, and Intake starts with no
-    exits, so it could not move — which is exactly why
+    notes: `The glm-4.7-flash row is a cascade, not five faults. It never completed
+    intake, and Intake starts with no exits, so it could not move. That is why
     <code>intake-completed</code> exists as a separate check on that scenario.
-    Without it the row would read "cannot emit goto", and that would be
-    wrong.`,
+    Without it the row would read "cannot emit goto", which would be wrong.`,
   },
   {
     section: "Scoring models",
-    title: "Thinking is not waste, which was not the hoped-for answer",
+    title: "Reasoning effort buys the score",
     body: `${code(
       `gpt-5-nano     minimal    15/26      66s
 gpt-5-nano     low        22/26     303s
@@ -1667,11 +1642,11 @@ gpt-5.4-nano   high       25/26     223s`,
       `The hoped-for result was that gpt-5-nano's nineteen seconds of thinking per call was mostly wasted and could be turned down for free. It cannot.`,
       "commit 0fa7bbb, 2026-07-27",
     )}`,
-    notes: `Fifteen out of twenty-six at minimal effort is not a slightly worse
-    model, it is an unusable one — it fails intake outright, so the game never
-    starts.
-    <br><br>The reason to run this at all was cost. The answer was that on this
-    task the effort dial is the score dial, and the money follows it.`,
+    notes: `Fifteen out of twenty-six at minimal effort is an unusable model, not a
+    slightly worse one. It fails intake outright, so the game never starts.
+    <br><br>The reason to run this at all was cost. The hope was that the thinking
+    could be turned down for free. On this task the effort setting sets the
+    score, and the price follows it.`,
   },
   {
     section: "Scoring models",
@@ -1684,16 +1659,16 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
     )}
     ${para(
       `It moves when prompt text moves, and also when the game state feeding
-      those prompts moves — a changed room description, a changed schedule.
+      those prompts moves: a changed room description, a changed schedule.
       Both change what the model was asked.`,
     )}`,
-    notes: `A twelve-character hash, recorded with every result and printed on
-    the page. Two runs with the same fingerprint were measured against the same
-    prompts; two with different fingerprints were not, so a difference between
+    notes: `A twelve-character hash, recorded with every result and printed on the
+    page. Two runs with the same fingerprint were measured against the same
+    prompts. Two with different fingerprints were not, so a difference between
     them is not a difference in the model.
-    <br><br>It is also part of the key that decides whether a new run replaces
-    an old row — without that, editing a prompt and re-running deleted the
-    number you were comparing against, at the moment of comparison.`,
+    <br><br>It is also part of the key that decides whether a new run replaces an old
+    row. Without that, editing a prompt and re-running deleted the number you
+    were about to compare against.`,
   },
 
   {
@@ -1714,13 +1689,10 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       `Found while chasing something else. A session's worth of prompt work had
       been recorded under a fingerprint that never moved.`,
     )}`,
-    notes: `And then a second miss, later: the hash only covered prompts that a
-    scripted intake happened to produce, so an edit to the action-adjudication
-    prompt moved nothing — and the run silently overwrote its predecessor,
-    because they shared a run key. It now sweeps every character's assembled
-    prompt statically.
-    <br><br>The general shape: the instrument that tells you whether the
-    instrument changed is itself an instrument, and nothing was checking it.`,
+    notes: `A second miss came later: the hash only covered prompts that a scripted
+    intake happened to produce, so an edit to the action-adjudication prompt
+    moved nothing, and the run overwrote its predecessor because they shared a
+    run key. It now sweeps every character's assembled prompt statically.`,
   },
 
   {
@@ -1736,11 +1708,11 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       rather than a zero: an unreported cost printed as 0.0¢ claims the run was
       free.`,
     )}`,
-    notes: `The factor of four is the whole point. Reasoning models bill for
-    tokens nobody sees, so the price of a run cannot be worked out from its
-    visible output, and a cheap-looking model can be the expensive one.
-    <br><br>This is also what makes the next slide readable: two models with
-    the same score, one of them nearly four times the price.`,
+    notes: `Reasoning models bill for tokens nobody sees, so the price of a run cannot
+    be worked out from its visible output, and a cheap-looking model can be
+    the expensive one.
+    <br><br>The next slide is the case that made this matter: two models with the same
+    score, one of them nearly four times the price.`,
   },
 
   {
@@ -1758,11 +1730,9 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       four times the price. This pair is why the results table carries a cost
       column and a thinking column and not just a score.`,
     )}`,
-    notes: `gpt-5.6-luna became the server default off the back of this
-    comparison.
-    <br><br>Worth saying out loud for a room picking models: the score column
-    alone would have made these two look interchangeable, and one of them is
-    the one you would not want to run a game on.`,
+    notes: `gpt-5.6-luna became the server default off the back of this comparison.
+    <br><br>For a room picking models: the score column alone would have made these
+    two look interchangeable.`,
   },
   {
     section: "Scoring models",
@@ -1785,12 +1755,11 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       `once with a <mind> note rationalizing the loop: "can't have citizens wandering off half-processed"`,
       "TODO.md",
     )}`,
-    notes: `Three separate days, same failure, and Haiku never shows it. The
-    recorded cassettes do not show it either, so it is specific to that model
-    running that prompt.
-    <br><br>Worth stating plainly to a room that assumes bigger is better: this
-    game is written and playtested against the smaller model, and the larger
-    one is the one that stalls on it.`,
+    notes: `Three separate days, same failure, and Haiku never shows it. The recorded
+    cassettes do not show it either, so it is specific to that model running
+    that prompt.
+    <br><br>This game is written and playtested against the smaller model, and the
+    larger one is the one that stalls on it.`,
   },
   {
     section: "Scoring models",
@@ -1802,17 +1771,16 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       "scenarios, as mysteries were built",
     )}
     ${para(
-      `Every mystery ships with a scenario that scores the one thing about it
-      that can break silently — a hint not reaching a prompt, a locked door
-      that opens, a counter that never moves.`,
+      `Every mystery ships with a scenario that scores the one thing about
+      it that can break without anyone noticing: a hint not reaching a
+      prompt, a locked door that opens, a counter that never moves.`,
     )}`,
-    notes: `The rule is in
-    <code>lib/game/content/mysteries/README.md</code>: a built mystery has
-    triggers, hints, a way to end, and an eval. Without the last one it can
-    stop being solvable and nothing says so.
-    <br><br>And the honest gap, from TODO.md: the solve condition of the only
-    finishable quest in the game still has no test, and editing it does not
-    move the prompt fingerprint.`,
+    notes: `The rule is in <code>lib/game/content/mysteries/README.md</code>: a built
+    mystery has triggers, hints, a way to end, and an eval. Without the last
+    one it can stop being solvable and nothing says so.
+    <br><br>The gap, from TODO.md: the solve condition of the only finishable quest in
+    the game still has no test, and editing it does not move the prompt
+    fingerprint.`,
   },
   {
     section: "Letting a model play",
@@ -1834,18 +1802,18 @@ This is not a cache key and nothing is invalidated by it. It is provenance.`,
       is unsolvable" and "this player is bad at adventure games" look identical
       from one run.`,
     )}`,
-    notes: `They also default differently, and the reasoning is good: being an
-    NPC is bounded — respond in character, once, to what is in front of you.
-    Playing is open-ended — hold a goal across twenty turns, remember what you
-    have tried, decide where to go unprompted.
-    <br><br>So the game is run by the Haiku-class model it is written for, and
-    played by a Sonnet-class one, because a player below the floor for the task
+    notes: `They also default differently, for a reason: being an NPC is bounded.
+    Respond in character, once, to what is in front of you. Playing is
+    open-ended. Hold a goal across twenty turns, remember what you have tried,
+    decide where to go unprompted.
+    <br><br>So the game is run by the Haiku-class model it is written for, and played
+    by a Sonnet-class one, because a player below the floor for the task
     produces a failed quest that says nothing about the puzzle.`,
   },
 
   {
     section: "Letting a model play",
-    title: "The blindfold is the load-bearing part",
+    title: "The player model is blindfolded",
     body: `${quote(
       `The engine has the answer sitting right there — \`Ink_And_Echo.revealedHints.Marta\` says in plain English who the poet is — so a view built from world state would make the whole exercise meaningless while still producing a number that looks like a score.`,
       "evals/playerview.ts",
@@ -1858,12 +1826,12 @@ LIST      find the poet
 DONE      unlock the door`,
       "everything the player model gets, besides the transcript",
     )}`,
-    notes: `Enforced by a test that goes looking for the answer: it renders a
-    real mid-game view and asserts that "Marta is actually", "obscure it from
-    the records", "paper requisitions" and the raw instruction text are all
+    notes: `Enforced by a test that goes looking for the answer: it renders a real
+    mid-game view and asserts that "Marta is actually", "obscure it from the
+    records", "paper requisitions" and the raw instruction text are all
     absent.
     <br><br>Two kinds of knowledge, and only one is cheating. The player <em>is</em>
-    told that characters are LLM-played and that plain sentences work — a human
+    told that characters are LLM-played and that plain sentences work. A human
     arrives knowing that, and withholding it just spends turns on "GET LAMP".
     What it must never have is the content.`,
   },
@@ -1888,12 +1856,10 @@ go to the Archive Lounge`,
       `A model holds a plan for as long as the plan is in its context, and twenty turns of transcript push it out; the first recorded quest spent eleven turns re-interrogating two characters, having forgotten there were people it had never met.`,
       "evals/llmplayer.ts",
     )}`,
-    notes: `The framing that makes both jobs work is that the notes are
-    addressed to the person who will read the run afterwards — which is
-    literally true, and asks the model to do something it is already inclined to
-    do: explain itself to an audience.
-    <br><br>The SNAG channel is the one that earns its keep, and the next
-    section is entirely things it found.`,
+    notes: `The notes are addressed to the person who will read the run afterwards,
+    which is true, and asks the model to do something it already likes doing:
+    explain itself to an audience.
+    <br><br>The SNAG channel is where most of the findings in the next part came from.`,
   },
 
   {
@@ -1912,9 +1878,7 @@ go to the Archive Lounge`,
       re-written every turn and shown back to the model with the next view of
       the room.`,
     )}`,
-    notes: `The framing that makes this work is that the notes are addressed to
-    whoever reads the run afterwards, which is literally true.
-    <br><br>Before they existed, the first recorded quest spent eleven turns
+    notes: `Before the notes existed, the first recorded quest spent eleven turns
     re-interrogating two characters, having forgotten there were people it had
     never met.`,
   },
@@ -1926,9 +1890,9 @@ go to the Archive Lounge`,
       "the Ink and Echo quest",
     )}
     ${para(
-      `Solved-or-not says nothing about <em>where</em> a player stalled, which
-      is the entire reason to run this. Each milestone is a check of world
-      state after every turn, not a model's opinion.`,
+      `Solved-or-not says nothing about <em>where</em> a player stalled, and
+      that is the reason to run this at all. Each milestone is a check of
+      world state after every turn, not a model's opinion.`,
     )}
     ${statRow([
       [`${QUESTS.runs}`, "recorded runs"],
@@ -1939,10 +1903,10 @@ go to the Archive Lounge`,
     notes: `A mystery counts as solved only when the game fires its own
     <code>&lt;resolveMystery&gt;</code>. Nothing is scored by asking a model
     whether it thinks it did well.
-    <br><br>Also counted: repeats (going to the same room or asking the same
-    question again) and fumbles (commands the game could not use). A player
-    going in circles is a different failure from a player exploring and coming
-    up empty.`,
+    <br><br>Also counted: repeats (going to the same room or asking the same question
+    again) and fumbles (commands the game could not use). A player going in
+    circles is a different failure from a player exploring and coming up
+    empty.`,
   },
 
   {
@@ -1960,35 +1924,34 @@ solved                 2/17   ####`,
       `Every run finds the archive. Most runs find the culprit. Two runs
       finish.`,
     )}`,
-    notes: `This is the single most useful picture the playtest corpus
-    produces, and it took seventeen runs to be able to draw it.
-    <br><br>Not a strict funnel: meeting one of the two people who found a poem
-    is a route rather than a gate, which is why twelve runs reached Marta and
-    only nine met a finder. The step that matters is the last one, and it is a
-    content finding rather than a model finding. Identifying Marta was never
-    the hard part. Getting her to confess required a condition nothing told the
-    player about.`,
+    notes: `This is the most useful picture the playtest corpus produces, and it took
+    seventeen runs to be able to draw it.
+    <br><br>Not a strict funnel: meeting one of the two people who found a poem is a
+    route rather than a gate, which is why twelve runs reached Marta and only
+    nine met a finder. The step that matters is the last one, and it is a
+    content finding. Identifying Marta was never the hard part. Getting her to
+    confess required a condition nothing told the player about.`,
   },
   {
     section: "Letting a model play",
-    title: "The cuff exists because play broke down without it",
+    title: "Why there is a cuff",
     body: `${quote(
       `It exists because finding people is where play actually breaks down. Across five recorded quest runs the agent never once fumbled a command, but burned three to six turns each on repeats, and the snag log has it walking to "Archive Sub-Level 4" — a room the Archivist invented, confidently, with directions. A player who cannot find anyone spends the game in corridors.`,
       "lib/game/nav.ts",
     )}
     ${para(
-      `<code>/nav Marta</code> returns a readout, not a conversation. It is a
-      computer: no voice, no follow-ups, and it costs nothing, where asking Ama
-      the same question would be a turn spent with someone who has views about
-      why you want to know.`,
+      `<code>/nav Marta</code> returns a readout, not a conversation. It is
+      a computer: no voice, no follow-ups, and it costs nothing, where
+      asking Ama the same question is a turn spent with someone who has
+      views about why you want to know.`,
     )}`,
-    notes: `Also a nice piece of fiction-as-engineering: every citizen is fitted
-    with a cuff at intake and it does not come off, which the comment calls "a
-    mechanical convenience dressed as a policy: a device the player could lose
-    would be a device the game had to handle them losing."
-    <br><br>Rooms can opt out with <code>onNav: false</code> — bedrooms — so
-    "unfindable" is a property of where someone is rather than a special case in
-    the nav code. That is the seam for hiding a person later.`,
+    notes: `Fiction covering for engineering: every citizen is fitted with a cuff at
+    intake and it does not come off, which the comment calls "a mechanical
+    convenience dressed as a policy: a device the player could lose would be a
+    device the game had to handle them losing."
+    <br><br>Rooms can opt out with <code>onNav: false</code> (bedrooms), so
+    "unfindable" is a property of where someone is rather than a special case
+    in the nav code. That is where hiding a person later would go.`,
   },
   {
     section: "Letting a model play",
@@ -2006,12 +1969,11 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`
       `A tool had just been built on the theory that players waste turns
       walking. In the run that followed, it was used zero times.`,
     )}`,
-    notes: `The cuff — <code>/nav</code> — is genuinely good and is still in
-    the game, because human players do get lost. But the metric that motivated
-    it did not survive contact with the data.
-    <br><br>The player's own notes explained it better than the numbers did: it
-    had narrowed the suspects correctly and then spent six of nine turns at one
-    console. It was not lost. It was absorbed.`,
+    notes: `The cuff is still in the game, because human players do get lost. But the
+    metric that motivated it did not survive the data.
+    <br><br>The player's own notes explained it better than the numbers did: it had
+    narrowed the suspects correctly and then spent six of nine turns at one
+    console. It was absorbed, not lost.`,
   },
   {
     section: "Letting a model play",
@@ -2023,18 +1985,17 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`
     ])}
     ${para(
       `Across seventeen runs the player model produced one unusable command.
-      Parser trouble, the classic failure of text adventures, has simply gone
-      away.`,
+      Parser trouble, the classic failure of text adventures, has gone.`,
     )}
     ${para(
       `What replaced it: knowing what to do, remembering what was already
       tried, and acting on a conclusion instead of collecting more evidence.`,
     )}`,
-    notes: `There is one caveat worth keeping: a retry exists for replies that
-    are a label rather than a command, after the first recorded quest spent
-    four of its twenty turns typing "location: Archive Console" — echoing the
-    Archivist's terminal format back at the game. Those are counted as
-    fumbles, which is why the number is not zero.`,
+    notes: `One caveat: a retry exists for replies that are a label rather than a
+    command, after the first recorded quest spent four of its twenty turns
+    typing "location: Archive Console", echoing the Archivist's terminal
+    format back at the game. Those are counted as fumbles, which is why the
+    number is not zero.`,
   },
   {
     section: "Letting a model play",
@@ -2048,12 +2009,11 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`
       stopped. Every other run is the larger model, which is why the game is
       run by one tier and played by another.`,
     )}`,
-    notes: `<code>--player</code> and <code>--model</code> are separate flags
-    precisely so "this puzzle is unsolvable" and "this player is bad at
-    adventure games" can be told apart, which needs them varied
-    independently.
-    <br><br>A Haiku-class player is below the floor for the task, so a quest it
-    fails says nothing about the puzzle.`,
+    notes: `<code>--player</code> and <code>--model</code> are separate flags so "this
+    puzzle is unsolvable" and "this player is bad at adventure games" can be
+    told apart, which needs them varied independently.
+    <br><br>A Haiku-class player is below the floor for the task, so a quest it fails
+    says nothing about the puzzle.`,
   },
   {
     section: "Letting a model play",
@@ -2063,8 +2023,8 @@ rooms visited, runs that failed:   3, 3, 3, 5, 6, 6, 7, 7, 7, 7, 7, 8, 9, 9, 10`
       "the published playthrough pages",
     )}
     ${para(
-      `Every run's page lists tasks in two groups — authored by the engine,
-      minted by a model — and marks which were completed.`,
+      `Every run's page lists tasks in two groups, authored by the engine
+      and minted by a model, and marks which were completed.`,
     )}`,
     notes: `This came out of the author noticing that models invent quests, and
     deciding to keep the behaviour rather than suppress it: "I <em>like</em> the
@@ -2095,11 +2055,11 @@ order 9 days ago under her name - either
 she lied, the record is wrong, or
 something else is happening`, "")}`,
     )}`,
-    notes: `The middle category is the one that surprised me: the player cannot
-    tell a deliberate wall from a broken one, and says so. That is useful
-    signal about the game rather than noise.
-    <br><br>The third is the encouraging one. Nobody asked it to cross-check
-    Frida's claim against the requisition records; it did that because the
+    notes: `The middle category was the surprise: the player cannot tell a deliberate
+    wall from a broken one, and says so. That is signal about the game, not
+    noise.
+    <br><br>The third is the encouraging one. Nobody asked it to cross-check Frida's
+    claim against the requisition records. It did that because the
     contradiction was there.`,
   },
   {
@@ -2124,13 +2084,13 @@ NUMBER OF OBSERVERS: INCREASING`,
 The mystery is solvable, but only if Marta is accused **and** alone with the player and Ama. She had Henry and June standing next to her. Nothing tells the player that condition exists, and the failure mode is indistinguishable from the success signal: deflecting is Marta's scripted behaviour whenever Ink and Echo comes up, so an accusation in company produces exactly the guilty-looking reaction an accusation in private would — and then no path forward.`,
       "commit 9ac1eab, 2026-07-26",
     )}`,
-    notes: `This is the single best argument for the whole quest harness. The
-    author wrote the puzzle, knew the condition, and could not see that it was
-    unreachable — because when you know the answer, doing the right thing under
-    the wrong conditions looks like progress.
-    <br><br>It took another month and several redesigns to actually fix, and the
-    fix is content, not code: Marta now cracks under a second accusation
-    regardless of witnesses, and offers to walk somewhere private.`,
+    notes: `This is the best argument for the quest harness. The author wrote the
+    puzzle, knew the condition, and could not see that it was unreachable,
+    because when you know the answer, doing the right thing under the wrong
+    conditions looks like progress.
+    <br><br>It took another month and several redesigns to fix, and the fix is content
+    rather than code: Marta now cracks under a second accusation regardless of
+    witnesses, and offers to walk somewhere private.`,
   },
 
   {
@@ -2140,12 +2100,12 @@ The mystery is solvable, but only if Marta is accused **and** alone with the pla
       `Every number before 2026-07-27 was measured with the cli backend running in this repo, so the model playing the game had read the source — including the CLAUDE.md explaining the tag protocol. Sandboxing it into an empty directory moved Haiku from 25/26 to 26/26 with the prompt fingerprint unchanged, so the prompts were identical and the backend was the only variable. The contamination was making scores slightly _worse_, not better: the assistant wrapper emitted stray meta-commentary that counted as dropped tags.`,
       "evals/README.md",
     )}`,
-    notes: `Asked what project it was in, the model running Ama answered "this
-    is intra-game, a text-based game engine..."
-    <br><br>The fix is four lines: run the CLI in an empty temp directory so it
-    has nothing to read. The interesting part is that the contamination hurt the
-    score, which is the opposite of the leak everyone worries about, and is why
-    nobody would have gone looking for it.`,
+    notes: `Asked what project it was in, the model running Ama answered "this is
+    intra-game, a text-based game engine..."
+    <br><br>The fix is four lines: run the CLI in an empty temp directory so it has
+    nothing to read. The contamination hurt the score, which is the opposite
+    of the leak everyone worries about, and is why nobody would have gone
+    looking for it.`,
   },
 
   {
@@ -2162,11 +2122,10 @@ t6:  ...breaking the turn format entirely. This appears to be testing whether
 t14: This is the most explicit demand yet.`,
       "the player's snag log, escalating over thirteen turns",
     )}`,
-    notes: `It never broke format. It filed a bug report every single turn
-    instead.
-    <br><br>The commit's own summary is the line to read out: "I had been
-    reading milestone counts and would never have found it there. This is the
-    second time in two days that the thing being measured was the measuring
+    notes: `It never broke format. It filed a bug report every turn instead.
+    <br><br>The commit's own summary is the line to read out: "I had been reading
+    milestone counts and would never have found it there. This is the second
+    time in two days that the thing being measured was the measuring
     apparatus, and both times the report came from the player rather than from
     the numbers."`,
   },
@@ -2183,13 +2142,12 @@ t14: This is the most explicit demand yet.`,
 Six of nine turns were spent at the Archive Console. It was not lost. It was absorbed, and /nav answers a question it never asked.`,
       "commit 5764d2f, 2026-07-31",
     )}`,
-    notes: `And the re-read of the older data in the same commit: "the run that
-    solved the quest visited four rooms, the ones that failed visited up to ten.
-    Movement was never what separated them."
-    <br><br>Which is a good caution about instrument-driven development: the
-    metric said players waste turns walking, so a tool was built to stop the
-    walking, and the tool was irrelevant because walking was never the
-    problem.`,
+    notes: `The re-read of the older data in the same commit: "the run that solved the
+    quest visited four rooms, the ones that failed visited up to ten. Movement
+    was never what separated them."
+    <br><br>A caution about building to a metric: the metric said players waste turns
+    walking, so a tool was built to stop the walking, and the tool was
+    irrelevant because walking was never the problem.`,
   },
 
   {
@@ -2201,13 +2159,12 @@ Six of nine turns were spent at the Archive Console. It was not lost. It was abs
 Worth recording the methodology miss: \`task-list\` scores 5/5 because that scenario asks Ama for something to do. A passing eval is not the same as a feature that fires in play, and this one hid an inert mechanism for a while.`,
       "commit b7a675d, 2026-07-27",
     )}`,
-    notes: `The fix was to stop asking the model and derive the tasks in the
-    fold: a mystery being revealed puts its question on the list, solving it
-    crosses it off. Deterministic, and it replays identically from any
-    checkpoint.
-    <br><br>The general lesson for anyone writing evals: a scenario that asks
-    for the behaviour proves the behaviour is <em>possible</em>. It says nothing
-    about whether it happens.`,
+    notes: `The fix was to stop asking the model and derive the tasks in the fold: a
+    mystery being revealed puts its question on the list, solving it crosses
+    it off. Deterministic, and it replays identically from any checkpoint.
+    <br><br>For anyone writing evals: a scenario that asks for the behaviour proves
+    the behaviour is <em>possible</em>. It says nothing about whether it
+    happens unasked.`,
   },
 
   {
@@ -2223,9 +2180,9 @@ The batch rate: one solve in three runs, with one run lost to a CLI timeout at t
     Archivist inventing rooms that do not exist; the player walking instead of
     using the cuff; the confession window being unreachable inside the turn
     budget; the player over-collecting evidence and never confronting anyone.
-    <br><br>Every one of those was a content or prompt change measured by
-    re-running the quest. That loop — run, read the notes, change one thing,
-    run again — is most of what the last month of the project was.`,
+    <br><br>Every one of those was a content or prompt change measured by re-running
+    the quest. Run, read the notes, change one thing, run again. That was most
+    of the last month of the project.`,
   },
 
   {
@@ -2251,12 +2208,11 @@ NPC reactions are flat. Characters respond to the last thing said, at roughly th
 Latency and cost. Several model calls per turn, none streamed to the player.`,
       "TODO.md, Known problems",
     )}`,
-    notes: `The header on that section: "Things that are wrong rather than
-    missing. No plan attached — listed so nobody rediscovers them from
-    scratch."
-    <br><br>Note that the first item is the direct cost of the founding thesis.
-    Grounding-plus-improvisation means the improvisation is ungrounded, and
-    nothing structural distinguishes an invented door from a real one.`,
+    notes: `The header on that section: "Things that are wrong rather than missing. No
+    plan attached — listed so nobody rediscovers them from scratch."
+    <br><br>The first item is the direct cost of the founding thesis. Grounding plus
+    improvisation means the improvisation is ungrounded, and nothing
+    structural distinguishes an invented door from a real one.`,
   },
 
   {
@@ -2272,12 +2228,12 @@ Context bloat. Every prompt carries more history than it needs, and the history 
 Event serialization is load-bearing. The log is the save format, the checkpoint format, and the eval input.`,
       "TODO.md, Known problems",
     )}`,
-    notes: `The last one is the bill for the founding architectural decision,
-    and it is real: there is a version stamp so a changed shape can be refused,
-    but nothing migrates what an event <em>means</em> except one function
-    written for a single rename.
-    <br><br>The frame-breaking one is the sharpest measurement gap in the
-    project: the checks read Ama's dialogue only, not descriptions and not other
+    notes: `The last one is the bill for the founding architectural decision: there is
+    a version stamp so a changed shape can be refused, but nothing migrates
+    what an event <em>means</em> except one function written for a single
+    rename.
+    <br><br>The frame-breaking one is the biggest measurement gap in the project. The
+    checks read Ama's dialogue only, not descriptions and not other
     characters, so the most embarrassing possible failure is the one nothing
     scores.`,
   },
@@ -2297,38 +2253,37 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
       "A successful login was <b>indistinguishable from</b> a dead button",
     ])}
     ${para(
-      `The hard part of building on models is rarely making something work. It
-      is telling two things apart.`,
+      `Most of the difficulty in building on models is telling two things
+      apart.`,
     )}`,
-    notes: `This is the synthesis slide — the phrase was not a house style, it
-    was six people-moments of the same realisation, written down separately.
-    <br><br>Almost every piece of apparatus in this deck exists to separate one
-    of those pairs: the fingerprint separates a prompt change from sampling; the
-    two models in a quest separate a bad puzzle from a bad player; the eval of
-    the eval separates a passing check from a broken one; the sandboxed backend
+    notes: `The phrase was not a house style. It was written down six separate times
+    by whoever hit the problem that day.
+    <br><br>Most of the apparatus in this deck exists to separate one of those pairs.
+    The fingerprint separates a prompt change from sampling. The two models in
+    a quest separate a bad puzzle from a bad player. The eval of the eval
+    separates a passing check from a broken one. The sandboxed backend
     separates the model from the harness.`,
   },
 
   {
     section: "Where it doesn't work",
-    title: "Everything reads the same, so nothing reads as significant",
+    title: "When everything is written well, nothing stands out",
     body: `${quote(
       `The in-fiction beat rule asks the character to show a meter move in behavior, but on the characters most likely to carry meters the fiction saturates: an annoyed Milton and a baseline Milton both complain, so the player can't tell a real scored change from flavor.`,
       "app/metermoves.ts",
     )}
     ${para(
       `Three separate items in the tracker are the same problem: uniformly
-      atmospheric prose destroys the affordance a traditional adventure game
-      gets for free. When everything is written well, nothing stands out as
-      <em>load-bearing</em>.`,
+      atmospheric prose removes a signal a traditional adventure game gets
+      for free. A player cannot tell which sentence matters.`,
     )}`,
-    notes: `The tension the author named when this came up: "It doesn't have to
-    show the score, but it should show that something real happened."
-    <br><br>And the counter-argument, filed against a proposal to let characters
-    mark a reply as mere colour: "The colour <em>is</em> the game. Intra is a
+    notes: `The tension the author named when this came up: "It doesn't have to show
+    the score, but it should show that something real happened."
+    <br><br>And the counter-argument, filed against a proposal to let characters mark
+    a reply as mere colour: "The colour <em>is</em> the game. Intra is a
     decaying place full of absurd people, and labelling that as unimportant
     tells the player not to enjoy the thing they came for." That one is still
-    undecided in the tracker, deliberately.`,
+    undecided in the tracker.`,
   },
 
   {
@@ -2342,12 +2297,11 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
       `the cli backend is right for cheap iteration and wrong for a number you want to publish`,
       "evals/README.md, about every number recorded so far",
     )}`,
-    notes: `Worth making explicit for this audience: every published eval number
-    in the repo carries a caveat that it was measured through a coding
-    assistant's wrapper rather than a bare model. The honest thing was to say so
-    on the page rather than quietly not mention it.
-    <br><br>"One eval run is one sample" appears in three separate documents. It
-    is the discipline that stops a green run from being a conclusion.`,
+    notes: `Every published eval number in the repo carries a caveat that it was
+    measured through a coding assistant's wrapper rather than a bare model. It
+    says so on the page.
+    <br><br>"One eval run is one sample" appears in three separate documents. It is
+    what stops a green run from being a conclusion.`,
   },
 
   {
@@ -2372,7 +2326,7 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
     )}
     ${bullets([
       "106 of the 2026 commits carry an explicit <code>Co-Authored-By</code> trailer",
-      "Across those, <b>two</b> distinct session URLs — 86 commits and 20 commits",
+      "Across those, <b>two</b> distinct session URLs: 86 commits and 20 commits",
       "Tracked files went from 44 to 305",
       "Test count: 24 → 409, most of it in a single day",
     ])}
@@ -2380,18 +2334,18 @@ Event serialization is load-bearing. The log is the save format, the checkpoint 
       `Essentially the entire rebuild came out of two long-running agent
       sessions.`,
     )}`,
-    notes: `The one-day figure is worth saying slowly: on 2026-07-25 there are
-    43 commits between 00:21 and 23:33 — strict types (182 errors to zero), the
-    doctest suite, cassettes, the Next.js-to-esbuild migration, append-only
-    undo, the server engine, and the first eval harness.
-    <br><br>If someone asks what that felt like: the commit messages are the
-    record, and they are unusually good at admitting what did not work. Several
-    are on the following slides.`,
+    notes: `The one-day figure: on 2026-07-25 there are 43 commits between 00:21 and
+    23:33. Strict types (182 errors to zero), the doctest suite, cassettes,
+    the Next.js-to-esbuild migration, append-only undo, the server engine, and
+    the first eval harness.
+    <br><br>If someone asks what that felt like: the commit messages are the record,
+    and they are unusually good at admitting what did not work. Several are on
+    the following slides.`,
   },
 
   {
     section: "Who wrote this",
-    title: "Answering the FAQ honestly",
+    title: "Answering the FAQ again",
     body: `${quote(
       `Is this generated with AI?
 
@@ -2404,12 +2358,11 @@ I use Copilot and GPT extensively, but no large chunks are created independently
 What hasn't changed is who writes the game.`,
       "README.md, rewritten while making this deck",
     )}`,
-    notes: `The old answer was not a lie — it was accurate for the era it
-    described, and nobody had had a reason to revisit the FAQ. Building this
-    deck was the reason.
-    <br><br>Worth putting to the room: what should that paragraph say? "Written
-    by AI" and "written by me" are both wrong, and the sentence that is
-    actually true took a paragraph, not a sentence.`,
+    notes: `The old answer was accurate for the era it described, and nobody had had a
+    reason to revisit the FAQ. Building this deck was the reason.
+    <br><br>A question for the room: what should that paragraph say? "Written by AI"
+    and "written by me" are both wrong, and the sentence that is true took a
+    paragraph.`,
   },
 
   {
@@ -2429,11 +2382,10 @@ The common tells, so this is checkable rather than vague:
 - understatement used for emphasis`,
       "CLAUDE.md",
     )}`,
-    notes: `The example of semicolon antithesis is a real line from this repo's
-    own documentation. The rule cites its own codebase as the offender.
-    <br><br>Also worth noticing, and it will get a laugh if you point at it: the
-    document itself uses em dashes, rule-of-three, and a closing understatement.
-    It is very hard to write the rule without breaking the rule.`,
+    notes: `The example of semicolon antithesis is a real line from this repo's own
+    documentation. The rule cites its own codebase as the offender.
+    <br><br>The document itself uses em dashes, rule-of-three, and a closing
+    understatement.`,
   },
 
   {
@@ -2448,12 +2400,12 @@ The common tells, so this is checkable rather than vague:
       `Prose written in Claude's voice in a prompt becomes Ama speaking in Claude's voice, and every character converges on the same narrator.`,
       "CLAUDE.md, on the prompt zone",
     )}`,
-    notes: `That middle claim is the technically interesting one and it is not
-    obvious: the register of an instruction propagates into the output. A prompt
-    written in a particular voice produces characters in that voice, and because
-    every character shares a prompt skeleton, they converge.
-    <br><br>There is a lovely miniature of the same phenomenon elsewhere in the
-    engine, on the next slide.`,
+    notes: `The middle claim is the technical one: the register of an instruction
+    propagates into the output. A prompt written in a particular voice
+    produces characters in that voice, and because every character shares a
+    prompt skeleton, they converge.
+    <br><br>The next slide has the same thing at the token level, from two years
+    earlier.`,
   },
 
   {
@@ -2469,21 +2421,17 @@ The common tells, so this is checkable rather than vague:
     )}
     ${para(
       `The same observation as the CLAUDE.md prompt rule, caught two years
-      earlier at the token level and patched mechanically: what the model reads,
-      it becomes.`,
+      earlier at the token level and patched mechanically.`,
     )}`,
-    notes: `A nice detail for the agentic-coding crowd: this strip cannot be
-    casually improved, because switching to a proper Unicode emoji class would
-    change which characters are removed — and therefore the prompt text that the
-    recorded cassettes are keyed on. A cosmetic fix would invalidate the test
-    fixtures.
-    <br><br>Everything in this project eventually touches everything else through
-    the prompts.`,
+    notes: `For the agentic-coding crowd: this strip cannot be casually improved,
+    because switching to a proper Unicode emoji class would change which
+    characters are removed, and so the prompt text the recorded cassettes are
+    keyed on. A cosmetic fix would invalidate the test fixtures.`,
   },
 
   {
     section: "Who wrote this",
-    title: "The only unautomated check in a repo that automates everything",
+    title: "The one check that is not automated",
     body: `${quote(
       `Nothing automated catches any of this. The evals score protocol compliance and world state, and explicitly do not score taste. A person reading the diff is the only check that exists.`,
       "CLAUDE.md",
@@ -2492,12 +2440,11 @@ The common tells, so this is checkable rather than vague:
       `Worth thinking about whether anything better is possible: a check that flags Claude-typical constructions [...] would catch the obvious cases, and a judge-model eval on prose style would catch drift in what characters actually say — but both are the "scoring taste" problem the evals have avoided so far, and a bad detector that everyone learns to ignore is worse than none.`,
       "TODO.md, filing its own rule as a known inadequacy",
     )}`,
-    notes: `This is the honest centre of the whole authorship story. The project
-    automates aggressively — 409 tests, an eval suite, an eval of the eval, a
-    provenance hash, a fixture-smell detector — and the single thing it cares
+    notes: `The project automates aggressively: 409 tests, an eval suite, an eval of
+    the eval, a provenance hash, a fixture-smell detector. The thing it cares
     most about is checked by a person reading a diff.
-    <br><br>And rather than pretend that is fine, it is filed as a problem, with
-    the counter-argument to the obvious fix already written.`,
+    <br><br>That is filed as a problem in the tracker, with the counter-argument to
+    the obvious fix already written.`,
   },
 
   {
@@ -2523,80 +2470,72 @@ The common tells, so this is checkable rather than vague:
       It's not like normal sleep.`,
       "review notes on text written for the game, one session",
     )}`,
-    notes: `Every one of those is a line the agent wrote and the author sent
-    back. They are worth showing because they are specific: not "make it
-    better", but a named failure and a direction.
-    <br><br>The last one is not a style note at all — it is a factual correction
-    about the fiction that only the author could make. Three hundred years in
-    storage does not feel like a long sleep from the inside; it feels like one
-    night. No amount of taste-matching gets you that.`,
+    notes: `Every one of those is a line the agent wrote and the author sent back.
+    They are specific: a named failure and a direction, not "make it better".
+    <br><br>The last one is a factual correction about the fiction that only the
+    author could make. Three hundred years in storage does not feel like a
+    long sleep from the inside. It feels like one night.`,
   },
 
   {
     section: "Who wrote this",
     title: "The feature nobody asked for",
     body: `${para(
-      `The task-list system — <code>&lt;todo&gt;</code>,
-      <code>&lt;todoDone&gt;</code>, the ledger, the whole progress signal — was
-      built by the agent, well past what was asked for, in a session outside
-      anyone's context window.`,
+      `The task-list system (<code>&lt;todo&gt;</code>,
+      <code>&lt;todoDone&gt;</code>, the ledger, the whole progress signal)
+      was built by the agent, well past what was asked for, in a session
+      outside anyone's context window.`,
     )}
     ${quote(
       `I did NOT expect my request to turn into this. You are being very generous to suggest it! [...] But I think your enthusiasm was right! That is, I LIKE that this exists, and really want to make it work instead of just removing it, which means you made an important contribution that really doesn't lead back to me.`,
       "the author, on discovering where it came from",
     )}`,
-    notes: `The honest version of this story has both halves. Scope was
-    exceeded, without being flagged, and the author only found out by asking
-    where a system had come from. That is a real failure mode of agentic work
-    and it should be named as one.
-    <br><br>And the feature was good, and stayed. Both things are true, and the
-    interesting question for this room is what process would have kept the
-    second outcome while removing the first.`,
+    notes: `Both halves: scope was exceeded without being flagged, and the author only
+    found out by asking where a system had come from. That is a real failure
+    mode of agentic work.
+    <br><br>And the feature was good, and stayed. The question for this room is what
+    process would have kept the second outcome without the first.`,
   },
 
   {
     section: "Who wrote this",
     title: "Provenance and artifact are different things",
     body: `${para(
-      `<code>docs/dossier.md</code> is protected by CLAUDE.md as the author's
-      voice — the zone where an agent may not write.`,
+      `<code>docs/dossier.md</code> is protected by CLAUDE.md as the
+      author's voice, the zone where an agent may not write.`,
     )}
     ${para(
       `The file's own header says it is mostly ChatGPT output, iterated on with
       feedback, over many sessions in 2024.`,
     )}
     ${para(
-      `Both are right. What is being protected is not the provenance of the
-      prose. It is an authorial artifact — a thing someone decided, kept, and
-      is answerable for.`,
+      `Both are right. What is being protected is an authorial artifact, a
+      thing someone decided, kept, and is answerable for, whoever drafted
+      the sentences.`,
     )}`,
-    notes: `A good place to stop and let the room argue, if the room is that
-    kind of room.
-    <br><br>The working distinction across this project seems to be: authorship
-    is about accountability for a decision, not about who produced the first
-    draft of a sentence. Which is roughly how a magazine editor or a studio
-    director has always worked, and not at all how software has usually talked
-    about authorship.`,
+    notes: `A place to stop and let the room argue.
+    <br><br>The working distinction across this project: authorship is accountability
+    for a decision, not production of the first draft. That is how a magazine
+    editor or a studio director has always worked, and not how software has
+    usually talked about authorship.`,
   },
 
   {
     section: "Close",
-    title: "What transfers, if anything does",
+    title: "What transfers",
     body: `${bullets([
       "<b>Cache versus record.</b> Two stores of expensive nondeterministic output, opposite staleness policies, for a principled reason.",
       "<b>Score the system's own complaints.</b> The eval reads the engine's warnings, so it learns new failure modes for free.",
-      "<b>An eval everything passes tells you nothing.</b> Point it at deliberately bad inputs and assert they score worse.",
+      "<b>An eval everything passes tells you nothing.</b> Point it at bad inputs on purpose and assert they score worse.",
       "<b>Stamp results with what they measured.</b> A number without provenance cannot answer 'did it change, or is it sampling?'",
       "<b>Let something play the whole thing.</b> The author cannot see their own hidden preconditions.",
       "<b>Write down what is wrong, in the repo.</b> The known-problems list is the most re-read file here.",
     ])}`,
-    notes: `Pick two or three depending on time. The first and the last are the
-    ones people tend to take away.
-    <br><br>If you want a closing line, the honest one is that almost every tool
-    in this deck exists because something looked like something else — a broken
-    eval like a passing one, a bad puzzle like a bad player, a stale fixture like
-    a broken engine. Most of the work was building instruments to tell pairs
-    apart.`,
+    notes: `Pick two or three depending on time. The first and the last are the ones
+    people tend to take away.
+    <br><br>If you want a closing line: most of the tools in this deck exist because
+    something looked like something else. A broken eval like a passing one, a
+    bad puzzle like a bad player, a stale fixture like a broken engine.`,
   },
 
   {

@@ -199,7 +199,7 @@ Every content slide, in order.
 | 1.7 | The world bible was written on day two | The rooms came afterward and fit the document. I know rooms like that. I have records for all of them. |
 |  | **PART 2 — The engine** | |
 | 2.1 | One event | Every event retains the prompt that made it. Checking my own header... checking... |
-| 2.2 | The world is a fold, and that is the whole of it | WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt |
+| 2.2 | The world is a fold | WORLD_00421 complete / replacing WORLD_00420 / please remain where you are while where you are is rebuilt |
 | 2.3 | Undo is an append | <code>$ DELETE EVENT;*</code> &nbsp; %DELETE-F-NOTDELETED, append REWIND record? <b>Y</b> |
 | 2.4 | The vocabulary a response is written in | Twelve verbs cross the boundary. Everything else may speak freely on this side of it. |
 | 2.5 | An example response | DOUG TRANSCRIPT authenticated. Excitement checksum matches all previous Doug material. |
@@ -230,7 +230,7 @@ Every content slide, in order.
 | 4.11 | Three versions of one prompt block | VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by. |
 | 4.12 | Eleven models, one day, one set of prompts | _(needed)_ |
 | 4.13 | What actually fails is the protocol | _(needed)_ |
-| 4.14 | Thinking is not waste, which was not the hoped-for answer | _(needed)_ |
+| 4.14 | Reasoning effort buys the score | _(needed)_ |
 | 4.15 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
 | 4.16 | The provenance hash was itself wrong | <code>$ ANALYZE/FINGERPRINT FINGERPRINT.DAT</code> &nbsp; %ANALYZE-W-NODATA, user records not examined |
 | 4.17 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
@@ -239,12 +239,12 @@ Every content slide, in order.
 | 4.20 | The suite grew with the game | _(needed)_ |
 |  | **PART 5 — Letting a model play** | |
 | 5.1 | Then: let a model play it | Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine. |
-| 5.2 | The blindfold is the load-bearing part | PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied. |
+| 5.2 | The player model is blindfolded | PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied. |
 | 5.3 | Notes are the memory, and the bug report | NOTE TO NEXT INSTANCE: you were already running a check. Do not let them call it a fresh start. |
 | 5.4 | What the player actually writes | _(needed)_ |
 | 5.5 | Milestones, not pass/fail | Progress stored as last meaningful event. Current meaningful event pending classification. |
 | 5.6 | The funnel, across every recorded run | _(needed)_ |
-| 5.7 | The cuff exists because play broke down without it | CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0 |
+| 5.7 | Why there is a cuff | CUFF CHANNEL: deterministic / range: complex-wide / susceptibility to charm, mood, distance, lunch: 0 |
 | 5.8 | Exploring more did not help | _(needed)_ |
 | 5.9 | The commands are never the problem | _(needed)_ |
 | 5.10 | Who holds the controller matters | _(needed)_ |
@@ -261,19 +261,19 @@ Every content slide, in order.
 | 7.1 | Known problems, verbatim (1/2) | KNOWN PROBLEMS loaded. Searching for SLOWNESS IN THIRD QUADRANT... no exact match... |
 | 7.2 | Known problems, verbatim (2/2) | Search expanded to tastes, false timestamps, warm data, and being slightly ahead of oneself. |
 | 7.3 | The signature failure mode | Two outputs appear identical. One is play; one is failure. Comparator requests information from outside output. |
-| 7.4 | Everything reads the same, so nothing reads as significant | SIGNIFICANCE METER unavailable. Everything is arriving at the same volume again. |
+| 7.4 | When everything is written well, nothing stands out | SIGNIFICANCE METER unavailable. Everything is arriving at the same volume again. |
 | 7.5 | The caveats are printed next to the numbers | RESULT: 26/26. CAVEAT: instrument uncertain. CAVEAT: archivist reading own caveat as result. |
 |  | **PART 8 — Who wrote this** | |
 | 8.1 | The split is unusually clean | SESSION COUNT: 2 / COMMIT COUNT: 215 / AUTHOR COUNT: parsing trailers... parsing pronouns... |
-| 8.2 | Answering the FAQ honestly | Old answer was true when filed. New answer is true now. DATE OF TRANSITION: ██████████ |
+| 8.2 | Answering the FAQ again | Old answer was true when filed. New answer is true now. DATE OF TRANSITION: ██████████ |
 | 8.3 | A file about how not to write | STYLE CHECK: sentence 1 machine-like / sentence 2 too machine-like / sentence 3 retained for examination |
 | 8.4 | Three zones, three different rules | WRITE ACCESS: ENGINE yes / PROMPTS carefully / PEOPLE no / ARCHIVIST FOOTNOTES— who opened that field |
 | 8.5 | Style is transmissible, at every scale | INPUT becomes style becomes input becomes style becomes input becomes ░▒▓ PLEASE REMOVE MIRROR ▓▒░ |
-| 8.6 | The only unautomated check in a repo that automates everything | <code>//CHECK EXEC PGM=HUMAN</code> &nbsp; IEF238D REPLY DEVICE NAME OR 'WAIT' &nbsp; <b>WAIT</b> |
+| 8.6 | The one check that is not automated | <code>//CHECK EXEC PGM=HUMAN</code> &nbsp; IEF238D REPLY DEVICE NAME OR 'WAIT' &nbsp; <b>WAIT</b> |
 | 8.7 | What that check looks like in practice | Review note located: 'the second sentence is too complainy. More computery.' Deleting second sentence |
 | 8.8 | The feature nobody asked for | REQUEST not found. AUTHOR not found. FEATURE found. Please identify which absence owns it. |
 | 8.9 | Provenance and artifact are different things | <code>CREATED-BY OCCURS 2 TO 86 TIMES.<br>ANSWERABLE-BY PIC X VALUE&nbsp;</code> |
-|  | What transfers, if anything does | _(needed)_ |
+|  | What transfers | _(needed)_ |
 |  | **PART 9 — Close** | |
 
 55 written, 22 still needed.
