@@ -156,7 +156,7 @@ const SWEEP = resultRows(SWEEP_DATE, "openrouter");
 
 /** The sweep table, split across slides when it is too tall for one. */
 function sweepSlides(): Slide[] {
-  const per = 10;
+  const per = 7;
   const pages = Math.max(1, Math.ceil(SWEEP.rows.length / per));
   return Array.from({ length: pages }, (_, i) => {
     const rows = SWEEP.rows.slice(i * per, (i + 1) * per);
