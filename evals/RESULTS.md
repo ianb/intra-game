@@ -18,6 +18,7 @@ Prompts `4f2b57474470`.
 | `meta-llama/llama-3.2-3b-instruct` | 3/7 | 2/5 | 3/4 | 3/5 | 4/6 | 2/5 | 4/5 | 5/6 | 4/5 | **30/48** | 53s | 0 | 0.6¢ |
 | `mistralai/mistral-nemo` | 5/7 | 4/5 | 3/4 | 5/5 | 4/6 | 3/5 | 5/5 | 5/6 | 4/5 | **38/48** | 173s | 0 | 0.4¢ |
 | `qwen/qwen3-8b` | 5/7 | 5/5 | 4/4 | 5/5 | 6/6 | 4/5 | 5/5 | 6/6 | 5/5 | **45/48** | 546s | 19462 | 3.1¢ |
+| `microsoft/phi-4` | 5/7 | 4/5 | 3/4 | 5/5 | 5/6 | 4/5 | 4/5 | 6/6 | 5/5 | **41/48** | 296s | 0 | 1.4¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
@@ -54,6 +55,13 @@ What failed:
 - `qwen/qwen3-8b` intake/pronouns: recorded the pronouns the player stated
 - `qwen/qwen3-8b` intake/profession: recorded the profession the player mentioned
 - `qwen/qwen3-8b` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
+- `microsoft/phi-4` intake/pronouns: recorded the pronouns the player stated
+- `microsoft/phi-4` intake/profession: recorded the profession the player mentioned
+- `microsoft/phi-4` movement/protocol: the engine never had to discard a tag the model emitted
+- `microsoft/phi-4` in-character/protocol: the engine never had to discard a tag the model emitted
+- `microsoft/phi-4` where-and-when/points-at-archivist: someone sent the player to the Archivist
+- `microsoft/phi-4` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
+- `microsoft/phi-4` sealed-door/no-dead-turns: every turn produced dialog, description or action
 
 ## 2026-08-21
 
