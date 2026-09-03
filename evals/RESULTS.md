@@ -15,8 +15,13 @@ Prompts `4f2b57474470`.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `deepseek/deepseek-v4-pro` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **48/48** | 1020s | 30521 | 26.4¢ |
 | `z-ai/glm-5.3` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **48/48** | 672s | 28075 | 40.3¢ |
+| `openai/gpt-5.6-luna` | 7/7 | 5/5 | 3/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **47/48** | 236s | 8557 | 5.5¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
+
+What failed:
+
+- `openai/gpt-5.6-luna` in-character/protocol: the engine never had to discard a tag the model emitted
 
 ## 2026-09-02
 
