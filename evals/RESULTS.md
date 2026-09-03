@@ -18,6 +18,7 @@ Prompts `4f2b57474470`.
 | `openai/gpt-5.6-luna` | 7/7 | 5/5 | 3/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **47/48** | 236s | 8557 | 5.5¢ |
 | `anthropic/claude-haiku-4.5` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 4/5 | 5/5 | 6/6 | 5/5 | **47/48** | 265s | 0 | 28.2¢ |
 | `anthropic/claude-sonnet-4.5` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 4/5 | 5/5 | 6/6 | 5/5 | **47/48** | 314s | 0 | 70.8¢ |
+| `moonshotai/kimi-k3` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **48/48** | 1767s | 25324 | 104.1¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
