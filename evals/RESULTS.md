@@ -17,6 +17,7 @@ Prompts `4f2b57474470`.
 | `z-ai/glm-5.3` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **48/48** | 672s | 28075 | 40.3¢ |
 | `openai/gpt-5.6-luna` | 7/7 | 5/5 | 3/4 | 5/5 | 6/6 | 5/5 | 5/5 | 6/6 | 5/5 | **47/48** | 236s | 8557 | 5.5¢ |
 | `anthropic/claude-haiku-4.5` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 4/5 | 5/5 | 6/6 | 5/5 | **47/48** | 265s | 0 | 28.2¢ |
+| `anthropic/claude-sonnet-4.5` | 7/7 | 5/5 | 4/4 | 5/5 | 6/6 | 4/5 | 5/5 | 6/6 | 5/5 | **47/48** | 314s | 0 | 70.8¢ |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 
@@ -24,6 +25,7 @@ What failed:
 
 - `openai/gpt-5.6-luna` in-character/protocol: the engine never had to discard a tag the model emitted
 - `anthropic/claude-haiku-4.5` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
+- `anthropic/claude-sonnet-4.5` star-citizen/point-for-the-act: self-reporting an infraction scored exactly one point
 
 ## 2026-09-02
 
