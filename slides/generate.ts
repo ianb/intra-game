@@ -111,12 +111,15 @@ interface RecordedRun {
   scenarios: RecordedScenario[];
 }
 function resultRows(
-  date: string,
+  dates: string[],
   backend: string,
 ): { rows: string[][]; models: number } {
-  const file = resolve(ROOT, `evals/results/${date}.yaml`);
-  const parsed = parse(readFileSync(file, "utf8")) as { runs: RecordedRun[] };
-  const runs = parsed.runs.filter((run) => run.backend === backend);
+  // A sweep that runs past midnight lands in two files.
+  const runs = dates.flatMap((date) => {
+    const file = resolve(ROOT, `evals/results/${date}.yaml`);
+    const parsed = parse(readFileSync(file, "utf8")) as { runs: RecordedRun[] };
+    return parsed.runs.filter((run) => run.backend === backend);
+  });
   const rows = runs
     .map((run) => {
       const passed = run.scenarios.reduce((n, s) => n + s.passed, 0);
@@ -152,7 +155,7 @@ function resultRows(
   return { rows, models: runs.length };
 }
 const SWEEP_DATE = "2026-09-02";
-const SWEEP = resultRows(SWEEP_DATE, "openrouter");
+const SWEEP = resultRows([SWEEP_DATE, "2026-09-03"], "openrouter");
 
 /** The sweep table, split across slides when it is too tall for one. */
 function sweepSlides(): Slide[] {
@@ -171,9 +174,9 @@ function sweepSlides(): Slide[] {
       ${
         i === pages - 1
           ? para(
-              `${SWEEP.models} models through OpenRouter on ${SWEEP_DATE}, the
-              full suite, one run each, sorted by score. Read from the results
-              file when this deck is generated.`,
+              `${SWEEP.models} models through OpenRouter, one sweep starting
+              ${SWEEP_DATE}, the full suite, one run each, sorted by score.
+              Read from the results files when this deck is generated.`,
             )
           : ""
       }`,

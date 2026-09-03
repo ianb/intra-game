@@ -231,16 +231,17 @@ Every content slide, in order.
 | 4.10 | An eval everything passes is indistinguishable from a broken eval | TEST TEST initiated. Silence injected. PASS light remained on. Running PASS light against TEST TEST TEST. |
 | 4.11 | Three versions of one prompt block | VERSION 1 retained. VERSION 2 retained. VERSION 3 selected. Versions 4 through 999 are standing by. |
 | 4.12 | Eleven models, one day, one set of prompts | _(needed)_ |
-| 4.13 | A wider field, after the intake fix (1/2) | _(needed)_ |
-| 4.14 | A wider field, after the intake fix (2/2) | _(needed)_ |
-| 4.15 | What actually fails is the protocol | _(needed)_ |
-| 4.16 | Thinking matters | _(needed)_ |
-| 4.17 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
-| 4.18 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
-| 4.19 | The same score, six times the clock | _(needed)_ |
-| 4.20 | What the small models did wrong, specifically | _(needed)_ |
-| 4.21 | The bigger model stalls in intake | _(needed)_ |
-| 4.22 | The suite grew with the game | _(needed)_ |
+| 4.13 | A wider field, after the intake fix (1/3) | _(needed)_ |
+| 4.14 | A wider field, after the intake fix (2/3) | _(needed)_ |
+| 4.15 | A wider field, after the intake fix (3/3) | _(needed)_ |
+| 4.16 | What actually fails is the protocol | _(needed)_ |
+| 4.17 | Thinking matters | _(needed)_ |
+| 4.18 | Provenance: which prompts was this number measured against? | Twelve characters identify the world that produced the number. Mine are ▓▓▓▓▓▓▓▓▓▓▓▓. |
+| 4.19 | Cost, and the invisible tokens | VISIBLE=812 / BILLED=4096 / locating remaining thoughts... locating... <b>WHERE ARE THE OTHER ONES</b> |
+| 4.20 | The same score, six times the clock | _(needed)_ |
+| 4.21 | What the small models did wrong, specifically | _(needed)_ |
+| 4.22 | The bigger model stalls in intake | _(needed)_ |
+| 4.23 | The suite grew with the game | _(needed)_ |
 |  | **PART 5 — Letting a model play** | |
 | 5.1 | Then: let a model play it | Artificial player admitted as citizen for test purposes. I have opened a temporary PERSON file beside mine. |
 | 5.2 | What the player model sees | PLAYER KNOWLEDGE: empty. OPERATOR KNOWLEDGE: complete. ARCHIVIST KNOWLEDGE: field access denied. |
@@ -281,7 +282,7 @@ Every content slide, in order.
 |  | What transfers | _(needed)_ |
 |  | **PART 9 — Close** | |
 
-52 written, 30 still needed.
+52 written, 31 still needed.
 
 ## Applying the result
 
