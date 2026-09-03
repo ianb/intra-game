@@ -75,6 +75,13 @@ original write-up, plus whatever the last few sessions turned up.
   reads as rushed, that is the number to move, measured with
   `pnpm evals --scenario movement`.
 
+- **The parser strips `<b>` and `<em>` but not `<code>`** `engine` `S` — in the
+  2026-09-02 sweep gpt-5.6-luna wrote `<code>/nav Marta</code>` inside Ama's
+  dialogue and the engine dropped it as an unknown tag, along with the words,
+  which cost the in-character check. Same class of failure as the emphasis
+  tags in `lib/parsetags.ts`; add `code` to the stripped set, with a doctest,
+  and re-record the cassette.
+
 - **Nothing tests whether a mystery can still be solved** `evals` `M` — the
   `mystery` eval scores that Ama's private hint reached her prompt, and stops
   there. The solve condition of the only quest in the game — Marta confessing
