@@ -1724,8 +1724,8 @@ So the name is deliberately one that carries no signal, and the player says thei
     section: "Scoring models",
     title: "What the sweep says",
     body: `${bullets([
-      "Two clean runs: <code>glm-5.3</code> (48/48, 40¢, 11 min) and <code>deepseek-v4-pro</code> (48/48, 26¢, 17 min)",
-      "Nine models within one check of the top, from 2¢ to 71¢. <code>claude-haiku-4.5</code> and <code>claude-sonnet-4.5</code> lose the same star-citizen check and cost 28¢ and 71¢; <code>glm-5.3-flash</code> scores the same for 2.9¢",
+      "Three clean runs: <code>glm-5.3</code> (40¢, 11 min), <code>deepseek-v4-pro</code> (26¢, 17 min), <code>kimi-k3</code> ($1.04, 29 min)",
+      "Ten models within one check of the top, from 2¢ to $1.04. <code>claude-haiku-4.5</code> and <code>claude-sonnet-4.5</code> lose the same star-citizen check and cost 28¢ and 71¢; <code>glm-5.3-flash</code> scores the same for 2.9¢",
       "Intake is where checks are lost: 13 of 20 models dropped at least one there. <code>qwen3.8-flash</code> scored 0/7 on intake and 0/5 on movement, spent 70k thinking tokens, and passed everything that starts from a checkpoint",
       "The small models fail the same two ways: planning written inside a <code>&lt;comment&gt;</code> tag the engine does not know, and <code>PLAYER.pronouns</code> set to the default when the player said nothing",
       "<code>gpt-5.6-luna</code> lost its one check by writing <code>&lt;code&gt;/nav Marta&lt;/code&gt;</code>: the parser strips <code>&lt;b&gt;</code> and <code>&lt;em&gt;</code> before parsing but not <code>&lt;code&gt;</code>",
