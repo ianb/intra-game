@@ -158,6 +158,16 @@ conversation.setMuted(false);
 => false true
 ```
 
+Turn-taking can change without a restart; it goes over the channel as a
+session update:
+
+``` continue
+conversation.setTurnTaking("unhurried");
+const update = peer.channel.sent.at(-1);
+[update.type, update.session.audio.input.turn_detection.silence_duration_ms].join(" ");
+=> session.update 1500
+```
+
 Elapsed time counts from when the channel opened:
 
 ``` continue

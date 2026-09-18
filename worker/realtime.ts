@@ -3,6 +3,7 @@ import {
   describeSecretFailure,
   isRealtimeModel,
   isRealtimeVoice,
+  isTurnTaking,
   redactKeys,
   type ClientSecretRequestBody,
   type ClientSecretResponse,
@@ -59,6 +60,12 @@ export async function mintClientSecret(
   if (!isRealtimeVoice(body.voice)) {
     return json({ error: "That voice is not one this game offers." }, 400);
   }
+  if (body.turnTaking !== undefined && !isTurnTaking(body.turnTaking)) {
+    return json(
+      { error: "That turn-taking setting is not one this game offers." },
+      400,
+    );
+  }
   const instructions =
     typeof body.instructions === "string" ? body.instructions : "";
   if (!instructions || instructions.length > MAX_INSTRUCTIONS) {
@@ -69,6 +76,7 @@ export async function mintClientSecret(
     voice: body.voice,
     instructions,
     transcribeInput: body.transcribeInput === true,
+    turnTaking: body.turnTaking,
   };
 
   let upstream: Response;

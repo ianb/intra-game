@@ -45,12 +45,46 @@ export function isRealtimeVoice(value: unknown): value is RealtimeVoice {
   return (REALTIME_VOICES as readonly unknown[]).includes(value);
 }
 
+/**
+ * How quickly the character decides the player has finished talking.
+ *
+ * "quick" is the API's default server VAD, which answers about half a second
+ * into any pause. That reads as an assistant filling silence. "patient" uses
+ * semantic VAD at low eagerness, which waits for what sounds like the end of
+ * a thought; "unhurried" is server VAD with a long silence window, for
+ * players who think out loud slowly.
+ */
+export const TURN_TAKING = ["quick", "patient", "unhurried"] as const;
+export type TurnTaking = (typeof TURN_TAKING)[number];
+export const DEFAULT_TURN_TAKING: TurnTaking = "patient";
+
+export function isTurnTaking(value: unknown): value is TurnTaking {
+  return (TURN_TAKING as readonly unknown[]).includes(value);
+}
+
+/** The API's turn_detection object for a mode. Always explicit, so a live update can switch back to quick. */
+export function turnDetectionFor(mode: TurnTaking): Record<string, unknown> {
+  switch (mode) {
+    case "patient":
+      return { type: "semantic_vad", eagerness: "low" };
+    case "unhurried":
+      return {
+        type: "server_vad",
+        silence_duration_ms: 1500,
+        prefix_padding_ms: 300,
+      };
+    default:
+      return { type: "server_vad" };
+  }
+}
+
 /** Everything a session needs besides the credential. */
 export interface RealtimeSessionSpec {
   model: RealtimeModel;
   voice: RealtimeVoice;
   instructions: string;
   transcribeInput?: boolean;
+  turnTaking?: TurnTaking;
 }
 
 /** What the browser posts to /api/realtime/secret. */
@@ -76,7 +110,9 @@ export interface ClientSecretResponse {
 export function clientSecretRequest(
   spec: RealtimeSessionSpec,
 ): Record<string, unknown> {
-  const input: Record<string, unknown> = {};
+  const input: Record<string, unknown> = {
+    turn_detection: turnDetectionFor(spec.turnTaking ?? DEFAULT_TURN_TAKING),
+  };
   if (spec.transcribeInput) {
     input.transcription = { model: INPUT_TRANSCRIPTION_MODEL };
   }

@@ -20,14 +20,18 @@ import {
 } from "@/lib/game/converse";
 import {
   DEFAULT_REALTIME_MODEL,
+  DEFAULT_TURN_TAKING,
   REALTIME_MODELS,
   REALTIME_VOICES,
   SESSION_LIMIT_MINUTES,
+  TURN_TAKING,
   isRealtimeModel,
   isRealtimeVoice,
+  isTurnTaking,
   type RealtimeModel,
   type RealtimeVoice,
   type ResponseUsage,
+  type TurnTaking,
 } from "@/lib/realtime";
 import { model } from "./model";
 import {
@@ -49,6 +53,13 @@ const selectedModel = signal<RealtimeModel>(DEFAULT_REALTIME_MODEL);
 const selectedVoice = signal<RealtimeVoice>("alloy");
 const transcribeInput = signal(false);
 const openingLine = signal(true);
+const turnTaking = signal<TurnTaking>(DEFAULT_TURN_TAKING);
+
+const TURN_TAKING_LABELS: Record<TurnTaking, string> = {
+  quick: "quick (answers half a second into a pause)",
+  patient: "patient (waits for the end of a thought)",
+  unhurried: "unhurried (waits a second and a half of silence)",
+};
 
 /** Open the panel for a character, ending any conversation with another. */
 export function openVoicePanel(person: Person): void {
@@ -84,6 +95,7 @@ function begin(person: Person): void {
       voice: selectedVoice.value,
       instructions: converseInstructions(person),
       transcribeInput: transcribeInput.value,
+      turnTaking: turnTaking.value,
     },
   });
 }
@@ -207,6 +219,27 @@ export function VoicePanel() {
               {REALTIME_VOICES.map((name) => (
                 <option key={name} value={name}>
                   {name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col">
+            <span className="text-gray-400 text-xs">Turn-taking</span>
+            <select
+              className="bg-gray-800 p-1"
+              value={turnTaking.value}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (isTurnTaking(value)) {
+                  turnTaking.value = value;
+                  // Changeable live, unlike model and voice.
+                  mine?.setTurnTaking(value);
+                }
+              }}
+            >
+              {TURN_TAKING.map((mode) => (
+                <option key={mode} value={mode}>
+                  {TURN_TAKING_LABELS[mode]}
                 </option>
               ))}
             </select>

@@ -17,10 +17,12 @@ import { signal } from "@preact/signals-react";
 import {
   redactKeys,
   sumUsage,
+  turnDetectionFor,
   usageFromResponseDone,
   type ClientSecretResponse,
   type RealtimeSessionSpec,
   type ResponseUsage,
+  type TurnTaking,
 } from "@/lib/realtime";
 
 export const REALTIME_CALLS_URL = "https://api.openai.com/v1/realtime/calls";
@@ -174,6 +176,21 @@ export class VoiceConversation {
     }
   }
 
+  /**
+   * Change how long the character waits before answering, mid-session.
+   * Turn detection is one of the few session fields the API lets a live
+   * session change, so this does not need a restart.
+   */
+  setTurnTaking(mode: TurnTaking): void {
+    this.send({
+      type: "session.update",
+      session: {
+        type: "realtime",
+        audio: { input: { turn_detection: turnDetectionFor(mode) } },
+      },
+    });
+  }
+
   setMuted(muted: boolean): void {
     this.muted.value = muted;
     for (const track of this.mic?.getAudioTracks() ?? []) {
@@ -280,7 +297,7 @@ export class VoiceConversation {
       this.send({
         type: "response.create",
         response: {
-          instructions: `Say one short line to PLAYER to pick the conversation up, as ${this.options.characterName}.`,
+          instructions: `Say one or two short sentences as ${this.options.characterName}, about what ${this.options.characterName} is doing or has noticed right now. Do not greet like a receptionist and do not offer help.`,
         },
       });
     }

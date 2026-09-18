@@ -36,7 +36,11 @@ builds a `RealtimeSessionSpec` from the prompt and hands it to the session.
    on the peer connection and plays through an `Audio` element.
 4. Server events over the data channel drive the transcript, the speaking
    indicators and the usage summary. Interruption is handled by the API's own
-   turn detection over WebRTC; nothing local is tuned.
+   turn detection over WebRTC. The **Turn-taking** picker sets how long the
+   character waits before answering: the API's default (`quick`) answers
+   about half a second into any pause, which sounds like an assistant filling
+   silence, so the default here is `patient` (semantic VAD, low eagerness).
+   It can be changed mid-session; model and voice cannot.
 5. **End**, the close button, Escape, a character switch, or a model/voice
    change ends the session: mic tracks stopped, channel and peer closed, audio
    silenced. A model or voice change while connected restarts with the new
@@ -127,5 +131,9 @@ means anything.
   its transcript is discarded with it.
 - **No consequences.** By design for this branch; the eventual integration is
   a separate decision.
-- **The voice map and delivery notes** in `lib/game/converse.ts` are drafts
-  for auditioning and are meant to be rewritten.
+- **The voice map, delivery notes and personas** in `lib/game/converse.ts`
+  are drafts for auditioning and are meant to be rewritten. The persona block
+  exists because Realtime models default to a help-desk manner; Ama's says
+  what she is like to talk to (surveillance as affection, calm that does not
+  change with the subject, certainty without argument). Add one for any
+  character who comes out sounding like an assistant.

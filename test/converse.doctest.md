@@ -87,11 +87,26 @@ yes(has("<record>") && has("Ink and Echo"));
 => yes
 ```
 
-And that this is talk with no effects:
+That this is talk with no effects, and that they are not an assistant:
 
 ```ts
-yes(has("This is talk only"));
+yes(has("Talk only.") && has("not an assistant"));
 => yes
+```
+
+Ama has a conversational persona of her own, because her written instructions
+alone come out sounding like a help desk. So does Marta. Frida's roleplay
+notes already say what she is like to talk to, so she has none:
+
+```ts
+yes(has("<inConversation>") && has("She never asks how she can help."));
+=> yes
+
+yes(converseInstructions(model.world.entities.Marta).includes("treats the player as an audience"));
+=> yes
+
+yes(converseInstructions(model.world.entities.Frida).includes("<inConversation>"));
+=> no
 ```
 
 ## What is left out
@@ -172,9 +187,24 @@ transcription is billed separately and is only asked for when asked for:
 const body = clientSecretRequest({ model: "gpt-realtime-2.1-mini", voice: "marin", instructions: "Hello" });
 const session = body.session as Record<string, any>;
 [session.type, session.model, session.audio.output.voice, session.instructions, JSON.stringify(session.audio.input)].join(" | ");
-=> realtime | gpt-realtime-2.1-mini | marin | Hello | {}
+=> realtime | gpt-realtime-2.1-mini | marin | Hello | {"turn_detection":{"type":"semantic_vad","eagerness":"low"}}
 
 const transcribed = clientSecretRequest({ model: "gpt-realtime-2.1", voice: "ash", instructions: "Hi", transcribeInput: true });
 (transcribed.session as any).audio.input.transcription.model;
 => gpt-4o-mini-transcribe
+```
+
+Turn-taking defaults to patient, because the API's own default answers half a
+second into any pause, which sounds like an assistant filling silence. The
+other two modes are explicit too, so a live switch back to quick sends a real
+setting rather than nothing:
+
+```ts
+const quick = clientSecretRequest({ model: "gpt-realtime-2.1", voice: "ash", instructions: "Hi", turnTaking: "quick" });
+JSON.stringify((quick.session as any).audio.input.turn_detection);
+=> {"type":"server_vad"}
+
+const slow = clientSecretRequest({ model: "gpt-realtime-2.1", voice: "ash", instructions: "Hi", turnTaking: "unhurried" });
+JSON.stringify((slow.session as any).audio.input.turn_detection);
+=> {"type":"server_vad","silence_duration_ms":1500,"prefix_padding_ms":300}
 ```

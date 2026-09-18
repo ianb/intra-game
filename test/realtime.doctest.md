@@ -95,6 +95,7 @@ const cases = [
   { ...good, apiKey: "not-a-key" },
   { ...good, model: "gpt-4o-realtime-preview" },
   { ...good, voice: "morgan" },
+  { ...good, turnTaking: "instant" },
   { ...good, instructions: "" },
 ];
 const answers = await Promise.all(cases.map(async (body) => {
@@ -106,6 +107,7 @@ answers.join("\n");
 400 That does not look like an OpenAI API key; they start with sk-.
 400 That model is not one this game offers.
 400 That voice is not one this game offers.
+400 That turn-taking setting is not one this game offers.
 400 Missing or oversized instructions.
 
 seen.calls;
