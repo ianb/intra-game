@@ -22,9 +22,10 @@ builds a `RealtimeSessionSpec` from the prompt and hands it to the session.
 
 ## How a session runs
 
-1. The panel asks for an OpenAI key if it has none. The key lives in a plain
-   in-memory signal (`openaiKey` in `app/voice.ts`): not localStorage, not a
-   save, not an export. Reloading forgets it; "Clear key" forgets it sooner.
+1. The panel asks for an OpenAI key if it has none. The key is kept in this
+   browser's localStorage (`openaiKey` in `app/voice.ts`) so it survives a
+   reload, and nowhere else: not a save, an export, the log, or a server
+   session. "Clear key" removes it.
 2. **Start talking** requests the microphone, then posts the key, model, voice
    and prompt to `/api/realtime/secret`. The Worker forwards them in one call
    to `https://api.openai.com/v1/realtime/client_secrets` and returns only the
@@ -77,7 +78,8 @@ means anything.
    note, and a disabled Start button.
 2. **Enter a key.** Paste a real OpenAI key, click Use key. The field is
    replaced by "OpenAI key set (ends in ····)" and a Clear button. Reload the
-   page later and confirm the key is gone.
+   page and confirm the key is still set; click Clear key and confirm it is
+   gone from Application → Local Storage.
 3. **Start.** Click Start talking, allow the microphone. Expect "Connecting..."
    then "● Connected 0:00" with a running timer, and (with "Character speaks
    first" on) an opening line in Ama's voice within a couple of seconds. The
@@ -113,8 +115,8 @@ means anything.
     refuses with "End the voice conversation before playing a turn." if
     anything reaches it.
 13. **Key hygiene.** With the panel open and a session running: in DevTools,
-    Application → Local Storage has no key; the `/api/realtime/secret` request
-    body carries it and the response does not; the `/v1/realtime/calls`
+    the `/api/realtime/secret` request body carries the key and the response
+    does not; the `/v1/realtime/calls`
     request uses an `ek_` bearer, not the key. `wrangler dev`'s console shows
     `POST /api/realtime/secret` and nothing else about it. Save the game and
     grep the save for `sk-`.

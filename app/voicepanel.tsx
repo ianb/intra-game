@@ -8,7 +8,7 @@
  */
 
 import { useEffect } from "react";
-import { signal, useSignal } from "@preact/signals-react";
+import { signal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/input";
@@ -54,6 +54,10 @@ const selectedVoice = signal<RealtimeVoice>("alloy");
 const transcribeInput = signal(false);
 const openingLine = signal(true);
 const turnTaking = signal<TurnTaking>(DEFAULT_TURN_TAKING);
+/** What is typed in the key field and not yet submitted; Start accepts it too. */
+const keyDraft = signal("");
+/** Why the last Start did nothing, shown beside the button. */
+const startNotice = signal<string | null>(null);
 
 const TURN_TAKING_LABELS: Record<TurnTaking, string> = {
   quick: "quick (answers half a second into a pause)",
@@ -81,10 +85,18 @@ export function closeVoicePanel(): void {
 
 /** Start (or restart) the session for a character with the current choices. */
 function begin(person: Person): void {
+  // A key typed into the field but not yet submitted counts: pressing Start
+  // was the intent, and a Start that silently does nothing looks broken.
+  if (!openaiKey.value.trim() && keyDraft.value.trim()) {
+    openaiKey.value = keyDraft.value.trim();
+    keyDraft.value = "";
+  }
   const key = openaiKey.value.trim();
   if (!key) {
+    startNotice.value = "Enter your OpenAI key first.";
     return;
   }
+  startNotice.value = null;
   startConversation({
     characterId: person.id,
     characterName: person.name,
@@ -281,14 +293,13 @@ export function VoicePanel() {
 
 function KeyEntry() {
   useSignals();
-  const draft = useSignal("");
+  const draft = keyDraft;
   const key = openaiKey.value;
   if (key) {
     return (
       <div className="mb-3 text-xs text-gray-300 flex items-center gap-2">
         <span>
-          OpenAI key set (ends in {key.slice(-4)}), kept in memory until this
-          page reloads.
+          OpenAI key set (ends in {key.slice(-4)}), saved in this browser.
         </span>
         <Button
           className="p-1 text-xs bg-gray-700 hover:bg-gray-600"
@@ -305,9 +316,9 @@ function KeyEntry() {
     <div className="mb-3 border border-gray-700 rounded p-2">
       <div className="text-xs text-gray-300 mb-1">
         Voice conversations run on your own OpenAI account and are billed to it.
-        The key stays in this page&apos;s memory; the game server uses it once
-        to open the connection and does not save it. Nothing about it goes into
-        saved games. This is separate from any OpenRouter key.
+        The key is saved in this browser only; the game server uses it once per
+        conversation to open the connection and does not keep it. Nothing about
+        it goes into saved games. This is separate from any OpenRouter key.
       </div>
       <div className="flex gap-2">
         <input
@@ -343,19 +354,29 @@ function Controls({
   conversation: VoiceConversation | null;
 }) {
   useSignals();
-  const hasKey = !!openaiKey.value.trim();
+  const hasKey = !!openaiKey.value.trim() || !!keyDraft.value.trim();
   const state = conversation?.state.value ?? "idle";
   const start = (
-    <Button
-      className="bg-blue-700"
-      disabled={!hasKey}
-      title={hasKey ? "" : "Enter an OpenAI key first"}
-      onClick={() => {
-        begin(person);
-      }}
-    >
-      {state === "idle" ? "🎙 Start talking" : "🎙 Start again"}
-    </Button>
+    <span className="flex items-center gap-2">
+      <Button
+        className={twMerge("bg-blue-700", !hasKey && "opacity-50")}
+        disabled={!hasKey}
+        title={hasKey ? "" : "Enter an OpenAI key first"}
+        onClick={() => {
+          begin(person);
+        }}
+      >
+        {state === "idle" ? "🎙 Start talking" : "🎙 Start again"}
+      </Button>
+      {!hasKey && (
+        <span className="text-xs text-gray-400">
+          Enter your OpenAI key above first.
+        </span>
+      )}
+      {startNotice.value && (
+        <span className="text-xs text-yellow-300">{startNotice.value}</span>
+      )}
+    </span>
   );
   if (!conversation || state === "idle") {
     return <div className="mb-3">{start}</div>;

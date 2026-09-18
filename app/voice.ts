@@ -14,6 +14,7 @@
  */
 
 import { signal } from "@preact/signals-react";
+import { persistentSignal } from "@/lib/persistentsignal";
 import {
   redactKeys,
   sumUsage,
@@ -459,12 +460,11 @@ export function browserDeps(): VoiceDeps {
 // --- Page-level state ---------------------------------------------------------
 
 /**
- * The player's OpenAI key, for this page load only.
- *
- * A plain signal, not a persistentSignal: it must not reach localStorage, a
- * save, or an export. Reloading the page forgets it, which is the intent.
+ * The player's OpenAI key, kept in this browser's localStorage so it survives
+ * a reload. It goes nowhere else: not into a save, an export, the event log,
+ * or a server session. "Clear key" in the panel removes it.
  */
-export const openaiKey = signal("");
+export const openaiKey = persistentSignal("openaiKey", "");
 
 /** The one conversation allowed at a time, or null. */
 export const activeConversation = signal<VoiceConversation | null>(null);
