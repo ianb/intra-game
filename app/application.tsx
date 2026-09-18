@@ -14,6 +14,7 @@ import { SidePanel, Time } from "./hud";
 import { Help } from "./help";
 import { Input } from "./inputbox";
 import { Settings } from "./settings";
+import { VoicePanel } from "./voicepanel";
 import { ZoomOverlay } from "@/components/zoom";
 import {
   authState,
@@ -198,6 +199,8 @@ export default function Home() {
             <Help />
           </ZoomOverlay>
         )}
+
+        <VoicePanel />
 
         {openSettings.value && (
           <ZoomOverlay

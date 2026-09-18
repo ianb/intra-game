@@ -8,6 +8,7 @@ import { model } from "./model";
 import { readSse } from "@/lib/ssestream";
 import type { StoryEventType } from "@/lib/types";
 import type { UsageRecordType } from "@/lib/usage";
+import { conversationInProgress } from "./voice";
 
 /**
  * Talking to the session server.
@@ -397,6 +398,13 @@ export async function playTurn(text: string): Promise<string | undefined> {
   const session = remoteSession.value;
   if (!session) {
     lastLlmError.value = "No game on the server yet — try reloading.";
+    return undefined;
+  }
+  // A voice conversation is a snapshot of the game with no effects on it, and
+  // the game is held still while one runs so the snapshot stays true. The
+  // panel covers the controls; this is the check that does not depend on it.
+  if (conversationInProgress()) {
+    lastLlmError.value = "End the voice conversation before playing a turn.";
     return undefined;
   }
   // Commands are instructions to the game rather than things the player said,

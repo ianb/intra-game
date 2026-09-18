@@ -32,6 +32,7 @@ import { effect, signal, useSignal } from "@preact/signals-react";
 import { initSession, playTurn, startNewGame, turnRunning } from "./session";
 import { model } from "./model";
 import { composer } from "./uistate";
+import { ConverseButtons } from "./voicepanel";
 import { twMerge } from "tailwind-merge";
 import { useSignals } from "@preact/signals-react/runtime";
 
@@ -123,6 +124,7 @@ export function NormalControls() {
           )}
         </div>
       )}
+      {room && <ConverseButtons />}
     </>
   );
 }

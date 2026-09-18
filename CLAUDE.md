@@ -10,6 +10,7 @@ Orientation:
 - [TODO.md](./TODO.md) — the issue list, and what's known to be broken
 - [docs/testing.md](./docs/testing.md) — doctests, cassettes, checkpoints
 - [docs/deploying.md](./docs/deploying.md) — the Cloudflare setup
+- [docs/voice-converse.md](./docs/voice-converse.md) — the voice-conversation experiment
 - [playtest/README.md](./playtest/README.md) — driving the engine with a real model
 - [evals/README.md](./evals/README.md) — scoring whether a model can run the game
 - [slides/README.md](./slides/README.md) — a talk about how all of this was built

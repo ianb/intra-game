@@ -6,6 +6,7 @@ import {
   googleLogout,
   startGoogleLogin,
 } from "./googleauth";
+import { mintClientSecret } from "./realtime";
 import { OWNER_HEADER } from "./session";
 import { MAX_SESSIONS, type SessionSummary } from "./sessionindex";
 
@@ -124,6 +125,15 @@ export default {
 
     if (url.pathname === "/api/sessions") {
       return sessions(request, env, auth.email);
+    }
+
+    // The voice experiment's one server leg: turn the player's own OpenAI key
+    // into a short-lived client secret. Behind the identity gate like the rest
+    // of /api, but it belongs to no session and stores nothing; see
+    // worker/realtime.ts. The body carries the key, so it must never be
+    // logged: the request line above is all this Worker records.
+    if (url.pathname === "/api/realtime/secret") {
+      return mintClientSecret(request);
     }
 
     // A session id is supplied by the client; the DO name is scoped by the
