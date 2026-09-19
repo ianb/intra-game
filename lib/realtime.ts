@@ -78,8 +78,21 @@ export function turnDetectionFor(mode: TurnTaking): Record<string, unknown> {
   }
 }
 
-/** Everything a session needs besides the credential. */
+/** Which speech-to-speech service a session runs on. */
+export const VOICE_PROVIDERS = ["openai", "gemini"] as const;
+export type VoiceProvider = (typeof VOICE_PROVIDERS)[number];
+export const PROVIDER_NAMES: Record<VoiceProvider, string> = {
+  openai: "OpenAI",
+  gemini: "Google",
+};
+
+export function isVoiceProvider(value: unknown): value is VoiceProvider {
+  return (VOICE_PROVIDERS as readonly unknown[]).includes(value);
+}
+
+/** Everything an OpenAI Realtime session needs besides the credential. */
 export interface RealtimeSessionSpec {
+  provider?: "openai";
   model: RealtimeModel;
   voice: RealtimeVoice;
   instructions: string;
@@ -87,18 +100,29 @@ export interface RealtimeSessionSpec {
   turnTaking?: TurnTaking;
 }
 
-/** What the browser posts to /api/realtime/secret. */
-export interface ClientSecretRequestBody extends RealtimeSessionSpec {
+/**
+ * What the browser posts to /api/realtime/secret: the key plus the session
+ * spec for whichever provider. The Gemini spec lives in lib/geminilive.ts;
+ * the Worker checks the fields it needs rather than the whole shape.
+ */
+export interface ClientSecretRequestBody {
   apiKey: string;
+  provider?: VoiceProvider;
+  model?: string;
+  voice?: string;
+  instructions?: string;
+  transcribeInput?: boolean;
+  turnTaking?: TurnTaking;
 }
 
 /** What /api/realtime/secret answers. Never the player's key. */
 export interface ClientSecretResponse {
+  provider: VoiceProvider;
   secret: string;
-  /** Unix seconds, as OpenAI reports it; 0 when it did not. */
+  /** Unix seconds when known; 0 when the provider did not say. */
   expiresAt: number;
-  model: RealtimeModel;
-  voice: RealtimeVoice;
+  model: string;
+  voice: string;
 }
 
 /**
@@ -132,12 +156,15 @@ export function clientSecretRequest(
 }
 
 /**
- * Strip anything shaped like an OpenAI key from text that might be shown or
- * logged. OpenAI's own "incorrect API key" message quotes a masked form of the
- * key, so the pattern accepts asterisks too.
+ * Strip anything shaped like a credential from text that might be shown or
+ * logged: OpenAI keys (whose own "incorrect API key" message quotes a masked
+ * form, so asterisks are accepted), Google keys, and Gemini ephemeral tokens.
  */
 export function redactKeys(text: string): string {
-  return text.replace(/sk-[A-Za-z0-9_*-]{4,}/g, "sk-[redacted]");
+  return text
+    .replace(/sk-[A-Za-z0-9_*-]{4,}/g, "sk-[redacted]")
+    .replace(/AIza[A-Za-z0-9_*-]{10,}/g, "AIza[redacted]")
+    .replace(/auth_tokens\/[A-Za-z0-9_-]+/g, "auth_tokens/[redacted]");
 }
 
 /**
@@ -150,25 +177,42 @@ export function describeSecretFailure(
   status: number,
   upstreamMessage: string | undefined,
   model: string,
+  provider: VoiceProvider = "openai",
 ): string {
+  const who = PROVIDER_NAMES[provider];
   const detail = upstreamMessage ? ` (${redactKeys(upstreamMessage)})` : "";
   switch (status) {
     case 401:
-      return `OpenAI rejected that API key${detail}.`;
+      return `${who} rejected that API key${detail}.`;
     case 403:
-      return `That OpenAI account is not allowed to use the Realtime API${detail}.`;
+      return `That ${who} account is not allowed to use this API${detail}.`;
     case 404:
-      return `OpenAI reports that ${model} is not available to this key${detail}.`;
+      return `${who} reports that ${model} is not available to this key${detail}.`;
     case 429:
-      return `OpenAI reports a rate limit or quota problem on this account${detail}.`;
+      return `${who} reports a rate limit or quota problem on this account${detail}.`;
     case 400:
-      if (upstreamMessage && /model/i.test(upstreamMessage)) {
-        return `OpenAI would not start a session on ${model}${detail}.`;
+      // Google answers a bad key with 400 rather than 401.
+      if (upstreamMessage && /api key/i.test(upstreamMessage)) {
+        return `${who} rejected that API key${detail}.`;
       }
-      return `OpenAI rejected the session request${detail}.`;
+      if (upstreamMessage && /model/i.test(upstreamMessage)) {
+        return `${who} would not start a session on ${model}${detail}.`;
+      }
+      return `${who} rejected the session request${detail}.`;
     default:
-      return `OpenAI returned ${status}${detail}.`;
+      return `${who} returned ${status}${detail}.`;
   }
+}
+
+/** Whether an upstream failure was the player's own account saying no. */
+export function isAccountRefusal(
+  status: number,
+  upstreamMessage: string | undefined,
+): boolean {
+  return (
+    [401, 403, 404, 429].includes(status) ||
+    (status === 400 && !!upstreamMessage && /api key/i.test(upstreamMessage))
+  );
 }
 
 /** Token counts from one response.done event, flattened. */

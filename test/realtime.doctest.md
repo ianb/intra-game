@@ -57,8 +57,8 @@ Authorization header and the session configuration in the body:
 ```ts
 const { seen, fetcher } = upstream(200, { value: "ek_abc123", expires_at: 1700000600 });
 const { status, data } = await result(await mintClientSecret(post(good), fetcher));
-[status, data.secret, data.expiresAt, data.model, data.voice].join(" ");
-=> 200 ek_abc123 1700000600 gpt-realtime-2.1-mini marin
+[status, data.provider, data.secret, data.expiresAt, data.model, data.voice].join(" ");
+=> 200 openai ek_abc123 1700000600 gpt-realtime-2.1-mini marin
 
 seen.url;
 => https://api.openai.com/v1/realtime/client_secrets
@@ -181,7 +181,7 @@ describeSecretFailure(400, "Unsupported model: gpt-realtime-2.1", "gpt-realtime-
 => OpenAI would not start a session on gpt-realtime-2.1 (Unsupported model: gpt-realtime-2.1).
 
 describeSecretFailure(403, undefined, "gpt-realtime-2.1-mini");
-=> That OpenAI account is not allowed to use the Realtime API.
+=> That OpenAI account is not allowed to use this API.
 ```
 
 Usage is read from `response.done` only, with missing detail blocks counting

@@ -18,6 +18,7 @@ import {
   voiceForPerson,
 } from "../lib/game/converse.js";
 import { REALTIME_VOICES, clientSecretRequest } from "../lib/realtime.js";
+import { GEMINI_VOICES } from "../lib/geminilive.js";
 
 // A real game, mid-story: the player in the atrium with the first mystery
 // handed over, which gives Ama a history worth carrying.
@@ -65,7 +66,7 @@ yes(has('You are voicing Ama (she/her)'));
 yes(has('known as "Ada Quill"'));
 => yes
 
-yes(has('Ama is in the room "The Hollow Atrium"'));
+yes(has("Ama is in The Hollow Atrium:"));
 => yes
 ```
 
@@ -79,12 +80,22 @@ yes(has("Delivery: " + voiceForPerson("Ama").delivery));
 => yes
 ```
 
-What they saw. The briefed checkpoint ends with Ama handing over the Ink and
-Echo errand, and that is in the record:
+What they saw, as a plain transcript rather than the text engine's tags. The
+briefed checkpoint ends with Ama handing over the Ink and Echo errand:
 
 ```ts
-yes(has("<record>") && has("Ink and Echo"));
+yes(has("<record>") && has('Ama (to Ada Quill): "Citizen, I have a small task'));
 => yes
+
+yes(has("Ada Quill tries: Ada Quill attempts to unlock the door"));
+=> yes
+```
+
+And no entity ids or tag markup in the situation or the record:
+
+```ts
+yes(has('id = "PLAYER"') || has("<dialog") || has("<description") || has("<intraActivity>"));
+=> no
 ```
 
 That this is talk with no effects, and that they are not an assistant:
@@ -156,11 +167,11 @@ yes(before === after);
 
 ## Voices
 
-Every character has a fixed voice from the API's built-in set, so the same
-person sounds the same from one session to the next:
+Every character has a fixed voice per provider, from each API's built-in set,
+so the same person sounds the same from one session to the next:
 
 ```ts
-Object.values(CHARACTER_VOICES).every((v) => REALTIME_VOICES.includes(v.voice));
+Object.values(CHARACTER_VOICES).every((v) => REALTIME_VOICES.includes(v.voice) && GEMINI_VOICES.includes(v.geminiVoice));
 => true
 
 Object.keys(CHARACTER_VOICES).length;
@@ -174,7 +185,7 @@ Someone without an entry gets a plain default rather than an error:
 
 ```ts
 JSON.stringify(voiceForPerson("nobody"));
-=> {"voice":"alloy","delivery":""}
+=> {"voice":"alloy","geminiVoice":"Schedar","delivery":""}
 ```
 
 ## The session request

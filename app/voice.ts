@@ -1,16 +1,18 @@
 /**
- * One spoken conversation with a character, over WebRTC to OpenAI's Realtime
- * API, and the small amount of state the panel needs to show it.
+ * One spoken conversation with a character, and the small amount of state the
+ * panel needs to show it.
+ *
+ * `VoiceSession` is the provider-neutral part: the signals the panel reads,
+ * the transcript, the usage figures, and the end/fail bookkeeping. The OpenAI
+ * Realtime session (WebRTC) is `VoiceConversation` below; the Gemini Live
+ * session (WebSocket and raw PCM) is in geminivoice.ts. Both take every
+ * browser API through a deps object, so the lifecycle runs in a test with
+ * fakes.
  *
  * Kept apart from the prompt (lib/game/converse.ts) and from the panel
- * (voicepanel.tsx): this file owns the microphone, the peer connection, the
- * data channel and the audio element, and nothing else does. Every browser
- * API it touches comes in through `VoiceDeps`, so the lifecycle can be run in
- * a test with fakes.
- *
- * Nothing here writes to the game. Voice output never reaches the tag parser
- * or a turn, the transcript lives in memory in this object, and the session
- * ends when the object is ended.
+ * (voicepanel.tsx). Nothing here writes to the game: voice output never
+ * reaches the tag parser or a turn, the transcript lives in memory in this
+ * object, and the session ends when the object is ended.
  */
 
 import { signal } from "@preact/signals-react";
@@ -24,7 +26,9 @@ import {
   type RealtimeSessionSpec,
   type ResponseUsage,
   type TurnTaking,
+  type VoiceProvider,
 } from "@/lib/realtime";
+import type { GeminiSessionSpec } from "@/lib/geminilive";
 
 export const REALTIME_CALLS_URL = "https://api.openai.com/v1/realtime/calls";
 
@@ -50,13 +54,20 @@ export interface VoiceDeps {
   now(): number;
 }
 
+export type VoiceSessionSpec = RealtimeSessionSpec | GeminiSessionSpec;
+
 export interface VoiceOptions {
   characterId: string;
   characterName: string;
-  spec: RealtimeSessionSpec;
+  spec: VoiceSessionSpec;
   apiKey: string;
   /** Have the character say one line as soon as the channel opens. */
   openingLine?: boolean;
+}
+
+/** The instruction for the character's first line, when one is asked for. */
+export function openingLineInstruction(characterName: string): string {
+  return `Say one or two short sentences as ${characterName}, about what ${characterName} is doing or has noticed right now. Do not greet like a receptionist and do not offer help.`;
 }
 
 interface ServerEvent {
@@ -64,7 +75,12 @@ interface ServerEvent {
   [key: string]: unknown;
 }
 
-export class VoiceConversation {
+/** What the panel needs from any provider's session. */
+export abstract class VoiceSession {
+  abstract readonly provider: VoiceProvider;
+  /** Whether turn-taking can change mid-session, or needs a restart. */
+  abstract readonly liveTurnTaking: boolean;
+
   readonly state = signal<VoiceState>("idle");
   readonly error = signal<string | null>(null);
   readonly endedBecause = signal<string | null>(null);
@@ -77,22 +93,24 @@ export class VoiceConversation {
   /** The last non-fatal complaint from the server, for the panel. */
   readonly notice = signal<string | null>(null);
 
-  private mic: MediaStream | null = null;
-  private pc: RTCPeerConnection | null = null;
-  private dc: RTCDataChannel | null = null;
-  private audio: HTMLAudioElement | null = null;
   /**
    * Set once by end(), fail() or finish(), and checked after every await in
-   * start(): a secret or an SDP answer that arrives after the player ended the
-   * conversation is dropped, so an ended session cannot come back.
+   * start(): a credential or an answer that arrives after the player ended
+   * the conversation is dropped, so an ended session cannot come back.
    */
-  private closed = false;
-  private partialLine = "";
+  protected closed = false;
 
   constructor(
     readonly options: VoiceOptions,
-    private readonly deps: VoiceDeps,
+    protected readonly clock: () => number,
   ) {}
+
+  abstract start(): Promise<void>;
+  abstract setMuted(muted: boolean): void;
+  /** No-op unless the provider supports it; see liveTurnTaking. */
+  setTurnTaking(_mode: TurnTaking): void {}
+  /** Let go of everything provider-specific, whatever state it is in. */
+  protected abstract releaseResources(): void;
 
   get inProgress(): boolean {
     return (
@@ -104,13 +122,87 @@ export class VoiceConversation {
     return this.closed;
   }
 
-  elapsedSeconds(now = this.deps.now()): number {
+  elapsedSeconds(now = this.clock()): number {
     const from = this.connectedAt.value;
     return from === null ? 0 : Math.max(0, Math.floor((now - from) / 1000));
   }
 
   usage(): ResponseUsage {
     return sumUsage(this.responses.value);
+  }
+
+  /** The player ended it. Idempotent, and safe at any point of start(). */
+  end(reason = "Ended."): void {
+    if (this.closed) {
+      return;
+    }
+    this.closed = true;
+    this.release();
+    if (this.state.value !== "error") {
+      this.state.value = "ended";
+      this.endedBecause.value = reason;
+    }
+  }
+
+  protected markConnected(): void {
+    this.state.value = "connected";
+    this.connectedAt.value = this.clock();
+  }
+
+  protected addLine(who: TranscriptLine["who"], text: string): void {
+    this.transcript.value = [...this.transcript.value, { who, text }];
+  }
+
+  protected addUsage(usage: ResponseUsage | null): void {
+    if (usage) {
+      this.responses.value = [...this.responses.value, usage];
+    }
+  }
+
+  /** The server or the network ended it. */
+  protected finish(reason: string): void {
+    if (this.closed) {
+      return;
+    }
+    this.closed = true;
+    this.release();
+    this.state.value = "ended";
+    this.endedBecause.value = reason;
+  }
+
+  protected fail(message: string): void {
+    if (this.closed) {
+      return;
+    }
+    this.closed = true;
+    this.release();
+    this.error.value = message;
+    this.state.value = "error";
+  }
+
+  private release(): void {
+    this.characterSpeaking.value = false;
+    this.playerSpeaking.value = false;
+    this.releaseResources();
+  }
+}
+
+/** OpenAI's Realtime API over WebRTC. */
+export class VoiceConversation extends VoiceSession {
+  readonly provider = "openai" as const;
+  readonly liveTurnTaking = true;
+
+  private mic: MediaStream | null = null;
+  private pc: RTCPeerConnection | null = null;
+  private dc: RTCDataChannel | null = null;
+  private audio: HTMLAudioElement | null = null;
+  private partialLine = "";
+
+  constructor(
+    options: VoiceOptions,
+    private readonly deps: VoiceDeps,
+  ) {
+    super(options, () => deps.now());
   }
 
   /** Call from a user gesture: the microphone prompt and audio playback need one. */
@@ -126,6 +218,9 @@ export class VoiceConversation {
         return;
       }
       this.mic = mic;
+      if (this.options.spec.provider === "gemini") {
+        throw new Error("This session is for OpenAI; the spec is for Gemini.");
+      }
       const minted = await this.deps.mintSecret(
         this.options.spec,
         this.options.apiKey,
@@ -182,7 +277,7 @@ export class VoiceConversation {
    * Turn detection is one of the few session fields the API lets a live
    * session change, so this does not need a restart.
    */
-  setTurnTaking(mode: TurnTaking): void {
+  override setTurnTaking(mode: TurnTaking): void {
     this.send({
       type: "session.update",
       session: {
@@ -196,19 +291,6 @@ export class VoiceConversation {
     this.muted.value = muted;
     for (const track of this.mic?.getAudioTracks() ?? []) {
       track.enabled = !muted;
-    }
-  }
-
-  /** The player ended it. Idempotent, and safe at any point of start(). */
-  end(reason = "Ended."): void {
-    if (this.closed) {
-      return;
-    }
-    this.closed = true;
-    this.release();
-    if (this.state.value !== "error") {
-      this.state.value = "ended";
-      this.endedBecause.value = reason;
     }
   }
 
@@ -266,10 +348,7 @@ export class VoiceConversation {
       }
       case "response.done": {
         this.characterSpeaking.value = false;
-        const usage = usageFromResponseDone(event);
-        if (usage) {
-          this.responses.value = [...this.responses.value, usage];
-        }
+        this.addUsage(usageFromResponseDone(event));
         const response = event.response as
           | {
               status?: string;
@@ -292,13 +371,12 @@ export class VoiceConversation {
     if (this.closed) {
       return;
     }
-    this.state.value = "connected";
-    this.connectedAt.value = this.deps.now();
+    this.markConnected();
     if (this.options.openingLine) {
       this.send({
         type: "response.create",
         response: {
-          instructions: `Say one or two short sentences as ${this.options.characterName}, about what ${this.options.characterName} is doing or has noticed right now. Do not greet like a receptionist and do not offer help.`,
+          instructions: openingLineInstruction(this.options.characterName),
         },
       });
     }
@@ -318,35 +396,7 @@ export class VoiceConversation {
     }
   }
 
-  private addLine(who: TranscriptLine["who"], text: string): void {
-    this.transcript.value = [...this.transcript.value, { who, text }];
-  }
-
-  /** The server or the network ended it. */
-  private finish(reason: string): void {
-    if (this.closed) {
-      return;
-    }
-    this.closed = true;
-    this.release();
-    this.state.value = "ended";
-    this.endedBecause.value = reason;
-  }
-
-  private fail(message: string): void {
-    if (this.closed) {
-      return;
-    }
-    this.closed = true;
-    this.release();
-    this.error.value = message;
-    this.state.value = "error";
-  }
-
-  /** Let go of everything, whatever state it is in. */
-  private release(): void {
-    this.characterSpeaking.value = false;
-    this.playerSpeaking.value = false;
+  protected releaseResources(): void {
     const { dc, pc, mic, audio } = this;
     this.dc = null;
     this.pc = null;
@@ -466,8 +516,17 @@ export function browserDeps(): VoiceDeps {
  */
 export const openaiKey = persistentSignal("openaiKey", "");
 
+/** Google's key, kept the same way. */
+export const geminiKey = persistentSignal("geminiKey", "");
+
+/** Which provider the panel starts sessions on; remembered in this browser. */
+export const voiceProvider = persistentSignal<VoiceProvider>(
+  "voiceProvider",
+  "gemini",
+);
+
 /** The one conversation allowed at a time, or null. */
-export const activeConversation = signal<VoiceConversation | null>(null);
+export const activeConversation = signal<VoiceSession | null>(null);
 
 /** Whether a voice session is connecting or connected right now. */
 export function conversationInProgress(): boolean {
@@ -475,18 +534,17 @@ export function conversationInProgress(): boolean {
 }
 
 /**
- * Start a conversation, ending whatever was running first. Two sessions at
- * once would mean two microphones and two characters talking over each other.
+ * Make a session the active one and start it, ending whatever was running
+ * first. Two sessions at once would mean two microphones and two characters
+ * talking over each other. The caller constructs the session, because which
+ * class to build depends on the provider and this module does not import
+ * the Gemini one.
  */
-export function startConversation(
-  options: VoiceOptions,
-  deps: VoiceDeps = browserDeps(),
-): VoiceConversation {
+export function adoptConversation<T extends VoiceSession>(session: T): T {
   activeConversation.value?.end("Replaced by a new conversation.");
-  const conversation = new VoiceConversation(options, deps);
-  activeConversation.value = conversation;
-  void conversation.start();
-  return conversation;
+  activeConversation.value = session;
+  void session.start();
+  return session;
 }
 
 export function endConversation(reason = "Ended."): void {

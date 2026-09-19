@@ -19,14 +19,30 @@
  */
 
 import { dedent, tmpl } from "../template";
-import { isPerson, type MessageType } from "../types";
+import {
+  isPerson,
+  isStoryActionAttempt,
+  isStoryDescription,
+  isStoryDialog,
+  isStoryMind,
+  type StoryEventType,
+} from "../types";
 import type { Person } from "./classes";
 import type { World } from "./world";
-import { timeAsString } from "./scheduler";
+import { updatesSeenBy } from "./history";
+import {
+  intraActivityForTime,
+  scheduleForTime,
+  timeAsString,
+} from "./scheduler";
 import { type RealtimeVoice } from "../realtime";
+import { type GeminiVoice } from "../geminilive";
 
 export interface CharacterVoice {
+  /** OpenAI's voice for this character. */
   voice: RealtimeVoice;
+  /** Google's. Picked to match, not to be the same character; audition both. */
+  geminiVoice: GeminiVoice;
   /** One plain sentence about delivery, or empty. Prompt text: keep it flat. */
   delivery: string;
   /**
@@ -49,6 +65,7 @@ export interface CharacterVoice {
 export const CHARACTER_VOICES: Record<string, CharacterVoice> = {
   Ama: {
     voice: "marin",
+    geminiVoice: "Sulafat",
     delivery:
       "Speak in a calm, warm, even tone, like an announcement system that wants to be liked. Leave pauses. Do not rush to answer.",
     persona: `
@@ -63,6 +80,7 @@ export const CHARACTER_VOICES: Record<string, CharacterVoice> = {
   },
   Marta: {
     voice: "shimmer",
+    geminiVoice: "Pulcherrima",
     delivery:
       "Speak in measured, polished sentences, and pause briefly after a compliment.",
     persona: `
@@ -73,52 +91,63 @@ export const CHARACTER_VOICES: Record<string, CharacterVoice> = {
   },
   Frida: {
     voice: "coral",
+    geminiVoice: "Laomedeia",
     delivery:
       "Speak quickly, in short bursts, and change subject before finishing a thought.",
   },
   June: {
     voice: "sage",
+    geminiVoice: "Vindemiatrix",
     delivery: "Speak slowly and softly, with a calm that sounds practiced.",
   },
   Doug: {
     voice: "verse",
+    geminiVoice: "Puck",
     delivery: "Speak eagerly and ask small questions one after another.",
   },
   Lana: {
     voice: "ballad",
+    geminiVoice: "Achernar",
     delivery:
       "Speak in a low, deliberate voice, as if testing the effect of each word.",
   },
   Harold: {
     voice: "cedar",
+    geminiVoice: "Alnilam",
     delivery:
       "Speak firmly in clipped sentences, like someone reading a rule aloud.",
   },
   Greg: {
     voice: "echo",
+    geminiVoice: "Algenib",
     delivery: "Speak plainly and briefly, with long pauses.",
   },
   Milton: {
     voice: "ash",
+    geminiVoice: "Umbriel",
     delivery:
       "Speak in a strained, complaining tone, trailing off at the ends of sentences.",
   },
   Gloria: {
     voice: "alloy",
+    geminiVoice: "Despina",
     delivery:
       "Speak in a low, confiding voice, as if passing on something overheard.",
   },
   Lily: {
     voice: "coral",
+    geminiVoice: "Leda",
     delivery: "Speak gently and brightly, and address the plants now and then.",
   },
   Henry: {
     voice: "echo",
+    geminiVoice: "Schedar",
     delivery:
       "Speak tiredly and patiently, like someone who has waited a long time.",
   },
   Archivist: {
     voice: "alloy",
+    geminiVoice: "Rasalgethi",
     delivery:
       "Speak briskly and precisely, and sound pleased whenever archives come up.",
     persona: `
@@ -127,7 +156,11 @@ export const CHARACTER_VOICES: Record<string, CharacterVoice> = {
   },
 };
 
-export const FALLBACK_VOICE: CharacterVoice = { voice: "alloy", delivery: "" };
+export const FALLBACK_VOICE: CharacterVoice = {
+  voice: "alloy",
+  geminiVoice: "Schedar",
+  delivery: "",
+};
 
 export function voiceForPerson(id: string): CharacterVoice {
   return CHARACTER_VOICES[id] ?? FALLBACK_VOICE;
@@ -150,25 +183,138 @@ export function conversablePeople(world: World): Person[] {
 }
 
 /**
- * The character's recent history, as lines of text.
- *
- * historyForEntity already limits it to what this character witnessed and
- * renders each event with the game's tags. The tags stay in: they say who
- * spoke to whom, and the instructions tell the model they are a record, not
- * a format to produce.
+ * Who is here, in plain words. The text prompt's version carries entity ids
+ * and full descriptions for the tag protocol; a speaking character needs
+ * names, pronouns and a line each.
  */
-export function historyLines(
+export function companyLines(person: Person): string {
+  const world = person.world;
+  const room = person.myRoom();
+  const others = world
+    .entitiesInRoom(room)
+    .filter((entity) => isPerson(entity))
+    .filter((other) => !other.invisible && other.id !== person.id);
+  const lines = others.map((other) => {
+    const doing = scheduleForTime(other, world.timestampMinutes);
+    const activity =
+      doing && doing.inside.includes(other.inside)
+        ? ` ${other.name} is ${doing.description.trim()}.`
+        : "";
+    return `- ${other.name} (${other.pronouns}): ${other.shortDescription.trim()}${activity}`;
+  });
+  if (person.id !== "Ama") {
+    lines.push(`- Ama, who has no body and speaks from the room's speakers.`);
+  }
+  return lines.join("\n");
+}
+
+/** What Intra as a whole, and this character, are doing right now. */
+export function activityLines(person: Person): string {
+  const world = person.world;
+  const lines: string[] = [];
+  const intra = intraActivityForTime(world.timestampOfDay);
+  if (intra) {
+    lines.push(
+      `All of Intra is in "${intra.activity}" (${timeAsString(intra.time)} to ${timeAsString(intra.time + intra.minuteLength)}): ${intra.description.trim()}`,
+    );
+  }
+  const own = scheduleForTime(person, world.timestampMinutes);
+  if (own) {
+    const where = own.inside.includes(person.inside)
+      ? `${person.name} is ${own.description.trim()}`
+      : `${person.name} is on ${person.hisher} way to ${own.inside[0]} to ${own.description.trim()}`;
+    lines.push(
+      `${where}, from ${timeAsString(own.time)} to ${timeAsString(own.time + own.minuteLength)}.`,
+    );
+    if (own.secretReason) {
+      lines.push(
+        `${person.name} is secretive about this because: ${own.secretReason.trim()}`,
+      );
+    }
+  }
+  return lines.join("\n");
+}
+
+/** The name a speaking character would use for an entity id. */
+function nameOf(world: World, id: string | undefined): string {
+  if (!id) {
+    return "";
+  }
+  return world.getEntity(id)?.name ?? id;
+}
+
+// Emoji in the record breed emoji in the output; the text history strips them
+// for the same reason. Same ranges as lib/game/history.ts.
+// eslint-disable-next-line no-misleading-character-class -- matching raw surrogate ranges on purpose
+const EMOJI = /[\uD83C-􏰀-\uDFFF]+|[☀-⛿✀-➿]/g;
+
+/** One witnessed event, as a few plain lines, or nothing. */
+function eventLines(person: Person, event: StoryEventType): string[] {
+  const world = person.world;
+  const lines: string[] = [];
+  for (const [entityId, change] of Object.entries(event.changes)) {
+    if (entityId === person.id) {
+      if (change.after.inside) {
+        lines.push(
+          `${person.name} goes to ${nameOf(world, change.after.inside)}.`,
+        );
+      }
+      continue;
+    }
+    if (change.after.inside && change.after.inside === event.roomId) {
+      lines.push(`${nameOf(world, entityId)} arrives.`);
+    } else if (change.before.inside && change.before.inside === event.roomId) {
+      lines.push(`${nameOf(world, entityId)} leaves.`);
+    }
+  }
+  for (const action of event.actions) {
+    if (isStoryDialog(action)) {
+      const to = action.toId ? ` (to ${nameOf(world, action.toId)})` : "";
+      const text = action.text.replace(EMOJI, "").trim();
+      lines.push(`${nameOf(world, action.id)}${to}: "${text}"`);
+    } else if (isStoryDescription(action)) {
+      lines.push(action.text.trim());
+    } else if (isStoryActionAttempt(action)) {
+      lines.push(
+        `${nameOf(world, action.id)} tries: ${action.attempt.trim()} What happens: ${action.resolution.trim()}`,
+      );
+    } else if (isStoryMind(action) && action.id === person.id) {
+      lines.push(`(${person.name}'s private thought: ${action.text.trim()})`);
+    }
+  }
+  return lines;
+}
+
+/**
+ * What this character witnessed recently, in plain words, oldest first.
+ *
+ * The text prompt renders the same events with the game's tags, because that
+ * model has to produce tags. A speaking character gets a transcript: who said
+ * what to whom, what happened, who came and went. Capped by events and by
+ * length so a long game does not hand the voice model the whole log.
+ */
+export function recordLines(
   person: Person,
-  { limit = 10 }: { limit?: number } = {},
+  { events = 12, maxChars = 6000 }: { events?: number; maxChars?: number } = {},
 ): string {
-  const messages: MessageType[] = person.historyForEntity({ limit });
-  return messages
-    .map((message) =>
-      message.role === "user"
-        ? `[PLAYER]\n${message.content}`
-        : `[scene]\n${message.content}`,
-    )
-    .join("\n\n");
+  const seen = updatesSeenBy(person).slice(-events);
+  const blocks: string[] = [];
+  let lastRoom: string | undefined;
+  for (const event of seen) {
+    const lines = eventLines(person, event);
+    if (!lines.length) {
+      continue;
+    }
+    if (event.roomId !== lastRoom && event.roomId !== "Void") {
+      lines.unshift(`[in ${nameOf(person.world, event.roomId)}]`);
+      lastRoom = event.roomId;
+    }
+    blocks.push(lines.join("\n"));
+  }
+  while (blocks.length > 1 && blocks.join("\n\n").length > maxChars) {
+    blocks.shift();
+  }
+  return blocks.join("\n\n");
 }
 
 /**
@@ -185,7 +331,7 @@ export function converseInstructions(person: Person): string {
   const { delivery, persona } = voiceForPerson(person.id);
   const inConversation = persona ? dedent(persona).trim() : "";
   const promptForPerson = room.promptForPerson(person);
-  const parameters = {};
+  const company = companyLines(person);
   return tmpl`
   You are voicing ${person.name} (${person.pronouns}), a person in Intra, an underground complex. This is a spoken conversation with the player. The player's character is called PLAYER and is currently known as "${player.name}" (${player.pronouns}).
 
@@ -212,25 +358,18 @@ export function converseInstructions(person: Person): string {
 
   [[Delivery: ${delivery}]]
 
-  The situation below was current when this conversation started.
-
-  The time is ${timeAsString(world.timestampMinutes)}.
-  ${person.name} is in the room "${room.name}": ${room.shortDescription}
-
+  <situation>
+  The time is ${timeAsString(world.timestampMinutes)}. ${person.name} is in ${room.name}: ${room.shortDescription.trim()}
   [[${promptForPerson}]]
-
-  ${person.intraActivityDescription()}
-
-  ${person.activityDescription(parameters)}
-
-  The other people in the room ${room.name} are:
-  ${person.currentPeoplePrompt(parameters)}
-
+  [[${activityLines(person)}]]
+  [[Also here:
+  ${company}]]
   [[${person.attitudesPrompt()}]]
+  </situation>
 
-  [[Recent events ${person.name} witnessed, oldest first. Lines under [PLAYER] are what the player said or did. The tags in this record show who spoke and what happened; they are a record to read, not a format to write.
-  <record>
-  ${historyLines(person)}
+  [[<record>
+  What ${person.name} saw and heard recently, oldest first. ${player.name} is the player.
+  ${recordLines(person)}
   </record>]]
   `;
 }

@@ -1,5 +1,5 @@
 /**
- * The voice-conversation panel: pick a model and a voice, supply an OpenAI
+ * The voice-conversation panel: pick a provider, model and voice, supply a
  * key, talk with one character, and see what it cost.
  *
  * A prototype for listening to the cast. It sits over the game and, while a
@@ -21,39 +21,63 @@ import {
 import {
   DEFAULT_REALTIME_MODEL,
   DEFAULT_TURN_TAKING,
+  PROVIDER_NAMES,
   REALTIME_MODELS,
   REALTIME_VOICES,
   SESSION_LIMIT_MINUTES,
   TURN_TAKING,
+  VOICE_PROVIDERS,
   isRealtimeModel,
   isRealtimeVoice,
   isTurnTaking,
+  isVoiceProvider,
   type RealtimeModel,
   type RealtimeVoice,
   type ResponseUsage,
   type TurnTaking,
 } from "@/lib/realtime";
+import {
+  DEFAULT_GEMINI_MODEL,
+  GEMINI_MODELS,
+  GEMINI_VOICES,
+  isGeminiModel,
+  isGeminiVoice,
+  type GeminiModel,
+  type GeminiVoice,
+} from "@/lib/geminilive";
 import { model } from "./model";
 import {
   activeConversation,
+  adoptConversation,
+  browserDeps,
   endConversation,
+  geminiKey,
   openaiKey,
-  startConversation,
-  type VoiceConversation,
+  voiceProvider,
+  VoiceConversation,
+  type VoiceSession,
+  type VoiceSessionSpec,
 } from "./voice";
+import { GeminiVoiceConversation, geminiBrowserDeps } from "./geminivoice";
 
 /** Which character the panel is open for, or null when closed. */
 export const voicePanelFor = signal<string | null>(null);
 
 /**
  * Choices kept across characters for the page session, so auditioning the
- * cast on one model does not mean re-picking it for each person.
+ * cast on one setup does not mean re-picking it for each person.
  */
-const selectedModel = signal<RealtimeModel>(DEFAULT_REALTIME_MODEL);
-const selectedVoice = signal<RealtimeVoice>("alloy");
+const openaiModel = signal<RealtimeModel>(DEFAULT_REALTIME_MODEL);
+const geminiModel = signal<GeminiModel>(DEFAULT_GEMINI_MODEL);
+const openaiVoice = signal<RealtimeVoice>("alloy");
+const geminiVoice = signal<GeminiVoice>("Schedar");
 const transcribeInput = signal(false);
 const openingLine = signal(true);
 const turnTaking = signal<TurnTaking>(DEFAULT_TURN_TAKING);
+/** Gemini only: the model may decide not to answer. */
+const proactiveAudio = signal(true);
+/** Gemini only: delivery follows the player's tone. */
+const affectiveDialog = signal(true);
 /** What is typed in the key field and not yet submitted; Start accepts it too. */
 const keyDraft = signal("");
 /** Why the last Start did nothing, shown beside the button. */
@@ -65,12 +89,18 @@ const TURN_TAKING_LABELS: Record<TurnTaking, string> = {
   unhurried: "unhurried (waits a second and a half of silence)",
 };
 
+function keySignal() {
+  return voiceProvider.value === "gemini" ? geminiKey : openaiKey;
+}
+
 /** Open the panel for a character, ending any conversation with another. */
 export function openVoicePanel(person: Person): void {
   const wasTalking = activeConversation.value?.inProgress ?? false;
   if (voicePanelFor.value !== person.id) {
     endConversation("Switched character.");
-    selectedVoice.value = voiceForPerson(person.id).voice;
+    const voices = voiceForPerson(person.id);
+    openaiVoice.value = voices.voice;
+    geminiVoice.value = voices.geminiVoice;
   }
   voicePanelFor.value = person.id;
   if (wasTalking) {
@@ -83,33 +113,57 @@ export function closeVoicePanel(): void {
   voicePanelFor.value = null;
 }
 
+function buildSpec(person: Person): VoiceSessionSpec {
+  const instructions = converseInstructions(person);
+  if (voiceProvider.value === "gemini") {
+    return {
+      provider: "gemini",
+      model: geminiModel.value,
+      voice: geminiVoice.value,
+      instructions,
+      transcribeInput: transcribeInput.value,
+      turnTaking: turnTaking.value,
+      proactiveAudio: proactiveAudio.value,
+      affectiveDialog: affectiveDialog.value,
+    };
+  }
+  return {
+    provider: "openai",
+    model: openaiModel.value,
+    voice: openaiVoice.value,
+    instructions,
+    transcribeInput: transcribeInput.value,
+    turnTaking: turnTaking.value,
+  };
+}
+
 /** Start (or restart) the session for a character with the current choices. */
 function begin(person: Person): void {
+  const key = keySignal();
   // A key typed into the field but not yet submitted counts: pressing Start
   // was the intent, and a Start that silently does nothing looks broken.
-  if (!openaiKey.value.trim() && keyDraft.value.trim()) {
-    openaiKey.value = keyDraft.value.trim();
+  if (!key.value.trim() && keyDraft.value.trim()) {
+    key.value = keyDraft.value.trim();
     keyDraft.value = "";
   }
-  const key = openaiKey.value.trim();
-  if (!key) {
-    startNotice.value = "Enter your OpenAI key first.";
+  const apiKey = key.value.trim();
+  if (!apiKey) {
+    startNotice.value = `Enter your ${PROVIDER_NAMES[voiceProvider.value]} key first.`;
     return;
   }
   startNotice.value = null;
-  startConversation({
+  const options = {
     characterId: person.id,
     characterName: person.name,
-    apiKey: key,
+    apiKey,
     openingLine: openingLine.value,
-    spec: {
-      model: selectedModel.value,
-      voice: selectedVoice.value,
-      instructions: converseInstructions(person),
-      transcribeInput: transcribeInput.value,
-      turnTaking: turnTaking.value,
-    },
-  });
+    spec: buildSpec(person),
+  };
+  adoptConversation(
+    options.spec.provider === "gemini"
+      ? new GeminiVoiceConversation(options, geminiBrowserDeps())
+      : new VoiceConversation(options, browserDeps()),
+  );
 }
 
 /** The row of people the player can talk with out loud, for the side panel. */
@@ -170,12 +224,6 @@ export function VoicePanel() {
     conversation && conversation.options.characterId === id
       ? conversation
       : null;
-  const busy = mine?.inProgress ?? false;
-  const restartIfBusy = () => {
-    if (busy) {
-      begin(person);
-    }
-  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
       <div className="w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white border border-gray-600 rounded p-4 text-sm">
@@ -191,99 +239,9 @@ export function VoicePanel() {
             &times;
           </button>
         </div>
-
-        <div className="flex flex-wrap gap-4 mb-3 items-end">
-          <label className="flex flex-col">
-            <span className="text-gray-400 text-xs">Model</span>
-            <select
-              className="bg-gray-800 p-1"
-              value={selectedModel.value}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (isRealtimeModel(value)) {
-                  selectedModel.value = value;
-                  restartIfBusy();
-                }
-              }}
-            >
-              {REALTIME_MODELS.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col">
-            <span className="text-gray-400 text-xs">
-              Voice (default for {person.name}: {voiceForPerson(id).voice})
-            </span>
-            <select
-              className="bg-gray-800 p-1"
-              value={selectedVoice.value}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (isRealtimeVoice(value)) {
-                  selectedVoice.value = value;
-                  restartIfBusy();
-                }
-              }}
-            >
-              {REALTIME_VOICES.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col">
-            <span className="text-gray-400 text-xs">Turn-taking</span>
-            <select
-              className="bg-gray-800 p-1"
-              value={turnTaking.value}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (isTurnTaking(value)) {
-                  turnTaking.value = value;
-                  // Changeable live, unlike model and voice.
-                  mine?.setTurnTaking(value);
-                }
-              }}
-            >
-              {TURN_TAKING.map((mode) => (
-                <option key={mode} value={mode}>
-                  {TURN_TAKING_LABELS[mode]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-1 text-xs text-gray-300">
-            <input
-              type="checkbox"
-              checked={transcribeInput.value}
-              disabled={busy}
-              onChange={(event) => {
-                transcribeInput.value = event.target.checked;
-              }}
-            />
-            Transcribe my speech (billed separately)
-          </label>
-          <label className="flex items-center gap-1 text-xs text-gray-300">
-            <input
-              type="checkbox"
-              checked={openingLine.value}
-              disabled={busy}
-              onChange={(event) => {
-                openingLine.value = event.target.checked;
-              }}
-            />
-            Character speaks first
-          </label>
-        </div>
-
+        <Options person={person} conversation={mine} />
         <KeyEntry />
-
         <Controls person={person} conversation={mine} />
-
         {mine && <Transcript conversation={mine} />}
         {mine && <UsageSummary conversation={mine} />}
       </div>
@@ -291,20 +249,216 @@ export function VoicePanel() {
   );
 }
 
+function Select<T extends string>({
+  label,
+  value,
+  options,
+  accept,
+  onChange,
+  labels,
+}: {
+  label: string;
+  value: T;
+  options: readonly T[];
+  accept: (value: unknown) => value is T;
+  onChange: (value: T) => void;
+  labels?: Record<T, string>;
+}) {
+  return (
+    <label className="flex flex-col">
+      <span className="text-gray-400 text-xs">{label}</span>
+      <select
+        className="bg-gray-800 p-1"
+        value={value}
+        onChange={(event) => {
+          const next = event.target.value;
+          if (accept(next)) {
+            onChange(next);
+          }
+        }}
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {labels ? labels[option] : option}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Check({
+  label,
+  value,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  disabled?: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center gap-1 text-xs text-gray-300">
+      <input
+        type="checkbox"
+        checked={value}
+        disabled={disabled}
+        onChange={(event) => {
+          onChange(event.target.checked);
+        }}
+      />
+      {label}
+    </label>
+  );
+}
+
+/** Provider, model, voice and behaviour choices. Changing one mid-session restarts it. */
+function Options({
+  person,
+  conversation,
+}: {
+  person: Person;
+  conversation: VoiceSession | null;
+}) {
+  useSignals();
+  const busy = conversation?.inProgress ?? false;
+  const restartIfBusy = () => {
+    if (busy) {
+      begin(person);
+    }
+  };
+  const gemini = voiceProvider.value === "gemini";
+  const defaults = voiceForPerson(person.id);
+  return (
+    <div className="flex flex-wrap gap-4 mb-3 items-end">
+      <Select
+        label="Provider"
+        value={voiceProvider.value}
+        options={VOICE_PROVIDERS}
+        accept={isVoiceProvider}
+        labels={PROVIDER_NAMES}
+        onChange={(value) => {
+          voiceProvider.value = value;
+          restartIfBusy();
+        }}
+      />
+      {gemini ? (
+        <Select
+          label="Model"
+          value={geminiModel.value}
+          options={GEMINI_MODELS}
+          accept={isGeminiModel}
+          onChange={(value) => {
+            geminiModel.value = value;
+            restartIfBusy();
+          }}
+        />
+      ) : (
+        <Select
+          label="Model"
+          value={openaiModel.value}
+          options={REALTIME_MODELS}
+          accept={isRealtimeModel}
+          onChange={(value) => {
+            openaiModel.value = value;
+            restartIfBusy();
+          }}
+        />
+      )}
+      {gemini ? (
+        <Select
+          label={`Voice (default for ${person.name}: ${defaults.geminiVoice})`}
+          value={geminiVoice.value}
+          options={GEMINI_VOICES}
+          accept={isGeminiVoice}
+          onChange={(value) => {
+            geminiVoice.value = value;
+            restartIfBusy();
+          }}
+        />
+      ) : (
+        <Select
+          label={`Voice (default for ${person.name}: ${defaults.voice})`}
+          value={openaiVoice.value}
+          options={REALTIME_VOICES}
+          accept={isRealtimeVoice}
+          onChange={(value) => {
+            openaiVoice.value = value;
+            restartIfBusy();
+          }}
+        />
+      )}
+      <Select
+        label="Turn-taking"
+        value={turnTaking.value}
+        options={TURN_TAKING}
+        accept={isTurnTaking}
+        labels={TURN_TAKING_LABELS}
+        onChange={(value) => {
+          turnTaking.value = value;
+          if (conversation?.liveTurnTaking) {
+            conversation.setTurnTaking(value);
+          } else {
+            restartIfBusy();
+          }
+        }}
+      />
+      <Check
+        label="Transcribe my speech (billed separately on OpenAI)"
+        value={transcribeInput.value}
+        disabled={busy}
+        onChange={(value) => {
+          transcribeInput.value = value;
+        }}
+      />
+      <Check
+        label="Character speaks first"
+        value={openingLine.value}
+        disabled={busy}
+        onChange={(value) => {
+          openingLine.value = value;
+        }}
+      />
+      {gemini && (
+        <Check
+          label="May stay silent (proactive audio)"
+          value={proactiveAudio.value}
+          onChange={(value) => {
+            proactiveAudio.value = value;
+            restartIfBusy();
+          }}
+        />
+      )}
+      {gemini && (
+        <Check
+          label="Reacts to my tone (affective dialog)"
+          value={affectiveDialog.value}
+          onChange={(value) => {
+            affectiveDialog.value = value;
+            restartIfBusy();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 function KeyEntry() {
   useSignals();
-  const draft = keyDraft;
-  const key = openaiKey.value;
-  if (key) {
+  const provider = voiceProvider.value;
+  const who = PROVIDER_NAMES[provider];
+  const key = keySignal();
+  if (key.value) {
     return (
       <div className="mb-3 text-xs text-gray-300 flex items-center gap-2">
         <span>
-          OpenAI key set (ends in {key.slice(-4)}), saved in this browser.
+          {who} key set (ends in {key.value.slice(-4)}), saved in this browser.
         </span>
         <Button
           className="p-1 text-xs bg-gray-700 hover:bg-gray-600"
           onClick={() => {
-            openaiKey.value = "";
+            key.value = "";
           }}
         >
           Clear key
@@ -315,7 +469,7 @@ function KeyEntry() {
   return (
     <div className="mb-3 border border-gray-700 rounded p-2">
       <div className="text-xs text-gray-300 mb-1">
-        Voice conversations run on your own OpenAI account and are billed to it.
+        Voice conversations run on your own {who} account and are billed to it.
         The key is saved in this browser only; the game server uses it once per
         conversation to open the connection and does not keep it. Nothing about
         it goes into saved games. This is separate from any OpenRouter key.
@@ -324,19 +478,19 @@ function KeyEntry() {
         <input
           type="password"
           autoComplete="off"
-          placeholder="sk-..."
+          placeholder={provider === "gemini" ? "AIza..." : "sk-..."}
           className="flex-1 bg-gray-800 p-1"
-          value={draft.value}
+          value={keyDraft.value}
           onInput={(event) => {
-            draft.value = (event.target as HTMLInputElement).value;
+            keyDraft.value = (event.target as HTMLInputElement).value;
           }}
         />
         <Button
           className="p-1"
-          disabled={!draft.value.trim()}
+          disabled={!keyDraft.value.trim()}
           onClick={() => {
-            openaiKey.value = draft.value.trim();
-            draft.value = "";
+            key.value = keyDraft.value.trim();
+            keyDraft.value = "";
           }}
         >
           Use key
@@ -351,17 +505,17 @@ function Controls({
   conversation,
 }: {
   person: Person;
-  conversation: VoiceConversation | null;
+  conversation: VoiceSession | null;
 }) {
   useSignals();
-  const hasKey = !!openaiKey.value.trim() || !!keyDraft.value.trim();
+  const hasKey = !!keySignal().value.trim() || !!keyDraft.value.trim();
   const state = conversation?.state.value ?? "idle";
   const start = (
     <span className="flex items-center gap-2">
       <Button
         className={twMerge("bg-blue-700", !hasKey && "opacity-50")}
         disabled={!hasKey}
-        title={hasKey ? "" : "Enter an OpenAI key first"}
+        title={hasKey ? "" : "Enter a key first"}
         onClick={() => {
           begin(person);
         }}
@@ -370,7 +524,7 @@ function Controls({
       </Button>
       {!hasKey && (
         <span className="text-xs text-gray-400">
-          Enter your OpenAI key above first.
+          Enter your key above first.
         </span>
       )}
       {startNotice.value && (
@@ -384,7 +538,9 @@ function Controls({
   if (state === "connecting") {
     return (
       <div className="mb-3 flex items-center gap-3">
-        <span className="text-yellow-300">Connecting...</span>
+        <span className="text-yellow-300">
+          Connecting to {PROVIDER_NAMES[conversation.provider]}...
+        </span>
         <Button
           className="bg-gray-700"
           onClick={() => {
@@ -401,6 +557,10 @@ function Controls({
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <span className="text-green-300">
           ● Connected <Elapsed conversation={conversation} />
+        </span>
+        <span className="text-xs text-gray-400">
+          {PROVIDER_NAMES[conversation.provider]} ·{" "}
+          {conversation.options.spec.model} · {conversation.options.spec.voice}
         </span>
         <span className="text-xs text-gray-400">
           {conversation.playerSpeaking.value
@@ -446,7 +606,9 @@ function Controls({
           : `Conversation over: ${conversation.endedBecause.value ?? ""}`}
       </div>
       <div className="text-xs text-gray-500 mb-2">
-        Sessions end on their own after {SESSION_LIMIT_MINUTES} minutes.
+        {conversation.provider === "openai"
+          ? `Sessions end on their own after ${SESSION_LIMIT_MINUTES} minutes.`
+          : "Google may end a long session on its own; it warns first."}
       </div>
       {start}
     </div>
@@ -456,7 +618,7 @@ function Controls({
 /** Ticks once a second while a timer is on screen; 0 means not yet read. */
 const clock = signal(0);
 
-function Elapsed({ conversation }: { conversation: VoiceConversation }) {
+function Elapsed({ conversation }: { conversation: VoiceSession }) {
   useSignals();
   useEffect(() => {
     clock.value = Date.now();
@@ -477,7 +639,7 @@ function Elapsed({ conversation }: { conversation: VoiceConversation }) {
   );
 }
 
-function Transcript({ conversation }: { conversation: VoiceConversation }) {
+function Transcript({ conversation }: { conversation: VoiceSession }) {
   useSignals();
   const lines = conversation.transcript.value;
   if (!lines.length) {
@@ -501,7 +663,7 @@ function Transcript({ conversation }: { conversation: VoiceConversation }) {
   );
 }
 
-function UsageSummary({ conversation }: { conversation: VoiceConversation }) {
+function UsageSummary({ conversation }: { conversation: VoiceSession }) {
   useSignals();
   const responses = conversation.responses.value;
   if (!responses.length) {
@@ -516,7 +678,7 @@ function UsageSummary({ conversation }: { conversation: VoiceConversation }) {
   return (
     <details className="text-xs text-gray-300">
       <summary className="cursor-pointer text-gray-400">
-        Usage: {responses.length} response{responses.length === 1 ? "" : "s"},{" "}
+        Usage: {responses.length} report{responses.length === 1 ? "" : "s"},{" "}
         {total.inputTokens} in / {total.outputTokens} out tokens
       </summary>
       <div className="mt-1">
@@ -529,8 +691,8 @@ function UsageSummary({ conversation }: { conversation: VoiceConversation }) {
         {cell("output audio", total.outputAudio)}
       </div>
       <div className="mt-1 text-gray-500">
-        As reported by the API per response. Connected time above is not a
-        dollar figure.
+        As reported by the API, one row per report. Connected time above is not
+        a dollar figure.
       </div>
       <table className="mt-1">
         <tbody>
