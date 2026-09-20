@@ -8,12 +8,15 @@
 import { redactKeys, type ClientSecretResponse } from "@/lib/realtime";
 import {
   GEMINI_INPUT_RATE,
+  GEMINI_OPTIONAL_SETUP_FIELDS,
   GEMINI_OUTPUT_RATE,
+  GEMINI_SETUP_FIELD_LABELS,
   geminiAudioMessage,
   geminiSetupMessage,
   geminiSocketUrl,
   geminiTextTurn,
   readGeminiMessage,
+  unknownSetupField,
   type GeminiSessionSpec,
 } from "@/lib/geminilive";
 import {
@@ -54,6 +57,14 @@ export interface GeminiDeps {
   now(): number;
 }
 
+/**
+ * Setup fields Google has refused during this page session, so later
+ * sessions leave them out from the start instead of paying the reconnect.
+ * Which fields a model or the ephemeral-token method accepts is not
+ * documented reliably; the server's own refusal is the source of truth.
+ */
+export const rejectedSetupFields = new Set<string>();
+
 export class GeminiVoiceConversation extends VoiceSession {
   readonly provider = "gemini" as const;
   /** Activity detection is part of setup; changing it means a new session. */
@@ -64,6 +75,8 @@ export class GeminiVoiceConversation extends VoiceSession {
   private capture: PcmCapture | null = null;
   private player: PcmPlayer | null = null;
   private setupDone = false;
+  /** Reconnects after a refused setup field; bounded so a bad model cannot loop. */
+  private reconnects = 0;
   private partialCharacter = "";
   private partialPlayer = "";
   /** Messages are handled in order even when one arrives as a Blob. */
@@ -96,42 +109,76 @@ export class GeminiVoiceConversation extends VoiceSession {
         return;
       }
       this.mic = mic;
-      const minted = await this.deps.mintSecret(spec, this.options.apiKey);
-      if (this.closed) {
-        return;
-      }
-      const socket = this.deps.openSocket(geminiSocketUrl(minted.secret));
-      this.socket = socket;
-      socket.onopen = () => {
-        if (!this.closed) {
-          socket.send(JSON.stringify(geminiSetupMessage(spec)));
-        }
-      };
-      socket.onmessage = (event) => {
-        this.inbound = this.inbound.then(() => this.receive(event.data));
-      };
-      socket.onerror = () => {
-        if (!this.closed) {
-          this.notice.value = "The connection to Google reported an error.";
-        }
-      };
-      socket.onclose = (event) => {
-        const why = event.reason ? redactKeys(event.reason) : "";
-        if (!this.setupDone) {
-          this.fail(
-            `Google closed the connection before the session started${event.code ? ` (${event.code}${why ? `: ${why}` : ""})` : ""}.`,
-          );
-        } else {
-          this.finish(
-            why ? `The connection ended: ${why}` : "The connection ended.",
-          );
-        }
-      };
+      await this.connect(spec);
     } catch (e) {
       if (!this.closed) {
         this.fail(describeStartError(e));
       }
     }
+  }
+
+  /**
+   * Mint a token and open the socket. Called once by start(), and again if
+   * Google refuses a setup field: the token is single-use, so a retry needs
+   * a fresh one, and the microphone is kept across the retry.
+   */
+  private async connect(spec: GeminiSessionSpec): Promise<void> {
+    const minted = await this.deps.mintSecret(spec, this.options.apiKey);
+    if (this.closed) {
+      return;
+    }
+    const socket = this.deps.openSocket(geminiSocketUrl(minted.secret));
+    this.socket = socket;
+    socket.onopen = () => {
+      if (!this.closed && this.socket === socket) {
+        socket.send(
+          JSON.stringify(geminiSetupMessage(spec, rejectedSetupFields)),
+        );
+      }
+    };
+    socket.onmessage = (event) => {
+      if (this.socket === socket) {
+        this.inbound = this.inbound.then(() => this.receive(event.data));
+      }
+    };
+    socket.onerror = () => {
+      if (!this.closed && this.socket === socket) {
+        this.notice.value = "The connection to Google reported an error.";
+      }
+    };
+    socket.onclose = (event) => {
+      if (this.socket !== socket) {
+        return;
+      }
+      const why = event.reason ? redactKeys(event.reason) : "";
+      if (this.setupDone) {
+        this.finish(
+          why ? `The connection ended: ${why}` : "The connection ended.",
+        );
+        return;
+      }
+      const field = unknownSetupField(event.reason);
+      if (
+        field &&
+        GEMINI_OPTIONAL_SETUP_FIELDS.has(field) &&
+        !rejectedSetupFields.has(field) &&
+        this.reconnects < 3
+      ) {
+        rejectedSetupFields.add(field);
+        this.reconnects += 1;
+        this.notice.value = `Google does not accept ${GEMINI_SETUP_FIELD_LABELS[field] ?? field} for this model; continuing without it.`;
+        this.socket = null;
+        this.connect(spec).catch((e: unknown) => {
+          if (!this.closed) {
+            this.fail(describeStartError(e));
+          }
+        });
+        return;
+      }
+      this.fail(
+        `Google closed the connection before the session started${event.code ? ` (${event.code}${why ? `: ${why}` : ""})` : ""}.`,
+      );
+    };
   }
 
   setMuted(muted: boolean): void {

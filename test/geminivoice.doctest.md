@@ -5,7 +5,7 @@ browser-specific comes in through `GeminiDeps`, so a fake socket, a fake
 capture and a fake player are enough to walk the whole lifecycle.
 
 ```ts setup
-import { GeminiVoiceConversation } from "../app/geminivoice.js";
+import { GeminiVoiceConversation, rejectedSetupFields } from "../app/geminivoice.js";
 
 class FakeTrack {
   enabled = true;
@@ -61,10 +61,12 @@ function deferred<T>() {
 }
 
 function rig({ mint }: { mint?: any } = {}) {
+  rejectedSetupFields.clear();
   const stream = new FakeStream();
   const player = new FakePlayer();
   const log: string[] = [];
   let socket: FakeSocket | null = null;
+  const sockets: FakeSocket[] = [];
   let capture: FakeCapture | null = null;
   let clock = 1_000_000;
   const deps = {
@@ -73,7 +75,7 @@ function rig({ mint }: { mint?: any } = {}) {
       log.push("mint");
       return mint ? mint.promise : { provider: "gemini", secret: "auth_tokens/tok", expiresAt: 0, model: "gemini-3.8-live", voice: "Sulafat" };
     },
-    openSocket: (url: string) => { log.push("socket"); socket = new FakeSocket(url); return socket; },
+    openSocket: (url: string) => { log.push("socket"); socket = new FakeSocket(url); sockets.push(socket); return socket; },
     startCapture: async (_stream: any, onChunk: (b64: string) => void) => { log.push("capture"); capture = new FakeCapture(onChunk); return capture; },
     createPlayer: () => { log.push("player"); return player; },
     now: () => clock,
@@ -84,13 +86,14 @@ function rig({ mint }: { mint?: any } = {}) {
       characterName: "Ama",
       apiKey: "AIzaFake",
       openingLine: true,
-      spec: { provider: "gemini", model: "gemini-3.8-live", voice: "Sulafat", instructions: "You are voicing Ama.", turnTaking: "patient" },
+      spec: { provider: "gemini", model: "gemini-3.8-live", voice: "Sulafat", instructions: "You are voicing Ama.", turnTaking: "patient", proactiveAudio: true },
     },
     deps as any,
   );
   return {
     conversation, stream, player, log,
     get socket() { return socket!; },
+    sockets,
     get capture() { return capture!; },
     advance: (ms: number) => { clock += ms; },
   };
@@ -231,6 +234,48 @@ await settle();
 await settle();
 [r.conversation.state.value, r.log.join(" "), r.stream.tracks[0].stopped].join(" | ");
 => ended | mic mint | true
+```
+
+## A refused setup field
+
+Google rejects setup fields it does not know for a model or the token method
+by closing the socket and naming the field. For the optional ones, the session
+says so, remembers it for the page, and reconnects on a fresh token with the
+field left out. The microphone is kept across the retry.
+
+```ts
+const r = rig();
+await r.conversation.start();
+r.socket.open();
+"proactivity" in r.socket.sent[0].setup;
+=> true
+
+r.socket.drop(1007, `Invalid JSON payload received. Unknown name "proactivity" at 'setup': Cannot find field.`);
+await settle();
+await settle();
+[r.conversation.state.value, r.conversation.notice.value, r.log.join(" "), r.sockets.length, r.stream.tracks[0].stopped].join(" | ");
+=> connecting | Google does not accept proactive audio for this model; continuing without it. | mic mint socket mint socket | 2 | false
+
+r.socket.open();
+["proactivity" in r.socket.sent[0].setup, [...rejectedSetupFields].join(",")].join(" | ");
+=> false | proactivity
+
+r.socket.serve({ setupComplete: {} });
+await settle();
+r.conversation.state.value;
+=> connected
+```
+
+A refusal of something the session cannot do without, or a second refusal of
+the same field, is a failure to start:
+
+```ts
+const r = rig();
+await r.conversation.start();
+r.socket.open();
+r.socket.drop(1007, `Invalid JSON payload received. Unknown name "systemInstruction" at 'setup': Cannot find field.`);
+[r.conversation.state.value, r.conversation.error.value?.includes("systemInstruction")].join(" | ");
+=> error | true
 ```
 
 Closed by the server before setup completed is a failure to start, with the

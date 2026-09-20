@@ -151,9 +151,44 @@ export function geminiActivityDetection(
   }
 }
 
-/** The first message on the socket. */
+/**
+ * Setup fields the server may refuse for a given model or method, each of
+ * which the session can do without. The session drops a refused one and
+ * reconnects; see unknownSetupField.
+ */
+export const GEMINI_OPTIONAL_SETUP_FIELDS: ReadonlySet<string> = new Set([
+  "proactivity",
+  "enableAffectiveDialog",
+  "contextWindowCompression",
+  "inputAudioTranscription",
+  "outputAudioTranscription",
+  "realtimeInputConfig",
+]);
+
+/** Plain names for the panel's notice when one of those is dropped. */
+export const GEMINI_SETUP_FIELD_LABELS: Record<string, string> = {
+  proactivity: "proactive audio",
+  enableAffectiveDialog: "affective dialog",
+  contextWindowCompression: "context compression",
+  inputAudioTranscription: "input transcription",
+  outputAudioTranscription: "output transcription",
+  realtimeInputConfig: "the turn-taking setting",
+};
+
+/**
+ * The field Google named when it closed the socket over the setup message,
+ * or null. The close reason reads like: Invalid JSON payload received.
+ * Unknown name "proactivity" at 'setup': Cannot find field.
+ */
+export function unknownSetupField(reason: string | undefined): string | null {
+  const match = /Unknown name "([A-Za-z_]+)"/.exec(reason ?? "");
+  return match ? match[1]! : null;
+}
+
+/** The first message on the socket. `omit` names fields the server has refused. */
 export function geminiSetupMessage(
   spec: GeminiSessionSpec,
+  omit: ReadonlySet<string> = new Set(),
 ): Record<string, unknown> {
   const generationConfig: Record<string, unknown> = {
     responseModalities: ["AUDIO"],
@@ -161,26 +196,32 @@ export function geminiSetupMessage(
       voiceConfig: { prebuiltVoiceConfig: { voiceName: spec.voice } },
     },
   };
-  if (spec.affectiveDialog) {
+  if (spec.affectiveDialog && !omit.has("enableAffectiveDialog")) {
     generationConfig.enableAffectiveDialog = true;
   }
   const setup: Record<string, unknown> = {
     model: `models/${spec.model}`,
     generationConfig,
     systemInstruction: { parts: [{ text: spec.instructions }] },
-    realtimeInputConfig: {
+  };
+  if (!omit.has("realtimeInputConfig")) {
+    setup.realtimeInputConfig = {
       automaticActivityDetection: geminiActivityDetection(
         spec.turnTaking ?? DEFAULT_TURN_TAKING,
       ),
-    },
-    outputAudioTranscription: {},
+    };
+  }
+  if (!omit.has("outputAudioTranscription")) {
+    setup.outputAudioTranscription = {};
+  }
+  if (!omit.has("contextWindowCompression")) {
     // Without this an audio session ends at 15 minutes.
-    contextWindowCompression: { slidingWindow: {} },
-  };
-  if (spec.transcribeInput) {
+    setup.contextWindowCompression = { slidingWindow: {} };
+  }
+  if (spec.transcribeInput && !omit.has("inputAudioTranscription")) {
     setup.inputAudioTranscription = {};
   }
-  if (spec.proactiveAudio) {
+  if (spec.proactiveAudio && !omit.has("proactivity")) {
     setup.proactivity = { proactiveAudio: true };
   }
   return { setup };

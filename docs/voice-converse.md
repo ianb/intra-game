@@ -159,7 +159,11 @@ means anything.
     your Google key's first characters.
 14. **Bad key.** Clear the key, enter `sk-invalid` (or a mangled Google key), Start. Expect "… rejected that API key" without the key repeated,
     and a released mic.
-15. **Gemini specifics.** With Google selected: interrupt her mid-sentence and
+15. **Gemini specifics.** If "Connecting to Google..." shows a yellow note
+    that Google does not accept some option for this model, that is the
+    session dropping a setup field the server refused and reconnecting
+    without it; the same field is left out for the rest of the page session.
+    With Google selected: interrupt her mid-sentence and
     confirm playback stops at once (the `interrupted` flush). Leave a long
     pause with "May stay silent" on and confirm she does not fill it. Watch
     the usage rows: Google reports usage per message, so rows are more

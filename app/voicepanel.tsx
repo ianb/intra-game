@@ -539,7 +539,7 @@ function Controls({
   }
   if (state === "connecting") {
     return (
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-3 flex flex-wrap items-center gap-3">
         <span className="text-yellow-300">
           Connecting to {PROVIDER_NAMES[conversation.provider]}...
         </span>
@@ -551,6 +551,11 @@ function Controls({
         >
           Cancel
         </Button>
+        {conversation.notice.value && (
+          <span className="text-xs text-yellow-300 w-full">
+            {conversation.notice.value}
+          </span>
+        )}
       </div>
     );
   }

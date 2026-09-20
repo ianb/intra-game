@@ -15,6 +15,7 @@ import {
   geminiTokenRequest,
   geminiTokenUrl,
   readGeminiMessage,
+  unknownSetupField,
   usageFromGeminiMessage,
   GEMINI_VOICES,
 } from "../lib/geminilive.js";
@@ -174,6 +175,25 @@ const full = geminiSetupMessage({
   JSON.stringify(full.realtimeInputConfig.automaticActivityDetection),
 ].join(" | ");
 => {} | {"proactiveAudio":true} | true | {"endOfSpeechSensitivity":"END_SENSITIVITY_LOW","silenceDurationMs":1500,"prefixPaddingMs":300}
+```
+
+Google refuses setup fields it does not know for a model or a method by
+closing the socket and naming the field. The session reads the name, and the
+setup can be built without it:
+
+```ts
+unknownSetupField(`Invalid JSON payload received. Unknown name "proactivity" at 'setup': Cannot find field.`);
+=> proactivity
+
+unknownSetupField("Internal error");
+=> null
+
+const trimmed = geminiSetupMessage(
+  { provider: "gemini", model: "gemini-3.8-live", voice: "Kore", instructions: "Hi", proactiveAudio: true, affectiveDialog: true },
+  new Set(["proactivity", "enableAffectiveDialog"]),
+).setup as any;
+["proactivity" in trimmed, "enableAffectiveDialog" in trimmed.generationConfig, "contextWindowCompression" in trimmed].join(" ");
+=> false false true
 ```
 
 Turn-taking maps onto activity detection. Quick is Google's default, so it
