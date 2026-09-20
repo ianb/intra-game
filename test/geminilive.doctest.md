@@ -93,7 +93,8 @@ again.text.includes("AIzaSy");
 => false
 ```
 
-Refusals before any upstream call, for Google-shaped mistakes:
+Refusals before any upstream call. Google keys come in more than one shape,
+so the only key check is against an OpenAI key pasted in the wrong slot:
 
 ```ts
 const { seen, fetcher } = upstream(200, { name: "auth_tokens/never" });
@@ -107,7 +108,7 @@ const answers = await Promise.all(cases.map(async (body) => {
   return `${status} ${data.error}`;
 }));
 answers.join("\n");
-=> 400 That does not look like a Google AI API key; they start with AIza.
+=> 400 That looks like an OpenAI key; this slot is for a Google AI key.
 400 That model is not one this game offers.
 400 That voice is not one this game offers.
 
@@ -241,8 +242,8 @@ usageFromGeminiMessage({ serverContent: {} });
 Google keys and ephemeral tokens are redacted like OpenAI keys:
 
 ```ts
-redactKeys("key AIzaSyFakeKey1234567890abcdefghijklmnop then auth_tokens/abc123def and sk-abcdefghij");
-=> key AIza[redacted] then auth_tokens/[redacted] and sk-[redacted]
+redactKeys("key AIzaSyFakeKey1234567890abcdefghijklmnop or AQ.Ab8RN6Jm0123456789abc then auth_tokens/abc123def and sk-abcdefghij");
+=> key AIza[redacted] or AQ.[redacted] then auth_tokens/[redacted] and sk-[redacted]
 
 GEMINI_VOICES.length;
 => 30

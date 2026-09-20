@@ -109,8 +109,8 @@ means anything.
 1. **Open the panel.** In the side panel's "here" tab, click 🎙 Ama. The panel
    should show the provider, model and voice pickers, the key field with its
    billing note, and a dimmed Start button with a hint.
-2. **Enter a key.** Pick the provider, paste a real key for it (Google AI
-   Studio keys start with `AIza`, OpenAI's with `sk-`), click Use key or just
+2. **Enter a key.** Pick the provider, paste a real key for it (OpenAI's start with
+   `sk-`; Google's vary), click Use key or just
    Start. The field is replaced by "… key set (ends in ····)" and a Clear
    button. Reload the page and confirm the key is still set; click Clear key
    and confirm it is gone from Application → Local Storage.
@@ -156,9 +156,8 @@ means anything.
     and on Google the WebSocket URL carries an `auth_tokens/…` value, never
     the key. `wrangler dev`'s console shows `POST /api/realtime/secret` and
     nothing else about it. Save the game and grep the save for `sk-` and
-    `AIza`.
-14. **Bad key.** Clear the key, enter `sk-invalid` (or `AIzaInvalid` on
-    Google), Start. Expect "… rejected that API key" without the key repeated,
+    your Google key's first characters.
+14. **Bad key.** Clear the key, enter `sk-invalid` (or a mangled Google key), Start. Expect "… rejected that API key" without the key repeated,
     and a released mic.
 15. **Gemini specifics.** With Google selected: interrupt her mid-sentence and
     confirm playback stops at once (the `interrupted` flush). Leave a long

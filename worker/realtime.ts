@@ -72,11 +72,13 @@ export async function mintClientSecret(
       400,
     );
   }
-  if (provider === "gemini" && !apiKey.startsWith("AIza")) {
+  // Google keys come in more than one shape (AIza..., AQ....), so the only
+  // check is against the one mistake with a clear signature.
+  if (provider === "gemini" && apiKey.startsWith("sk-")) {
     return json(
       {
         error:
-          "That does not look like a Google AI API key; they start with AIza.",
+          "That looks like an OpenAI key; this slot is for a Google AI key.",
       },
       400,
     );

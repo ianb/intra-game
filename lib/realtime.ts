@@ -164,6 +164,7 @@ export function redactKeys(text: string): string {
   return text
     .replace(/sk-[A-Za-z0-9_*-]{4,}/g, "sk-[redacted]")
     .replace(/AIza[A-Za-z0-9_*-]{10,}/g, "AIza[redacted]")
+    .replace(/AQ\.[A-Za-z0-9_*.-]{10,}/g, "AQ.[redacted]")
     .replace(/auth_tokens\/[A-Za-z0-9_-]+/g, "auth_tokens/[redacted]");
 }
 

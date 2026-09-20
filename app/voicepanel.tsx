@@ -478,7 +478,9 @@ function KeyEntry() {
         <input
           type="password"
           autoComplete="off"
-          placeholder={provider === "gemini" ? "AIza..." : "sk-..."}
+          placeholder={
+            provider === "gemini" ? "Google AI Studio key" : "sk-..."
+          }
           className="flex-1 bg-gray-800 p-1"
           value={keyDraft.value}
           onInput={(event) => {
