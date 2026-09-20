@@ -92,6 +92,20 @@ export abstract class VoiceSession {
   readonly playerSpeaking = signal(false);
   /** The last non-fatal complaint from the server, for the panel. */
   readonly notice = signal<string | null>(null);
+  /**
+   * Developer-facing trace of the connection: what was last sent, in
+   * summary, and how it closed. For diagnosing a provider's refusal of
+   * something this code sent, without a debugger on the player's machine.
+   */
+  readonly trace = signal<string[]>([]);
+
+  protected note(line: string): void {
+    const kept = this.trace.value.slice(-11);
+    this.trace.value = [
+      ...kept,
+      `${new Date(this.clock()).toISOString().slice(11, 23)} ${line}`,
+    ];
+  }
 
   /**
    * Set once by end(), fail() or finish(), and checked after every await in

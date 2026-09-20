@@ -131,9 +131,11 @@ export class GeminiVoiceConversation extends VoiceSession {
     this.socket = socket;
     socket.onopen = () => {
       if (!this.closed && this.socket === socket) {
-        socket.send(
-          JSON.stringify(geminiSetupMessage(spec, rejectedSetupFields)),
+        const setup = geminiSetupMessage(spec, rejectedSetupFields);
+        this.note(
+          `sent setup: ${Object.keys(setup.setup as object).join(",")}`,
         );
+        socket.send(JSON.stringify(setup));
       }
     };
     socket.onmessage = (event) => {
@@ -151,6 +153,7 @@ export class GeminiVoiceConversation extends VoiceSession {
         return;
       }
       const why = event.reason ? redactKeys(event.reason) : "";
+      this.note(`socket closed: code ${event.code ?? "?"} ${why}`);
       if (this.setupDone) {
         this.finish(
           why ? `The connection ended: ${why}` : "The connection ended.",
@@ -216,6 +219,21 @@ export class GeminiVoiceConversation extends VoiceSession {
 
   private async handle(message: unknown): Promise<void> {
     const event = readGeminiMessage(message);
+    const keys = Object.keys((message as object) ?? {}).join(",");
+    if (
+      event.setupComplete ||
+      event.goAwaySeconds !== null ||
+      keys !== "serverContent"
+    ) {
+      this.note(`received: ${keys}`);
+    } else if (
+      event.audio.length === 0 &&
+      (event.turnComplete || event.interrupted)
+    ) {
+      this.note(
+        `received: serverContent ${event.turnComplete ? "turnComplete" : "interrupted"}`,
+      );
+    }
     if (event.setupComplete && !this.setupDone) {
       this.setupDone = true;
       await this.beginStreaming();
@@ -260,8 +278,15 @@ export class GeminiVoiceConversation extends VoiceSession {
       return;
     }
     this.player = this.deps.createPlayer();
+    let chunks = 0;
     const capture = await this.deps.startCapture(mic, (base64) => {
       if (!this.closed && this.socket === socket) {
+        chunks += 1;
+        if (chunks === 1 || chunks === 50) {
+          this.note(
+            `sent audio chunk ${chunks}: ${base64.length} base64 chars`,
+          );
+        }
         socket.send(JSON.stringify(geminiAudioMessage(base64)));
       }
     });
@@ -273,6 +298,7 @@ export class GeminiVoiceConversation extends VoiceSession {
     capture.setMuted(this.muted.value);
     this.markConnected();
     if (this.options.openingLine) {
+      this.note("sent opening line as clientContent text turn");
       socket.send(
         JSON.stringify(
           geminiTextTurn(

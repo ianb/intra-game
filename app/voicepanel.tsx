@@ -618,7 +618,25 @@ function Controls({
           : "Google may end a long session on its own; it warns first."}
       </div>
       {start}
+      <ConnectionTrace conversation={conversation} />
     </div>
+  );
+}
+
+/** What was sent and how it closed, for pasting into a bug report. */
+function ConnectionTrace({ conversation }: { conversation: VoiceSession }) {
+  useSignals();
+  const lines = conversation.trace.value;
+  if (!lines.length) {
+    return null;
+  }
+  return (
+    <details className="mt-2 text-xs text-gray-400">
+      <summary className="cursor-pointer">Connection details</summary>
+      <pre className="whitespace-pre-wrap mt-1 text-gray-300">
+        {lines.join("\n")}
+      </pre>
+    </details>
   );
 }
 
