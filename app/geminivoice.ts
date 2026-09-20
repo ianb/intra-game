@@ -10,11 +10,13 @@ import {
   GEMINI_INPUT_RATE,
   GEMINI_OPTIONAL_SETUP_FIELDS,
   GEMINI_OUTPUT_RATE,
+  GEMINI_POST_SETUP_FALLBACKS,
   GEMINI_SETUP_FIELD_LABELS,
   geminiAudioMessage,
   geminiSetupMessage,
   geminiSocketUrl,
   geminiTextTurn,
+  isInvalidArgumentClose,
   readGeminiMessage,
   unknownSetupField,
   type GeminiSessionSpec,
@@ -77,6 +79,9 @@ export class GeminiVoiceConversation extends VoiceSession {
   private setupDone = false;
   /** Reconnects after a refused setup field; bounded so a bad model cannot loop. */
   private reconnects = 0;
+  /** When setup completed, and whether the model has produced anything since. */
+  private setupAt: number | null = null;
+  private heardModel = false;
   private partialCharacter = "";
   private partialPlayer = "";
   /** Messages are handled in order even when one arrives as a Blob. */
@@ -155,6 +160,25 @@ export class GeminiVoiceConversation extends VoiceSession {
       const why = event.reason ? redactKeys(event.reason) : "";
       this.note(`socket closed: code ${event.code ?? "?"} ${why}`);
       if (this.setupDone) {
+        // Accepted at setup, refused as soon as audio arrived, before the
+        // model said anything: a feature this model lacks, most likely. The
+        // close does not say which, so drop the next candidate and retry.
+        const early =
+          !this.heardModel &&
+          this.setupAt !== null &&
+          this.clock() - this.setupAt < 15_000;
+        const suspect =
+          early && isInvalidArgumentClose(event.reason)
+            ? this.nextFallback(spec)
+            : null;
+        if (suspect && this.reconnects < 5) {
+          this.retryWithout(
+            suspect,
+            spec,
+            `Google refused the session once audio started; retrying without ${GEMINI_SETUP_FIELD_LABELS[suspect] ?? suspect}.`,
+          );
+          return;
+        }
         this.finish(
           why ? `The connection ended: ${why}` : "The connection ended.",
         );
@@ -165,23 +189,64 @@ export class GeminiVoiceConversation extends VoiceSession {
         field &&
         GEMINI_OPTIONAL_SETUP_FIELDS.has(field) &&
         !rejectedSetupFields.has(field) &&
-        this.reconnects < 3
+        this.reconnects < 5
       ) {
-        rejectedSetupFields.add(field);
-        this.reconnects += 1;
-        this.notice.value = `Google does not accept ${GEMINI_SETUP_FIELD_LABELS[field] ?? field} for this model; continuing without it.`;
-        this.socket = null;
-        this.connect(spec).catch((e: unknown) => {
-          if (!this.closed) {
-            this.fail(describeStartError(e));
-          }
-        });
+        this.retryWithout(
+          field,
+          spec,
+          `Google does not accept ${GEMINI_SETUP_FIELD_LABELS[field] ?? field} for this model; continuing without it.`,
+        );
         return;
       }
       this.fail(
         `Google closed the connection before the session started${event.code ? ` (${event.code}${why ? `: ${why}` : ""})` : ""}.`,
       );
     };
+  }
+
+  /** The first post-setup fallback still in the setup and not yet refused. */
+  private nextFallback(spec: GeminiSessionSpec): string | null {
+    for (const field of GEMINI_POST_SETUP_FALLBACKS) {
+      if (rejectedSetupFields.has(field)) {
+        continue;
+      }
+      if (field === "enableAffectiveDialog" && !spec.affectiveDialog) {
+        continue;
+      }
+      return field;
+    }
+    return null;
+  }
+
+  /**
+   * Remember a refused field, drop the per-socket audio, and connect again
+   * on a fresh token. The microphone stays open across the retry.
+   */
+  private retryWithout(
+    field: string,
+    spec: GeminiSessionSpec,
+    notice: string,
+  ): void {
+    rejectedSetupFields.add(field);
+    this.reconnects += 1;
+    this.notice.value = notice;
+    this.note(`retrying without ${field}`);
+    this.socket = null;
+    this.setupDone = false;
+    this.setupAt = null;
+    this.heardModel = false;
+    const { capture, player } = this;
+    this.capture = null;
+    this.player = null;
+    capture?.stop();
+    player?.close();
+    this.state.value = "connecting";
+    this.connectedAt.value = null;
+    this.connect(spec).catch((e: unknown) => {
+      if (!this.closed) {
+        this.fail(describeStartError(e));
+      }
+    });
   }
 
   setMuted(muted: boolean): void {
@@ -236,8 +301,17 @@ export class GeminiVoiceConversation extends VoiceSession {
     }
     if (event.setupComplete && !this.setupDone) {
       this.setupDone = true;
+      this.setupAt = this.clock();
       await this.beginStreaming();
       return;
+    }
+    if (
+      event.audio.length ||
+      event.outputTranscript ||
+      event.inputTranscript ||
+      event.turnComplete
+    ) {
+      this.heardModel = true;
     }
     if (event.interrupted) {
       this.player?.flush();

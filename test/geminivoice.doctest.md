@@ -86,7 +86,7 @@ function rig({ mint }: { mint?: any } = {}) {
       characterName: "Ama",
       apiKey: "AIzaFake",
       openingLine: true,
-      spec: { provider: "gemini", model: "gemini-3.8-live", voice: "Sulafat", instructions: "You are voicing Ama.", turnTaking: "patient", proactiveAudio: true },
+      spec: { provider: "gemini", model: "gemini-3.8-live", voice: "Sulafat", instructions: "You are voicing Ama.", turnTaking: "patient", proactiveAudio: true, affectiveDialog: true },
     },
     deps as any,
   );
@@ -254,16 +254,70 @@ r.socket.drop(1007, `Invalid JSON payload received. Unknown name "proactivity" a
 await settle();
 await settle();
 [r.conversation.state.value, r.conversation.notice.value, r.log.join(" "), r.sockets.length, r.stream.tracks[0].stopped].join(" | ");
-=> connecting | Google does not accept proactive audio for this model; continuing without it. | mic mint socket mint socket | 2 | false
+=> connecting | Google does not accept proactive audio (nested form) for this model; continuing without it. | mic mint socket mint socket | 2 | false
 
 r.socket.open();
-["proactivity" in r.socket.sent[0].setup, [...rejectedSetupFields].join(",")].join(" | ");
-=> false | proactivity
+["proactivity" in r.socket.sent[0].setup, r.socket.sent[0].setup.proactiveAudio, [...rejectedSetupFields].join(",")].join(" | ");
+=> false | true | proactivity
 
 r.socket.serve({ setupComplete: {} });
 await settle();
 r.conversation.state.value;
 => connected
+```
+
+When Google accepts the setup and then closes with "invalid argument" as soon
+as audio arrives, before the model has said anything, it is refusing a feature
+without naming it. The session drops the likeliest candidate, then the next,
+one reconnect each, remembering each for the page:
+
+```ts
+const r = rig();
+await r.conversation.start();
+r.socket.open();
+r.socket.serve({ setupComplete: {} });
+await settle();
+r.capture.speak("AAAA");
+[r.conversation.state.value, "enableAffectiveDialog" in r.socket.sent[0].setup.generationConfig].join(" | ");
+=> connected | true
+
+r.socket.drop(1007, "Request contains an invalid argument.");
+await settle();
+await settle();
+[r.conversation.state.value, r.conversation.notice.value, r.sockets.length, r.capture.stopped, r.player.closed, r.stream.tracks[0].stopped].join(" | ");
+=> connecting | Google refused the session once audio started; retrying without affective dialog. | 2 | true | true | false
+
+r.socket.open();
+"enableAffectiveDialog" in r.socket.sent[0].setup.generationConfig;
+=> false
+
+r.socket.serve({ setupComplete: {} });
+await settle();
+r.socket.drop(1007, "Request contains an invalid argument.");
+await settle();
+await settle();
+[r.conversation.state.value, r.sockets.length, [...rejectedSetupFields].join(",")].join(" | ");
+=> connecting | 3 | enableAffectiveDialog,realtimeInputConfig
+
+r.socket.open();
+"realtimeInputConfig" in r.socket.sent[0].setup;
+=> false
+```
+
+Once the model has spoken, a later "invalid argument" close is just the end
+of the conversation:
+
+```ts
+const r = rig();
+await r.conversation.start();
+r.socket.open();
+r.socket.serve({ setupComplete: {} });
+await settle();
+r.socket.serve({ serverContent: { modelTurn: { parts: [{ inlineData: { mimeType: "audio/pcm;rate=24000", data: "AQID" } }] } } });
+await settle();
+r.socket.drop(1007, "Request contains an invalid argument.");
+[r.conversation.state.value, r.conversation.endedBecause.value].join(" | ");
+=> ended | The connection ended: Request contains an invalid argument.
 ```
 
 A refusal of something the session cannot do without, or a second refusal of

@@ -158,6 +158,7 @@ export function geminiActivityDetection(
  */
 export const GEMINI_OPTIONAL_SETUP_FIELDS: ReadonlySet<string> = new Set([
   "proactivity",
+  "proactiveAudio",
   "enableAffectiveDialog",
   "contextWindowCompression",
   "inputAudioTranscription",
@@ -167,13 +168,32 @@ export const GEMINI_OPTIONAL_SETUP_FIELDS: ReadonlySet<string> = new Set([
 
 /** Plain names for the panel's notice when one of those is dropped. */
 export const GEMINI_SETUP_FIELD_LABELS: Record<string, string> = {
-  proactivity: "proactive audio",
+  proactivity: "proactive audio (nested form)",
+  proactiveAudio: "proactive audio",
   enableAffectiveDialog: "affective dialog",
   contextWindowCompression: "context compression",
   inputAudioTranscription: "input transcription",
   outputAudioTranscription: "output transcription",
   realtimeInputConfig: "the turn-taking setting",
 };
+
+/**
+ * What to try dropping, in order, when Google accepts the setup and then
+ * closes with "invalid argument" as soon as audio arrives: the moment the
+ * generation pipeline starts is when a feature a model lacks gets refused,
+ * and the close names nothing. Most likely first. The session drops one per
+ * reconnect and remembers the refusal for the page.
+ */
+export const GEMINI_POST_SETUP_FALLBACKS: readonly string[] = [
+  "enableAffectiveDialog",
+  "realtimeInputConfig",
+  "contextWindowCompression",
+  "outputAudioTranscription",
+];
+
+export function isInvalidArgumentClose(reason: string | undefined): boolean {
+  return /invalid argument/i.test(reason ?? "");
+}
 
 /**
  * The field Google named when it closed the socket over the setup message,
@@ -221,8 +241,13 @@ export function geminiSetupMessage(
   if (spec.transcribeInput && !omit.has("inputAudioTranscription")) {
     setup.inputAudioTranscription = {};
   }
+  // The docs nest this as proactivity.proactiveAudio; a js-genai issue
+  // reports gemini-3.8-live refusing that and taking a flat property. Try
+  // the documented form, then the flat one, then do without.
   if (spec.proactiveAudio && !omit.has("proactivity")) {
     setup.proactivity = { proactiveAudio: true };
+  } else if (spec.proactiveAudio && !omit.has("proactiveAudio")) {
+    setup.proactiveAudio = true;
   }
   return { setup };
 }

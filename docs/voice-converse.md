@@ -160,9 +160,12 @@ means anything.
 14. **Bad key.** Clear the key, enter `sk-invalid` (or a mangled Google key), Start. Expect "… rejected that API key" without the key repeated,
     and a released mic.
 15. **Gemini specifics.** If "Connecting to Google..." shows a yellow note
-    that Google does not accept some option for this model, that is the
-    session dropping a setup field the server refused and reconnecting
-    without it; the same field is left out for the rest of the page session.
+    that Google does not accept some option for this model, or refused the
+    session once audio started, that is the session dropping a setup field
+    the server refused and reconnecting without it; the same field is left
+    out for the rest of the page session. "Connection details" under an
+    ended session lists what was dropped, which is worth reporting so the
+    defaults can be fixed for that model.
     With Google selected: interrupt her mid-sentence and
     confirm playback stops at once (the `interrupted` flush). Leave a long
     pause with "May stay silent" on and confirm she does not fill it. Watch

@@ -192,8 +192,21 @@ const trimmed = geminiSetupMessage(
   { provider: "gemini", model: "gemini-3.8-live", voice: "Kore", instructions: "Hi", proactiveAudio: true, affectiveDialog: true },
   new Set(["proactivity", "enableAffectiveDialog"]),
 ).setup as any;
-["proactivity" in trimmed, "enableAffectiveDialog" in trimmed.generationConfig, "contextWindowCompression" in trimmed].join(" ");
-=> false false true
+["proactivity" in trimmed, trimmed.proactiveAudio, "enableAffectiveDialog" in trimmed.generationConfig, "contextWindowCompression" in trimmed].join(" ");
+=> false true false true
+```
+
+The docs nest proactive audio; a js-genai issue reports gemini-3.8-live taking
+it flat instead. The setup tries the documented form first, then the flat one
+once the nested one is refused, then goes without:
+
+```ts
+const flatToo = geminiSetupMessage(
+  { provider: "gemini", model: "gemini-3.8-live", voice: "Kore", instructions: "Hi", proactiveAudio: true },
+  new Set(["proactivity", "proactiveAudio"]),
+).setup as any;
+["proactivity" in flatToo, "proactiveAudio" in flatToo].join(" ");
+=> false false
 ```
 
 Turn-taking maps onto activity detection. Quick is Google's default, so it
