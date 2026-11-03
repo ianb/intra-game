@@ -23,19 +23,6 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Now
 
-- **Finish the Cloudflare setup** `infra` `M` `blocked:account-setup` — the
-  deployment path is written and dry-run clean but has never run against real
-  Cloudflare. Follow [docs/deploying.md](docs/deploying.md): Workers Builds, AI
-  Gateway, the API token, the Access application. Done when a push deploys and
-  the deployed game is playable behind Access.
-- **Exercise a real provider from the server** `infra` `S` — the streaming path
-  is now verified against `pnpm fakeprovider` (framing, deltas, the usage chunk,
-  cost, cached tokens, per-tier model choice), so what's left is whether a real
-  provider agrees. OpenRouter is one key away: `OPENROUTER_API_KEY` in
-  `.dev.vars`, `DEV_FAKE_LLM` commented out, `pnpm preview`, one turn. The
-  gateway is the same exercise with `CF_ACCOUNT_ID`/`CF_AIG_TOKEN`, and would
-  additionally confirm the `cf-aig-authorization` header, which nothing has ever
-  sent for real.
 - **Publish the callback-box dev deps** `tooling` `S` — `agent-doctest` and
   `personal-vibe-check` are `file:` dependencies pointing outside the repo, so
   nobody without that checkout can run the test suite or the linter. They are

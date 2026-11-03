@@ -66,7 +66,7 @@ install succeeds without them. [INSTALL.md](./INSTALL.md) covers it.
 ```bash
 pnpm build      # bundle into dist/
 pnpm preview    # run the whole thing locally through wrangler
-pnpm deploy     # wrangler deploy
+pnpm run deploy # wrangler deploy
 ```
 
 One Worker serves both halves: Cloudflare serves `dist/` directly (with a

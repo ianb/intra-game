@@ -4,6 +4,10 @@ One Worker serves the whole game: Cloudflare serves the client bundle from
 `dist/` directly, and `worker/index.ts` handles `/api/*`. Sessions live in
 Durable Objects, one per player per session id.
 
+Production is [playintra.win](https://playintra.win). Its deployed commit is
+reported by `/version.json` and checked against the current checkout by
+`pnpm deployed`.
+
 Pushes to `main` deploy automatically via **Workers Builds** — Cloudflare's own
 git integration, so there is no API token stored in GitHub and no Actions
 workflow to maintain. The trade-off is that Workers Builds does not gate on
@@ -364,9 +368,11 @@ Add to the environment's variables:
 | `CLOUDFLARE_API_TOKEN`  | a token with `Account` → `Workers Scripts` → `Edit` |
 | `CLOUDFLARE_ACCOUNT_ID` | your account id                                     |
 
-Then `pnpm deploy` works from the container. Scope the token to Workers Scripts
-on the one account, and rotate it when you're done experimenting — it is a
-deploy key living in an ephemeral machine.
+Then `pnpm build && pnpm run deploy` works from the container. Use `pnpm run`
+explicitly: `pnpm deploy` is also a pnpm workspace command and recent pnpm
+versions may invoke that instead of the package script. Scope the token to
+Workers Scripts on the one account, and rotate it when you're done
+experimenting — it is a deploy key living in an ephemeral machine.
 
 Without it, everything except the deploy itself still works offline:
 
