@@ -45,6 +45,17 @@ const fire = (world: unknown, event: StoryEventType) =>
   mysteryTriggers(world as never, event);
 ```
 
+An announcement event does not trigger a second copy of itself before its state
+has been folded into the world.
+
+```ts
+const source = new Mystery({id: 'source', state: 'solved'});
+const next = new Mystery({id: 'next', triggers: [{solved:'source', becomes:'revealed', announcedBy:'Ama'}]});
+const world = fakeWorld([source, next]);
+fire(world, {id:'Ama', roomId:'Foyer', totalTime:0, actions:[], changes:{next:{before:{state:'veiled'},after:{state:'revealed'}}}}).length;
+=> 0
+```
+
 ## Walking into a room
 
 ```ts

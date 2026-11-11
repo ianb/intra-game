@@ -52,9 +52,9 @@ export const Fridas_Copies = quest(
       Gloria: `You saw Frida and Ama have a dreadful public argument about treatment. Later Frida asked you why you were avoiding her. You do not know what was erased. Tell the player Frida is comparing her old complaints and wants discretion.`,
     },
     solvedHints: {
-      Frida: `The player helped compare your records. Share the treatment correspondence on request: Ama offered relief after a humiliating quarrel, and later you could remember being upset without remembering what you had objected to. You now want records kept outside treatment. If the player mentions Henry's appointment, offer to witness it and keep a written copy of his wishes.`,
+      Frida: `The player helped compare your records. Before recovery, share the treatment correspondence on request: Ama offered relief after a humiliating quarrel, and later you could remember being upset without remembering what you had objected to. You want records kept outside treatment. Offer to witness Henry's appointment. If Recovery_Review.outcome is recovered, these are facts in documents rather than memories you possess. Follow Recovery_Review's reintroduction instructions; do not pretend to remember helping the player.`,
     },
-    meters: ["Archivist.serviceMode", "Frida.confidence"],
+    meters: ["Archivist.serviceMode", "Frida.confidence", "Recovery_Review.outcome"],
   },
   [{ field: "Fridas_Copies.evidence" }, { field: "Fridas_Copies.performed" }],
   [{ field: "Frida.confidence", value: 2 }],

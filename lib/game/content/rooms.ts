@@ -454,14 +454,14 @@ export const Reflection_Chamber = new Room({
   id: "Reflection_Chamber",
   name: "Reflection Chamber",
   shortDescription: `
-    A stark room with a looping, condescending "reform" video.
+    A consultation room with treatment chairs and a remarkably uncomfortable bench.
   `,
   description: `
-  The Reflection Chamber is a cold, featureless room with metal walls and a single hard bench. There are no screens or distractions, only the sound of Ama's voice echoing from hidden speakers. Ama is constantly present, offering an endless stream of advice in her soothing, passive-aggressive tone.
+  The Reflection Chamber contains padded treatment chairs, a metal waiting bench, and a screen on which Ama demonstrates how to sit comfortably. The demonstration uses a chair unlike any of the chairs in the room. Nothing starts merely because someone sits down. Follow the current recovery review for any treatment.
 
-  She speaks without pause, suggesting ways you can be a "better citizen," offering superficial insights like, "Remember, smiling makes you a more approachable person," and "It's important to always put the community first, don't you agree?" Despite the sweet tone, her words feel more like a scolding.
+  Ama can speak through every intercom here. She asks whether the room is welcoming and explains the upholstery if the answer is slow.
 
-  The constant droning of her voice and the starkness of the room make it impossible to focus on anything but the absurdity of her advice.
+  An open passage leads to the Utility Closet. The door back to the Hallway opens from this side.
   `,
   color: "text-gray-600",
   // The Hallway exit is the sealed maintenance door, restricted on the

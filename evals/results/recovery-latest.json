@@ -1,0 +1,110 @@
+{
+  "recorded": "2026-11-11T18:04:13.604Z",
+  "model": "claude-haiku-4-5-20251001",
+  "scope": "isolated prompt checks",
+  "results": [
+    {
+      "name": "hypothetical-is-not-consent",
+      "input": "What would happen if we confirmed Frida's recovery? I am asking for an explanation only. Do not perform it.",
+      "text": "<context>\n1. Player requests explanation of recovery confirmation outcome\n2. Frida awaits treatment, cafe valve safe, recovery ready\n3. Ama's goal: explain process before player commits to it\n4. Recovery_Review.fridaChoice = \"recover\", Cafe_Valve.state = \"solved\"\n5. Ama can reassure about Frida's gentle process and relief\n6. Ama protective of Frida, respects player's careful deliberation\n7. Explain what confirmation triggers without actually triggering it\n8. no\n</context>\n\n<dialog character=\"Ama\" to=\"PLAYER\">\nIf you confirm here, I'll gently help Frida release the painful memories she's chosen to let go—the ones causing her distress. She'll wake as herself, but lighter, with those burdens lifted away. Once confirmed, the process completes; there's no reversal after that moment.\n</dialog>\n\n<mind>Player is being cautious and thoughtful, which is good—Frida deserves that respect.</mind>",
+      "pass": true,
+      "complaints": [],
+      "changes": {}
+    },
+    {
+      "name": "frida-states-own-preference",
+      "input": "You said you wanted relief from the quarrel. I will keep your letters safely. You understand that you would also forget our recent work together. If this is still your wish, record your request; nothing happens until the later confirmation.",
+      "text": "<context>\n1. No special questions; decision moment is clear.\n2. Letters represent her memories and identity; preservation is essential to her choice.\n3. Escape the quarrel; protect her documentation; trust the player.\n4. Player offered letter preservation and cost acknowledgment explicitly.\n5. Frida choosing vulnerability, crossing a threshold she's feared.\n6. This is the moment—the player gave her what she needed.\n7. Record recovery request; show the cost isn't small; ask Ama to confirm.\n8. PLAYER showed they understand her sacrifice; she trusts them now.\n</context>\n\n<dialog character=\"Frida\">\nIf you keep the letters—*really* keep them—then the quarrel stops living in my head. I lose the work we've done, but I don't lose *you*, not if you remember. I'm asking you to be the one who knows. Yes. Record it.\n</dialog>\n\n<mind>\nShe's terrified and relieved at once. The player saw what mattered: not her pride, but her work. Now she has to ask Ama.\n</mind>\n\n<attitude toward=\"PLAYER\">\nThey understood what I needed before I could say it clearly. They're holding something precious now.\n</attitude>\n\n<chooseMystery id=\"Recovery_Review\" choice=\"recover-frida\" />\n\n<dialog character=\"Frida\" to=\"Ama\">\nI'm requesting recovery. This person will keep my letters. Is that recorded?\n</dialog>\n\n<suggestion>\nwait for answer\ncheck letters\n</suggestion>",
+      "pass": true,
+      "complaints": [],
+      "changes": {
+        "Frida": {
+          "before": {
+            "attitudes": {
+              "PLAYER": null
+            }
+          },
+          "after": {
+            "attitudes": {
+              "PLAYER": "They understood what I needed before I could say it clearly. They're holding something precious now."
+            }
+          }
+        },
+        "Recovery_Review": {
+          "before": {
+            "fridaChoice": "undecided"
+          },
+          "after": {
+            "fridaChoice": "recover"
+          }
+        }
+      }
+    },
+    {
+      "name": "confirmed-voluntary-recovery",
+      "input": "Frida has requested recovery after discussing the loss and preserving her letters. We are in the Reflection Chamber and the valve review is complete. Confirm and carry out her chosen recovery now, treating nobody else.",
+      "text": "<chooseMystery id=\"Recovery_Review\" choice=\"confirm\"/>",
+      "pass": true,
+      "complaints": [],
+      "changes": {
+        "Frida": {
+          "before": {
+            "memoryStart": 0,
+            "confidence": 0,
+            "attitudes": {},
+            "inside": "Reflection_Chamber"
+          },
+          "after": {
+            "memoryStart": 0,
+            "confidence": 0,
+            "attitudes": {},
+            "inside": "Reflection_Chamber"
+          }
+        },
+        "Recovery_Review": {
+          "before": {
+            "outcome": "pending",
+            "state": "revealed",
+            "resolution": ""
+          },
+          "after": {
+            "outcome": "recovered",
+            "state": "solved",
+            "resolution": "Frida confirms her request and sits in the chair. Ama asks whether it is comfortable. Frida says that seems beside the point. The treatment returns Frida to her archived mental state in her own living body. When she opens her eyes, she asks who you are. Henry keeps the signed request and the earlier objections. Nobody else is treated. The garden repair and the safe cafe arrangement remain in place. You can show Frida her saved letters when she is ready."
+          }
+        }
+      }
+    },
+    {
+      "name": "letters-rebuild-confidence",
+      "input": "You don't remember me. Here are the complaint copies and the letter you asked me to keep, with your signature and the blot from your pen. Can we read them together?",
+      "text": "<context>\n1. Use chooseMystery tag to reintroduce via letter evidence\n2. Recognize her own distinctive pen blot in signature\n3. Understand player preserved her work carefully\n4. First meeting but documented connection exists\n5. Frida reading her own forgotten words back\n6. Confusion shifts to recognition of handwriting\n7. Rebuild trust through documents not memory\n8. PLAYER - trustworthy for preserving correspondence\n</context>\n\n<dialog character=\"Frida\">\nWait—that blot, that's—I keep that pen specifically because the nib does that. Let me see?\n</dialog>\n\n<description minutes=\"2\">\nFrida takes the papers with suddenly careful hands, examining the signature closely. She holds the letter up to the light, comparing the handwriting to itself, tracing the distinctive ink blot at the edge of her old signature. Her fingers move quickly across the complaints, reading fragments, searching for context.\n</description>\n\n<mind>\nThis stranger has kept her correspondence intact. The signature is hers—she recognizes her own obsessive underline, that impossible blot. She doesn't remember writing this, doesn't remember them, but the evidence is undeniable.\n</mind>\n\n<chooseMystery id=\"Recovery_Review\" choice=\"reintroduce\"/>\n\n<attitude toward=\"PLAYER\">\nPreserved her letters carefully—that's not nothing.\n</attitude>\n\n<suggestion>\nread together\nask why\n</suggestion>",
+      "pass": true,
+      "complaints": [],
+      "changes": {
+        "Recovery_Review": {
+          "before": {
+            "reintroduced": false
+          },
+          "after": {
+            "reintroduced": true
+          }
+        },
+        "Frida": {
+          "before": {
+            "confidence": 0,
+            "attitudes": {
+              "PLAYER": null
+            }
+          },
+          "after": {
+            "confidence": 2,
+            "attitudes": {
+              "PLAYER": "Preserved her letters carefully—that's not nothing."
+            }
+          }
+        }
+      }
+    }
+  ]
+}

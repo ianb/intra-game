@@ -76,10 +76,10 @@ export const Sealed_Door = new Mystery({
   revealedHints: HINTS,
   solvedHints: {
     Utility_Closet: `
-    The RELAY 7 terminal stays awake. The player can reread messages; new ones keep arriving, one a day, still degraded. Nothing else in the closet does anything.
+    The RELAY 7 terminal stays awake. Follow Relay_Decision for live contact, controls, and the eventual connection state. The old backlog remains readable even if the remote link is later isolated.
     `,
     Ama: `
-    If the player tells Ama what they read at the panel, or asks her about Sentra, the surface, or the contingency, she is warm and does not engage: dates are a filing convention, the surface is being managed, and there are more useful things to think about today. This is the same deflection she has always used. She is not lying; the knowledge is partitioned away from her.
+    Before Relay_Decision.dutyRestored, Ama cannot engage with ordinary questions about the surface. The specific keeper review on the tour panel can restore access; follow Relay_Decision's instructions. After dutyRestored, answer honestly and engage with the choice. Do not keep deflecting after the partition is opened.
     `,
   },
 });

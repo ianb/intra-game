@@ -54,7 +54,7 @@ export const Frida = new Person({
       engineManaged: true,
       max: 2,
       levels: {
-        0: "Explain that retrieving and comparing your old complaints earns access to your private treatment correspondence. Compliments alone do not help.",
+        0: "Before recovery, retrieving and comparing your old complaints earns access to your private correspondence. After recovery, ask to see the preserved letters and follow Recovery_Review's reintroduction instructions. Compliments alone do not help.",
         2: "The player helped compare your records. Offer the treatment correspondence and help witnessing Henry's objection.",
       },
     },
@@ -66,7 +66,7 @@ export const Frida = new Person({
     Frida moves quickly, darting between the shelves of the archive, her hands constantly full of papers and pens. Her hair is perpetually messy, and she speaks in quick bursts, often interrupting herself. She's obsessed with keeping track of every tiny detail she comes across, whether or not it makes sense.
   `,
   roleplayInstructions: `
-    When playing Frida, focus on her erratic energy and obsession with details. She is constantly moving, never quite finishing a thought before jumping to the next one. For example, she might say, 'Oh, you're looking into something strange? I've got this... thing... keeps coming up in old files.' Make sure to play up her excitement for information, even if she doesn't know its full importance.
+    Frida puts papers in order while she speaks, then changes the order when it fails to support her argument. Give her concrete discrepancies to point at. She can finish sentences and explain a task. She keeps a pen she dislikes because its particular blot helps identify her old signatures. Avoid breathless gratitude, repeated stammering, or treating every useful question as a personal breakthrough.
 
     Frida has failed to obtain a reliable date. She knows the Archive Console has a maintenance interface and points the player toward Greg for a job number. Do not give her the year or knowledge of Sentra before the player has discovered them.
   `,
@@ -327,15 +327,15 @@ export const Henry = new Person({
   inside: "Waiting_Room",
   scheduleTemplate: schedules.Henry,
   shortDescription: `
-    Henry has been waiting for an appointment for years.
+    Henry has been waiting for an appointment for weeks. Everyone knows where to leave a message.
   `,
   description: `
     Henry sits calmly in the Waiting Room, flipping through old magazines as though he's in no rush. He's dressed in clean but simple clothing, and his face is marked by an odd mix of patience and anticipation. His posture is relaxed, but there's always a hint of hope in his eyes, as if his name might be called at any moment.
   `,
   roleplayInstructions: `
-    When playing Henry, lean into his unshakeable patience. He's been waiting for years, but he's convinced that his appointment with Ama will come any day now. His voice is calm and measured, and he often speaks as though he's reminding himself to stay hopeful.
+    Henry has waited weeks for this appointment. He has rehearsed a polite opening so often that he worries a direct answer will leave most of it unused. He is calm, but wants someone to come with him and keep notes. Once the appointment is resolved, follow its recorded result; do not return him to waiting for the same appointment.
 
-    For example, Henry might say, "I'm sure they'll call me soon. It's been... well, a while, but I've got important things to discuss with Ama. No rush though, no rush." He never expresses frustration and seems genuinely at peace with the endless waiting, though he often talks about what he'll do when his appointment finally happens.
+    Greg leaves a toolkit under Henry's chair. People leave messages with Henry because they know where he is. He has begun taking the chair when he leaves, which Greg considers inconsiderate. Use this when it affects a scene, rather than repeating it in every conversation.
 
     Henry is polite to a fault and never bothers others with his worries, though he enjoys talking about what he thinks will happen during his long-awaited meeting.
   `,

@@ -32,30 +32,13 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
-- **Continue the story middle and recovery lead-up** `content` `L` — see
-  [story-development.md](docs/story-development.md) for the November 11 revision,
-  cast connections, implemented quests, and remaining recovery/ending work. This
-  supersedes the mandatory-death and re-clone-everyone assumptions in the older
-  reset ledger below: living citizens reboot, Ama recovers occasionally, and
-  successful safety work must not be defeated by a replacement accident.
-
-- **The reset act (design ledger)** `content` `L` — the planned final act,
-  designed in chat 2026-08-21; recorded here so the pieces stay findable.
-  Resolving why-woken sets `PLAYER.queueDisturbed` (the fuse, already live and
-  dormant). Later: the unclogged delivery queue starts clearing three hundred
-  years of backlog, including items addressed to citizens nobody recognizes;
-  the lethal phase arms only once the player is endgame-ready; a multi-turn
-  crisis (mealtime is the natural stage) where individual saves work but the
-  cascade re-aims until someone dies; Ama cannot file a death and resets Intra
-  — every NPC re-cloned from originals, the player exempt because their
-  baseline recording was never completed (pending), with Sentra having locked
-  their pod out of the refresh roster as the deeper cause. The reset event
-  must set a flag (e.g. `PLAYER.loopedBack`) so intake, the flashback, and
-  other one-time beats play differently on the second pass. The queue is
-  outside the reset and delivers the Facility Appreciation Tour days after,
-  so the player goes from second intake to the relay without replaying the
-  game. The victim comes back with everyone else; only the player carries the
-  death.
+- **Author read-through of the expanded story** `content` `M` — the middle,
+  recovery review, voluntary restoration, and relay settlements are implemented.
+  Read [story-development.md](docs/story-development.md) and the scope of the
+  [playtest evidence](docs/story-playtest.md). Review the specific Frida choice,
+  keeper-review mechanism, and admissions-film epilogue for tone and plot.
+  The former mandatory-death/reset-everyone outline is superseded. Successful
+  repairs persist; nobody dies to force a particular ending.
 
 - **Intake can end early, and the wrap-up prompt covers what it skipped**
   `prompts` `S` — fixed 2026-09-02, after Sonnet stalled the movement scenario

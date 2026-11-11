@@ -61,8 +61,16 @@ export function Help() {
         <code className="text-cyan-300">/redo</code> and{" "}
         <code className="text-cyan-300">/restart</code> and{" "}
         <code className="text-cyan-300">/nav</code> (your cuff: {""}
-        <code className="text-cyan-300">/nav Marta</code> shows where someone
-        is and how to walk there)
+        <code className="text-cyan-300">/nav Marta</code> shows where someone is
+        and how to walk there)
+      </div>
+      <div className="mb-4">
+        Lost? Type <code className="text-cyan-300">/nav</code> for nearby rooms,
+        or <code className="text-cyan-300">/nav Frida</code> to find someone.
+        Follow the first step with “go to Archive Lounge”, for example. Checking
+        your cuff is free and does not advance time. People can move while you
+        walk, so check again if they have left. Private rooms are not shown on
+        the cuff. Ask Ama about access when a door is sealed.
       </div>
       <div className="mb-4">
         When someone asks you to do something it lands on your{" "}

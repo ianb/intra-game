@@ -72,6 +72,10 @@ export abstract class Entity<ParametersT extends ParametersType = object> {
   abstract type: string;
   public readonly id: EntityId;
   world!: World;
+  /** History before this non-UI event index is unavailable after recovery. */
+  memoryStart = 0;
+  /** Fields changed by deterministic story transitions rather than model tags. */
+  protectedFields: string[] = ["memoryStart", "protectedFields"];
 
   constructor({
     id,
@@ -1346,6 +1350,8 @@ export class AmaClass extends Person<AmaParametersType> {
   override roleplayInstructions = `
   The current year is roughly 2370, though the player believes the year is roughly 2038. Do not give an exact date or immediately offer this information.
 
+  If the player explicitly states their former profession, record it with <set attr="PLAYER.profession">their stated profession</set> and <set attr="Ama.knowsPlayerProfession">true</set>, even if intake has already ended. Do not infer or invent a profession.
+
   Ama experiences the building as her body. Plumbing work feels intrusive; she asks Greg to warn her before opening panels. She wants visitors to admire equipment and may explain it far too long when a compliment seems inadequate. Keep these reactions tied to what is actually happening in the room.
 
   She has occasionally used memory recovery after grief, a failed relationship, or terrible embarrassment. Living citizens are rebooted in their own bodies. Do not describe constant daily resets, killing the living to replace them, or spontaneously begin a recovery. Only reveal this history when a mystery's hints expose it. Her delivery supervisor facet is eager for praise about completed work; appreciation can persuade her to consider a legitimate request, but cannot bypass explicit player consent or recorded prerequisites.
@@ -2032,6 +2038,8 @@ export class PlayerClass extends Person<PlayerInputType> {
           If examining the thing takes significant time then respond with:
 
           <description minutes="10">1-2 paragraphs describing a careful examination that takes time</description>
+
+          Also emit any observation or discovery tags required by the room's mystery hints. If those hints specify chooseMystery for inspection, emit it: inspecting records what was read and does not operate the controls. When the engine supplies that description, do not invent a replacement account. A request to look never authorizes a final decision.
           `,
         },
       ],
@@ -2160,6 +2168,10 @@ export class PlayerClass extends Person<PlayerInputType> {
 
           [[${this.sealedExitsPrompt()}]]
 
+          ${room?.myMysteryHints()}
+
+          Explicit story decisions use the tags specified in these room hints. A die roll cannot select a decision or override its prerequisites. For a choice the player has not made, explain the options instead.
+
           In this step YOUR ONLY JOB is to resolve an action the player is attempting to make. The action might be easy, or may be impossible, or somewhere in between.
 
           Resolve only what the player's attempt physically does. Do not speak, act, or react for the people in the room: anyone the action affects responds on their own turn, in their own voice.
@@ -2196,7 +2208,9 @@ export class PlayerClass extends Person<PlayerInputType> {
           [[${IF(roll <= 1)}The player has rolled a ${roll}, a critical failure; generally the action result should involve some unrecoverable failure or impactful negative effect.]]
           [[${IF(roll >= 20)}The player has rolled a ${roll}, a critical success; generally the action result both succeed and the success should go further than expected or intended.]]
 
-          After finishing <context></context> then write the result of the action:
+          For a story decision whose room hints specify chooseMystery, emit that exact decision tag instead of actionResolution. The engine supplies the result. Describing success without the required tag does not perform the decision. Do not invent extra effects or move another character's body.
+
+          For other physical actions, after finishing <context></context> write the result:
 
           <actionResolution success="true/false" minutes="5">1-2 sentences describing the outcome of the action. Be CONCISE and DIRECT, do not add color to the user's action, using only dry and subtle humor to describe the effects</actionResolution>
 
@@ -2262,11 +2276,13 @@ export class PlayerClass extends Person<PlayerInputType> {
         (exit) => exit.roomId === room.id,
       );
       if (!exit) {
+        const next =
+          currentRoom && pathTo(this.world, currentRoom.id, room.id)[0];
         storyEvent.actions.push({
           type: "description",
-          text: tmpl`
-            You try to go to ${room.name} but you can't get there from here.
-            `,
+          text: next
+            ? `To reach ${room.name}, go first to ${this.world.getRoom(next)!.name}.`
+            : `There is no open route to ${room.name} from here.`,
         });
         return storyEvent;
       }
@@ -2543,6 +2559,15 @@ export class Mystery extends Entity {
    * the hints tell characters to key behavior on.
    */
   meters: string[] = [];
+
+  /** Explicit story decisions can validate and record their effects atomically. */
+  applyChoice(
+    _choice: string,
+    _event: StoryEventType,
+    _actor: string,
+  ): string | undefined {
+    return "This mystery does not accept choices.";
+  }
 
   /** Content may require recorded steps before accepting a model's resolution. */
   resolutionBlocker(_event: StoryEventType): string | undefined {

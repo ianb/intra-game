@@ -41,21 +41,40 @@ export interface NavResult {
 }
 
 /** Fuzzy id match, the same shape /teleport uses: "joyous" finds Joyous_Cafe. */
-function matches(id: string, query: string): boolean {
-  return id.toLowerCase().includes(query);
+function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/^the\s+/, "")
+    .replace(/[\s_]+/g, "_");
+}
+
+function matches(entity: { id: string; name: string }, query: string): boolean {
+  return (
+    normalize(entity.id).includes(query) ||
+    normalize(entity.name).includes(query)
+  );
 }
 
 export function navigate(world: World, argument: string): NavResult {
-  const query = argument.trim().replace(/ /g, "_").toLowerCase();
+  const query = normalize(argument);
   if (!query) {
-    return { text: "/nav <room or person>" };
+    const here = world.getRoom(world.entities.PLAYER.inside)!;
+    const exits = here.exits
+      .filter((e) => !e.sealed && world.getRoom(e.roomId)?.onNav !== false)
+      .map((e) => world.getRoom(e.roomId)!.name);
+    return {
+      text: `You are in ${here.name}.\nNearby: ${exits.join(", ") || "no public exits"}.\nFind someone: /nav Marta\nFind a room: /nav Archive Console\nDirections are free and do not move you or advance time. Walk to the first room shown, then check again; people can move.`,
+    };
   }
 
   const entities = Object.values(world.entities);
   // A person wins a tie over a room, so a bare name finds the person rather
   // than their quarters, whose id contains their name too.
-  const person = entities.filter(isPerson).find((e) => matches(e.id, query));
-  const room = entities.filter(isRoom).find((e) => matches(e.id, query));
+  const person = entities.filter(isPerson).find((e) => matches(e, query));
+  const room = entities.filter(isRoom).find((e) => matches(e, query));
 
   const here = world.entities.PLAYER.inside;
 
@@ -64,7 +83,9 @@ export function navigate(world: World, argument: string): NavResult {
     if (!where || where.onNav === false) {
       // Not "in their quarters". The cuff does not know why and would not say
       // if it did; naming the room would make the exclusion pointless.
-      return { text: `${person.name} — no route.` };
+      return {
+        text: `${person.name} — not on the public cuff map. Ask Ama where you can meet them.`,
+      };
     }
     if (where.id === here) {
       return { text: `${person.name} — here.` };
@@ -74,7 +95,9 @@ export function navigate(world: World, argument: string): NavResult {
 
   if (room) {
     if (room.onNav === false) {
-      return { text: `${room.name} — no route.` };
+      return {
+        text: `${room.name} — not on the public cuff map. Ask Ama about access.`,
+      };
     }
     if (room.id === here) {
       return { text: `${room.name} — here.` };
@@ -82,7 +105,9 @@ export function navigate(world: World, argument: string): NavResult {
     return directions(world, here, room.id, "");
   }
 
-  return { text: `${argument.trim()} — no match.` };
+  return {
+    text: `${argument.trim()} — no match. Try a person's name, part of a room name, or /nav for nearby rooms.`,
+  };
 }
 
 /** The walk itself, as a list of rooms to go to in order. */
@@ -94,9 +119,11 @@ function directions(
 ): NavResult {
   const path = pathTo(world, from, to);
   if (!path.length) {
-    return { text: `${lead ? lead + "\n" : ""}No route.` };
+    return {
+      text: `${lead ? lead + "\n" : ""}No open route. Ask Ama about access, or use /nav to see nearby rooms.`,
+    };
   }
   const named = path.map((id) => world.getRoom(id)?.name ?? id);
-  const steps = `Route: ${named.join(", ")}`;
+  const steps = `Route: ${named.join(", ")}\nNext: type "go to ${named[0]}". Check /nav again after walking; people can move.`;
   return { text: `${lead ? lead + "\n" : ""}${steps}`, path };
 }

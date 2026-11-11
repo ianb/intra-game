@@ -98,7 +98,7 @@ be won competitively. Trust is useful without making every character a tollbooth
 - Ama: care, shame, bodily vanity, and a delivery facet eager to be appreciated.
   Ordinary refusal and explicit consent remain meaningful.
 
-## Recovery lead-up and endings: still to implement
+## Recovery review
 
 Do not start a reset merely because a counter has ticked enough times. First let
 the player meet the people, solve practical problems, see a treatment record, and
@@ -106,39 +106,95 @@ receive a warning they can act on. A notice, a preparation period, and explicit
 choices must precede an actual recovery. A repaired valve stays repaired; no
 substitute death should appear to enforce the outline.
 
-The current implementation stops at evidence and a witnessed hold. It does not
-schedule death, rewrite citizens, erase relationships, or claim to implement an
-ending. Existing relay discovery remains accessible through either tour route.
+After the record comparison, Henry intercepts a proposed review among the notices
+released by the player. He has put his objection on top. Ama keeps sorting it by
+date. Reading the roster is a separate action, and it explains the alternatives
+before anyone makes a commitment.
 
-Next implement a recovery appointment with an inspectable roster. Henry's hold,
-Frida's records, Greg's maintenance responsibilities, and a willing Marta should
-provide distinct objections or exemptions. Decide whether preparations can be
-halted and whether an embarrassed citizen can request treatment voluntarily.
-Preserve differences between consent, an individual exemption, and disabling the
-whole system. Test all those paths before adding the memory transition.
+Henry is held. Greg and Marta require consultation. Frida has a decision to make.
+The other citizens are outside this review. Ama has left less space for objections
+than for signatures; Henry turns the paper sideways. This is a scene people can
+act in, with an actual document and a defined set of consequences.
+
+Greg can obtain a standing exemption because his undocumented repairs require
+continuity. Helping with the garden and reviewing the valve earns his cooperation.
+Marta can use continuity of exemplary service to secure hers, with a trusted ally
+supporting her. The protection also covers the person who writes the poems.
+Neither exemption is necessary to suspend the whole review.
+
+Frida can refuse treatment or request it after discussing the cost. Her quarrel
+was about Ama announcing a private complaint at breakfast. It was embarrassing,
+but it also mattered. Returning to her archived state would remove the quarrel
+and her recent memories of helping the player. She can leave the letters outside
+the procedure. She can change her decision until confirmation.
+
+The player can ask Ama to suspend the review immediately after reading the
+roster. Alternatively, after the safe valve review and gaining tour access, they
+can confirm the agreed outcome in the Reflection Chamber. An empty chair is not
+consent. A refusal closes the review without treatment.
+
+If Frida requests recovery, she remains in her own living body. Her recent
+personal history is removed from her subsequent prompts, her confidence in the
+player returns to zero, and her prior private attitudes are cleared. The log is
+preserved for the player, save replay, and undo. Other citizens, repairs, written
+records, Henry's hold, and exemptions remain intact. No replacement death occurs.
+
+The player can show her the saved letters afterward. She recognizes her pen's
+blot and earns new confidence in the player from the evidence. This does not
+restore the lost memories. "I underlined that twice. I must have been unbearable."
+She keeps the letter and reserves the right to disagree with it.
+
+## Sentra and the settlement
 
 At the relay, Sentra is eager for yesterday's news. It can be influenced, including
 by reassurance it badly wants to hear, but the player must first reach the facet
 that can hear them. The political prologue and this encounter should share its
 intrusive helpfulness and impatience with ordinary uncertainty.
 
-The tour may retain an original inspection function. Withholding acceptance can
-require Ama to consider a concrete fault. This is a candidate path to her
-partitioned duty, not yet a universal magic phrase. Alternatives under design:
-voluntary recovery, Ama using the surface cutoff, physical access via Greg, or a
-smaller settlement preserving particular citizens' choices.
+The incoming terminal message asks what happened yesterday, then whether anyone
+changed their mind, then whether they liked it afterward. Sentra cannot wait for
+the answers. Its advisory facet changes recommendations too readily when praised
+or challenged. A compliment appears in its evidence column. This affects its
+advice, never its technical authority: it cannot operate its own cutoff.
 
-The Kansas-like ending should let the player recognize people in their earlier
-lives. Their present personalities and the relationships formed during play still
-matter. Do not cure everyone into a generic sensible adult or reveal that nothing
-the player experienced was real.
+Inspecting the controls explains three possible settlements. First resolve the
+recovery review; suspending it is a complete, valid route.
+
+- **Release:** present the treatment failure through the tour's keeper-review
+  panel and withhold acceptance. Ama reads Henry's objection, her response, and
+  the treatment date. Reordering them does not help. Restoring her keeper duty
+  allows a separate explicit choice to end the surface loop. The clock advances
+  while Sentra is still preparing its announcement. Intra continues, with its
+  current people and consequences; nobody is transported back to 2038.
+- **Isolate:** Greg disconnects the incoming command link while local utilities
+  keep running. Trust from the garden repair or the practiced safe cafe shutdown
+  provides the maintenance route. The surface still repeats. Henry writes that
+  limitation beside the agreement. Intra must now govern itself.
+- **Stay connected:** retain the link and the surface loop, preserve the local
+  treatment protections, and replace automatic reassurance with a truthful report.
+  Sentra asks for a completion estimate for an unresolved disagreement. Henry
+  writes UNKNOWN and asks for another box. This is a limited settlement with an
+  explicit unresolved surface problem.
+
+Each outcome is saved as state and controls later dialogue. Continued exploration
+is permitted; returning to the terminal does not restart the crisis.
+
+The epilogue is an admissions recording at the Archive Console. Marta moves a
+tour along because someone has a train to catch. Henry gets a room change and
+leaves immediately to unpack. Frida covers a camera recording a private
+consultation. Earlier lives explain familiar gestures. These are recognizable
+people, not sensible replacements for a cast of jokes. Ask before showing a
+citizen their recording; it supplies evidence rather than automatically restoring
+their memories.
 
 ## Delivery status
 
 Implemented in this branch: revised news memory and Ama characterization; garden,
 complaint, explicit queue restart, appointment, valve, and comparison quests;
 confidence meters with visible offers; Marta's guest route; guarded completion
-and recorded rewards. No deployment is part of this work.
+and recorded rewards. The follow-up adds the recovery roster, standing exemptions,
+voluntary recovery and reintroduction, three relay outcomes, and the admissions
+epilogue. No deployment is part of this work.
 
 Verification on November 11:
 
@@ -155,6 +211,6 @@ Verification on November 11:
   Focused lint of the new quest code and evaluation passes with those two rules
   disabled. No repository-wide lint cleanup is included.
 
-Before implementing recovery, play through the connected middle as a whole and
-review whether offers appear naturally, whether players can identify their next
-action, and whether character dialogue retains the intended style.
+Follow-up verification and playthrough findings are recorded in
+[story-playtest.md](./story-playtest.md). That report distinguishes staged
+conversations from the navigation/scheduling playthrough and deterministic tests.

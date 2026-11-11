@@ -57,6 +57,14 @@ export function applyTag(
 ): boolean {
   const { world, roomId } = ctx;
   switch (tag.type) {
+    case "chooseMystery": {
+      const mystery = world.getMystery(tag.attrs.id || "");
+      const complaint = mystery
+        ? mystery.applyChoice(tag.attrs.choice || "", event, ctx.entityId)
+        : "chooseMystery must name an existing mystery.";
+      if (complaint) ctx.complaints?.push(complaint);
+      return true;
+    }
     case "set":
       applySet(tag, event, ctx);
       return true;
@@ -244,6 +252,12 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     return;
   }
   const value = fieldsOf(entity)[key];
+  if (entity.protectedFields.includes(key)) {
+    ctx.complaints?.push(
+      `${id}.${key} is controlled by story decisions, not <set>.`,
+    );
+    return;
+  }
   if (isPerson(entity) && entity.statSpecs[key]?.engineManaged) {
     ctx.complaints?.push(
       `${entity.id}.${key} changes only through completed quests, not <set>.`,

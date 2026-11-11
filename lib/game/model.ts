@@ -21,7 +21,7 @@ import type { ChatType } from "../types";
 import { World } from "./world";
 import type { AllEntitiesType } from "./content";
 import { scheduleForTime } from "./scheduler";
-import { catchUpMysteries } from "./mysteries";
+import { catchUpMysteries, staleMysteryTransition } from "./mysteries";
 import { navigate } from "./nav";
 import { pathTo } from "./pathto";
 import { applyRewinds, lastTurnInput, lastTurnLength } from "./rewind";
@@ -324,6 +324,7 @@ export class Model {
   async applyActions(actions: ActionRequestType[]) {
     for (const action of actions) {
       if (isStoryEvent(action)) {
+        if (staleMysteryTransition(this.world, action)) continue;
         await this.run(() => this.addStoryEvent(action));
       } else if (isPromptRequest(action)) {
         console.info(
@@ -604,6 +605,7 @@ export class Model {
         totalTime: 0,
         changes: {},
         actions: [{ type: "description", text: result.text }],
+        uiOnly: true,
       },
     ];
   }

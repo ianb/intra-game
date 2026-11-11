@@ -9,11 +9,12 @@ checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
 ## 2026-11-11
 
-Prompts `2e63d3606839`.
+Prompts `2e63d3606839`, `c70c26a01795` — rows here were measured against different prompts and aren't directly comparable.
 
 | model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | why-woken | task-list | total | time | thinking | ¢ |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `claude-haiku-4-5-20251001` | – | – | – | – | – | 5/5 | – | – | – | **5/5** | 48s | 0 | – |
+| `claude-haiku-4-5-20251001` `2e63d3606839` | – | – | – | – | – | 5/5 | – | – | – | **5/5** | 48s | 0 | – |
+| `claude-haiku-4-5-20251001` `c70c26a01795` | – | – | – | – | – | 5/5 | – | – | – | **5/5** | 61s | 0 | – |
 
 Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
 

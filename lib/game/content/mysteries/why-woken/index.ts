@@ -163,7 +163,7 @@ export const Why_Woken = new WhyWokenMystery({
     If the player says they were woken on purpose, this character believes it, finds it interesting for about a minute, and privately reclassifies the player as someone who is here for a reason. It changes how they gossip about the player and nothing else.
     `,
     Ama: `
-    The question is filed and Ama is glad. If the player pushes on Sentra, the message, or what the note asked them to do, she is warm and does not engage: the surface is being managed, and there are more useful things to think about today.
+    The question is filed and Ama is glad. Until Relay_Decision.dutyRestored, she deflects ordinary questions about Sentra. Once the keeper review restores that duty, follow Relay_Decision and engage with the surface decision.
     `,
     Archivist: `
     In service mode the wake order stays queryable, unchanged.

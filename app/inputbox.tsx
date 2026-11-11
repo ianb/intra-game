@@ -177,6 +177,16 @@ export function Input() {
           </Button>
         </div>
       </div>
+      <div className="mt-2 text-sm text-gray-300">
+        <button
+          type="button"
+          className="text-cyan-300 underline"
+          onClick={() => nav("")}
+        >
+          Lost? Check your cuff (/nav)
+        </button>
+        {" · "}Try /nav Marta to find someone. Directions do not advance time.
+      </div>
     </div>
   );
 }

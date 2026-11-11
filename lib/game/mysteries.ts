@@ -134,7 +134,10 @@ function fired(
   }
   if (trigger.solved !== undefined) {
     const other = world.getEntity(trigger.solved);
-    if (!(other instanceof Mystery) || other.state !== "solved") {
+    const state =
+      event.changes[trigger.solved]?.after?.state ??
+      (other instanceof Mystery ? other.state : undefined);
+    if (!(other instanceof Mystery) || state !== "solved") {
       return false;
     }
   }
@@ -178,6 +181,24 @@ function advances(from: string, to: string): boolean {
   );
 }
 
+/** Nested reactions can enqueue the same transition before either is applied. */
+export function staleMysteryTransition(
+  world: World,
+  event: StoryEventType,
+): boolean {
+  const entries = Object.entries(event.changes);
+  if (entries.length !== 1) return false;
+  const [id, change] = entries[0]!;
+  const mystery = world.getMystery(id);
+  const next = change.after.state;
+  return Boolean(
+    mystery &&
+    typeof next === "string" &&
+    Object.keys(change.after).length === 1 &&
+    !advances(mystery.state, next),
+  );
+}
+
 /**
  * Every state change the world has just earned, as story events.
  *
@@ -199,7 +220,16 @@ export function mysteryTriggers(
     if (!(entity instanceof Mystery)) {
       continue;
     }
+    // Hooks run before the incoming event is folded. Its own transition must
+    // count, otherwise announcing a revealed quest announces it again.
+    const incomingState = event.changes[entity.id]?.after?.state;
     for (const trigger of entity.triggers) {
+      if (
+        typeof incomingState === "string" &&
+        !advances(incomingState, trigger.becomes)
+      ) {
+        continue;
+      }
       if (!advances(entity.state, trigger.becomes)) {
         continue;
       }

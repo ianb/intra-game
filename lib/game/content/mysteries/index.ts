@@ -12,6 +12,8 @@ export {
   Recovery_Questions,
 } from "./middle";
 export { Martas_Guest } from "./middle/guest";
+export { Recovery_Review } from "./recovery";
+export { Relay_Decision } from "./recovery/relay";
 
 /**
  * One directory per mystery. See ./README.md for what belongs in one.

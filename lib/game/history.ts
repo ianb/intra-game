@@ -28,6 +28,7 @@ export interface HistoryViewer {
   id: EntityId;
   name: string;
   world: World;
+  memoryStart?: number;
 }
 
 /**
@@ -40,12 +41,9 @@ export interface HistoryViewer {
  */
 export function updatesSeenBy(viewer: HistoryViewer): StoryEventType[] {
   const results: StoryEventType[] = [];
-  for (const eventPos of viewer.world.model.updatesWithPositions.value) {
-    if (eventPos.event.uiOnly) {
-      // Interface messages (command usage hints); in the transcript, never
-      // in a prompt.
-      continue;
-    }
+  for (const eventPos of viewer.world.model.updatesWithPositions.value
+    .filter((item) => !item.event.uiOnly)
+    .slice(viewer.memoryStart ?? 0)) {
     if (eventPos.event.id === "narrator" && eventPos.event.roomId === "Void") {
       results.push(
         ...movementUpdatesForPosition(

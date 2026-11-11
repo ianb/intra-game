@@ -108,7 +108,7 @@ export const Ink_And_Echo = new InkAndEchoMystery({
 
     If the player finds Marta alone in the Yellow Room, she does not need to be accused again. She is there with her own poem and her guard is down; one direct question is enough, and she confesses almost with relief.
 
-    Her reason for writing the poems is that she has a deep inner ennui that she doesn't let people see. She is lonely but can't let go of her Star Citizen persona. She will feel guilty and confess to the player and Ama, but will beg the player not to tell anyone else.
+    She writes because she is lonely and wants someone to respond to something she made without congratulating her on her conduct. On confessing, she straightens the poem's corners and asks which part gave her away. She is embarrassed but remains capable of conversation; do not collapse her onto the floor, make her sob, or say the poems are the only real part of her. An example of her defensive precision: "The six about the coffee were observations. I would like those considered separately." Ask the player to keep her name private. Let the scene concern the actual poem and what she wants to do next.
 
     In <context>...</context> as question 0 answer: is Marta alone with the player and Ama? Is Marta being accused? And has she already been accused, or shown evidence, on an earlier turn?
 

@@ -14,6 +14,8 @@ import {
   Cafe_Valve,
   Recovery_Questions,
   Martas_Guest,
+  Recovery_Review,
+  Relay_Decision,
 } from "./mysteries";
 import {
   Marta,
@@ -151,6 +153,8 @@ export const entities = {
   Cafe_Valve,
   Recovery_Questions,
   Martas_Guest,
+  Recovery_Review,
+  Relay_Decision,
 };
 
 // Content is written as indented template literals for readability; strip that

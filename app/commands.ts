@@ -15,7 +15,7 @@
 import { isPerson, isRoom } from "@/lib/types";
 import type { StoryActionType } from "@/lib/types";
 import type { Person, Room } from "@/lib/game/classes";
-import { pathTo } from "@/lib/game/pathto";
+import { navigate } from "@/lib/game/nav";
 import { model } from "./model";
 
 interface Target {
@@ -72,34 +72,7 @@ export function teleport(argument: string): void {
 }
 
 export function nav(argument: string): void {
-  if (!argument.trim()) {
-    narrate("Usage: /nav <room or person>");
-    return;
-  }
-  const target = resolve(argument);
-  if (!target) {
-    narrate(`/nav: nothing matching "${argument.trim()}".`);
-    return;
-  }
-  const player = model.world.entities.PLAYER;
-  const where = target.person
-    ? `${target.person.name} is in ${target.room.name}.`
-    : `${target.room.name}.`;
-  if (player.inside === target.room.id) {
-    narrate(
-      target.person
-        ? `${target.person.name} is here, in ${target.room.name}.`
-        : `You are already in ${target.room.name}.`,
-    );
-    return;
-  }
-  const path = pathTo(model.world, player.inside, target.room.id);
-  if (!path.length) {
-    narrate(`${where} There is no known route from here.`);
-    return;
-  }
-  const names = path.map((id) => model.world.getRoom(id)?.name ?? id);
-  narrate(`${where} From here: ${names.join(" → ")}.`);
+  narrate(navigate(model.world, argument).text);
 }
 
 export function unknownCommand(text: string): void {
@@ -116,6 +89,7 @@ function narrate(text: string): void {
       totalTime: 0,
       changes: {},
       actions: [action],
+      uiOnly: true,
     },
   ]);
 }

@@ -33,6 +33,7 @@ const nav = (q: string) => navigate(world, q).text;
 ```ts
 nav("Archive Console");
 => Route: Archive Lounge, Archive Console
+Next: type "go to Archive Lounge". Check /nav again after walking; people can move.
 ```
 
 Matching is fuzzy in the same way `/teleport` is — spaces become underscores and
@@ -41,6 +42,7 @@ the query is a case-insensitive substring of the id:
 ``` continue
 nav("joyous");
 => Route: Activity Hub, Joyous Café
+Next: type "go to Activity Hub". Check /nav again after walking; people can move.
 ```
 
 ## A person, as where they are and how to get there
@@ -49,6 +51,7 @@ nav("joyous");
 nav("Frida");
 => Frida — Archive Lounge
 Route: Archive Lounge
+Next: type "go to Archive Lounge". Check /nav again after walking; people can move.
 ```
 
 A person wins a tie over a room, so a bare name finds the person rather than
@@ -74,7 +77,7 @@ world.getRoom("Quarters_Frida").onNav;
 ``` continue
 world.entities.Frida.inside = "Quarters_Frida";
 nav("Frida");
-=> Frida — no route.
+=> Frida — not on the public cuff map. Ask Ama where you can meet them.
 ```
 
 Deliberately not "she is in her quarters": the cuff does not know why, and
@@ -87,7 +90,7 @@ there, so an unknown query says so rather than guessing at the nearest thing.
 
 ```ts
 nav("Archive Sub-Level 4");
-=> Archive Sub-Level 4 — no match.
+=> Archive Sub-Level 4 — no match. Try a person's name, part of a room name, or /nav for nearby rooms.
 ```
 
 ## Already there
@@ -101,4 +104,21 @@ nav("Frida");
 ``` continue
 nav("Hollow Atrium");
 => The Hollow Atrium — here.
+```
+
+## Help and displayed names work without consuming a turn
+
+```ts
+[nav("").includes("Nearby:"), nav("").includes("/nav Marta"), nav("The Yellow Room").includes("The Solitude Cubes"), nav("Joyous Café").includes("Activity Hub")].join(" ");
+=> true true true true
+```
+
+```ts
+let calls = 0;
+const model = new Model(entities, { chat: async () => { calls++; return ""; } });
+const time = model.world.timestampMinutes;
+const room = model.world.entities.PLAYER.inside;
+await model.sendText("/nav Marta");
+[calls, model.world.timestampMinutes === time, model.world.entities.PLAYER.inside === room, model.updates.value.at(-1).uiOnly].join(" ");
+=> 0 true true true
 ```

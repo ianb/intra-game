@@ -19,6 +19,13 @@ story unfolds; `[llm:<prompt title>]` trace lines go to stderr. `-i` /
 `--interactive` hands you a prompt when the scripted input runs out, so you can
 keep playing.
 
+Use `/nav` to see nearby public rooms and `/nav Marta` (or a room name) for a
+route and the next movement command. It costs no model call or game time.
+Walk one room at a time; recheck the cuff because citizens can move. The browser
+and this harness use the same navigation lookup. Private rooms remain off the
+cuff. `/go <room id>` follows one adjacent exit without an interpretation call;
+it still respects locks and produces arrival scenes.
+
 ## How it works
 
 `clichat.ts` is a `ChatFn` (the engine's injectable LLM backend) that shells

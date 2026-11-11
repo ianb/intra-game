@@ -184,3 +184,16 @@ const prompt = JSON.stringify(w.entities.Frida.assemblePrompt({}));
  prompt.includes('dated originals')].join(' ');
 => true true true
 ```
+
+## The real reaction queue announces a quest once
+
+```ts
+const model = new Model(entities, { chat: async () => "" });
+model.world.entities.PLAYER.launched = true;
+model.world.entities.Ama.personality = 'prime';
+await model.addStoryEvent({id:'Marta', roomId:'Yellow_Room', totalTime:0, actions:[], changes:{
+  Ink_And_Echo:{before:{state:'revealed'},after:{state:'solved'}},
+}});
+[model.world.entities.Garden_Repair.state, model.updates.value.filter(e => e.changes.Garden_Repair?.after?.state === 'revealed').length].join(' ');
+=> revealed 1
+```
