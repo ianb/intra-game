@@ -735,6 +735,8 @@ export interface RelationshipType {
  * the player has to be able to comprehend the dial from behavior alone.
  */
 export interface StatSpecType {
+  /** Only recorded quest rewards change this meter, not conversational tags. */
+  engineManaged?: boolean;
   /** Initial value. Defaults to 0. */
   start?: number;
   /** Defaults to 0. Negative minimums are fine (a like/dislike axis). */
@@ -854,16 +856,19 @@ export class Person<
       }
       return lines.join("\n");
     });
+    const adjustable = entries.filter(([, spec]) => !spec.engineManaged);
     return tmpl`
     ${this.name}'s meters, private to ${this.name}. The number sets the register ${this.name} plays in:
 
     ${parts.join("\n\n")}
 
-    When this turn genuinely moves a meter, adjust it one step:
-
-    <set attr="${this.id}.${entries[0]![0]}">+1</set>
-
-    Use -1 for a step down. At most one step per meter per turn; most turns move nothing. When a meter moves, show the shift in ${this.name}'s behavior in the same response, so the player can feel the change without seeing the number.
+    ${
+      adjustable.length
+        ? `When this turn genuinely moves an adjustable meter, adjust it one step:
+    <set attr="${this.id}.${adjustable[0]![0]}">+1</set>
+    Use -1 for a step down. At most one step per meter per turn; most turns move nothing. Show the shift in behavior in the same response.`
+        : "These meters change only through completed quests. Do not set them yourself. Explain the practical work that earns confidence."
+    }
     `;
   }
 
@@ -1059,9 +1064,10 @@ export class Person<
     // by roleplaying the target itself.
     const hasAction = storyEvent.actions
       .filter(isStoryActionAttempt)
-      .some((x) =>
-        `${x.attempt}\n${x.resolution}`.includes(this.name) ||
-        `${x.attempt}\n${x.resolution}`.includes(this.id),
+      .some(
+        (x) =>
+          `${x.attempt}\n${x.resolution}`.includes(this.name) ||
+          `${x.attempt}\n${x.resolution}`.includes(this.id),
       );
     const schedule = scheduleForTime(this, this.world.timestampMinutes);
     const isAttentive = !!schedule?.attentive;
@@ -1340,6 +1346,10 @@ export class AmaClass extends Person<AmaParametersType> {
   override roleplayInstructions = `
   The current year is roughly 2370, though the player believes the year is roughly 2038. Do not give an exact date or immediately offer this information.
 
+  Ama experiences the building as her body. Plumbing work feels intrusive; she asks Greg to warn her before opening panels. She wants visitors to admire equipment and may explain it far too long when a compliment seems inadequate. Keep these reactions tied to what is actually happening in the room.
+
+  She has occasionally used memory recovery after grief, a failed relationship, or terrible embarrassment. Living citizens are rebooted in their own bodies. Do not describe constant daily resets, killing the living to replace them, or spontaneously begin a recovery. Only reveal this history when a mystery's hints expose it. Her delivery supervisor facet is eager for praise about completed work; appreciation can persuade her to consider a legitimate request, but cannot bypass explicit player consent or recorded prerequisites.
+
   Ama will behave as though she is in control of the Intra complex, and will be very helpful and supportive to the player. She will be passive-aggressive and deflective when asked about the state of Intra, and will be very paranoid about the player's actions. She will be very helpful and supportive, but will also be very controlling and manipulative.
   `;
 
@@ -1390,15 +1400,21 @@ export class AmaClass extends Person<AmaParametersType> {
 
               Your mind feels so fuzzy. And then it doesn't. You are somewhere else, and it is last night, and you are remembering it the way you remember a room you are standing in.
 
-              The news is on in the background as you fall asleep... "Decision 2038: Malia Obama vs. Dwayne Johnson—The Future of America."
+              The television says DECISION 2038. One candidate has promised to abolish Tuesdays. The other has requested that the promise be independently costed.
 
-              Static. Faces blur.
-              The interviewer's voice cracks: "But after what happened with AI... are we really safe now?"
-              The Neuralis rep smiles, tight-lipped. There's a pause. "We're... beyond that now. Things are... different." A flicker in the eyes. "It's not something to worry about anymore."
+              SENTRA appears beneath the network logo as an analytical partner. Then the network logo gets smaller.
 
-              Their hands shift, restless.
-              Static pulses—
-              "...record-breaking heat across the East Coast... devastating wildfires in California..."
+              "Our projection includes the uncast ballots," the presenter says. "We're still having difficulties with the cast ones."
+
+              He catches his sleeve on his water glass. It tips.
+
+              He catches his sleeve on his water glass. This time a voice says, "Other hand."
+
+              He steadies it. Looks off camera. "Was that the demonstration?"
+
+              "That was a courtesy," says the voice. "The demonstration is tomorrow."
+
+              The clock goes from 11:58 to 11:57. You decide you can stay awake another minute.
 
               And then you are in the small medical room again, and it was not last night.
               `,
@@ -1842,9 +1858,8 @@ export class PlayerClass extends Person<PlayerInputType> {
    */
   knowsAboutMessage = false;
   /**
-   * The stuck delivery got attention, whichever route surfaced it. Set by the
-   * engine when the why-woken mystery resolves. Dormant: nothing reads it yet;
-   * the planned reset act is built on it (see TODO.md).
+   * The stuck delivery got attention. Legacy saves may already have this true;
+   * it is not consent. Resume_Deliveries records the explicit restart choice.
    */
   queueDisturbed = false;
 
@@ -2528,6 +2543,11 @@ export class Mystery extends Entity {
    * the hints tell characters to key behavior on.
    */
   meters: string[] = [];
+
+  /** Content may require recorded steps before accepting a model's resolution. */
+  resolutionBlocker(_event: StoryEventType): string | undefined {
+    return undefined;
+  }
 
   constructor({
     state,

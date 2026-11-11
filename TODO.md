@@ -32,6 +32,13 @@ original write-up, plus whatever the last few sessions turned up.
 
 ## Next
 
+- **Continue the story middle and recovery lead-up** `content` `L` — see
+  [story-development.md](docs/story-development.md) for the November 11 revision,
+  cast connections, implemented quests, and remaining recovery/ending work. This
+  supersedes the mandatory-death and re-clone-everyone assumptions in the older
+  reset ledger below: living citizens reboot, Ama recovers occasionally, and
+  successful safety work must not be defeated by a replacement accident.
+
 - **The reset act (design ledger)** `content` `L` — the planned final act,
   designed in chat 2026-08-21; recorded here so the pieces stay findable.
   Resolving why-woken sets `PLAYER.queueDisturbed` (the fuse, already live and

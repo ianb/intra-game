@@ -137,7 +137,7 @@ const prompt = String(
 Characters without meters carry nothing:
 
 ``` continue
-String(world.entities.Frida.assemblePrompt({}).messages[0]!.content).includes(
+String(world.entities.Lily.assemblePrompt({}).messages[0]!.content).includes(
   "meters",
 );
 => false

@@ -19,7 +19,7 @@ import { Mystery } from "../../../classes";
 
 const HINTS = {
   Hallway: `
-  At the far end of the Hallway is a heavy sealed door. Mounted next to it is a framed notice: the official itinerary of the Facility Appreciation Tour, listing what the Star Citizen of the Week will be shown, including the maintenance corridor behind this door. The frame is dusty and the paper has yellowed. If the player examines the door or the notice, describe both, and mention the signature lines printed at the bottom for each past tour: all of them blank.
+  At the far end of the Hallway is a heavy sealed door. Mounted next to it is the itinerary of the Facility Appreciation Tour, listing the maintenance corridor and permitting the Star Citizen to bring one guest. The paper has yellowed. One old attendance line bears Marta's signature; the later ones are blank.
   `,
   Ama: `
   If the player asks about the sealed door at the end of the Hallway, Ama is not evasive: it is the maintenance corridor, it stays sealed for everyone's safety, and it is opened only for the Facility Appreciation Tour, the Star Citizen's prize. She moves directly from answering into promoting the award. She has wanted someone to ask her about the award for years. When she tells the player about the tour, respond with:
@@ -52,7 +52,7 @@ const HINTS = {
   - Intra was built as Sentra's backup plan, outside the loop, with Ama to keep it.
   - The contingency is a kill switch for the loop. Ama holds it. The auto-reply has been confirming her readiness to use it for three hundred years.
 
-  If Ama is present she watches with pride and no reaction to the content: this is infrastructure, and her Star Citizen is taking a healthy interest in it. She cannot engage with what the messages say.
+  If Ama is present she watches with pride and no reaction to the content: this is infrastructure, and her tour visitor is taking a healthy interest in it. The player may be the winner or Marta's guest. She cannot engage with what the messages say.
 
   When the player has read enough to understand the loop, additionally respond with:
 

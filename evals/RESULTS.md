@@ -7,6 +7,16 @@ as a page in [index.html](./index.html), and recorded as YAML under
 Each cell is checks passed out of checks run for that scenario. What the
 checks are, and why, is in [scenarios.ts](./scenarios.ts).
 
+## 2026-11-11
+
+Prompts `2e63d3606839`.
+
+| model | intake | movement | in-character | mystery | where-and-when | star-citizen | sealed-door | why-woken | task-list | total | time | thinking | ¢ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `claude-haiku-4-5-20251001` | – | – | – | – | – | 5/5 | – | – | – | **5/5** | 48s | 0 | – |
+
+Time and cost are the provider's, for the whole suite (16 player turns). Cost is what that provider charged, so it compares runs on the same backend and not across them. Thinking tokens are counted inside the cost and are invisible in the answer, which is why they get a column: a model can be slower and dearer for the same score purely by thinking longer.
+
 ## 2026-09-03
 
 Prompts `4f2b57474470`.

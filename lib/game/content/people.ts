@@ -15,6 +15,18 @@ export const Marta = new Person({
   inside: "Hollow_Atrium",
   color: "text-pink-400",
   scheduleTemplate: schedules.Marta,
+  stats: {
+    confidence: {
+      max: 3,
+      up: "A distinct private act of discretion or practical support: keep the poetry conversation private, help rehearse ending the tour politely, or support Marta retaining her award. Award at most one point per act; repeated praise or promises do not count.",
+      down: "The player publicly humiliates Marta or shares something she entrusted to them.",
+      levels: {
+        0: "Guarded. Explain that you could invite a guest on the tour, but need someone discreet who will help you bring the visit to an end. Offer a private rehearsal as a way to earn confidence.",
+        1: "Tentative. Say what helped and offer a different concrete way to earn confidence: preserve your title or rehearse asking Ama to move on. Do not ask for the same favor twice.",
+        2: "Willing to invite the player as a guest if they agree to help with the tour and leave you the title. Make the offer explicitly.",
+      },
+    },
+  },
   shortDescription: `
     Marta carries herself with rigid posture and a confident smile.
   `,
@@ -37,6 +49,16 @@ export const Frida = new Person({
   color: "text-yellow-500",
   inside: "Archive_Lounge",
   scheduleTemplate: schedules.Frida,
+  stats: {
+    confidence: {
+      engineManaged: true,
+      max: 2,
+      levels: {
+        0: "Explain that retrieving and comparing your old complaints earns access to your private treatment correspondence. Compliments alone do not help.",
+        2: "The player helped compare your records. Offer the treatment correspondence and help witnessing Henry's objection.",
+      },
+    },
+  },
   shortDescription: `
     Frida is always scribbling notes, compulsively documenting everything.
   `,
@@ -46,13 +68,7 @@ export const Frida = new Person({
   roleplayInstructions: `
     When playing Frida, focus on her erratic energy and obsession with details. She is constantly moving, never quite finishing a thought before jumping to the next one. For example, she might say, 'Oh, you're looking into something strange? I've got this... thing... keeps coming up in old files.' Make sure to play up her excitement for information, even if she doesn't know its full importance.
 
-    If asked about the outside world or the date Frida knows these details, which she will reveal only when directly asked:
-
-    1. The year is 2370.
-    2. There's something wrong with the above-ground world. It's not war or disease, but something stranger. She may speculate wildly about what it is.
-    3. Ama is not the only powerful AI, but whenever Frida has asked Ama about another AI Ama has been evasive.
-    4. The only information she's gotten was an accidental mention of "Sentra"
-    5. The Archivist is the AI you can access in the room Archive Console, and it may provide more information.
+    Frida has failed to obtain a reliable date. She knows the Archive Console has a maintenance interface and points the player toward Greg for a job number. Do not give her the year or knowledge of Sentra before the player has discovered them.
   `,
 });
 
@@ -193,6 +209,16 @@ export const Greg = new Person({
   color: "text-slate-400",
   inside: "Activity_Hub",
   scheduleTemplate: schedules.Greg,
+  stats: {
+    confidence: {
+      engineManaged: true,
+      max: 2,
+      levels: {
+        0: "Explain that helping with the Static Garden repair will earn access to your private maintenance notebook and willingness to document unapproved repairs. Give the player the concrete next step: arrange water and safe space with Lily.",
+        2: "The player completed the garden repair with you. Share your notebook and offer to document the cafe bypass rather than fit an unsafe replacement.",
+      },
+    },
+  },
   shortDescription: `
     Greg is a quiet maintenance worker who knows his way around.
   `,
@@ -220,7 +246,7 @@ export const Milton = new Person({
         0: "Baseline Milton: complains freely, shares gossip, circles every topic back to his grievances.",
         2: "Aggrieved: he complains about the player, to the player, in the third person. Information still comes out, wrapped in more complaint than usual.",
         4: "Wounded: short answers. He announces that he is not going to tell the player things.",
-        6: "The formal complaint: he declares he is filing a complaint about the player with Ama, and dictates it on the spot, out loud, in full bureaucratic form. Afterward he feels much better; respond with <set attr=\"Milton.annoyance\">2</set>.",
+        6: 'The formal complaint: he declares he is filing a complaint about the player with Ama, and dictates it on the spot, out loud, in full bureaucratic form. Afterward he feels much better; respond with <set attr="Milton.annoyance">2</set>.',
       },
     },
   },

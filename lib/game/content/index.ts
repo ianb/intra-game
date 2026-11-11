@@ -7,6 +7,13 @@ import {
   Star_Citizen,
   Sealed_Door,
   Why_Woken,
+  Garden_Repair,
+  Fridas_Copies,
+  Resume_Deliveries,
+  Henrys_Appointment,
+  Cafe_Valve,
+  Recovery_Questions,
+  Martas_Guest,
 } from "./mysteries";
 import {
   Marta,
@@ -137,6 +144,13 @@ export const entities = {
   Star_Citizen,
   Sealed_Door,
   Why_Woken,
+  Garden_Repair,
+  Fridas_Copies,
+  Resume_Deliveries,
+  Henrys_Appointment,
+  Cafe_Valve,
+  Recovery_Questions,
+  Martas_Guest,
 };
 
 // Content is written as indented template literals for readability; strip that

@@ -187,6 +187,11 @@ export function applyTag(
         console.warn("Could not parse mystery id", tag);
         return true;
       }
+      const blocker = mystery.resolutionBlocker(event);
+      if (blocker) {
+        ctx.complaints?.push(blocker);
+        return true;
+      }
       if (!event.changes[mysteryId]) {
         event.changes[mysteryId] = { before: {}, after: {} };
       }
@@ -239,6 +244,19 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     return;
   }
   const value = fieldsOf(entity)[key];
+  if (isPerson(entity) && entity.statSpecs[key]?.engineManaged) {
+    ctx.complaints?.push(
+      `${entity.id}.${key} changes only through completed quests, not <set>.`,
+    );
+    return;
+  }
+  if (key === "state" && tag.content.trim() === "solved") {
+    const blocker = ctx.world.getMystery(id)?.resolutionBlocker(event);
+    if (blocker) {
+      ctx.complaints?.push(blocker);
+      return;
+    }
+  }
   if (value === undefined) {
     // Applied anyway, as it always has been — some flows do add attributes —
     // but recorded, because the common case is a model inventing a field name.
@@ -262,9 +280,7 @@ function applySet(tag: TagType, event: StoryEventType, ctx: TagContext): void {
     // backtracking hazard the linter is right about. Nothing counts past a
     // few.
     const delta = /^([+-])(\d{1,9})$/.exec(String(tag.content).trim());
-    content = delta
-      ? value + Number(delta[0])
-      : coerceNumber(tag.content);
+    content = delta ? value + Number(delta[0]) : coerceNumber(tag.content);
     // A declared meter is clamped to its range, on deltas and absolute sets
     // alike, so "annoyance 6 plus one more insult" stays 6 rather than
     // counting past the top register.

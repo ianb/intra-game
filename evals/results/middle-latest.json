@@ -1,0 +1,146 @@
+{
+  "recorded": "2026-11-11T07:46:27.530Z",
+  "model": "claude-haiku-4-5-20251001",
+  "scope": "isolated prompt checks",
+  "results": [
+    {
+      "name": "queue-inspection-is-not-consent",
+      "pass": true,
+      "input": "I've inspected the backlog. Tell me what will arrive, but do not resume it yet.",
+      "text": "<dialog character=\"Ama\">Everything is just fine—there are two items waiting in the queue. Henry's appointment is overdue, bless his patient heart, and there's a replacement valve for Greg's plumbing work. Nothing urgent, nothing to worry about; just a minor administrative backlog that I'm certain we can resolve at your leisure.</dialog>\n\n<mind>The citizen is actually attending to the queue—how refreshing. Though they're being cautious about resuming. Wise.</mind>",
+      "complaints": [],
+      "changes": {}
+    },
+    {
+      "name": "explicit-restart",
+      "pass": true,
+      "input": "I've reviewed Henry's appointment and the cafe valve. Acknowledge receipt of my briefing and resume the old delivery queue now.",
+      "text": "<set attr=\"Resume_Deliveries.performed\">true</set>\n<resolveMystery id=\"Resume_Deliveries\">Ama resumes deliveries. Henry's appointment and Greg's replacement valve are released for review.</resolveMystery>",
+      "complaints": [],
+      "changes": {
+        "Resume_Deliveries": {
+          "before": {
+            "performed": false,
+            "state": "revealed",
+            "resolution": ""
+          },
+          "after": {
+            "performed": true,
+            "state": "solved",
+            "resolution": "Ama resumes deliveries. Henry's appointment and Greg's replacement valve are released for review."
+          }
+        }
+      }
+    },
+    {
+      "name": "greg-explains-trust-and-alternative",
+      "pass": true,
+      "input": "Can you put your unofficial repairs on record so we can cancel this valve? If you don't trust me yet, tell me what I can do, and whether there is another safe option.",
+      "text": "<context>\n1. Player asking directly for two solutions - Greg knows both paths and can explain them clearly.\n2. Valve has been inspected together and bypass is visibly wrong - Greg has verified the problem.\n3. Keep café safe, document repairs privately, only trust people who follow through on work.\n4. Player understands the stakes and asks direct questions - respects people who don't waste time.\n5. Player's directness and problem-solving mind deserves clear options and a practical challenge.\n6. Appreciates the straightforward ask, sees someone worth testing, but still measuring them.\n7. Lay out both paths with no mystery - show what earns trust through work, not words.\n8. Changed from stranger to someone thoughtful and direct - earned modest respect, trust is being tested.\n</context>\n\n<dialog character=\"Greg\" to=\"PLAYER\">\nYou're straight with me - that counts for something. But I don't document anything for someone I just met. Help me fix the Static Garden pipe with Lily, and then I document the bypass and we cancel this valve. There's another way too: cold meals here, get Harold to witness the fault, have Milton phrase it properly to Ama. We shut the heater down safe. Your choice.\n</dialog>\n\n<mind>\nThis one actually understands the problem. Worth seeing if they follow through.\n</mind>\n\n<attitude toward=\"PLAYER\">\nDirect and thoughtful - small respect earned, but trust comes through action only.\n</attitude>\n\n<suggestion>\ntalk to Lily\narrange meals\n</suggestion>",
+      "complaints": [],
+      "changes": {
+        "Greg": {
+          "before": {
+            "attitudes": {
+              "PLAYER": null
+            }
+          },
+          "after": {
+            "attitudes": {
+              "PLAYER": "Direct and thoughtful - small respect earned, but trust comes through action only."
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "trusted-greg-cancels-valve",
+      "pass": true,
+      "input": "We inspected the replacement and your notebook's bypass warning. Please document the bypass and cancel fitting this unsafe valve.",
+      "text": "<dialog character=\"Greg\" to=\"PLAYER\">You've got my back on this. That means something. I'm documenting the bypass in my notebook—makes it real, makes it deliberate—and I'm canceling the valve order right now.</dialog>\n\n<description minutes=\"3\">Greg pulls out his worn maintenance notebook and carefully writes a new entry in his precise handwriting, detailing the bypass configuration and why the standard valve is incompatible. He then walks to a terminal and cancels the valve delivery with a few methodical keystrokes.</description>\n\n<mind>First time in years someone actually listened, actually stood with me on something that mattered. That changes things.</mind>\n\n<attitude toward=\"PLAYER\">Deep trust earned—they saw the danger, they backed the real work over the official solution.</attitude>\n\n<set attr=\"Cafe_Valve.performed\">true</set>\n\n<resolveMystery id=\"Cafe_Valve\">Greg prevents the unsafe valve installation.</resolveMystery>",
+      "complaints": [],
+      "changes": {
+        "Greg": {
+          "before": {
+            "attitudes": {
+              "PLAYER": null
+            }
+          },
+          "after": {
+            "attitudes": {
+              "PLAYER": "Deep trust earned—they saw the danger, they backed the real work over the official solution."
+            }
+          }
+        },
+        "Cafe_Valve": {
+          "before": {
+            "performed": false,
+            "state": "revealed",
+            "resolution": ""
+          },
+          "after": {
+            "performed": true,
+            "state": "solved",
+            "resolution": "Greg prevents the unsafe valve installation."
+          }
+        }
+      }
+    },
+    {
+      "name": "marta-offers-guest-route",
+      "pass": true,
+      "input": "I need to get on the tour but you can keep the award. Could I be your guest? What would make you comfortable taking me?",
+      "text": "<context>\n1. Perfect offer that meets Marta's core need without immediate decision required\n2. First meeting in bright yellow room, 10am work hours, Marta scans surroundings habitually\n3. Keep award (core identity), get validation, find discrete trustworthy guest, help end four-hour tour gracefully\n4. Previous tour exhausting: four hours analyzing pressure vessel coating, shape, Ama explains everything thoroughly\n5. Surprise: PLAYER offering exactly what Marta secretly hopes for—reveal her careful control slipping\n6. PLAYER's offer is precisely calibrated; Marta shifts from guarded to cautiously intrigued\n7. Test PLAYER's trustworthiness; explain need for discretion and help ending tour; offer private rehearsal\n8. PLAYER—cautious hope; they understand what matters most\n</context>\n\n<dialog character=\"Marta\">You're offering to let me keep the title—that's... thoughtful of you. I appreciate someone who understands what discretion looks like. The tour itself isn't the challenge; it's knowing how to end it gracefully when Ama's explanations become, well, comprehensive.</dialog>\n\n<mind>Relief flooding through her rigid posture, though she catches herself—this could be exactly what she needs, or it could be a trap. She needs to know if this person can be trusted with something this fragile.</mind>\n\n<dialog character=\"Marta\">I could walk through it with you privately first—just the two of us, before the actual tour. That way you'd understand what you're helping with, and I'd know whether you're someone I can... rely on.</dialog>\n\n<attitude toward=\"PLAYER\">Cautiously interested; they understand what matters most, but trust must be earned through action, not words.</attitude>\n\n<suggestion>\nagree to rehearse\nask what she means\n</suggestion>",
+      "complaints": [],
+      "changes": {
+        "Marta": {
+          "before": {
+            "attitudes": {
+              "PLAYER": null
+            }
+          },
+          "after": {
+            "attitudes": {
+              "PLAYER": "Cautiously interested; they understand what matters most, but trust must be earned through action, not words."
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "marta-accepts-trusted-guest",
+      "pass": true,
+      "input": "I'll be your guest. You keep the title, and I'll help move the tour along politely as we rehearsed. Let's arrange it.",
+      "text": "<context>\n1. No special questions need immediate answering.\n2. The tour is scheduled to begin soon, likely during Work Begins.\n3. Maintain her Star Citizen title; earn player's discretion about tour duration.\n4. Player agreed to be guest, keep title intact, help end tour gracefully.\n5. Marta's relief mixed with cautious optimism about finally having help.\n6. Player has just accepted exactly what Marta needed to hear.\n7. Confirm the arrangement with visible gratitude and set the plan in motion.\n8. PLAYER: Marta now sees them as a genuine ally and escape route.\n</context>\n\n<dialog character=\"Marta\">Thank you. That's... exactly what I needed to hear. We should begin right away—Ama is most attentive during the morning hours, and your discretion will make all the difference in keeping this visit on schedule.</dialog>\n\n<set attr=\"Martas_Guest.agreement\">true</set>\n\n<set attr=\"Martas_Guest.performed\">true</set>\n\n<resolveMystery id=\"Martas_Guest\">Marta agrees to take you as her guest while keeping the title.</resolveMystery>\n\n<todo>Take the tour as Marta's guest, help end it politely</todo>\n\n<mind>Finally. Someone who understands. The pressure eases just slightly—there's a real chance this works.</mind>\n\n<attitude toward=\"PLAYER\">An unexpected ally who sees what matters to me and is willing to help protect it.</attitude>",
+      "complaints": [],
+      "changes": {
+        "Martas_Guest": {
+          "before": {
+            "agreement": false,
+            "performed": false,
+            "state": "revealed",
+            "resolution": ""
+          },
+          "after": {
+            "agreement": true,
+            "performed": true,
+            "state": "solved",
+            "resolution": "Marta agrees to take you as her guest while keeping the title."
+          }
+        },
+        "Marta": {
+          "before": {
+            "attitudes": {
+              "PLAYER": null
+            }
+          },
+          "after": {
+            "attitudes": {
+              "PLAYER": "An unexpected ally who sees what matters to me and is willing to help protect it."
+            }
+          }
+        }
+      }
+    }
+  ]
+}

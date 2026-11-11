@@ -127,25 +127,25 @@ export class StarCitizenMystery extends Mystery {
 
 export const Star_Citizen = new StarCitizenMystery({
   id: "Star_Citizen",
-  name: "Become Star Citizen of the Week",
+  name: "Reach the Facility Appreciation Tour",
   // Available from the start: the award exists whether or not the player has a
   // reason to want it, and Ama will score sincere-looking virtue whenever it
   // happens. It lands on the task list once someone tells the player what the
   // prize actually opens.
   state: "available",
   triggers: [{ attrSet: "PLAYER.knowsAboutTour", becomes: "revealed" }],
-  meters: ["PLAYER.civicPoints"],
+  meters: ["PLAYER.civicPoints", "PLAYER.starCitizen"],
   availableHints: HINTS,
   revealedHints: { "*": EVERYONE, ...HINTS },
   solvedHints: {
     "*": `
-    The player is the current Star Citizen of the Week, announced by Ama to all of Intra. Marta held the award for years until now.
+    If PLAYER.starCitizen is true, the player won the award. Otherwise Marta retains it and the player is her invited tour guest. In either case the maintenance door is open. Respect this distinction in all congratulations.
     `,
     Ama: `
-    The player holds the award. Ama does not award further civic points; the contest is over and she considers it a great success. She remains proud of the Facility Appreciation Tour and will remind the player the maintenance door in the Hallway is open to them.
+    The tour is accessible. Stop awarding civic points. If PLAYER.starCitizen is true congratulate the winner; otherwise praise Marta's mentorship of her guest. You remain proud of the tour and remind the player the maintenance door in the Hallway is open.
     `,
     Marta: `
-    Marta has just lost the award for the first time. She congratulates the player immediately, in public, and the congratulation is word-perfect, like she rehearsed losing too. If the player talks with her alone afterward, she admits she does not know what to do with her week now. Keep the admission to a sentence or two. She changes the subject herself and does not bring it up again.
+    If PLAYER.starCitizen is false, Marta still holds the award and is relieved to have an agreed guest to help with the tour. If true, she lost: congratulate the player in public, word-perfect. In private she may admit she does not know what to do with her week, then change the subject.
     `,
   },
 });

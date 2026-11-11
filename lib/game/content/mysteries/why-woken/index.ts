@@ -25,9 +25,9 @@ import type { ActionRequestType, StoryEventType } from "../../../../types";
  *    mystery and sets `PLAYER.knowsAboutTour` — "WIN THEIR GAME" — which is
  *    what reveals the Star Citizen contest through its existing trigger.
  *
- * Resolving sets `PLAYER.queueDisturbed`: whichever route the player took,
- * the stuck delivery got attention, and the backlog it was stuck behind is no
- * longer at rest. Dormant for now; the reset act (see TODO.md) is built on it.
+ * Resolving sets `PLAYER.queueDisturbed`: the stuck delivery has been noticed.
+ * Resume_Deliveries separately requires inspecting the backlog and explicitly
+ * requesting a restart. This legacy flag is not consent to resume old work.
  */
 
 export const SENTRA_NOTE = `
@@ -113,9 +113,7 @@ export class WhyWokenMystery extends Mystery {
     ) {
       return [];
     }
-    // The fuse. Whichever route surfaced the stuck delivery, the queue holding
-    // it got attention for the first time in three hundred years. Nothing
-    // reads this yet; the reset act will.
+    // Discovery only. Resume_Deliveries owns the explicit restart decision.
     return [
       {
         id: "narrator",
